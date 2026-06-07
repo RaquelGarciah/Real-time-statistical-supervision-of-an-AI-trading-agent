@@ -1,0 +1,34 @@
+{
+  "calibration_window": [
+    "2000-01-01",
+    "2024-09-30"
+  ],
+  "target_percentile": 0.95,
+  "psa": {
+    "score_p95": 0.02292820871149785,
+    "activation_pct_at_p95": 0.05012448132780083,
+    "n_obs": 6025,
+    "score_distribution": {
+      "p50": 0.004943277932641166,
+      "p75": 0.005642724414416015,
+      "p90": 0.008685208789023185,
+      "p95": 0.02292820871149785,
+      "p99": 0.647207512555752,
+      "max": 1.0000000000000002
+    }
+  },
+  "gso": {
+    "score_p95": 2.3706284732416774,
+    "activation_pct_at_p95": 0.05012448132780083,
+    "n_obs": 6025,
+    "score_distribution": {
+      "p50": 0.4245224270992418,
+      "p75": 1.0055459428486282,
+      "p90": 1.7167415184882597,
+      "p95": 2.3706284732416774,
+      "p99": 5.565324880787546,
+      "max": 10.302518674114362
+    }
+  },
+  "notes": "PSA score = P(change-point|history) de BOCPD sobre sizing \u00f3ptimo GARCH \u00d7 HMM. GSO score = exceso relativo del agente sint\u00e9tico all-in (|size|=1) sobre la banda GARCH. strata/detectors.py mapea low=P95/medium=P99/high=max para PSA y GSO. RAM se mantiene en defaults (0.2/0.4/0.7); su distribuci\u00f3n calibrada se guarda aparte en ram_score_distribution.json (no activa)."
+}

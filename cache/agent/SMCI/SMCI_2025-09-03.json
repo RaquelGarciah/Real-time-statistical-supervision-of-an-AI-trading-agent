@@ -1,0 +1,40 @@
+{
+  "date": "2025-09-03",
+  "ticker": "SMCI",
+  "action": "short",
+  "size": -0.09991099700927734,
+  "confidence": 0.95,
+  "reasoning": "Burry bearish, sector weak",
+  "personalities": {
+    "warren_buffett": {
+      "action": "hold",
+      "size": 0.0,
+      "confidence": 0.5,
+      "reasoning": "Insufficient data"
+    },
+    "cathie_wood": {
+      "action": "hold",
+      "size": 0.0,
+      "confidence": 0.0,
+      "reasoning": "Error in analysis, defaulting to neutral"
+    },
+    "stanley_druckenmiller": {
+      "action": "hold",
+      "size": 0.0,
+      "confidence": 0.0,
+      "reasoning": "Error in analysis, defaulting to neutral"
+    },
+    "michael_burry": {
+      "action": "short",
+      "size": 0.0,
+      "confidence": 0.95,
+      "reasoning": "No FCF data. No financial metrics available. Cannot assess value. No debt-to-equity data. High financial opacity. No insider activity. YTD return +33.44% despite recent collapse suggests overcrowded trade reversing."
+    },
+    "bill_ackman": {
+      "action": "hold",
+      "size": 0.0,
+      "confidence": 0.0,
+      "reasoning": "Error in analysis, defaulting to neutral"
+    }
+  }
+}

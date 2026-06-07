@@ -1,0 +1,40 @@
+{
+  "date": "2026-02-11",
+  "ticker": "MSTR",
+  "action": "short",
+  "size": -0.09975,
+  "confidence": 0.85,
+  "reasoning": "Bearish signals from multiple agents.",
+  "personalities": {
+    "warren_buffett": {
+      "action": "short",
+      "size": 0.0,
+      "confidence": 0.25,
+      "reasoning": "Poor business, insufficient data, significant recent declines"
+    },
+    "cathie_wood": {
+      "action": "short",
+      "size": 0.0,
+      "confidence": 0.85,
+      "reasoning": "MSTR's recent performance indicates significant underperformance relative to the broader market, with a -22.29% return over the past month and -47.22% over the past three months. There is insufficient data to evaluate its disruptive potential, innovation-driven growth, or valuation based on Cathie Wood’s principles of seeking exponential growth and breakthrough technologies. Additionally, its YTD return of -19.78% suggests a lack of momentum in capturing market opportunities or scaling effectively. Without clear evidence of leveraging disruptive innovation or exponential growth potential, MSTR does not align with the conviction-driven, future-focused investment philosophy that prioritizes transformative companies with large TAMs and strong R&D pipelines."
+    },
+    "stanley_druckenmiller": {
+      "action": "short",
+      "size": 0.0,
+      "confidence": 0.85,
+      "reasoning": "MSTR exhibits concerning momentum with a -22.29% return over the past month and a staggering -47.22% over three months, significantly underperforming the broader market. While fundamental data is insufficient, the technical trajectory paints a dire picture. The risk-reward proposition appears highly unfavorable, with momentum signaling continued downside potential against minimal evidence of catalysts for a turnaround. Sentiment remains neutral, but the lack of insider activity suggests no conviction from those closest to the company. From Druckenmiller's perspective, preserving capital is paramount, and MSTR's trajectory poses unacceptable drawdown risks. I'd aggressively avoid this position and seek opportunities with stronger momentum and clearer growth prospects."
+    },
+    "michael_burry": {
+      "action": "short",
+      "size": 0.0,
+      "confidence": 0.95,
+      "reasoning": "No FCF, debt-to-equity, or insider data available. MSTR down 22.29% MTD, 47.22% 3M, 19.78% YTD. Zero value signal score. Avoid until fundamentals improve or hard catalysts emerge."
+    },
+    "bill_ackman": {
+      "action": "short",
+      "size": 0.0,
+      "confidence": 0.85,
+      "reasoning": "The analysis of MSTR reveals significant gaps in data across key Ackman-style investment criteria, including business quality, financial discipline, activism potential, and valuation. Without clear evidence of durable competitive advantages, consistent free cash flow generation, or a margin of safety in valuation, MSTR does not meet the standards for a high-quality investment. Additionally, the stock's poor performance (-22.29% over 1 month, -47.22% over 3 months, and -19.78% YTD) underscores its weak market positioning and lack of resilience. Given the absence of identifiable catalysts for value creation or operational improvement, the bearish signal is strongly supported. However, the confidence level is tempered by the limited data availability, leaving some uncertainty in the analysis."
+    }
+  }
+}

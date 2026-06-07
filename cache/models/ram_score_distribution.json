@@ -1,0 +1,19 @@
+{
+  "calibration_window": [
+    "2000-01-01",
+    "2024-09-30"
+  ],
+  "flag_percentile_probado": 90,
+  "n_obs": 12050,
+  "score_distribution": {
+    "p50": 2.2446437347028386e-05,
+    "p75": 0.9998163111407967,
+    "p85": 0.9999958741985739,
+    "p90": 0.9999990659873944,
+    "p95": 0.9999999711570131,
+    "p99": 1.0,
+    "max": 1.0
+  },
+  "activado": false,
+  "notas": "Distribuci\u00f3n saturada (posteriores HMM \u2248 0/1): p85\u2013p99 \u2248 1.0. Calibrar el flag de RAM a estos percentiles dispara muy poco y baja el Sharpe; RAM mantiene los defaults 0.2/0.4/0.7."
+}
