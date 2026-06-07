@@ -1,0 +1,44 @@
+# Entornos y bytecode
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Secretos
+.env
+
+# Datos regenerables (no se versionan; se redescargan con yfinance)
+data/
+
+# Caché: los modelos y las decisiones del agente (cache/models, cache/agent) SÍ se
+# versionan. Las respuestas LLM crudas no: cache/llm es grande y ruidoso, se conserva
+# solo en disco (no se pierde, pero no entra en git).
+cache/llm/
+
+# Sistema operativo
+.DS_Store
+Icon?
+
+# IDE / herramientas locales
+.idea/
+.vscode/
+.claude/*
+!.claude/agents/
+!.claude/agents/**
+logs/
+
+# Audios crudos del tutor (las transcripciones .md sí se versionan)
+docs/tutor_audios/
+
+# Tests y coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Caché de linters
+.ruff_cache/
+
+# Salidas intermedias de notebooks
+.ipynb_checkpoints/
