@@ -39,7 +39,7 @@ def main() -> None:
     feat = pd.concat([ret.rename("r"), rv.rename("rv")], axis=1).dropna()
     calib = feat.loc[feat.index <= pd.Timestamp(CALIBRATION_END)]
     calib_ret = ret.loc[ret.index <= pd.Timestamp(CALIBRATION_END)]
-    print(f"Pipeline documentado: feature = (log_return, realized_vol_21d).")
+    print("Pipeline documentado: feature = (log_return, realized_vol_21d).")
     print(f"Calibración {CALIBRATION_START} → {CALIBRATION_END}: n_obs = {len(calib)}")
 
     # --- HMM legacy (para comparar) ---

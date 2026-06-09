@@ -19,7 +19,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from sklearn.metrics import confusion_matrix
 from sklearn.metrics import log_loss as _logloss
 
 import config
@@ -29,7 +28,7 @@ from core.backtest import run_backtest
 from core.cpcv import CombinatorialPurgedKFold
 from core.garch import GARCHModel
 from core.hmm import RegimeHMM
-from core.stats import diebold_mariano, mcnemar_test, tost
+from core.stats import diebold_mariano, tost
 from strata.strata import StrataSupervisor
 from strata.types import AgentOutput, PersonalityOutput
 

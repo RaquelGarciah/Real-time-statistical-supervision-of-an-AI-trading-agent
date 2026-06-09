@@ -1,0 +1,15 @@
+# Configuración de ruff para STRATA.
+#
+# Filosofía (CLAUDE.md §6): es código de investigación. Se ENFORZAN las reglas que
+# cazan bugs reales (pyflakes `F`: imports sin usar, nombres no definidos, f-strings
+# vacíos…) y se relaja el estilo compacto deliberado del proyecto: sentencias en una
+# línea con `;`/`:` (E701/E702), que se usan a propósito en tests y utilidades.
+
+line-length = 120
+
+[lint]
+# Default de ruff (E4/E7/E9 + F) menos el estilo compacto intencionado.
+ignore = ["E701", "E702"]
+
+# El submódulo del agente (upstream AI Hedge Fund) y los entornos no se lintan.
+exclude = ["agent", ".venv", "notebooks"]
