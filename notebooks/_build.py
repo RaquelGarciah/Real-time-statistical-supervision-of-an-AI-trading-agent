@@ -374,8 +374,18 @@ plot_regimes_06b(prices["Close"], oos_feat,
 
 md(r"""## §4. De dónde salen los umbrales (metodología rigurosa)
 
-PSA y GSO mapean su severidad a percentiles de la calibración (P95 → *low*, P99 →
-*medium*, máximo → *high*): cortes sacados de los datos.""")
+**Principio rector (siempre).** Toda decisión de umbral en STRATA se toma **ex-ante sobre la
+calibración 2000–2024, ANTES de ver el OOS**. Es la disciplina que blinda contra el p-hacking y
+la que el tutor exige: ningún corte se elige porque "mejora la curva".
+
+**PSA y GSO — percentiles del score en calibración.** Son **detectores de alarma para patologías
+raras**: PSA marca que el agente pega un *volantazo estructural* en su sizing; GSO que se
+*sobreexpone* brutalmente para la volatilidad del día. Por eso su severidad se mapea a percentiles
+**altos**: low = P95, medium = P99, high = máximo. El override dispara en severidad ≥ medium =
+**P99 = el 1 % más extremo** de la calibración. La elección de P99 no es a ojo: como se ve abajo,
+las distribuciones tienen **suelo plano y cola larga** —el score vive pegado a su mínimo en el
+90–95 % de los días y solo explota en la cola—; **P99 es el codo donde empieza la anomalía real**,
+no el ruido de fondo. Un detector de alarma debe ser conservador por diseño.""")
 
 code(r"""th = json.load(open(CACHE_MODELS_DIR / "strata_thresholds.json"))
 def _dist(name):
@@ -383,6 +393,37 @@ def _dist(name):
 umbrales = pd.concat([_dist("psa"), _dist("gso")], axis=1)
 print(f"Ventana de calibración de umbrales PSA/GSO: {th['calibration_window']}  (n={th['psa']['n_obs']})")
 umbrales""")
+
+code(r"""import matplotlib.pyplot as plt
+
+# Perfil de la distribución del score (cuantiles de calibración): muestra el suelo plano y
+# la cola, y por qué el gate del override se pone en P99 (donde empieza la anomalía real).
+pcts = [50, 75, 90, 95, 99, 100]
+def _profile(name):
+    d = th[name]["score_distribution"]
+    return [d["p50"], d["p75"], d["p90"], d["p95"], d["p99"], d["max"]]
+
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))
+for a, name, ttl in [(ax[0], "psa", "PSA"), (ax[1], "gso", "GSO")]:
+    a.plot(pcts, _profile(name), "o-", color="#185", lw=2)
+    a.set_yscale("log")
+    a.axvline(95, color="#ca4", lw=1.5, ls="--", label="P95 = low")
+    a.axvline(99, color="blue", lw=2, label="P99 = medium (gate del override)")
+    a.set_xlabel("percentil de calibración"); a.set_ylabel(f"score {ttl} (escala log)")
+    a.set_title(f"{ttl}: suelo plano hasta P95–P99, luego dispara"); a.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print("PSA: el score (prob. de change-point) vive en ~0.005 el 90% de los días; solo en P99 sube a 0.65.")
+print("GSO: el score de sobreexposición tiene cola larga (P99≈5.6, max≈10.3); P99 corta solo lo extremo.")""")
+
+md(r"""**¿Y si relajáramos los umbrales para que disparen más?** Lo probamos explícitamente (cuaderno
+de experimentos, §E4): bajar PSA/GSO hasta P50 hace que **PSA dispare en ~193/401 días, pero NO
+mejora el acierto direccional** (Δacc = 0; McNemar trivial $b=c=0$) —PSA solo encoge magnitud,
+nunca voltea el signo—; y **GSO no llega a disparar ni así**, porque su score es $\approx0$ en todo
+el OOS (el agente nunca se sobreexpone). El único Sharpe que se mueve (+0.07 en PSA-P50) **no es
+significativo** (IC del ΔSharpe incluye 0) y vendría de reducir exposición, no de acertar más.
+**Conclusión: P95/P99 ex-ante no solo es defendible —es óptimo—; relajarlo no aporta nada, y elegir
+el corte por el Sharpe del OOS sería look-ahead.** Los umbrales se quedan donde la calibración los
+puso. (PSA/GSO son **cortafuegos**; el motor direccional de la supervisión es RAM.)""")
 
 md(r"""RAM necesita su **propia** metodología: su score es una **masa de probabilidad de régimen**
 $P(\text{régimen contrario a la acción})$, no un score de anomalía. Para el agente —sesgado a
