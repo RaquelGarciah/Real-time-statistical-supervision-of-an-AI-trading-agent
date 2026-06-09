@@ -159,6 +159,57 @@ sin ella, "$K=3$ supervisa y $K=2$ cabalga" es una hipótesis bien fundada, no u
 El canónico adopta $K=3$ deliberadamente. **Límite reconocido:** todo esto vive en una única
 ventana OOS alcista; la robustez multi-ventana es trabajo pendiente.""")
 
+# ───────────────────────── E4 ─────────────────────────
+md(r"""## E4. Sensibilidad de los umbrales de PSA y GSO — ¿aportan algo si los forzamos a disparar?
+
+Los umbrales de PSA/GSO son percentiles **ex-ante** de la calibración (low=P95, medium=P99, high=max);
+el override dispara en severidad ≥ medium (GSO) o = high (PSA), por eso **casi nunca saltan** en SPY
+—RAM hace todo el trabajo—. Pregunta natural del tutor: *si los bajamos para que disparen, ¿mejora el
+acierto direccional?* Barremos sus umbrales (P50–P99) y medimos. Es **DIAGNÓSTICO, no recalibración**:
+se reportan todos los puntos y **no se adopta** ninguno (el default sigue siendo P95/P99 ex-ante; bajar
+y quedarse con el mejor OOS sería look-ahead). Pre-registro: `BITACORA.md [2026-06-09]`. Como PSA frena
+×0.5 (no voltea) y GSO solo recorta magnitud (no voltea), la H1 honesta es que **bajar sus umbrales no
+mejora la dirección**. El barrido mueve `high` en PSA (donde interviene) y `medium` en GSO
+(`experiments/psa_gso_threshold_sensitivity.py`).""")
+
+code(r"""s4 = load("psa_gso_threshold_sensitivity")
+b, m5 = s4["base"], s4["m5"]
+print(f"M5 (agente solo): acc={m5['accuracy']:.3f}  sharpe={m5['sharpe_causal']:+.2f}")
+print(f"BASE M8 (P95/P99 ex-ante): acc={b['accuracy']:.3f}  mcc={b['mcc']:+.3f}  sharpe={b['sharpe_causal']:+.2f}"
+      f"  | PSA high={b['n_psa_high']}  GSO medium+={b['n_gso_medium_plus']}  (ninguno dispara en el default)")
+
+rows = [{"detector": p["detector"], "pctil": p["pctile"], "umbral": round(p["thresh"], 3),
+         "umbral_movido": p["umbral_movido"], "nº dispara": p["n_intervenciones_detector"],
+         "accuracy": p["accuracy"], "Δacc vs base": p["delta_accuracy_vs_base"],
+         "sharpe": p["sharpe_causal"], "turnover": p["turnover"],
+         "McNemar p (vs base)": p["mcnemar_vs_base"]["p"], "b/c": f"{p['mcnemar_vs_base']['b']}/{p['mcnemar_vs_base']['c']}",
+         "¿refuta H1?": p["refuta_h1"]}
+        for p in s4["sweep"]]
+display(pd.DataFrame(rows).set_index(["detector", "pctil"]))
+print(f"\nVeredicto: H1 sostenida = {s4['verdict']['h1_sostenida']}  ({s4['verdict']['n_puntos_refutan']}/"
+      f"{s4['meta']['n_trials']} puntos refutan)")
+for ci in s4["ci_sharpe_extreme_vs_base"]:
+    print(f"  IC ΔSharpe {ci['detector'].upper()} P50 vs base: media-diff95=[{ci['ci95_low_meandiff']:.5f}, "
+          f"{ci['ci95_high_meandiff']:.5f}]  excluye 0: {ci['excluye_cero']}")""")
+
+md(r"""**Lectura E4 (honesta).** Dos hallazgos distintos, los dos refuerzan que **RAM es quien rescata**:
+
+- **PSA — al bajar el umbral SÍ dispara** (hasta 193/401 días en P50), **pero el accuracy direccional no
+  cambia ni un punto** (Δacc = 0.000 en todo el barrido; McNemar vs base trivial, $b=c=0$). Es exactamente
+  lo que predice la mecánica: el freno de PSA **encoge la magnitud (×0.5), nunca voltea el signo** → mismos
+  aciertos direccionales. El Sharpe se mueve mínimamente ($0.67\to0.74$ en P50) por modular tamaño, pero el
+  **IC del ΔSharpe incluye 0** (no significativo).
+- **GSO — no dispara en NINGÚN umbral**, ni a P50. Su score de sobreexposición es $\approx0$ en todo el OOS
+  porque el agente **nunca arriesga más que la banda de volatilidad** ($|size|\sim$0.1–0.25 < bound). Si el
+  score es 0, ningún umbral positivo lo captura: GSO es **estructuralmente inerte** en este OOS,
+  independientemente del umbral. (Limitación metodológica ya conocida, aquí confirmada como robusta.)
+
+**Conclusión.** Ni forzando a PSA/GSO a actuar mejora el acierto direccional de M8 —porque **solo modulan
+magnitud, no dirección**—. El único detector que voltea el signo (y por tanto el único que puede mejorar la
+dirección) es **RAM**. Esto valida, por la vía negativa, la decisión de que M8 se apoye en RAM y que PSA/GSO
+sean guardarraíles, no motores. *Nota de rigor:* es un análisis de sensibilidad en una sola ventana OOS; no
+se adopta ningún umbral (el default ex-ante P95/P99 es inamovible).""")
+
 nb = new_notebook(cells=cells, metadata={
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
     "language_info": {"name": "python"},
