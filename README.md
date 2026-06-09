@@ -1,6 +1,6 @@
 # STRATA — Real-time statistical supervision of an AI trading agent
 
-[![CI](https://github.com/RaquelGarciah/strata-tfg/actions/workflows/ci.yml/badge.svg)](https://github.com/RaquelGarciah/strata-tfg/actions/workflows/ci.yml)
+[![CI](https://github.com/RaquelGarciah/Real-time-statistical-supervision-of-an-AI-trading-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/RaquelGarciah/Real-time-statistical-supervision-of-an-AI-trading-agent/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)
 ![Status](https://img.shields.io/badge/status-active%20research-success.svg)
 
