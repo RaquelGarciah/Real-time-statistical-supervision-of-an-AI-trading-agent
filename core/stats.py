@@ -17,6 +17,12 @@ Referencias:
 - Diebold & Mariano (1995), "Comparing predictive accuracy", J. Bus. Econ. Stat.
 - López de Prado (2014), "The Deflated Sharpe Ratio: correcting for selection
   bias, backtest overfitting, and non-normality", J. Portfolio Mgmt.
+- McNemar (1947), "Note on the sampling error of the difference between
+  correlated proportions or percentages", Psychometrika.
+- Edwards (1948), corrección de continuidad para proporciones correlacionadas.
+- Conover (1999), *Practical Nonparametric Statistics*, 3ª ed., §3.4 (sign test).
+- Schuirmann (1987), "A comparison of the two one-sided tests procedure...",
+  J. Pharmacokinet. Biopharm. (TOST de equivalencia).
 """
 
 from __future__ import annotations
@@ -154,3 +160,136 @@ def diebold_mariano(loss1: np.ndarray, loss2: np.ndarray, h: int = 1) -> tuple[f
     stat = mean_d / np.sqrt(var_d / n)
     p = 2 * (1 - stats.norm.cdf(abs(stat)))
     return float(stat), float(p)
+
+
+def mcnemar_test(
+    correct_a: np.ndarray,
+    correct_b: np.ndarray,
+    exact_threshold: int = 25,
+) -> tuple[float, float, int, int]:
+    """Test de McNemar pareado sobre aciertos correlacionados (McNemar 1947).
+
+    ``H0: P(b) = P(c)``, donde sobre los mismos ``N`` días pareados ``b`` cuenta
+    los días en que A acierta y B falla, y ``c`` los días en que B acierta y A
+    falla. Las concordancias (ambos aciertan / ambos fallan) no informan y se
+    ignoran por diseño.
+
+    Usa el **binomial exacto** (``b ~ Binom(b+c, 1/2)``) cuando ``b + c <
+    exact_threshold``, donde la aproximación chi-cuadrado es poco fiable; en
+    otro caso el chi-cuadrado con corrección de continuidad de Edwards (1948):
+    ``chi2 = (|b - c| - 1)^2 / (b + c)``.
+
+    ``correct_a``, ``correct_b`` son arrays booleanos de aciertos **alineados
+    día a día** (mismo índice). Devuelve ``(estadístico, p_valor_2colas, b, c)``;
+    el estadístico es el chi-cuadrado, o ``nan`` en el caso exacto.
+    """
+    a = np.asarray(correct_a, dtype=bool)
+    b_arr = np.asarray(correct_b, dtype=bool)
+    if a.shape != b_arr.shape:
+        raise ValueError("correct_a y correct_b deben tener la misma longitud (pares alineados).")
+    b = int(np.sum(a & ~b_arr))
+    c = int(np.sum(~a & b_arr))
+    if b + c == 0:
+        return float("nan"), 1.0, b, c
+    if b + c < exact_threshold:
+        p = float(stats.binomtest(min(b, c), b + c, 0.5, alternative="two-sided").pvalue)
+        return float("nan"), p, b, c
+    chi2 = (abs(b - c) - 1) ** 2 / (b + c)
+    p = float(stats.chi2.sf(chi2, df=1))
+    return float(chi2), p, b, c
+
+
+def sign_test(
+    correct: np.ndarray,
+    p0: float = 0.5,
+) -> tuple[int, int, float, tuple[float, float]]:
+    """Sign test binomial exacto contra ``p0`` (Conover 1999, §3.4).
+
+    ``H0: P(acierto) = p0``. Contraste a dos colas mediante el binomial exacto,
+    sin aproximación normal. Devuelve ``(k_aciertos, n, p_valor_2colas,
+    ic95_proporción)`` con intervalo de Clopper-Pearson (exacto).
+
+    Supuesto: independencia de las observaciones. Con días consecutivos hay
+    autocorrelación que infla el error tipo I; úsese como contraste de margen
+    amplio, no para diferencias finas.
+    """
+    x = np.asarray(correct, dtype=bool)
+    n = int(x.size)
+    k = int(x.sum())
+    if n == 0:
+        return 0, 0, float("nan"), (float("nan"), float("nan"))
+    res = stats.binomtest(k, n, p0, alternative="two-sided")
+    ci = res.proportion_ci(confidence_level=0.95, method="exact")
+    return k, n, float(res.pvalue), (float(ci.low), float(ci.high))
+
+
+def block_permutation_test(
+    correct_a: np.ndarray,
+    correct_b: np.ndarray,
+    block_len: int | None = None,
+    n: int = 10_000,
+    seed: int = SEED,
+) -> tuple[float, float]:
+    """Test de permutación por bloques para Δ-aciertos entre dos modelos pareados.
+
+    Blinda a McNemar contra la autocorrelación serial: permuta las etiquetas
+    A/B por bloques contiguos de longitud ``block_len`` (por defecto
+    ``round(sqrt(N))``), preservando la dependencia temporal, y construye la
+    distribución nula de ``mean(correct_a) - mean(correct_b)``.
+
+    Devuelve ``(estadístico_observado, p_valor_2colas)``.
+    """
+    a = np.asarray(correct_a, dtype=float)
+    b = np.asarray(correct_b, dtype=float)
+    if a.shape != b.shape:
+        raise ValueError("correct_a y correct_b deben tener la misma longitud.")
+    n_obs = a.size
+    if n_obs == 0:
+        return float("nan"), float("nan")
+    if block_len is None:
+        block_len = max(1, int(round(np.sqrt(n_obs))))
+    obs = float(a.mean() - b.mean())
+    diff = a - b  # d_t; bajo H0 el signo de cada bloque es intercambiable
+    starts = np.arange(0, n_obs, block_len)
+    rng = np.random.default_rng(seed)
+    null = np.empty(n)
+    for i in range(n):
+        signs = rng.choice((-1.0, 1.0), size=len(starts))
+        flipped = diff.copy()
+        for s_idx, start in enumerate(starts):
+            flipped[start : start + block_len] *= signs[s_idx]
+        null[i] = flipped.mean()
+    p = float((np.abs(null) >= abs(obs)).mean())
+    return obs, p
+
+
+def tost(
+    diff: np.ndarray | pd.Series,
+    margin: float,
+    alpha: float = 0.05,
+) -> tuple[float, bool]:
+    """Two One-Sided Tests de equivalencia (Schuirmann 1987).
+
+    Contrasta ``H0: |E[diff]| >= margin`` frente a equivalencia. Permite
+    AFIRMAR que dos series son equivalentes dentro de ``±margin`` (lo que un
+    contraste de superioridad como Diebold-Mariano no permite: ese solo da
+    "no hay evidencia de diferencia"). ``diff`` es la serie pareada de
+    diferencias (p. ej. pérdida diaria de A menos la de B).
+
+    Devuelve ``(p_valor_TOST, equivalente)``, con ``p_valor_TOST = max`` de los
+    dos p-valores unilaterales y ``equivalente = p_valor_TOST < alpha``.
+    """
+    d = np.asarray(diff, dtype=float)
+    n = d.size
+    mean_d = d.mean()
+    se = d.std(ddof=1) / np.sqrt(n)
+    if se == 0:
+        equiv = abs(mean_d) < margin
+        return (0.0 if equiv else 1.0), bool(equiv)
+    df = n - 1
+    t_lower = (mean_d - (-margin)) / se  # H0: E[diff] <= -margin
+    t_upper = (mean_d - margin) / se     # H0: E[diff] >= +margin
+    p_lower = float(stats.t.sf(t_lower, df))    # cola derecha
+    p_upper = float(stats.t.cdf(t_upper, df))   # cola izquierda
+    p_tost = max(p_lower, p_upper)
+    return p_tost, bool(p_tost < alpha)

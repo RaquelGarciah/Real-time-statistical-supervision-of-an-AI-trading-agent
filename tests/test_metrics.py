@@ -54,3 +54,23 @@ def test_summary_devuelve_diccionario_completo(retornos):
     s = M.summary(retornos)
     esperadas = {"sharpe", "sortino", "max_drawdown", "calmar", "profit_factor", "hit_rate"}
     assert esperadas.issubset(s.keys())
+
+
+def test_classification_metrics_clasificador_perfecto():
+    y = np.array([0, 1, 0, 1, 1, 0])
+    score = np.array([0.1, 0.9, 0.2, 0.8, 0.7, 0.3])
+    m = M.classification_metrics(y, score)
+    assert m["accuracy"] == 1.0
+    assert m["auc"] == 1.0
+    assert m["mcc"] == pytest.approx(1.0)
+    assert m["brier"] < 0.1
+
+
+def test_classification_metrics_una_sola_clase_auc_nan():
+    y = np.ones(10, dtype=int)
+    score = np.linspace(0.3, 0.7, 10)
+    m = M.classification_metrics(y, score)
+    assert np.isnan(m["auc"])
+    assert np.isnan(m["log_loss"])
+    # accuracy y brier sí están definidos
+    assert 0.0 <= m["accuracy"] <= 1.0
