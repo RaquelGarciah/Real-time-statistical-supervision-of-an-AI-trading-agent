@@ -138,8 +138,16 @@ def _classify_severity(score: float) -> Severity:
 
 
 def _severity_from_levels(score: float, low: float, medium: float, high: float) -> Severity:
-    """Severidad a partir de tres umbrales explícitos ``low < medium < high``."""
+    """Severidad a partir de tres umbrales explícitos ``low < medium < high``.
+
+    Si un gate calibrado τ supera el ancla ``high`` (p. ej. τ=0.85 con high=0.70), se sube
+    ``high`` hasta τ para que τ siga siendo el corte efectivo: de lo contrario ``s >= high``
+    se evalúa primero y un score en [high, τ) se marcaría 'high' POR DEBAJO del gate. Mismo
+    criterio que ``_load_thresholds`` (``high = max(p99, medium)``).
+    """
     s = max(0.0, float(score))
+    medium = max(medium, low)
+    high = max(high, medium)
     if s >= high:
         return "high"
     if s >= medium:
