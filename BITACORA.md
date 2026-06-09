@@ -765,3 +765,28 @@ mcnemar_vs_m5), `sweep` (10 puntos: detector, pctile, umbral_movido, n_intervenc
 accuracy, mcc, n_valid, delta_accuracy_vs_base, sharpe_causal, mcnemar_vs_m5/base, refuta_h1),
 `ci_sharpe_extreme_vs_base`, `verdict` (h1_sostenida, n_puntos_refutan, comentario neutral).
 Interpretación → notebooks/experimentos.ipynb §E4. Script: experiments/psa_gso_threshold_sensitivity.py.
+
+---
+
+## [2026-06-09] [Decisión] - RAM mantiene la tupla de 3 niveles; el gate efectivo es medium=τ
+
+**Contexto.** Revisión (code-review + dictamen harvard-professor) de si `low`/`high` de RAM son
+grados de libertad ocultos que el tribunal atacaría como p-hacking. Un fix previo
+(detectors.py: `high = max(high, medium)`) ya resolvió el orden de umbrales cuando τ>high.
+
+**Detalle.** Verificado en código: override-C (M8, intervention.py:151) y reduce ram_continuous
+(M7, intervention.py:108) disparan AMBOS en severidad medium/high = `score ≥ τ`. `low=0.25` y
+`high=0.70` NO entran en ninguna decisión de intervención en SPY; solo re-etiquetan severidad en
+la tabla de §6. Se DESCARTA colapsar RAM a un único umbral: rompería la simetría con PSA/GSO (que
+sí usan P95/P99/máx informativos), crearía un caso especial en Severity/detector/tests, y no
+cambiaría ninguna cifra (low/high no tocan el P&L). Se CORRIGE un claim falso de §4 (_build.py:450)
+que afirmaba que `low=0.25` activa M7: M7 dispara en `medium=τ`, no en `low`.
+
+**Implicaciones para el TFG.** §4 reescrita para declarar que RAM es de facto un detector de un
+solo corte τ y que la tupla es la firma común de los tres detectores, sin grados de libertad sobre
+el P&L. Frase de defensa proactiva ante "¿por qué tres umbrales?". Sin re-ejecución con cambio de
+cifras (invariantes). Recordatorio: el flanco real del tribunal es "¿τ=0.5 lo elegiste tú?" —
+cubierto por el histograma de §4 + McNemar dual τ=0.5/0.40.
+
+**Referencias.** strata/detectors.py:202-214, strata/intervention.py:108,151;
+notebooks/_build.py:449-451,466.
