@@ -790,3 +790,277 @@ cubierto por el histograma de §4 + McNemar dual τ=0.5/0.40.
 
 **Referencias.** strata/detectors.py:202-214, strata/intervention.py:108,151;
 notebooks/_build.py:449-451,466.
+
+---
+
+## [2026-06-09] [Pre-registro] - Validación walk-forward / robustez multi-ventana de STRATA (SPY)
+
+**Pregunta de investigación.** ¿El rescate de STRATA (M8 mejora a M5) es un rasgo estable
+del fenómeno o un artefacto de la única ventana OOS alcista (2024-10→2026-05)? Falsable:
+el rescate debe sobrevivir al re-muestreo por ventanas rodantes del OOS **y** el modelo de
+régimen subyacente (K=3) debe ser estable a lo largo de 24 años que incluyen 2008/2020/2022.
+
+**Antecedentes (`@asesor-historico`).** El proyecto anterior hizo rolling-origin SOLO sobre
+el OOS del agente: *sliding* (window=120, step=5 → 57 ventanas) y *anchor* (step=20 → 10
+ventanas crecientes), métrica ΔSharpe(M8−M5)/Δacc/Δequity por ventana. Número honesto:
+`frac_positive ΔSharpe = 0.737` (sliding); el 1.0 de anchor era con 10 ventanas muy
+solapadas; el "95%" era aspiración del tutor, NO resultado. ERROR a no repetir: aquel
+rolling-origin fue **huérfano** (sin pre-registro, sin BITACORA, sin garantía de
+`signal_lag=1`). CONSTRAINT DURO heredado: el agente LLM solo existe en el OOS post-cutoff
+de DeepSeek (2024-10→); ejecutar M5/M8 en 2008/2020 **contaminaría** el LLM con look-ahead,
+así que la validación se parte en dos (A: modelo de régimen sin agente, 24 años; B: rescate
+con agente, dentro del OOS). Pendiente nº1 reconocido como límite en la entrada de auditoría
+del 2026-06-09 (§5 PENDIENTE GRANDE).
+
+**Alcance de cada parte (declaración explícita, anti-tribunal).** Parte A y Parte B miden
+cosas DISTINTAS y NO intercambiables:
+- *Parte A* mide la **robustez inter-régimen / inter-época** del modelo de régimen (HMM K=3),
+  porque es la ÚNICA que recorre 2000–2024 incluyendo 2008/2020/2022. Es donde recae,
+  enteramente, la respuesta al "puede que tuvieras suerte en el periodo". No usa al agente.
+- *Parte B* mide **estabilidad INTRA-OOS**: re-muestreos por ventanas rodantes de un ÚNICO OOS
+  alcista (~400 días, 2024-10→2026-05). NO es robustez inter-régimen ni inter-época — todas las
+  sub-ventanas viven en el mismo tramo alcista. Se declara así para que el tribunal no la
+  confunda con validación fuera de muestra real: es un test de **fragilidad de la lectura
+  global** (¿sobrevive a re-muestreos del mismo periodo?), no de generalización temporal.
+
+**Hipótesis H1.**
+- *(A — modelo de régimen, sin agente)* El HMM K=3 calibrado en 2000–2024-09 generaliza:
+  su held-out log-likelihood por observación es estable (no colapsa) en pseudo-OOS rodantes
+  que incluyen las crisis de 2008/2020/2022, y la informatividad direccional del régimen
+  (acierto del mapeo régimen→signo por encima del gate τ=0.5, con el signo del mapeo CONGELADO
+  en el tramo de ajuste) se mantiene ≥0.5 en la mayoría de ventanas. La elección de K=3 no es
+  artefacto de una época.
+- *(B — rescate del agente, dentro del OOS)* La lectura global del rescate M8 vs M5 NO es
+  artefacto de la agregación: la **mediana de ΔSharpe(M8−M5)**, re-estimada en re-muestreos del
+  OOS, es positiva con IC95 bootstrap que excluye 0 por arriba.
+
+**Hipótesis nula H0.**
+- *(A)* La held-out LL de K=3 se degrada (no es estable) o el régimen no es direccionalmente
+  informativo (acierto cruza por debajo de 0.5) en una fracción material de ventanas → la
+  calibración 2000–2024 no generaliza y K=3 estaba ajustado a una época.
+- *(B)* La mediana de ΔSharpe(M8−M5) tiene IC95 bootstrap que **contiene 0** → la lectura
+  global del rescate es frágil al re-muestreo del propio OOS.
+
+**Estadístico de contraste.**
+
+*CONFIRMATORIO (un único test que dicta el veredicto de la Parte B):*
+- *(B-conf) Mediana de ΔSharpe(M8−M5) con IC95 por bootstrap estacionario que excluye 0 por
+  arriba.* Se bootstrapea la **serie diaria de la diferencia de retornos pareada**
+  `d_t = r_t^{M8} − r_t^{M5}` (con `signal_lag=1`: `w_t × r_{t+1}`), NO la serie pre-agregada
+  de ΔSharpe por ventana, y en **cada réplica se recomputa el Sharpe** de cada brazo y su
+  diferencia. Bloque medio = √N (Politis-Romano 1994). H0: la mediana bootstrap de ΔSharpe
+  tiene IC95 que contiene 0. Sólo se aplica en el esquema **SLIDING** (window=120, step=5).
+  Todo lo demás de la Parte B es exploratorio.
+
+*EXPLORATORIO / SANITY (NO entra al veredicto; descriptivo):*
+- *(A.1) Held-out log-likelihood rodante.* Rolling-origin / time-series CV (Tashman 2000;
+  Bergmeir & Benítez 2012) sobre 2000–2024-09: en cada origen se reajusta el HMM K∈{2,3,4}
+  en `[inicio, t]` y se evalúa la LL/obs en el bloque siguiente `(t, t+h]`. Curva de LL/obs
+  por K y por ventana; comparación K=3 vs {2,4} por nº de ventanas donde K=3 domina (conteo
+  descriptivo). Control de label switching: tras cada reajuste los estados se ordenan por σ
+  ascendente (Calma<Estrés<Crisis). El mapeo régimen→dirección se fija con las MEDIAS de
+  retorno por estado en el tramo de AJUSTE `[inicio,t]`, se CONGELA, y se aplica al held-out
+  (nunca se mira el held-out para decidir el signo → sin look-ahead).
+- *(A.2) Informatividad direccional rodante.* Por ventana de evaluación held-out: acierto del
+  régimen (mapeo dirección dominante CONGELADO → signo de r_{t+1}) entre los días con
+  confianza ≥ τ=0.5; `frac_windows(acierto ≥ 0.5)` con sign test contra 0.5 (descriptivo).
+- *(B-expl.1) ΔSharpe por sub-ventana, frac_positive y sign test sobre N_eff.* Degradados a
+  DESCRIPTIVOS. N_eff se reporta como nota informativa con el descuento de Bartlett
+  `N·(1−ρ)/(1+ρ)` (ρ = autocorrelación lag-1 de la serie de ΔSharpe por ventana), NO con el
+  apaño `N/(window/step)`. NO forma parte del criterio de éxito.
+- *(B-expl.2) ANCHOR* (origen fijo, ventanas crecientes) y *DISJOINT* (step=window, ventanas
+  no solapadas): descriptivos, sanity de baja potencia. Anchor NUNCA entra al veredicto.
+- *(B-expl.3) McNemar pareado por sub-ventana* (`core.stats.mcnemar_test`) M8 vs M5: descriptivo
+  (56 tests; no se corrige multiplicidad porque no son confirmatorios).
+- *(B-expl.4) McNemar pooled estratificado* por régimen (Calma/Estrés/Crisis, 3 estratos) y por
+  signo del drift del sub-tramo (alcista/bajista, 2 estratos) = 6 tests. Se aplica
+  **Holm-Bonferroni** (Holm 1979) sobre los 6 p-valores y se reporta el p ajustado; el estrato
+  bajista alimenta el brazo (1) del criterio de fracaso. Complementado con
+  `block_permutation_test` (bloques √N). Se pre-declara el **tamaño mínimo de días** del estrato
+  bajista para concluir: `n_obs ≥ 60`; si el OOS aporta menos (previsiblemente n≈20–40 días
+  bajistas), el estrato se marca `inconclusivo_por_n` y NO dispara falsificación.
+- *(B-expl.5) Deflated Sharpe* (`core.stats.deflated_sharpe`, Bailey & López de Prado 2014) del
+  Sharpe agregado de M8 en el OOS global, con `n_trials = nº de configuraciones de ventana`
+  probadas (sliding+anchor+disjoint = 3) y `n_obs = N` días OOS. Descriptivo: documenta que el
+  Sharpe de M8 sobrevive al descuento por selección de configuración.
+
+**Distribución bajo H0.** B-conf: empírica por **bootstrap estacionario sobre la serie diaria
+pareada** (recomputando Sharpe en cada réplica). A.2/B-expl.1: binomial exacta (sign test).
+B-expl.3/4: binomial exacta del McNemar (b+c<25) o χ²₁ con corrección de Edwards; permutación
+por bloques (distribución empírica de signos de bloque); Holm-Bonferroni sobre el conjunto de 6.
+A.1: comparación descriptiva de curvas (no test formal; conteo de ventanas).
+
+**Criterio de éxito (PRE-DECLARADO, honesto — NO "95%").** α=0.10 (justificado por baja
+potencia con N≈400 días OOS y efecto direccional pequeño; convención en finanzas, igual que M8).
+- *(A — DESCRIPTIVO, no test confirmatorio)* Se REPORTA: (i) en qué fracción de ventanas K=3
+  domina en held-out LL/obs a K=2 (esperado ≫0.5; el 0.70 NO es umbral de decisión sino
+  referencia descriptiva del "K=3≫K2" global) y (ii) `frac_windows(acierto régimen ≥ 0.5)` con
+  el sign test (A.2). El **ancla direccional** de la Parte A es el criterio (ii): que el régimen
+  siga informando direccionalmente en épocas que incluyen crisis. La Parte A se considera
+  "consistente" si (ii) > 0.5 con sign test p<0.10; el conteo de dominancia de K=3 es soporte.
+- *(B — CONFIRMATORIO)* La **mediana de ΔSharpe(M8−M5)** (bootstrap estacionario sobre la serie
+  diaria pareada, esquema sliding) tiene **IC95 que excluye 0 por arriba** (`low > 0`). Único
+  criterio que dicta `h1_b_sostenida`. frac_positive, sign_test_neff, ΔAccuracy: se reportan,
+  NO deciden.
+
+**Composición A×B (regla pre-declarada del veredicto global).**
+- A consistente **y** B confirmatorio positivo → hipótesis de robustez SOSTENIDA (modelo
+  generaliza inter-época; rescate estable intra-OOS).
+- A consistente, B **inconcluso por baja potencia** (IC95 cruza 0 pero `low` cercano) → se
+  reporta como "robustez del MODELO sostenida; robustez del RESCATE no concluyente por tamaño
+  del OOS". NO se afirma el rescate; NO se refuta (ausencia de evidencia ≠ evidencia de
+  ausencia). Es el resultado más probable dado N≈400 y se acepta como honesto.
+- A inconsistente, B positivo → contradicción a investigar (`@rigor-matematico`): un rescate
+  intra-OOS sin modelo de régimen generalizable es sospechoso de cabalgar el drift.
+- Ambos negativos → hipótesis de robustez NO sostenida.
+
+**Criterio de fracaso (DOS reglas prior-flip INDEPENDIENTES, en OR; pre-registradas).**
+Cualquiera de las dos, por separado, marca un límite (antes exigían AND, que neutralizaba el
+brazo SPY porque el brazo panel con n=10 casi nunca dispara). Ahora:
+1. *(Falsificación a nivel SPY)* El signo de ΔSharpe(M8−M5) **se invierte** (mediana < 0) en el
+   **estrato bajista** del OOS (B-expl.4), SIEMPRE que ese estrato tenga `n_obs ≥ 60`. Si
+   `n_obs < 60`, el estrato es `inconclusivo_por_n` y este brazo NO se evalúa (no falsifica ni
+   confirma). Una inversión de signo con n suficiente refuta el rescate direccional a nivel SPY.
+2. *(Límite a nivel panel — DESCRIPTIVO, n=10 subpotente)* Spearman ρ(drift_oos, ΔSharpe(M8−M5))
+   sobre los 10 activos. Con n=10 NO se usa p<0.10 (subpotente); se reporta el **signo de ρ y su
+   IC bootstrap**. Si ρ>0 con IC que excluye 0 → indicio de que M8 cabalga el drift (rescata
+   donde el mercado sube). Se reporta como LÍMITE descriptivo, no como test confirmatorio. Es el
+   mecanismo ya documentado en la exclusión de M_neg y en el test del drift K2/K3 (ρ=−0.70).
+Si (1) [con n suficiente] dispara, STRATA-SPY queda documentado como disciplina de riesgo
+condicional al alza, NO como rescate direccional universal. (2) refina la lectura a nivel panel.
+
+**No-independencia de las ventanas solapadas (el agujero del rolling-origin).** El veredicto
+confirmatorio (B-conf) NO usa la serie de ΔSharpe por ventana (que arrastra el solapamiento):
+bootstrapea la **serie diaria pareada** y recomputa Sharpe, lo que no infla N. Para los
+descriptivos por ventana: (a) frac_positive y sign test usan **N efectivo de Bartlett**
+`N_eff = N·(1−ρ̂)/(1+ρ̂)` (ρ̂ = autocorrelación lag-1 de la serie de ΔSharpe por ventana), NO el
+apaño `N/(window/step)` (sin base, hacía N_eff≈2 e imposibilitaba cruzar α); (b) panel de
+**ventanas NO solapadas** (step=window=120 → ⌊N/120⌋≈3 bloques disjuntos) como sanity de baja
+potencia. Todo esto es exploratorio.
+
+**Datos.**
+- Activo central: SPY. Panel de robustez (solo Parte B.iii y criterio de fracaso 2):
+  SPY, NVDA, BAC, TSLA, XLE, UNG, MSTR, SMCI, ROKU, MARA (`cache/agent/`).
+- Calibración: 2000-01-01 → 2024-09-30 (Parte A reajusta HMM rodante DENTRO de este tramo;
+  HMM/GARCH canónicos cacheados se reusan para Parte B).
+- OOS: 2024-10-01 → última fecha en `cache/agent/SPY/` (~401 días). Parte B vive aquí.
+- Rolling-origin Parte A: orígenes anuales 2008→2023, horizonte de evaluación h=252 días;
+  reajuste HMM expanding-window. Parte B: *sliding* (window=120, step=5) y *anchor* (origen
+  fijo en OOS_START, step=20, ventanas crecientes), replicando al proyecto anterior.
+- Embargo: no aplica a Parte A/B (rolling-origin de evaluación, no CPCV con etiquetas
+  solapadas); se mantiene `signal_lag=1` (posición_t × retorno_{t+1}) en TODO backtest.
+- Splits: A = 16 orígenes anuales × K∈{2,3,4} (exploratorio); B-conf = 1 bootstrap sobre la
+  serie diaria pareada del esquema sliding (confirmatorio); B-sliding ≈ ⌊(401−120)/5⌋ ≈ 56
+  ventanas, B-anchor ≈ 14, B-disjuntas = ⌊401/120⌋ = 3 (todos exploratorios).
+- Estrato bajista del OOS: tamaño mínimo pre-declarado `n_obs ≥ 60` para concluir falsificación
+  a nivel SPY; por debajo, `inconclusivo_por_n`.
+- Deflated Sharpe de M8: `n_trials = 3` (configuraciones de ventana sliding/anchor/disjoint).
+- Panel: verificación de estabilidad de signo de medias por régimen (calib 2000–2024 vs primeros
+  60 días OOS) por activo antes de incluirlo en la nube de Spearman.
+- Semillas: `config.SEED=42` (HMM `n_seeds=10`, `n_iter=1000`; bootstrap estacionario 2000
+  réplicas, bloque medio √N).
+
+**Sanity dual same-day / causal y tabla maestra (agregado OOS global).** Sobre el agregado OOS
+global (NO por sub-ventana, donde AUC/log-loss/Brier son inestables — lección #11):
+- *Doble protocolo de medición.* Se computa el Sharpe agregado de M8 y M5 en los dos protocolos:
+  `causal` (`w_t × r_{t+1}`, signal_lag=1, el único válido para reportar) y `same_day`
+  (`w_t × r_t`, sanity). Se verifica que el **signo de ΔSharpe NO se invierte** entre ambos; una
+  inversión delata el bug `peso_t × retorno_t` (el que infectó M8 semanas en el proyecto
+  anterior). Se reporta `sign_consistent` (bool).
+- *Tabla maestra completa* (lección #11) en el agregado OOS global, para M5 y M8:
+  `accuracy`, `auc`, `log_loss`, `brier`, `mcc` (`core.metrics.classification_metrics`) +
+  `sharpe`, `equity_final` (`core.metrics`). Solo en el agregado; nunca por sub-ventana.
+
+**Estabilidad de signo por activo en el panel (lección #6, pre-registrada).** Antes de usar un
+activo del panel en `panel_drift`, se verifica que el signo de las **medias de retorno por
+régimen** (Calma/Estrés/Crisis) calibradas en 2000–2024 **coincide** con el signo en los
+**primeros 60 días del OOS** de ese activo. Si no coincide (prior-flip de calibración a OOS), el
+activo se marca `prior_flip_calib_oos=True` y se reporta aparte; su ΔSharpe sigue en la nube de
+Spearman pero la inestabilidad queda documentada (no se silencia).
+
+**Salida esperada.** `outputs/experiments/walkforward_robustez.json` con claves:
+- `meta` (ticker, panel, oos_start/end, n_days, n_obs, signal_lag=1, seed, window/step, alpha,
+  `bartlett_note`, hashes de caché).
+- `part_a` — `heldout_ll` por (origen, K) con `ll_por_obs` y `n_obs`; `k3_domina_frac`
+  (descriptivo); `directional` por ventana con `acc_at_gate`, `n_obs` y `frac_windows_acc_ge_0p5`
+  + `sign_test`; `label_switch_control` (orden por σ); `direction_map_frozen` (mapeo congelado).
+- `part_b_confirmatory` — **el test del veredicto B**: `median_delta_sharpe`, `ci95_boot`
+  (`{low, high, point}` por bootstrap estacionario sobre la serie diaria pareada), `block_len`,
+  `n_obs`.
+- `part_b_sliding` / `part_b_anchor` / `part_b_disjoint` (EXPLORATORIOS): lista de ventanas con
+  `delta_sharpe`, `delta_acc`, `mcnemar`, `n_obs` por ventana; agregados descriptivos
+  `frac_positive`, `n_eff_bartlett`, `rho_lag1`, `sign_test_neff`, `median_delta_sharpe`.
+- `stratified_mcnemar` (EXPLORATORIO): por estrato (régimen y signo del drift) con `mcnemar`,
+  `block_permutation_p`, `n_obs`, `inconclusivo_por_n` (bool); `holm_bonferroni` (p ajustados de
+  los 6 tests).
+- `deflated_sharpe_m8` (`{dsr, n_trials, n_obs}`, n_trials=3 configuraciones de ventana).
+- `sanity_dual` (`sharpe_causal`, `sharpe_same_day` de M5/M8; `sign_consistent`).
+- `master_table` (M5 y M8: accuracy, auc, log_loss, brier, mcc, sharpe, equity_final; agregado
+  OOS global).
+- `panel_drift` (por activo: `drift_oos`, `delta_sharpe_M8_M5`, `prior_flip_calib_oos`;
+  `spearman_drift_vs_delta` con `{rho, ci95}` — NO p-valor, n=10 subpotente).
+- `verdict` (`part_a_consistente`, `h1_b_sostenida` [solo del confirmatorio],
+  `falsif_spy_estrato_bajista`, `limite_panel_drift`, `composicion`, comentario neutral).
+
+**Citas.** Tashman (2000) "Out-of-sample tests of forecasting accuracy", Int. J. Forecast.;
+Bergmeir & Benítez (2012) "On the use of cross-validation for time series predictor
+evaluation", Inf. Sci. (justifica rolling-origin/CV en series temporales); Politis & Romano
+(1994) "The stationary bootstrap", JASA (IC de la mediana de ΔSharpe, bloque √N); Bartlett
+(1946) (descuento de N efectivo por autocorrelación, `N·(1−ρ)/(1+ρ)`); Holm (1979) "A simple
+sequentially rejective multiple test procedure", Scand. J. Stat. (control de multiplicidad en
+los 6 McNemar estratificados); Bailey & López de Prado (2014) "The Deflated Sharpe Ratio",
+J. Portfolio Manag. (descuento del Sharpe de M8 por nº de configuraciones); McNemar (1947);
+López de Prado (2018, sec. 7.4) (purge/embargo, contexto de validación causal).
+
+---
+
+## [2026-06-09] [Hallazgo] - Walk-forward: el rescate de M8 es CONDICIONAL al alza (falsificación disparada); el modelo K=3 sí generaliza
+
+**Contexto.** Ejecutado el experimento walk-forward pre-registrado (experiments/walkforward_robustez.py),
+auditado por @rigor-matematico en diseño (2 rondas, APROBADO) y en resultados (paso 5, APROBADO CON
+CONDICIONES). Output: outputs/experiments/walkforward_robustez.json (SPY, OOS 2024-10→2026-06, n=401).
+
+**Detalle (cifras verificadas).**
+- **Parte A (modelo, 24 años, sin agente):** el HMM K=3 mejora el log-likelihood held-out frente a
+  K=2 en **15/16 orígenes anuales** (2008–2023, incluidas las crisis de 2008/2020/2022). MATIZ HONESTO:
+  K=4 mejora a K=3 en 14/16; **K=3 se elige por parsimonia e interpretabilidad, NO por ser óptimo de LL**.
+  La dirección por régimen acierta ≥0.5 en 11/16 ventanas (sign test p=0.21) → **NO generaliza con
+  significancia** (no es solo subpotencia: la magnitud es débil, acc 0.43–0.58).
+- **Parte B confirmatorio (test ÚNICO):** mediana ΔSharpe(M8−M5)=+2.45, IC95 bootstrap estacionario
+  pareado [−0.21, +5.71] → **incluye 0**. Deflated Sharpe M8=0.50 → indistinguible del azar. El rescate
+  **NO es robusto multi-ventana**.
+- **Condicionalidad al régimen (lo central):** estrato ALCISTA (278 d) ΔSharpe=+8.45, McNemar p=0.030
+  **pero p_adj(Holm)=0.15** (no sobrevive multiplicidad); estrato BAJISTA (123 d ≥60) **ΔSharpe=−3.92**
+  → **dispara la regla de falsificación pre-registrada brazo 1**. El rescate se invierte cuando el
+  mercado no sube.
+- **Panel (exploratorio):** ΔSharpe(M8−M5)>0 en 9/10 activos; Spearman(drift,ΔSharpe) ρ=0.54 con IC
+  [−0.26, 0.90] (incluye 0, n=10 subpotente → limite_panel=False). prior_flip calib/OOS en 6/10 activos
+  (XLE/UNG/MSTR/SMCI/ROKU/MARA): el prior direccional NO es estable fuera de SPY (consistente con el
+  leverage effect limpio solo en índices).
+- **Tabla maestra global:** M8 mejora a M5 en TODO (acc 0.454 vs 0.402; MCC −0.106 vs −0.149; Sharpe
+  causal +0.67 vs −1.82) **pero ambos son perdedores direccionales absolutos** (acc < base rate 0.566,
+  MCC<0). STRATA reduce el daño, no lo convierte en ganancia.
+- **Sanity dual:** sign_consistent=False (causal M5=−1.82/M8=+0.67; same-day M5=+0.88/M8=+0.31). NO es
+  bug de look-ahead: el bug peso_t×retorno_t INFLARÍA el causal, aquí lo PENALIZA. Es propiedad del
+  agente perdedor (correlaciona + con r_t contemporáneo, − con r_{t+1}); el dato válido es el causal
+  (signal_lag=1).
+
+**Conclusión defendible (frase aprobada por @rigor-matematico para §14):** el COMPONENTE de modelo de
+STRATA generaliza inter-época (K=3 mejora a K=2 en 15/16 orígenes incl. crisis), pero el RESCATE del
+agente por M8 **no es robusto multi-ventana**: el test confirmatorio incluye el cero, el alcista no
+sobrevive Holm y el bajista se invierte. **STRATA-SPY = disciplina de riesgo condicional al alza, no
+rescate direccional universal** — límite reconocido por diseño (§4f de la constitución).
+
+**Implicaciones para el TFG.** (1) Es un resultado de FALSIFICACIÓN honesto: la regla pre-registrada
+cazó la condicionalidad al drift — exactamente lo que el tutor temía ("¿tuviste suerte en el periodo?").
+No invalida el TFG; lo hace defendible (el sistema reconoce dónde no funciona). (2) Separar nítidamente
+en la memoria "el modelo generaliza" (sí) de "el rescate es robusto" (no, condicional). (3) El relato
+honesto es "rescata en este OOS alcista; condicional al régimen", nunca "rescate universal".
+
+**Correcciones de reporte pendientes antes de §14 (exigidas por rigor):** (i) no afirmar K=3 óptimo de
+LL (K=4 lo supera; parsimonia); (ii) reportar p_adj de Holm junto a cada p de estrato; (iii) NO reportar
+el p=0.0 de B-disjoint (artefacto de Bartlett con ρ<0 y n=3); (iv) nota de que sign_consistent=False es
+esperado, no leak.
+
+**Referencias.** experiments/walkforward_robustez.py, outputs/experiments/walkforward_robustez.json,
+BITACORA pre-registro [2026-06-09].
