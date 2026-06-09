@@ -1,177 +1,178 @@
-# STRATA — Supervisión estadística en tiempo real de agentes de trading con IA
+# STRATA — Real-time statistical supervision of an AI trading agent
 
 [![CI](https://github.com/RaquelGarciah/strata-tfg/actions/workflows/ci.yml/badge.svg)](https://github.com/RaquelGarciah/strata-tfg/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)
-![Estado](https://img.shields.io/badge/estado-investigaci%C3%B3n%20activa-success.svg)
+![Status](https://img.shields.io/badge/status-active%20research-success.svg)
 
-> **STRATA** (*Statistical Trading Real-time Audit*) es una capa de **supervisión estadística** que
-> audita y corrige, decisión a decisión, lo que hace un agente de trading basado en LLMs. Convierte
-> un agente caja-negra que **pierde dinero** en un sistema **disciplinado, interpretable y
-> validado estadísticamente** — sin convertirse en otra caja negra.
+> **STRATA** (*Statistical Trading Real-time Audit*) is a **statistical supervision layer** that
+> audits and corrects, decision by decision, what an LLM-based trading agent does. It turns a
+> money-losing black-box agent into a **disciplined, interpretable, statistically validated**
+> system — without becoming another black box.
 
-Trabajo de Fin de Grado · Doble Grado en **Matemáticas y Ciencia de Datos**, Universidad Complutense
-de Madrid · Autora: **Raquel García**.
-
----
-
-## El problema
-
-Los agentes de trading basados en LLMs se venden como la nueva frontera de la inversión
-automática, pero son **cajas negras poco fiables**. El agente que estudiamos —*AI Hedge Fund*, un
-sistema open-source con cinco personalidades inversoras (Buffett, Wood, Druckenmiller, Burry,
-Ackman)— sobre el ETF **SPY** y en datos fuera de muestra (oct 2024 – jun 2026, 401 sesiones):
-
-- **Pierde dinero**: €1 000 → **€903**.
-- **Acierta la dirección del mercado menos del 50 %**: 38,4 % de los días (*sign test* p < 0,001).
-  Peor que una moneda.
-
-La pregunta del proyecto: **¿cómo se hace utilizable un agente LLM que, por sí solo, no es viable —
-sin sustituir una caja negra por otra?**
+Bachelor's Thesis (TFG) · Double Degree in **Mathematics and Data Science**, Complutense University
+of Madrid · Author: **Raquel García**.
 
 ---
 
-## La solución
+## The problem
 
-STRATA **no predice el mercado**. Es una **función determinista** que se interpone entre el agente
-y el mercado y solo usa información disponible *hoy*:
+LLM-based trading agents are marketed as the new frontier of automated investing, but they are
+**unreliable black boxes**. The agent we study — *AI Hedge Fund*, an open-source system with five
+investor personalities (Buffett, Wood, Druckenmiller, Burry, Ackman) — trading the **SPY** ETF, out
+of sample (Oct 2024 – Jun 2026, 401 sessions):
+
+- **Loses money**: €1,000 → **€903**.
+- **Predicts market direction less than 50 % of the time**: 38.4 % of days (*sign test* p < 0.001).
+  Worse than a coin flip.
+
+The research question: **how do you make a losing LLM agent usable — without replacing one black box
+with another?**
+
+---
+
+## The solution
+
+STRATA **does not predict the market**. It is a **deterministic function** that sits between the
+agent and the market and uses only information available *today*:
 
 ```
-f : (decisión del agente,  estado del mercado hoy)  ⟶  posición supervisada  w ∈ [−1, +1]
+f : (agent decision,  market state today)  ⟶  supervised position  w ∈ [−1, +1]
 ```
 
-Tres **detectores estadísticos clásicos y ortogonales** auditan cada decisión diaria:
+Three **classical, orthogonal statistical detectors** audit every daily decision:
 
-| Detector | Eje que vigila | Modelo subyacente | Pregunta |
+| Detector | Axis it watches | Underlying model | Question |
 |---|---|---|---|
-| **RAM** | Régimen de mercado | HMM gaussiano de 3 estados | ¿La dirección del agente es coherente con el régimen (calma/estrés/crisis)? |
-| **PSA** | Coherencia del agente | BOCPD (Adams & MacKay, 2007) | ¿El agente acaba de cambiar de opinión de forma anómala? |
-| **GSO** | Volatilidad del mercado | GARCH(1,1)-t | ¿El tamaño de la apuesta es compatible con la volatilidad? |
+| **RAM** | Market regime | 3-state Gaussian HMM | Is the agent's direction coherent with the regime (calm/stress/crisis)? |
+| **PSA** | Agent consistency | BOCPD (Adams & MacKay, 2007) | Did the agent just change its mind anomalously? |
+| **GSO** | Market volatility | GARCH(1,1)-t | Is the bet size compatible with current volatility? |
 
-Cuando el régimen contradice con confianza al agente, STRATA **voltea** la posición hacia la
-dirección que sugiere el régimen, dimensionada por volatilidad. Tres modos de intervención
-(`warn` / `reduce` / `override`) cubren desde el registro pasivo hasta la corrección activa.
+When the regime confidently contradicts the agent, STRATA **flips** the position toward the
+regime's direction, sized by volatility. Three intervention modes (`warn` / `reduce` / `override`)
+span from passive logging to active correction.
 
 ---
 
-## Resultados clave
+## Key results
 
-Sobre SPY, fuera de muestra (oct 2024 – jun 2026, 401 sesiones), evaluación **causal estricta**
-(la posición de hoy gana el retorno de mañana, `signal_lag = 1`):
+On SPY, out of sample (Oct 2024 – Jun 2026, 401 sessions), under **strictly causal evaluation**
+(today's position earns tomorrow's return, `signal_lag = 1`):
 
-| Estrategia | Acierto direccional | Sharpe | €1 000 → |
+| Strategy | Directional accuracy | Sharpe | €1,000 → |
 |---|:--:|:--:|:--:|
-| Agente LLM solo (sin supervisar) | 38,4 % | −1,82 | €903 |
-| **STRATA (supervisión estadística)** | **43,6 %** | **+0,67** | **€1 069** |
-| Meta-learner XGBoost (referencia ML) | 53,9 % | +0,64 | €1 035 |
-| Buy & Hold (mercado pasivo) | 56,9 % | +1,09 | €1 317 |
+| LLM agent alone (unsupervised) | 38.4 % | −1.82 | €903 |
+| **STRATA (statistical supervision)** | **43.6 %** | **+0.67** | **€1,069** |
+| XGBoost meta-learner (ML benchmark) | 53.9 % | +0.64 | €1,035 |
+| Buy & Hold (passive market) | 56.9 % | +1.09 | €1,317 |
 
-**Tres conclusiones, todas con su test estadístico:**
+**Three findings, each backed by a statistical test:**
 
-1. **STRATA rescata al agente.** El acierto direccional sube de 38,4 % a 43,6 % y la cuenta pasa de
-   perder a recuperar. La mejora es **significativa en el contraste pareado** que de verdad importa:
-   *McNemar* STRATA vs agente, **p ≈ 0,07** (de 121 días en que difieren, STRATA arregla 71 y
-   estropea 50). Honestamente: significativo a α = 0,10, *borderline* a α = 0,05.
+1. **STRATA rescues the agent.** Directional accuracy rises from 38.4 % to 43.6 % and the account
+   goes from losing to recovering. The improvement is **significant in the paired test that matters**:
+   *McNemar* STRATA vs agent, **p ≈ 0.07** (of the 121 days where they differ, STRATA fixes 71 and
+   breaks 50). Honestly stated: significant at α = 0.10, *borderline* at α = 0.05.
 
-2. **Un meta-learner con "todo dentro" no lo bate.** Un XGBoost validado con *Combinatorial Purged
-   CV* sobre 22 features (las 5 personalidades + los 3 detectores + 4 de régimen) **iguala** a la
-   regla a mano pero no la supera (*Diebold-Mariano* p = 0,61). Y el **SHAP** revela que las features
-   informativas son justo las de STRATA y el régimen —no las del agente—: **el ML redescubre la
-   regla, no la mejora.**
+2. **An "everything-in" meta-learner does not beat it.** An XGBoost validated with *Combinatorial
+   Purged CV* on 22 features (the 5 personalities + the 3 detectors + 4 regime features) **matches**
+   the hand-built rule but does not surpass it (*Diebold-Mariano* p = 0.61). And **SHAP** shows the
+   informative features are exactly STRATA's and the regime's — not the agent's: **the ML
+   rediscovers the rule rather than improving on it.**
 
-3. **Honestidad científica.** Ningún sistema bate al mercado pasivo (Buy & Hold, €1 317). La
-   aportación **no es "ganar al mercado"**: es **rescatar a un agente perdedor con un protocolo
-   estadístico defendible**.
-
----
-
-## La aportación — por qué este proyecto vale
-
-- **Rigor por encima de la curva bonita.** Ninguna cifra se reporta sin su test: contrastes
-  pareados (*McNemar*, *Diebold-Mariano*), *Deflated Sharpe Ratio*, *bootstrap* estacionario,
-  validación CPCV **sin fuga temporal**, y **pre-registro** de cada experimento (hipótesis y
-  criterio fijados *antes* de mirar resultados) como blindaje anti *p-hacking*.
-
-- **Interpretabilidad frente a caja negra.** STRATA está hecho de estadística clásica (HMM, GARCH,
-  BOCPD) que se puede **explicar y defender** ante un tribunal, no de un modelo opaco. Cada
-  intervención es trazable paso a paso.
-
-- **Disciplina estadística > complejidad de ML.** El resultado central —que una regla a mano bien
-  fundamentada es *estadísticamente indistinguible* de un XGBoost universal— es una lección
-  contraintuitiva y valiosa: en un problema con señal débil y muestra pequeña, **la complejidad no
-  compra ventaja; la disciplina sí.**
-
-- **Ciencia falsable.** El proyecto documenta explícitamente **cuándo NO funciona** (la regla
-  *prior-flip*: si el signo calibrado del régimen difiere del signo fuera de muestra, se reporta como
-  fallo). Reportar los límites es parte del resultado.
+3. **Scientific honesty.** No system beats the passive market (Buy & Hold, €1,317). The contribution
+   is **not "beating the market"**: it is **rescuing a losing agent with a defensible statistical
+   protocol.**
 
 ---
 
-## Cómo funciona — un día concreto
+## The contribution — why this project matters
 
-El motor de backtest es contabilidad pura: `P&L = posición · retorno_mañana`. Lo único que cambia
-entre estrategias es **cómo se calcula la posición**. Ejemplo de día con intervención:
+- **Rigor over a pretty equity curve.** No figure is reported without its test: paired contrasts
+  (*McNemar*, *Diebold-Mariano*), *Deflated Sharpe Ratio*, stationary *bootstrap*, CPCV validation
+  **with no temporal leakage**, and **pre-registration** of every experiment (hypothesis and success
+  criterion fixed *before* looking at results) as a shield against *p-hacking*.
 
-| Paso | Cálculo | Resultado |
+- **Interpretability over black box.** STRATA is built from classical statistics (HMM, GARCH, BOCPD)
+  that can be **explained and defended** before a committee — not an opaque model. Every
+  intervention is traceable step by step.
+
+- **Statistical discipline > ML complexity.** The central result — that a well-founded hand-built
+  rule is *statistically indistinguishable* from a universal XGBoost — is a counterintuitive,
+  valuable lesson: in a problem with weak signal and a small sample, **complexity buys no edge;
+  discipline does.**
+
+- **Falsifiable science.** The project explicitly documents **when it does NOT work** (the
+  *prior-flip* rule: if the calibrated sign of the regime disagrees with the out-of-sample sign, it
+  is reported as a failure). Reporting the limits is part of the result.
+
+---
+
+## How it works — one concrete day
+
+The backtest engine is pure accounting: `P&L = position · next-day return`. The only thing that
+changes between strategies is **how the position is computed**. An intervention day:
+
+| Step | Computation | Result |
 |---|---|---|
-| 1. El agente decide | long, *size* = +0,30 | tupla del agente |
-| 2. HMM + GARCH | régimen = **Crisis** (P = 0,80), σ = 23 % | estado del mercado |
-| 3. RAM detecta incoherencia | long en Crisis ⇒ score 0,80 (*high*) | dispara |
-| 4. *override* hacia el régimen | signo_régimen · banda_vol = −1 · 0,43 | **posición = −0,43** |
+| 1. Agent decides | long, *size* = +0.30 | agent tuple |
+| 2. HMM + GARCH | regime = **Crisis** (P = 0.80), σ = 23 % | market state |
+| 3. RAM flags mismatch | long in Crisis ⇒ score 0.80 (*high*) | triggers |
+| 4. *override* toward regime | regime_sign · vol_band = −1 · 0.43 | **position = −0.43** |
 
-El agente quería comprar en plena crisis; STRATA lo reorienta a corto. Sobre 401 días, ese tipo de
-corrección es lo que convierte la pérdida en recuperación.
+The agent wanted to buy in the middle of a crisis; STRATA reorients it to short. Over 401 days, that
+kind of correction is what turns the loss into a recovery.
 
 ---
 
-## Stack técnico
+## Tech stack
 
-**Modelos:** HMM gaussiano (regímenes) · GARCH(1,1)-Student-t (volatilidad) · BOCPD (puntos de
-cambio) · XGBoost + SHAP (meta-learner de referencia).
-**Inferencia:** McNemar · Diebold-Mariano · *sign test* · Deflated Sharpe · *bootstrap* estacionario
+**Models:** Gaussian HMM (regimes) · GARCH(1,1)-Student-t (volatility) · BOCPD (change points) ·
+XGBoost + SHAP (ML benchmark).
+**Inference:** McNemar · Diebold-Mariano · *sign test* · Deflated Sharpe · stationary *bootstrap*
 (Politis-Romano) · Combinatorial Purged CV (López de Prado).
-**Ingeniería:** Python 3.11, `numpy` / `pandas` / `scipy` / `scikit-learn` / `hmmlearn` / `arch` /
-`xgboost`; tests con `pytest`; CI en GitHub Actions; determinismo con semilla fijada.
+**Engineering:** Python 3.11, `numpy` / `pandas` / `scipy` / `scikit-learn` / `hmmlearn` / `arch` /
+`xgboost`; tests with `pytest`; CI on GitHub Actions; reproducibility via fixed random seed.
 
 ---
 
-## Estructura del repositorio
+## Repository layout
 
 ```
-core/         Primitivas matemáticas testeadas (HMM, GARCH, BOCPD, CPCV, métricas, contrastes)
-strata/       Los tres detectores (RAM/PSA/GSO) + la capa de intervención
-experiments/  Experimentos reproducibles, cada uno con su pre-registro y su salida JSON
-notebooks/    Cuaderno canónico del TFG (strata_canonical) + cuaderno de experimentos
-tests/        Suite de tests (incluye verificación de ausencia de look-ahead)
-cache/        Modelos calibrados (HMM/GARCH/thresholds) y decisiones del agente por activo
-BITACORA.md   Cuaderno de campo: decisiones metodológicas, hallazgos y pre-registros
+core/         Tested mathematical primitives (HMM, GARCH, BOCPD, CPCV, metrics, statistical tests)
+strata/       The three detectors (RAM/PSA/GSO) + the intervention layer
+experiments/  Reproducible experiments, each with its pre-registration and JSON output
+notebooks/    Canonical thesis notebook (strata_canonical) + experiments notebook
+tests/        Test suite (includes a look-ahead / leakage check)
+cache/        Calibrated models (HMM/GARCH/thresholds) and the agent's per-asset decisions
+BITACORA.md   Lab notebook: methodological decisions, findings and experiment pre-registrations
 ```
 
 ---
 
-## Reproducibilidad
+## Reproducibility
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-pytest -q                      # suite de tests (incl. no-leakage)
-jupyter notebook notebooks/strata_canonical.ipynb   # análisis completo del TFG
+pytest -q                      # test suite (incl. no-leakage check)
+jupyter notebook notebooks/strata_canonical.ipynb   # full thesis analysis
 ```
 
-Calibración de modelos: 2000–2024 (una sola vez). Evaluación fuera de muestra: oct 2024 en adelante,
-con inicio posterior al *cutoff* del LLM para eliminar contaminación por *look-ahead*.
+Model calibration: 2000–2024 (once). Out-of-sample evaluation: Oct 2024 onward, starting after the
+LLM's knowledge cutoff to rule out look-ahead contamination.
 
 ---
 
-## Alcance y limitaciones (declaradas)
+## Scope and limitations (stated)
 
-- **Caso central: SPY.** Funciona porque en índices agregados el *leverage effect* (Black 1976;
-  Christie 1982) hace que la alta volatilidad coincida con caídas, y el régimen sirve de *proxy*
-  direccional. La asunción se debilita en acciones individuales — limitación documentada, con un
-  panel de robustez de 10 activos como apéndice.
-- **Una única ventana fuera de muestra** (alcista). La validación multi-ventana / *walk-forward* es
-  trabajo en curso.
-- **No bate al mercado pasivo.** El objetivo es supervisar al agente, no superar a Buy & Hold.
+- **Central case: SPY.** It works because in aggregate indices the *leverage effect* (Black 1976;
+  Christie 1982) makes high volatility coincide with drawdowns, so the regime acts as a directional
+  *proxy*. The assumption weakens for individual stocks — a documented limitation, with a 10-asset
+  robustness panel as an appendix.
+- **A single out-of-sample window** (bullish). Multi-window / walk-forward validation is ongoing
+  work.
+- **It does not beat the passive market.** The goal is to supervise the agent, not to beat Buy &
+  Hold.
 
 ---
 
-*STRATA — Statistical Trading Real-time Audit. Raquel García, Universidad Complutense de Madrid.*
+*STRATA — Statistical Trading Real-time Audit. Raquel García, Complutense University of Madrid.*
