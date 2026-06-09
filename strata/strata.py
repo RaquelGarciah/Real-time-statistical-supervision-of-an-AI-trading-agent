@@ -37,6 +37,7 @@ class StrataSupervisor:
     psa_hazard: float = 1 / 250
     gso_mode: str = "absolute"
     reduce_mode: str = "bucket"
+    ram_thresholds: tuple[float, float, float] | None = None
 
     def __post_init__(self) -> None:
         if self.enabled is None:
@@ -68,7 +69,7 @@ class StrataSupervisor:
 
         detectors = {}
         if self.enabled["ram"]:
-            detectors["ram"] = ram_detector(agent.size, regime_probs)
+            detectors["ram"] = ram_detector(agent.size, regime_probs, thresholds=self.ram_thresholds)
         if self.enabled["psa"]:
             detectors["psa"] = psa_detector(
                 sizing_history, hazard=self.psa_hazard, signal=self.psa_signal

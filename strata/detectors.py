@@ -137,9 +137,22 @@ def _classify_severity(score: float) -> Severity:
     return "none"
 
 
+def _severity_from_levels(score: float, low: float, medium: float, high: float) -> Severity:
+    """Severidad a partir de tres umbrales explícitos ``low < medium < high``."""
+    s = max(0.0, float(score))
+    if s >= high:
+        return "high"
+    if s >= medium:
+        return "medium"
+    if s >= low:
+        return "low"
+    return "none"
+
+
 def ram_detector(
     agent_size: float,
     regime_probs: dict[str, float],
+    thresholds: tuple[float, float, float] | None = None,
 ) -> DetectorResult:
     """RAM — Regime-Action Mismatch.
 
@@ -160,6 +173,11 @@ def ram_detector(
     acción coherente en Crisis es el opuesto direccional de Calma, no flat.
 
     ``regime_probs`` es ``{"Calma": p1, "Estrés": p2, "Crisis": p3}``.
+
+    ``thresholds`` permite pasar umbrales explícitos ``(low, medium, high)``
+    calibrados ex-ante por activo (p. ej. el punto donde el régimen se vuelve
+    direccionalmente informativo en el histórico). Si es ``None`` se usa la
+    tabla cargada de ``cache/models/strata_thresholds.json`` o los defaults.
     """
     agent_sign = 0 if abs(agent_size) < 1e-9 else (1 if agent_size > 0 else -1)
 
@@ -173,7 +191,10 @@ def ram_detector(
         inconsistency += crisis_prob
 
     score = float(min(1.0, inconsistency))
-    severity = _classify_severity_for("ram", score)
+    if thresholds is not None:
+        severity = _severity_from_levels(score, *thresholds)
+    else:
+        severity = _classify_severity_for("ram", score)
     # Dirección implícita del régimen (leverage effect): Calma → long, Crisis →
     # short. ``regime_sign`` y ``p_dominant`` los consume la capa de override
     # para reorientar el sizing del agente hacia el régimen (variantes B/C).

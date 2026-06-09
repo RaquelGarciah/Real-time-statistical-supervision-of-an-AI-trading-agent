@@ -16,6 +16,13 @@ from strata.detectors import (
 # ---- RAM ---------------------------------------------------------------
 
 
+def test_ram_thresholds_explicitos():
+    """Umbrales RAM explícitos cambian la severidad respecto a los defaults."""
+    probs = {"Calma": 0.30, "Estrés": 0.70, "Crisis": 0.0}  # agente short → score = P(Calma) = 0.30
+    assert ram_detector(-0.2, probs).severity == "low"  # default medium=0.40 → 0.30 es "low"
+    assert ram_detector(-0.2, probs, thresholds=(0.10, 0.20, 0.70)).severity == "medium"  # medium=0.20
+
+
 def test_ram_long_en_calma_no_inconsistente():
     res = ram_detector(agent_size=0.5, regime_probs={"Calma": 1.0, "Estrés": 0.0, "Crisis": 0.0})
     assert res.score == 0.0

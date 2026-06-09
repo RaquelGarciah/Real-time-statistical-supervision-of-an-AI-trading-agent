@@ -65,6 +65,27 @@ def test_reduce_continuo_atenua_proporcional_al_score():
     assert s.was_intervened is True
 
 
+def test_reduce_ram_continuous_gated_atenua_solo_si_ram_dispara():
+    """reduce_mode='ram_continuous' (M7) atenúa por 1-RAM solo si RAM es medium/high."""
+    a = _agent(0.8)
+    # RAM en 'low' (score 0.30 < τ): NO interviene, deja el size del agente intacto.
+    dets_low = {
+        "ram": DetectorResult(name="ram", score=0.30, flag=False, severity="low"),
+        "psa": DetectorResult(name="psa", score=0.0, flag=False, severity="none"),
+        "gso": DetectorResult(name="gso", score=0.0, flag=False, severity="none",
+                              extra={"bounded_size": 0.0, "bound": 1.0}),
+    }
+    s_low = supervise(a, dets_low, "reduce", reduce_mode="ram_continuous")
+    assert s_low.final_size == pytest.approx(0.8)
+    assert s_low.was_intervened is False
+    # RAM en 'medium' (score 0.55 ≥ τ): atenúa por 1-0.55=0.45 → 0.8*0.45=0.36.
+    dets_med = dict(dets_low)
+    dets_med["ram"] = DetectorResult(name="ram", score=0.55, flag=True, severity="medium")
+    s_med = supervise(a, dets_med, "reduce", reduce_mode="ram_continuous")
+    assert s_med.final_size == pytest.approx(0.8 * 0.45)
+    assert s_med.was_intervened is True
+
+
 def test_override_no_actua_si_solo_severidad_low():
     a = _agent(0.9)
     s = supervise(a, _detectors(ram="low", bounded=0.2), "override")
