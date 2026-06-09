@@ -42,3 +42,8 @@ htmlcov/
 
 # Salidas intermedias de notebooks
 .ipynb_checkpoints/
+
+# Backups transitorios de calibración (el rastro está en BITACORA)
+cache/models/*_legacy*.pkl
+# Notebook scratch local
+notebooks/logic_esential.ipynb
