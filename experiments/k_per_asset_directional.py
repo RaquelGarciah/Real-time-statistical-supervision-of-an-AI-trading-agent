@@ -64,7 +64,7 @@ def oos_m8(tk, K):
                            psa_signal="cp_prob", psa_hazard=config.BOCPD_HAZARD,
                            ram_thresholds=(TAU / 2, TAU, 0.70))
     rows, sh = [], []
-    lo, hi = f"s0", f"s{K-1}"; mids = [f"s{j}" for j in range(1, K - 1)]
+    lo, hi = "s0", f"s{K-1}"; mids = [f"s{j}" for j in range(1, K - 1)]
     for t in sorted(agents):
         if t not in g.index or t not in sigma.index:
             continue
