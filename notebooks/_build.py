@@ -446,9 +446,12 @@ es **robusto a su posición exacta** (§6 lo confirma sobre el OOS).
 *Cautela honesta:* medir "acierto $>0.5$ absoluto" estaría confundido por el **drift** (SPY sube el
 54 % de los días → "largo" acierta $>0.5$ **siempre**, haya o no señal). Por eso el gate no calibra
 contra el 0.5 absoluto del acierto, sino que **separa la masa bimodal del score**: actuar solo
-cuando el régimen contrario **domina** la probabilidad. `ram_thresholds = (τ/2, τ, 0.70)`: `medium`
-$=\tau=0.5$ es el *gate* del override, `low`$=0.25$ activa el reduce suave de M7, `high`$=0.70$ solo
-re-etiqueta severidad.""")
+cuando el régimen contrario **domina** la probabilidad. `ram_thresholds = (τ/2, τ, 0.70)`: el *gate*
+del override (M8) **y** del reduce (M7) es `medium`$=\tau=0.5$ —ambos disparan cuando `score`$\ge\tau$—.
+`low`$=0.25$ y `high`$=0.70$ **no intervienen**: son la infraestructura de tres niveles compartida con
+PSA/GSO (donde sí salen de percentiles $P_{95}/P_{99}/\max$) y aquí solo etiquetan severidad en la
+tabla de §6. RAM es, de facto, un detector de **un único corte $\tau$**; la tupla conserva la firma
+común de los tres detectores sin añadir grados de libertad sobre el P&L.""")
 
 code(r"""import matplotlib.pyplot as plt
 
