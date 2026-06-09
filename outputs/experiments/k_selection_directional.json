@@ -1,0 +1,111 @@
+{
+  "per_asset": [
+    {
+      "ticker": "SPY",
+      "dir_sharpe_K2": 0.417,
+      "dir_sharpe_K3": 0.076,
+      "dir_acc_K2": 0.5379,
+      "dir_acc_K3": 0.5325,
+      "k_mejor_dir_sharpe": 2,
+      "k_mejor_dir_acc": 2,
+      "vol_anual_calib": 0.194
+    },
+    {
+      "ticker": "NVDA",
+      "dir_sharpe_K2": 0.61,
+      "dir_sharpe_K3": 0.862,
+      "dir_acc_K2": 0.5202,
+      "dir_acc_K3": 0.5304,
+      "k_mejor_dir_sharpe": 3,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 0.594
+    },
+    {
+      "ticker": "BAC",
+      "dir_sharpe_K2": 0.417,
+      "dir_sharpe_K3": 0.195,
+      "dir_acc_K2": 0.5034,
+      "dir_acc_K3": 0.5156,
+      "k_mejor_dir_sharpe": 2,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 0.438
+    },
+    {
+      "ticker": "TSLA",
+      "dir_sharpe_K2": -0.176,
+      "dir_sharpe_K3": 0.044,
+      "dir_acc_K2": 0.4924,
+      "dir_acc_K3": 0.5088,
+      "k_mejor_dir_sharpe": 3,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 0.563
+    },
+    {
+      "ticker": "XLE",
+      "dir_sharpe_K2": -0.249,
+      "dir_sharpe_K3": -0.301,
+      "dir_acc_K2": 0.5024,
+      "dir_acc_K3": 0.5057,
+      "k_mejor_dir_sharpe": 2,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 0.292
+    },
+    {
+      "ticker": "UNG",
+      "dir_sharpe_K2": 0.468,
+      "dir_sharpe_K3": 0.683,
+      "dir_acc_K2": 0.4927,
+      "dir_acc_K3": 0.5025,
+      "k_mejor_dir_sharpe": 3,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 0.48
+    },
+    {
+      "ticker": "MSTR",
+      "dir_sharpe_K2": -0.205,
+      "dir_sharpe_K3": -0.172,
+      "dir_acc_K2": 0.5021,
+      "dir_acc_K3": 0.504,
+      "k_mejor_dir_sharpe": 3,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 0.731
+    },
+    {
+      "ticker": "SMCI",
+      "dir_sharpe_K2": -0.647,
+      "dir_sharpe_K3": -0.77,
+      "dir_acc_K2": 0.4799,
+      "dir_acc_K3": 0.4751,
+      "k_mejor_dir_sharpe": 2,
+      "k_mejor_dir_acc": 2,
+      "vol_anual_calib": 0.577
+    },
+    {
+      "ticker": "ROKU",
+      "dir_sharpe_K2": 0.867,
+      "dir_sharpe_K3": 0.09,
+      "dir_acc_K2": 0.5299,
+      "dir_acc_K3": 0.5133,
+      "k_mejor_dir_sharpe": 2,
+      "k_mejor_dir_acc": 2,
+      "vol_anual_calib": 0.755
+    },
+    {
+      "ticker": "MARA",
+      "dir_sharpe_K2": -0.491,
+      "dir_sharpe_K3": -0.094,
+      "dir_acc_K2": 0.4622,
+      "dir_acc_K3": 0.4774,
+      "k_mejor_dir_sharpe": 3,
+      "k_mejor_dir_acc": 3,
+      "vol_anual_calib": 1.465
+    }
+  ],
+  "n_k3_best_sharpe": 5,
+  "n_k3_best_acc": 7,
+  "spearman_vol_vs_dir_advantage": {
+    "rho": 0.37,
+    "p": 0.293
+  },
+  "criterio": "rendimiento direccional fuera de muestra (CV temporal en calibracion, posterior filtrado, sin OOS)"
+}

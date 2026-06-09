@@ -1,0 +1,111 @@
+{
+  "per_asset": [
+    {
+      "ticker": "SPY",
+      "heldout_LL_K2": -1.6927,
+      "heldout_LL_K3": -1.301,
+      "delta_LL_K3_minus_K2": 0.3917,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.194,
+      "drift_anual_calib": 0.075,
+      "n_calib": 6204
+    },
+    {
+      "ticker": "NVDA",
+      "heldout_LL_K2": -1.746,
+      "heldout_LL_K3": -1.432,
+      "delta_LL_K3_minus_K2": 0.314,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.594,
+      "drift_anual_calib": 0.302,
+      "n_calib": 6204
+    },
+    {
+      "ticker": "BAC",
+      "heldout_LL_K2": -0.8944,
+      "heldout_LL_K3": -0.7727,
+      "delta_LL_K3_minus_K2": 0.1217,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.438,
+      "drift_anual_calib": 0.046,
+      "n_calib": 6204
+    },
+    {
+      "ticker": "TSLA",
+      "heldout_LL_K2": -2.7646,
+      "heldout_LL_K3": -2.3599,
+      "delta_LL_K3_minus_K2": 0.4048,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.563,
+      "drift_anual_calib": 0.37,
+      "n_calib": 3567
+    },
+    {
+      "ticker": "XLE",
+      "heldout_LL_K2": -2.1743,
+      "heldout_LL_K3": -1.6602,
+      "delta_LL_K3_minus_K2": 0.5141,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.292,
+      "drift_anual_calib": 0.074,
+      "n_calib": 6204
+    },
+    {
+      "ticker": "UNG",
+      "heldout_LL_K2": -3.0883,
+      "heldout_LL_K3": -2.9834,
+      "delta_LL_K3_minus_K2": 0.1049,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.48,
+      "drift_anual_calib": -0.347,
+      "n_calib": 4373
+    },
+    {
+      "ticker": "MSTR",
+      "heldout_LL_K2": -1.4624,
+      "heldout_LL_K3": -1.2345,
+      "delta_LL_K3_minus_K2": 0.2279,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.731,
+      "drift_anual_calib": 0.01,
+      "n_calib": 6204
+    },
+    {
+      "ticker": "SMCI",
+      "heldout_LL_K2": -2.5688,
+      "heldout_LL_K3": -2.1728,
+      "delta_LL_K3_minus_K2": 0.396,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.577,
+      "drift_anual_calib": 0.213,
+      "n_calib": 4386
+    },
+    {
+      "ticker": "ROKU",
+      "heldout_LL_K2": -2.2777,
+      "heldout_LL_K3": -2.1935,
+      "delta_LL_K3_minus_K2": 0.0842,
+      "k_elegido": 3,
+      "vol_anual_calib": 0.755,
+      "drift_anual_calib": 0.201,
+      "n_calib": 1741
+    },
+    {
+      "ticker": "MARA",
+      "heldout_LL_K2": -1.882,
+      "heldout_LL_K3": -1.4302,
+      "delta_LL_K3_minus_K2": 0.4518,
+      "k_elegido": 3,
+      "vol_anual_calib": 1.465,
+      "drift_anual_calib": -0.151,
+      "n_calib": 3100
+    }
+  ],
+  "n_k2": 0,
+  "n_k3": 10,
+  "spearman_vol_vs_deltaLL": {
+    "rho": -0.139,
+    "p": 0.701
+  },
+  "criterio": "held-out log-likelihood por activo (CV temporal en calibracion, sin OOS)"
+}
