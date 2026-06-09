@@ -76,3 +76,33 @@ def test_fit_rechaza_input_1d():
 def test_predict_sin_fit_levanta():
     with pytest.raises(RuntimeError):
         RegimeHMM().predict_states(np.zeros((10, 2)))
+
+
+def test_filtered_suma_uno():
+    X = _sim_3regimenes()
+    h = RegimeHMM().fit(X)
+    g = h.predict_proba_filtered(X)
+    np.testing.assert_allclose(g.sum(axis=1), 1.0, atol=1e-9)
+
+
+def test_filtered_no_lookahead():
+    """El posterior filtrado en t solo depende de x_{1:t}: truncar la serie en
+    t no cambia la fila t. El suavizado (predict_proba) sí cambia, porque usa
+    el futuro — eso es lo que NO queremos en OOS."""
+    X = _sim_3regimenes()
+    h = RegimeHMM().fit(X)
+    g_full = h.predict_proba_filtered(X)
+    for t in (50, 600, 1500):
+        g_trunc = h.predict_proba_filtered(X[: t + 1])
+        np.testing.assert_allclose(g_trunc[-1], g_full[t], atol=1e-10)
+
+
+def test_filtrado_coincide_con_suavizado_en_el_ultimo_punto():
+    """En el último instante no hay futuro: el suavizado (forward-backward de
+    hmmlearn) y el filtrado (mi forward) deben coincidir. Valida que el forward
+    propio está bien implementado y normalizado."""
+    X = _sim_3regimenes()
+    h = RegimeHMM().fit(X)
+    p_smooth = h.predict_proba(X)
+    g_filt = h.predict_proba_filtered(X)
+    np.testing.assert_allclose(g_filt[-1], p_smooth[-1], atol=1e-8)

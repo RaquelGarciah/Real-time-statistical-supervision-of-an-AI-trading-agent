@@ -40,6 +40,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from hmmlearn.hmm import GaussianHMM
+from scipy.special import logsumexp
 
 from config import HMM_COVARIANCE_TYPE, HMM_N_ITER, HMM_N_STATES, SEED
 
@@ -162,12 +163,44 @@ class RegimeHMM:
         return self._map_to_ordered(raw)
 
     def predict_proba(self, features: np.ndarray) -> np.ndarray:
-        """Posteriores ``gamma_t(s)`` reordenadas por varianza emisora."""
+        """Posteriores SUAVIZADOS ``gamma_t(s) = P(s_t | x_{1:T})`` (forward-backward).
+
+        Usa toda la serie, incluido el futuro de ``t``. Sirve para describir el
+        régimen *ex-post* (gráficos, calibración), NO para supervisar en OOS:
+        para eso está ``predict_proba_filtered``, que es causal.
+        """
         if self.model is None:
             raise RuntimeError("Llama a fit() antes de predecir.")
         X = self._standardize(features)
         raw_proba = self.model.predict_proba(X)
         return raw_proba[:, self.state_order]
+
+    def predict_proba_filtered(self, features: np.ndarray) -> np.ndarray:
+        """Posteriores FILTRADOS ``gamma^f_t(s) = P(s_t | x_{1:t})``, causales.
+
+        Solo propaga el mensaje forward: la fila ``t`` depende exclusivamente de
+        ``x_{1:t}``, nunca del futuro. Es el régimen admisible para supervisar
+        en tiempo real sin look-ahead, frente al suavizado de ``predict_proba``.
+
+        Forward: ``alpha_t(j) = b_j(x_t) * sum_i alpha_{t-1}(i) a_{ij}``, en
+        espacio log. La fila normalizada es ``P(s_t | x_{1:t})``.
+        Referencia: Rabiner (1989), algoritmo forward, ecs. (18)-(20).
+        """
+        if self.model is None:
+            raise RuntimeError("Llama a fit() antes de predecir.")
+        X = self._standardize(features)
+        framelogprob = self.model._compute_log_likelihood(X)  # (T, n_states): log b_j(x_t)
+        with np.errstate(divide="ignore"):
+            log_startprob = np.log(self.model.startprob_)
+            log_transmat = np.log(self.model.transmat_)
+        log_alpha = np.empty_like(framelogprob)
+        log_alpha[0] = log_startprob + framelogprob[0]
+        for t in range(1, framelogprob.shape[0]):
+            log_alpha[t] = framelogprob[t] + logsumexp(
+                log_alpha[t - 1][:, None] + log_transmat, axis=0
+            )
+        filtered = np.exp(log_alpha - logsumexp(log_alpha, axis=1, keepdims=True))
+        return filtered[:, self.state_order]
 
     @property
     def transition_matrix(self) -> np.ndarray:
