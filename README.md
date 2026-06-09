@@ -9,7 +9,7 @@
 > money-losing black-box agent into a **disciplined, interpretable, statistically validated**
 > system — without becoming another black box.
 
-Bachelor's Thesis (TFG) · Double Degree in **Mathematics and Data Science**, Complutense University
+Bachelor's Thesis ·  Degree in **Mathematics and Data Science**, Complutense University
 of Madrid · Author: **Raquel García**.
 
 ---
