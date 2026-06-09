@@ -4,6 +4,8 @@ name: CI
 # lint (ruff) + tests (pytest sin leakage). Runners de GitHub, sin API keys.
 on:
   pull_request:
+  push:
+    branches: [main]
 
 permissions:
   contents: read

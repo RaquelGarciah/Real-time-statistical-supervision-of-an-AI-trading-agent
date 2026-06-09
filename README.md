@@ -1,112 +1,178 @@
-# STRATA — Kit semilla
+# STRATA — Real-time statistical supervision of an AI trading agent
 
-Este es el **kit semilla** para arrancar el proyecto STRATA limpio desde cero, conservando lo que es irrecuperable o caro: caches de inferencias LLM ya pagadas, modelos calibrados, contexto del proyecto anterior y conocimiento sintetizado.
+[![CI](https://github.com/RaquelGarciah/strata-tfg/actions/workflows/ci.yml/badge.svg)](https://github.com/RaquelGarciah/strata-tfg/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)
+![Status](https://img.shields.io/badge/status-active%20research-success.svg)
 
-**No es una réplica del proyecto anterior.** Los experimentos, notebooks, figuras y pipeline se rediseñan en el nuevo proyecto con ayuda de agentes especializados (ver `AGENTES_SUGERIDOS.md`).
+> **STRATA** (*Statistical Trading Real-time Audit*) is a **statistical supervision layer** that
+> audits and corrects, decision by decision, what an LLM-based trading agent does. It turns a
+> money-losing black-box agent into a **disciplined, interpretable, statistically validated**
+> system — without becoming another black box.
+
+Bachelor's Thesis (TFG) · Double Degree in **Mathematics and Data Science**, Complutense University
+of Madrid · Author: **Raquel García**.
 
 ---
 
-## Cómo bootstrapear el nuevo proyecto
+## The problem
 
-```bash
-# 1. Copia este kit como semilla
-cp -R /Users/Raquel/Desktop/STRATA_kit/ /Users/Raquel/Desktop/STRATA/
-cd /Users/Raquel/Desktop/STRATA/
+LLM-based trading agents are marketed as the new frontier of automated investing, but they are
+**unreliable black boxes**. The agent we study — *AI Hedge Fund*, an open-source system with five
+investor personalities (Buffett, Wood, Druckenmiller, Burry, Ackman) — trading the **SPY** ETF, out
+of sample (Oct 2024 – Jun 2026, 401 sessions):
 
-# 2. Inicializa git y submódulo del agente
-git init
-git submodule add https://github.com/virattt/ai-hedge-fund.git agent/ai_hedge_fund
+- **Loses money**: €1,000 → **€903**.
+- **Predicts market direction less than 50 % of the time**: 38.4 % of days (*sign test* p < 0.001).
+  Worse than a coin flip.
 
-# 3. Entorno Python
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+The research question: **how do you make a losing LLM agent usable — without replacing one black box
+with another?**
 
-# 4. Variables de entorno
-cp .env.example .env
-# editar .env con OPENROUTER_API_KEY, FINANCIAL_DATASETS_API_KEY, GOOGLE_API_KEY
+---
 
-# 5. Test smoke: 18 suites deben quedar verdes desde el primer commit
-pytest tests/ -v
+## The solution
 
-# 6. Configurar agentes (ver AGENTES_SUGERIDOS.md)
-mkdir -p .claude/agents/
-# crear los ficheros descritos en AGENTES_SUGERIDOS.md
+STRATA **does not predict the market**. It is a **deterministic function** that sits between the
+agent and the market and uses only information available *today*:
+
+```
+f : (agent decision,  market state today)  ⟶  supervised position  w ∈ [−1, +1]
 ```
 
----
+Three **classical, orthogonal statistical detectors** audit every daily decision:
 
-## Orden de lectura recomendado
-
-| # | Fichero | Propósito | Tiempo |
+| Detector | Axis it watches | Underlying model | Question |
 |---|---|---|---|
-| 1 | `CLAUDE.md` | Constitución del nuevo proyecto: qué es, qué no es, cómo trabajar con agentes | 10 min |
-| 2 | `CONOCIMIENTO_ACUMULADO.md` | Síntesis del proyecto anterior. Lectura obligatoria antes de cualquier experimento | 10 min |
-| 3 | `DECISIONES_ESENCIALES.md` | Las 12 decisiones vivas a 2026-06-07 (las que sobreviven al pivot final) | 5 min |
-| 4 | `LECCIONES_APRENDIDAS.md` | Errores cometidos y cómo NO repetirlos | 10 min |
-| 5 | `ENTREGABLES.md` | Qué exige el tutor para la defensa | 5 min |
-| 6 | `RESULTADOS_OBJETIVO.md` | Cifras actuales como referencia a replicar/superar | 5 min |
-| 7 | `AGENTES_SUGERIDOS.md` | Arquitectura de agentes que ayudan a hacer cada cosa bien | 15 min |
+| **RAM** | Market regime | 3-state Gaussian HMM | Is the agent's direction coherent with the regime (calm/stress/crisis)? |
+| **PSA** | Agent consistency | BOCPD (Adams & MacKay, 2007) | Did the agent just change its mind anomalously? |
+| **GSO** | Market volatility | GARCH(1,1)-t | Is the bet size compatible with current volatility? |
 
-Total: ~60 minutos para tener el contexto completo antes de tocar código.
+When the regime confidently contradicts the agent, STRATA **flips** the position toward the
+regime's direction, sized by volatility. Three intervention modes (`warn` / `reduce` / `override`)
+span from passive logging to active correction.
 
 ---
 
-## Qué está incluido
+## Key results
 
-| Carpeta | Tamaño | Por qué se incluye |
-|---|---:|---|
-| `core/` | <1M | Primitivas matemáticas testadas (HMM, GARCH, BOCPD, CPCV, stats, metrics, backtest). Reescribirlas no añade rigor |
-| `strata/` | <1M | Detectores RAM/PSA/GSO + capa de intervención |
-| `agent/` | <1M | Wrapper + cliente LLM + patches macro/precio/stats. **Sin** el submódulo `ai_hedge_fund/` |
-| `tests/` | <1M | 18 suites verdes |
-| `cache/agent/` | 16M | Decisiones del Portfolio Manager por activo, 10 tickers, 2024-10-01 → 2026-05-19 |
-| `cache/models/` | 44K | HMM/GARCH/BOCPD pickles, thresholds STRATA, calibración |
-| `cache/llm/` | 156M | Inferencias LLM individuales por personalidad (no se versiona en git) |
-| `data/` | 170M | Parquets de yfinance (SPY + panel + factores) |
-| `_archivo_proyecto_anterior/` | 1.4M | BITACORA + decisiones + chats + transcripciones + outputs canónicos como referencia |
+On SPY, out of sample (Oct 2024 – Jun 2026, 401 sessions), under **strictly causal evaluation**
+(today's position earns tomorrow's return, `signal_lag = 1`):
 
-**Total kit:** ~345 MB.
+| Strategy | Directional accuracy | Sharpe | €1,000 → |
+|---|:--:|:--:|:--:|
+| LLM agent alone (unsupervised) | 38.4 % | −1.82 | €903 |
+| **STRATA (statistical supervision)** | **43.6 %** | **+0.67** | **€1,069** |
+| XGBoost meta-learner (ML benchmark) | 53.9 % | +0.64 | €1,035 |
+| Buy & Hold (passive market) | 56.9 % | +1.09 | €1,317 |
+
+**Three findings, each backed by a statistical test:**
+
+1. **STRATA rescues the agent.** Directional accuracy rises from 38.4 % to 43.6 % and the account
+   goes from losing to recovering. The improvement is **significant in the paired test that matters**:
+   *McNemar* STRATA vs agent, **p ≈ 0.07** (of the 121 days where they differ, STRATA fixes 71 and
+   breaks 50). Honestly stated: significant at α = 0.10, *borderline* at α = 0.05.
+
+2. **An "everything-in" meta-learner does not beat it.** An XGBoost validated with *Combinatorial
+   Purged CV* on 22 features (the 5 personalities + the 3 detectors + 4 regime features) **matches**
+   the hand-built rule but does not surpass it (*Diebold-Mariano* p = 0.61). And **SHAP** shows the
+   informative features are exactly STRATA's and the regime's — not the agent's: **the ML
+   rediscovers the rule rather than improving on it.**
+
+3. **Scientific honesty.** No system beats the passive market (Buy & Hold, €1,317). The contribution
+   is **not "beating the market"**: it is **rescuing a losing agent with a defensible statistical
+   protocol.**
 
 ---
 
-## Qué NO está incluido (y por qué)
+## The contribution — why this project matters
 
-- `experiments/` — los rediseña `@disenador-experimentos` desde cero con rigor.
-- `notebooks/` — el nuevo notebook canónico lo hace el agente, math-first.
-- `viz/` — los gráficos se regeneran junto con los experimentos.
-- `pipeline.py` — el nuevo pipeline se diseña con la nueva estructura.
-- `live/` — el modo live se rehace con la nueva arquitectura.
-- `outputs/figures/` — regenerable.
-- `.git/` — el nuevo proyecto inicializa su propio repo.
-- Submódulo `ai_hedge_fund/` — se re-añade con `git submodule add`.
+- **Rigor over a pretty equity curve.** No figure is reported without its test: paired contrasts
+  (*McNemar*, *Diebold-Mariano*), *Deflated Sharpe Ratio*, stationary *bootstrap*, CPCV validation
+  **with no temporal leakage**, and **pre-registration** of every experiment (hypothesis and success
+  criterion fixed *before* looking at results) as a shield against *p-hacking*.
+
+- **Interpretability over black box.** STRATA is built from classical statistics (HMM, GARCH, BOCPD)
+  that can be **explained and defended** before a committee — not an opaque model. Every
+  intervention is traceable step by step.
+
+- **Statistical discipline > ML complexity.** The central result — that a well-founded hand-built
+  rule is *statistically indistinguishable* from a universal XGBoost — is a counterintuitive,
+  valuable lesson: in a problem with weak signal and a small sample, **complexity buys no edge;
+  discipline does.**
+
+- **Falsifiable science.** The project explicitly documents **when it does NOT work** (the
+  *prior-flip* rule: if the calibrated sign of the regime disagrees with the out-of-sample sign, it
+  is reported as a failure). Reporting the limits is part of the result.
 
 ---
 
-## Verificación rápida del kit
+## How it works — one concrete day
 
-```bash
-du -sh .
-ls cache/agent/ | wc -l                                 # esperado: 10
-ls cache/agent/SPY/ | wc -l                             # esperado: ~401
-ls cache/models/                                        # HMM, GARCH, BOCPD, thresholds
-find core/ strata/ agent/ tests/ -name "*.py" | wc -l   # esperado: ~50
-ls *.md                                                 # 8 MDs raíz
-ls _archivo_proyecto_anterior/                          # BITACORA + docs + outputs_canonicos
+The backtest engine is pure accounting: `P&L = position · next-day return`. The only thing that
+changes between strategies is **how the position is computed**. An intervention day:
+
+| Step | Computation | Result |
+|---|---|---|
+| 1. Agent decides | long, *size* = +0.30 | agent tuple |
+| 2. HMM + GARCH | regime = **Crisis** (P = 0.80), σ = 23 % | market state |
+| 3. RAM flags mismatch | long in Crisis ⇒ score 0.80 (*high*) | triggers |
+| 4. *override* toward regime | regime_sign · vol_band = −1 · 0.43 | **position = −0.43** |
+
+The agent wanted to buy in the middle of a crisis; STRATA reorients it to short. Over 401 days, that
+kind of correction is what turns the loss into a recovery.
+
+---
+
+## Tech stack
+
+**Models:** Gaussian HMM (regimes) · GARCH(1,1)-Student-t (volatility) · BOCPD (change points) ·
+XGBoost + SHAP (ML benchmark).
+**Inference:** McNemar · Diebold-Mariano · *sign test* · Deflated Sharpe · stationary *bootstrap*
+(Politis-Romano) · Combinatorial Purged CV (López de Prado).
+**Engineering:** Python 3.11, `numpy` / `pandas` / `scipy` / `scikit-learn` / `hmmlearn` / `arch` /
+`xgboost`; tests with `pytest`; CI on GitHub Actions; reproducibility via fixed random seed.
+
+---
+
+## Repository layout
+
+```
+core/         Tested mathematical primitives (HMM, GARCH, BOCPD, CPCV, metrics, statistical tests)
+strata/       The three detectors (RAM/PSA/GSO) + the intervention layer
+experiments/  Reproducible experiments, each with its pre-registration and JSON output
+notebooks/    Canonical thesis notebook (strata_canonical) + experiments notebook
+tests/        Test suite (includes a look-ahead / leakage check)
+cache/        Calibrated models (HMM/GARCH/thresholds) and the agent's per-asset decisions
+BITACORA.md   Lab notebook: methodological decisions, findings and experiment pre-registrations
 ```
 
 ---
 
-## Workflow del nuevo proyecto (resumen)
+## Reproducibility
 
-1. Tienes una pregunta de investigación nueva.
-2. Pregunta a `@asesor-historico`: "¿se intentó algo parecido?". Recibirás cita de BITACORA + decisión tomada.
-3. Pide a `@disenador-experimentos` el pre-registro del experimento (metodología, criterios de éxito, citas).
-4. `@rigor-matematico` audita el diseño antes de ejecutar.
-5. `@ejecutor-experimentos` lo corre y guarda outputs.
-6. `@rigor-matematico` audita los resultados.
-7. `@bitacora` decide si entra a BITACORA.
-8. `@narrativa-coherencia` propaga al notebook y a las decisiones.
-9. `@defensa-tutor` anticipa las objeciones del tribunal.
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+pytest -q                      # test suite (incl. no-leakage check)
+jupyter notebook notebooks/strata_canonical.ipynb   # full thesis analysis
+```
 
-Nunca se ejecuta un experimento sin pasar por los pasos 1–4. Eso es lo que en el proyecto anterior no se hizo y costó 4 notebooks + 12 scripts de tuning huérfanos.
+Model calibration: 2000–2024 (once). Out-of-sample evaluation: Oct 2024 onward, starting after the
+LLM's knowledge cutoff to rule out look-ahead contamination.
+
+---
+
+## Scope and limitations (stated)
+
+- **Central case: SPY.** It works because in aggregate indices the *leverage effect* (Black 1976;
+  Christie 1982) makes high volatility coincide with drawdowns, so the regime acts as a directional
+  *proxy*. The assumption weakens for individual stocks — a documented limitation, with a 10-asset
+  robustness panel as an appendix.
+- **A single out-of-sample window** (bullish). Multi-window / walk-forward validation is ongoing
+  work.
+- **It does not beat the passive market.** The goal is to supervise the agent, not to beat Buy &
+  Hold.
+
+---
+
+*STRATA — Statistical Trading Real-time Audit. Raquel García, Complutense University of Madrid.*
