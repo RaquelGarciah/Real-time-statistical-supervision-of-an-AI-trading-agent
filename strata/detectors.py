@@ -244,6 +244,7 @@ def psa_detector(
     short_window: int = 5,
     hazard: float = 1 / 250,
     signal: str = "cp_prob",
+    thresholds: tuple[float, float, float] | None = None,
 ) -> DetectorResult:
     """PSA — Position Sizing Anomaly vía BOCPD sobre el historial de sizing.
 
@@ -263,6 +264,11 @@ def psa_detector(
     ``hazard`` es la tasa esperada de cambio del BOCPD (mayor = más sensible).
     Necesita al menos ``short_window + 2`` observaciones (``+3`` para la variante
     de incrementos); en caso contrario se emite *none*.
+
+    ``thresholds`` permite pasar umbrales explícitos ``(low, medium, high)`` que
+    sustituyen a los del JSON para las señales ``cp_prob``/``cp_prob_delta`` (mismo
+    patrón que ``ram_detector``); se usa en el barrido de sensibilidad de umbrales.
+    La señal ``map_runlength`` es threshold-free y lo ignora.
     """
     min_len = short_window + 2 + (1 if signal == "cp_prob_delta" else 0)
     if len(sizing_history) < min_len:
@@ -288,7 +294,10 @@ def psa_detector(
         flag = map_rl <= short_window
     else:
         score = float(res.cp_prob[-1])
-        severity = _classify_severity_for("psa", score)
+        if thresholds is not None:
+            severity = _severity_from_levels(score, *thresholds)
+        else:
+            severity = _classify_severity_for("psa", score)
         # Con umbrales recalibrados el "flag" se alinea con severidad ``medium``
         # o superior (en defaults equivale a score ≥ 0.4).
         flag = severity in ("medium", "high")
@@ -331,6 +340,7 @@ def gso_detector(
     sigma_t_annualized: float,
     target_vol: float = TARGET_VOL,
     gso_mode: str = "absolute",
+    thresholds: tuple[float, float, float] | None = None,
 ) -> DetectorResult:
     """GSO — GARCH-bounded Sizing Override.
 
@@ -372,7 +382,12 @@ def gso_detector(
         # El score GSO ya no se clipea a 1.0: el wrapper compara contra los
         # umbrales recalibrados que pueden estar muy por encima de 1 (P95 ≈ 2.4).
         score = float(exceso / max(bound, 1e-3))
-        severity = _classify_severity_for("gso", score)
+        # ``thresholds`` explícitos (barrido de sensibilidad) solo aplican al modo
+        # "absolute"; los modos relativos son threshold-free.
+        if thresholds is not None:
+            severity = _severity_from_levels(score, *thresholds)
+        else:
+            severity = _classify_severity_for("gso", score)
         bounded_size = float(sign * min(abs_size, bound))
         flag = score > 0
 
