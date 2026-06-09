@@ -4,9 +4,13 @@ una vez los detectores han hablado.
 Modos:
 
 - ``warn``: pasa la decisión sin modificarla; sólo registra los detectores.
-- ``reduce``: atenúa el tamaño multiplicativamente por ``(1 - max_severity)``,
-  donde ``max_severity`` se mapea numéricamente desde el resultado más severo
-  de los tres detectores.
+- ``reduce``: atenúa el tamaño multiplicativamente. Según ``reduce_mode``:
+  ``"bucket"`` por la severidad discreta del peor detector, ``"continuous"`` por
+  ``(1 - max_score)`` de los tres, o ``"ram_continuous"`` (control M7) por
+  ``(1 - RAM)`` pero solo cuando RAM dispararía el override (severidad
+  medium/high, i.e. score ≥ τ): es el análogo "encoger" de override-C, que
+  "voltea". Aísla cuánto del rescate de M8 viene de reducir exposición frente a
+  cuánto de corregir la dirección.
 - ``override``: si algún detector marca *medium* o *high*, el tamaño se
   sustituye. La respuesta a la desalineación direccional de RAM tiene tres
   variantes (``override_variant``):
@@ -91,7 +95,23 @@ def supervise(
         )
 
     if mode == "reduce":
-        if reduce_mode == "continuous":
+        if reduce_mode == "ram_continuous":
+            # Reduce *gated* en RAM (control M7 de la escalera de intervención).
+            # Solo atenúa cuando el régimen contradice la acción con confianza
+            # suficiente, es decir cuando RAM ya dispararía el override
+            # (severidad medium/high; el corte 'medium' es el umbral τ calibrado
+            # vía ram_thresholds). El factor es 1 - RAM_t: encoge la posición del
+            # agente hacia cash en proporción a la confianza de incoherencia. Es
+            # el análogo "reduce" de override-C: en lugar de voltear al régimen,
+            # solo reduce la exposición del agente sin imponer dirección.
+            ram = detectors.get("ram")
+            if ram is not None and ram.severity in {"medium", "high"}:
+                factor = 1.0 - min(1.0, max(0.0, ram.score))
+                was_intervened = True
+            else:
+                factor = 1.0
+                was_intervened = False
+        elif reduce_mode == "continuous":
             # Atenuación continua: factor 1 - max(score) en [0,1]. Más fino que
             # los buckets de severidad; el score de RAM ya es una probabilidad.
             max_score = max((d.score for d in detectors.values()), default=0.0)
