@@ -30,12 +30,8 @@ jobs:
       - name: Lint (ruff)
         run: ruff check core strata experiments tests config.py
 
-      # Se excluyen: test_data (necesita data/, gitignored) y test_common/test_decision_level
-      # (dependen del submódulo agent/experiments aún no presentes). Lo demás corre sobre
-      # datos sintéticos y verifica la ausencia de look-ahead.
+      # tests/conftest.py omite automáticamente los tests que necesitan el stack del
+      # agente (langchain), data/ (gitignored) o módulos de experiments/ ausentes. Lo
+      # demás corre sobre datos sintéticos y verifica la ausencia de look-ahead.
       - name: Tests (pytest)
-        run: |
-          pytest -q \
-            --ignore=tests/test_data.py \
-            --ignore=tests/test_common.py \
-            --ignore=tests/test_decision_level.py
+        run: pytest -q
