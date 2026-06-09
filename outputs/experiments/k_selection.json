@@ -1,0 +1,72 @@
+{
+  "ticker": "SPY",
+  "n_obs": 6204,
+  "ks": [
+    2,
+    3
+  ],
+  "folds": [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "per_k": {
+    "2": {
+      "logL_insample": -12008.926272812532,
+      "n_params": 13,
+      "AIC": 24043.852545625065,
+      "BIC": 24131.38088944092,
+      "occupancy": [
+        0.649,
+        0.351
+      ],
+      "duration_days": [
+        124.0,
+        66.5
+      ],
+      "mean_ret": [
+        0.00062,
+        -0.00029
+      ],
+      "std_ret": [
+        0.0071,
+        0.0182
+      ],
+      "min_occupancy": 0.351,
+      "heldout_loglik_perobs": -1.6927
+    },
+    "3": {
+      "logL_insample": -9286.9239390197,
+      "n_params": 23,
+      "AIC": 18619.8478780394,
+      "BIC": 18774.70571709822,
+      "occupancy": [
+        0.437,
+        0.408,
+        0.155
+      ],
+      "duration_days": [
+        55.8,
+        36.9,
+        46.0
+      ],
+      "mean_ret": [
+        0.00064,
+        0.0002,
+        -0.00043
+      ],
+      "std_ret": [
+        0.0059,
+        0.0109,
+        0.0235
+      ],
+      "min_occupancy": 0.155,
+      "heldout_loglik_perobs": -1.301
+    }
+  },
+  "k_best_heldout": 3,
+  "k_plateau_heldout": 3,
+  "criterio": "held-out log-likelihood (CV temporal) + ocupacion + interpretabilidad, sin OOS ni trading"
+}

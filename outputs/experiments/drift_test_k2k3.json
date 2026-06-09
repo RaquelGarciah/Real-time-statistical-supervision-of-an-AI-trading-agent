@@ -1,0 +1,156 @@
+{
+  "2": {
+    "per_asset": [
+      {
+        "M8": 1.329,
+        "M10": 0.471,
+        "M10_minus_M8": -0.858,
+        "drift_oos": 0.16,
+        "ticker": "SPY"
+      },
+      {
+        "M8": 0.531,
+        "M10": -1.479,
+        "M10_minus_M8": -2.01,
+        "drift_oos": 0.38,
+        "ticker": "NVDA"
+      },
+      {
+        "M8": 0.289,
+        "M10": 0.16,
+        "M10_minus_M8": -0.129,
+        "drift_oos": 0.16,
+        "ticker": "BAC"
+      },
+      {
+        "M8": -0.714,
+        "M10": -2.278,
+        "M10_minus_M8": -1.565,
+        "drift_oos": 0.33,
+        "ticker": "TSLA"
+      },
+      {
+        "M8": 1.449,
+        "M10": 1.358,
+        "M10_minus_M8": -0.092,
+        "drift_oos": 0.19,
+        "ticker": "XLE"
+      },
+      {
+        "M8": 0.676,
+        "M10": 0.997,
+        "M10_minus_M8": 0.32,
+        "drift_oos": -0.23,
+        "ticker": "UNG"
+      },
+      {
+        "M8": -0.478,
+        "M10": -0.413,
+        "M10_minus_M8": 0.065,
+        "drift_oos": 0.09,
+        "ticker": "MSTR"
+      },
+      {
+        "M8": 0.685,
+        "M10": 0.349,
+        "M10_minus_M8": -0.336,
+        "drift_oos": -0.14,
+        "ticker": "SMCI"
+      },
+      {
+        "M8": -0.234,
+        "M10": 0.941,
+        "M10_minus_M8": 1.175,
+        "drift_oos": 0.34,
+        "ticker": "ROKU"
+      },
+      {
+        "M8": -0.016,
+        "M10": 0.698,
+        "M10_minus_M8": 0.714,
+        "drift_oos": -0.12,
+        "ticker": "MARA"
+      }
+    ],
+    "rho_drift_vs_M10minusM8": -0.359,
+    "p": 0.309,
+    "n_M8_beats_M10": 6
+  },
+  "3": {
+    "per_asset": [
+      {
+        "M8": 0.672,
+        "M10": 0.642,
+        "M10_minus_M8": -0.03,
+        "drift_oos": 0.16,
+        "ticker": "SPY"
+      },
+      {
+        "M8": 0.672,
+        "M10": -2.557,
+        "M10_minus_M8": -3.228,
+        "drift_oos": 0.38,
+        "ticker": "NVDA"
+      },
+      {
+        "M8": 1.079,
+        "M10": -0.421,
+        "M10_minus_M8": -1.5,
+        "drift_oos": 0.16,
+        "ticker": "BAC"
+      },
+      {
+        "M8": -0.342,
+        "M10": -1.912,
+        "M10_minus_M8": -1.57,
+        "drift_oos": 0.33,
+        "ticker": "TSLA"
+      },
+      {
+        "M8": 0.835,
+        "M10": 0.189,
+        "M10_minus_M8": -0.646,
+        "drift_oos": 0.19,
+        "ticker": "XLE"
+      },
+      {
+        "M8": 0.325,
+        "M10": 1.149,
+        "M10_minus_M8": 0.823,
+        "drift_oos": -0.23,
+        "ticker": "UNG"
+      },
+      {
+        "M8": -0.1,
+        "M10": -0.851,
+        "M10_minus_M8": -0.751,
+        "drift_oos": 0.09,
+        "ticker": "MSTR"
+      },
+      {
+        "M8": 0.266,
+        "M10": 0.072,
+        "M10_minus_M8": -0.194,
+        "drift_oos": -0.14,
+        "ticker": "SMCI"
+      },
+      {
+        "M8": 0.361,
+        "M10": -0.147,
+        "M10_minus_M8": -0.508,
+        "drift_oos": 0.34,
+        "ticker": "ROKU"
+      },
+      {
+        "M8": 0.536,
+        "M10": 0.493,
+        "M10_minus_M8": -0.043,
+        "drift_oos": -0.12,
+        "ticker": "MARA"
+      }
+    ],
+    "rho_drift_vs_M10minusM8": -0.699,
+    "p": 0.024,
+    "n_M8_beats_M10": 9
+  }
+}
