@@ -719,3 +719,49 @@ recalibrar `strata_thresholds.json` (PSA/GSO) a n_obs=6204.
 
 **Referencias.** notebooks/strata_canonical.ipynb (§3 selección K con gráfico, §12 robustez OOS),
 notebooks/experimentos.ipynb (E1-E3), experiments/drift_test_k2k3.py, outputs/experiments/*.json.
+
+---
+
+## [2026-06-09] [Pre-registro] - Experimento E4 (sensibilidad de los umbrales de PSA y GSO)
+
+**Contexto.** Los umbrales de PSA/GSO son percentiles ex-ante de la calibración (low=P95,
+medium=P99, high=max); el override dispara en severidad ≥ medium, por eso PSA/GSO casi nunca
+saltan en el OOS de SPY (RAM hace todo el trabajo). Pregunta: si los bajamos para que disparen,
+¿mejora algo el acierto direccional? Es **diagnóstico de sensibilidad, NO recalibración**.
+
+**Hipótesis (H1).** Como PSA/GSO **no voltean el signo** (GSO solo recorta magnitud en medium+;
+PSA frena ×0.5 solo en high; RAM es el único que reorienta la dirección, override-C), bajar sus
+umbrales **NO mejora el acierto direccional** de M8; a lo sumo cambia Sharpe/turnover por modular
+magnitud. Refuerza la tesis "RAM domina la supervisión".
+
+**H0.** Existe algún umbral PSA/GSO (más bajo que P95/P99) que mejora el acierto direccional de
+M8 de forma significativa y en la dirección de mejora.
+
+**Estadístico.** McNemar pareado (sweep vs base P95/P99 y sweep vs M5) sobre el acierto
+direccional; IC del ΔSharpe por bootstrap estacionario (Politis-Romano) en el punto extremo (P50).
+
+**Criterio de fracaso de H1 (pre-registrado).** Un punto del barrido REFUTA H1 si **Δaccuracy >
++0.02 vs base** Y **McNemar vs base p<0.10** Y los discordantes favorecen al sweep (**b>c** con
+`mcnemar_dict(sweep, base)`, donde b = sweep✓&base✗). La coherencia de signo evita contar como
+"mejora" un punto que en realidad empeora. Si ≥1 punto refuta, se analiza en auditoría de
+resultados SIN prejuzgar la causa.
+
+**Mecánica del barrido (decisión metodológica).** Se barre el umbral en la severidad donde cada
+detector interviene: **PSA mueve `high`** (low=0, medium=high=p{pct}); **GSO mueve `medium`**
+(low=medium=p{pct}, high=max). Percentiles del barrido: {50,75,90,95,99}. RAM fijo en τ=0.5.
+
+**Anti-p-hacking.** Se reportan TODOS los puntos; **prohibido adoptar** el mejor umbral OOS como
+nuevo default (sería look-ahead). El default sigue siendo P95/P99 ex-ante. `n_trials = 10`
+(5 pct × 2 detectores) declarado ex-ante para el Deflated Sharpe si se mencionara algún Sharpe
+favorable.
+
+**Datos.** SPY, OOS 2024-10-01→cierre, signal_lag=1 (peso_t·retorno_{t+1}). HMM/GARCH cacheados
+(no se recalibran). Auditado por @rigor-matematico (PASS tras 4 arreglos: cableado de umbrales,
+PSA mueve high, coherencia de signo en refutación, n_trials).
+
+**Output esperado.** `outputs/experiments/psa_gso_threshold_sensitivity.json` con claves: `meta`
+(incl. n_trials, hashes, signal_lag=1), `m5`, `base` (accuracy/mcc/hit_rate/sharpe/turnover +
+mcnemar_vs_m5), `sweep` (10 puntos: detector, pctile, umbral_movido, n_intervenciones_detector,
+accuracy, mcc, n_valid, delta_accuracy_vs_base, sharpe_causal, mcnemar_vs_m5/base, refuta_h1),
+`ci_sharpe_extreme_vs_base`, `verdict` (h1_sostenida, n_puntos_refutan, comentario neutral).
+Interpretación → notebooks/experimentos.ipynb §E4. Script: experiments/psa_gso_threshold_sensitivity.py.
