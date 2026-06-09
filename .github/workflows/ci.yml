@@ -1,0 +1,37 @@
+name: CI
+
+# Verificación automática y GRATIS en cada cambio de un Pull Request:
+# lint (ruff) + tests (pytest sin leakage). Runners de GitHub, sin API keys.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Solo el subconjunto científico que importan core/ y strata/ (NO el stack de
+      # langchain/agente, que no se testea y haría la CI lenta).
+      - name: Instalar dependencias de test
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas scipy scikit-learn hmmlearn arch statsmodels ruptures yfinance pyarrow pytest ruff
+
+      - name: Lint (ruff)
+        run: ruff check core strata experiments tests config.py
+
+      # tests/conftest.py omite automáticamente los tests que necesitan el stack del
+      # agente (langchain), data/ (gitignored) o módulos de experiments/ ausentes. Lo
+      # demás corre sobre datos sintéticos y verifica la ausencia de look-ahead.
+      - name: Tests (pytest)
+        run: pytest -q

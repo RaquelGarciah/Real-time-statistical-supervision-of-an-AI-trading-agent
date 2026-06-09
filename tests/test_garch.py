@@ -52,6 +52,24 @@ def test_forecast_sin_fit_levanta():
         GARCHModel().forecast_path(pd.Series([0.001, 0.002, 0.003]))
 
 
+def test_forecast_path_causal_sin_lookahead():
+    """σ_t de forecast_path NO puede depender de r_t: es la previsión a un paso
+    hecha al cierre de t-1, la información disponible al decidir el día t. Por eso
+    en GSO se alimenta sigma.iloc[t] directamente (no shift). Perturbar r_k solo
+    puede mover σ a partir de k+1, nunca σ_k."""
+    r = _sim_garch(seed=3)
+    m = GARCHModel().fit(r.iloc[:1500])
+    oos = r.iloc[1500:]
+    sigma = m.forecast_path(oos)
+    oos_pert = oos.copy()
+    k = 20
+    oos_pert.iloc[k] *= 5.0
+    sigma_pert = m.forecast_path(oos_pert)
+    # σ en k (y antes) intacta; σ en k+1 cambia.
+    np.testing.assert_allclose(sigma.iloc[: k + 1].to_numpy(), sigma_pert.iloc[: k + 1].to_numpy())
+    assert sigma.iloc[k + 1] != sigma_pert.iloc[k + 1]
+
+
 def test_determinismo_misma_serie():
     r = _sim_garch(seed=7, n=1500)
     m1 = GARCHModel().fit(r)

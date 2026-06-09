@@ -137,9 +137,30 @@ def _classify_severity(score: float) -> Severity:
     return "none"
 
 
+def _severity_from_levels(score: float, low: float, medium: float, high: float) -> Severity:
+    """Severidad a partir de tres umbrales explícitos ``low < medium < high``.
+
+    Si un gate calibrado τ supera el ancla ``high`` (p. ej. τ=0.85 con high=0.70), se sube
+    ``high`` hasta τ para que τ siga siendo el corte efectivo: de lo contrario ``s >= high``
+    se evalúa primero y un score en [high, τ) se marcaría 'high' POR DEBAJO del gate. Mismo
+    criterio que ``_load_thresholds`` (``high = max(p99, medium)``).
+    """
+    s = max(0.0, float(score))
+    medium = max(medium, low)
+    high = max(high, medium)
+    if s >= high:
+        return "high"
+    if s >= medium:
+        return "medium"
+    if s >= low:
+        return "low"
+    return "none"
+
+
 def ram_detector(
     agent_size: float,
     regime_probs: dict[str, float],
+    thresholds: tuple[float, float, float] | None = None,
 ) -> DetectorResult:
     """RAM — Regime-Action Mismatch.
 
@@ -160,6 +181,11 @@ def ram_detector(
     acción coherente en Crisis es el opuesto direccional de Calma, no flat.
 
     ``regime_probs`` es ``{"Calma": p1, "Estrés": p2, "Crisis": p3}``.
+
+    ``thresholds`` permite pasar umbrales explícitos ``(low, medium, high)``
+    calibrados ex-ante por activo (p. ej. el punto donde el régimen se vuelve
+    direccionalmente informativo en el histórico). Si es ``None`` se usa la
+    tabla cargada de ``cache/models/strata_thresholds.json`` o los defaults.
     """
     agent_sign = 0 if abs(agent_size) < 1e-9 else (1 if agent_size > 0 else -1)
 
@@ -173,7 +199,10 @@ def ram_detector(
         inconsistency += crisis_prob
 
     score = float(min(1.0, inconsistency))
-    severity = _classify_severity_for("ram", score)
+    if thresholds is not None:
+        severity = _severity_from_levels(score, *thresholds)
+    else:
+        severity = _classify_severity_for("ram", score)
     # Dirección implícita del régimen (leverage effect): Calma → long, Crisis →
     # short. ``regime_sign`` y ``p_dominant`` los consume la capa de override
     # para reorientar el sizing del agente hacia el régimen (variantes B/C).
@@ -215,6 +244,7 @@ def psa_detector(
     short_window: int = 5,
     hazard: float = 1 / 250,
     signal: str = "cp_prob",
+    thresholds: tuple[float, float, float] | None = None,
 ) -> DetectorResult:
     """PSA — Position Sizing Anomaly vía BOCPD sobre el historial de sizing.
 
@@ -234,6 +264,11 @@ def psa_detector(
     ``hazard`` es la tasa esperada de cambio del BOCPD (mayor = más sensible).
     Necesita al menos ``short_window + 2`` observaciones (``+3`` para la variante
     de incrementos); en caso contrario se emite *none*.
+
+    ``thresholds`` permite pasar umbrales explícitos ``(low, medium, high)`` que
+    sustituyen a los del JSON para las señales ``cp_prob``/``cp_prob_delta`` (mismo
+    patrón que ``ram_detector``); se usa en el barrido de sensibilidad de umbrales.
+    La señal ``map_runlength`` es threshold-free y lo ignora.
     """
     min_len = short_window + 2 + (1 if signal == "cp_prob_delta" else 0)
     if len(sizing_history) < min_len:
@@ -259,7 +294,10 @@ def psa_detector(
         flag = map_rl <= short_window
     else:
         score = float(res.cp_prob[-1])
-        severity = _classify_severity_for("psa", score)
+        if thresholds is not None:
+            severity = _severity_from_levels(score, *thresholds)
+        else:
+            severity = _classify_severity_for("psa", score)
         # Con umbrales recalibrados el "flag" se alinea con severidad ``medium``
         # o superior (en defaults equivale a score ≥ 0.4).
         flag = severity in ("medium", "high")
@@ -302,6 +340,7 @@ def gso_detector(
     sigma_t_annualized: float,
     target_vol: float = TARGET_VOL,
     gso_mode: str = "absolute",
+    thresholds: tuple[float, float, float] | None = None,
 ) -> DetectorResult:
     """GSO — GARCH-bounded Sizing Override.
 
@@ -343,7 +382,12 @@ def gso_detector(
         # El score GSO ya no se clipea a 1.0: el wrapper compara contra los
         # umbrales recalibrados que pueden estar muy por encima de 1 (P95 ≈ 2.4).
         score = float(exceso / max(bound, 1e-3))
-        severity = _classify_severity_for("gso", score)
+        # ``thresholds`` explícitos (barrido de sensibilidad) solo aplican al modo
+        # "absolute"; los modos relativos son threshold-free.
+        if thresholds is not None:
+            severity = _severity_from_levels(score, *thresholds)
+        else:
+            severity = _classify_severity_for("gso", score)
         bounded_size = float(sign * min(abs_size, bound))
         flag = score > 0
 

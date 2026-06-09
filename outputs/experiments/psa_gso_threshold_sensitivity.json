@@ -1,0 +1,353 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "oos_start": "2024-10-01",
+    "oos_end": "2026-06-05",
+    "n_days": 401,
+    "signal_lag": 1,
+    "ram_tau": 0.5,
+    "override_variant": "C",
+    "calibration_window": [
+      "2000-01-01",
+      "2024-09-30"
+    ],
+    "seed": 42,
+    "n_trials": 10,
+    "hash_cache_agent": "e1790da591004a5d",
+    "hash_cache_models": "5c01cd98295dfb4c"
+  },
+  "m5": {
+    "accuracy": 0.38403990024937656,
+    "mcc": -0.11115613002256237,
+    "n_valid": 401,
+    "hit_rate": 0.3765586034912718,
+    "sharpe_causal": -1.8189000135066176,
+    "turnover": 0.1388909759552002,
+    "equity_final_1000": 903.5161706200299
+  },
+  "base": {
+    "threshold_label": "P95/P99 ex-ante",
+    "n_psa_medium_plus": 0,
+    "n_psa_high": 0,
+    "n_gso_medium_plus": 0,
+    "accuracy": 0.43640897755610975,
+    "mcc": -0.08433451106217565,
+    "n_valid": 401,
+    "hit_rate": 0.4314214463840399,
+    "sharpe_causal": 0.6720850075998914,
+    "turnover": 0.23098663645243472,
+    "equity_final_1000": 1068.8962151677292,
+    "mcnemar_vs_m5": {
+      "p": 0.06903634799441524,
+      "b": 71,
+      "c": 50,
+      "n_disc": 121
+    }
+  },
+  "sweep": [
+    {
+      "detector": "psa",
+      "pctile": 50,
+      "umbral_movido": "high",
+      "thresh": 0.004943277932641166,
+      "n_intervenciones_detector": 193,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.428927680798005,
+      "sharpe_causal": 0.7442104885151117,
+      "turnover": 0.17308591024662245,
+      "equity_final_1000": 1063.010857473893,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "psa",
+      "pctile": 75,
+      "umbral_movido": "high",
+      "thresh": 0.005642724414416015,
+      "n_intervenciones_detector": 88,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.43640897755610975,
+      "sharpe_causal": 0.6804259479901856,
+      "turnover": 0.22495379868813767,
+      "equity_final_1000": 1068.2344790577959,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "psa",
+      "pctile": 90,
+      "umbral_movido": "high",
+      "thresh": 0.008685208789023185,
+      "n_intervenciones_detector": 17,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6740686878320183,
+      "turnover": 0.2348317277595026,
+      "equity_final_1000": 1069.0882114278454,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "psa",
+      "pctile": 95,
+      "umbral_movido": "high",
+      "thresh": 0.02292820871149785,
+      "n_intervenciones_detector": 2,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.678050450649046,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1069.5561344811508,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "psa",
+      "pctile": 99,
+      "umbral_movido": "high",
+      "thresh": 0.647207512555752,
+      "n_intervenciones_detector": 0,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6720850075998914,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1068.8962151677292,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "gso",
+      "pctile": 50,
+      "umbral_movido": "medium",
+      "thresh": 0.4245224270992418,
+      "n_intervenciones_detector": 0,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6720850075998914,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1068.8962151677292,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "gso",
+      "pctile": 75,
+      "umbral_movido": "medium",
+      "thresh": 1.0055459428486282,
+      "n_intervenciones_detector": 0,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6720850075998914,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1068.8962151677292,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "gso",
+      "pctile": 90,
+      "umbral_movido": "medium",
+      "thresh": 1.7167415184882597,
+      "n_intervenciones_detector": 0,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6720850075998914,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1068.8962151677292,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "gso",
+      "pctile": 95,
+      "umbral_movido": "medium",
+      "thresh": 2.3706284732416774,
+      "n_intervenciones_detector": 0,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6720850075998914,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1068.8962151677292,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    },
+    {
+      "detector": "gso",
+      "pctile": 99,
+      "umbral_movido": "medium",
+      "thresh": 5.565324880787546,
+      "n_intervenciones_detector": 0,
+      "accuracy": 0.43640897755610975,
+      "mcc": -0.08433451106217565,
+      "n_valid": 401,
+      "delta_accuracy_vs_base": 0.0,
+      "hit_rate": 0.4314214463840399,
+      "sharpe_causal": 0.6720850075998914,
+      "turnover": 0.23098663645243472,
+      "equity_final_1000": 1068.8962151677292,
+      "mcnemar_vs_m5": {
+        "p": 0.06903634799441524,
+        "b": 71,
+        "c": 50,
+        "n_disc": 121
+      },
+      "mcnemar_vs_base": {
+        "p": 1.0,
+        "b": 0,
+        "c": 0,
+        "n_disc": 0
+      },
+      "refuta_h1": false
+    }
+  ],
+  "ci_sharpe_extreme_vs_base": [
+    {
+      "detector": "psa",
+      "pctile": 50,
+      "delta_sharpe": 0.07212548091522031,
+      "ci95_low_meandiff": -0.0001581337159173704,
+      "ci95_high_meandiff": 0.00013739489361125242,
+      "excluye_cero": false
+    },
+    {
+      "detector": "gso",
+      "pctile": 50,
+      "delta_sharpe": 0.0,
+      "ci95_low_meandiff": 0.0,
+      "ci95_high_meandiff": 0.0,
+      "excluye_cero": false
+    }
+  ],
+  "verdict": {
+    "h1_sostenida": true,
+    "n_puntos_refutan": 0,
+    "max_delta_accuracy": 0.0,
+    "comentario": "Ningún punto del barrido cruza el umbral de refutación: bajar los umbrales de PSA/GSO no mejora el acierto direccional (consistente con que solo modulan magnitud)."
+  }
+}
