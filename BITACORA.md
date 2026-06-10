@@ -1103,3 +1103,111 @@ evidencia primaria.
 
 **Referencias.** notebooks/strata_canonical.ipynb §9/§10/§11/§14, outputs/experiments/
 walkforward_robustez.json, BITACORA [2026-06-09] [Hallazgo] walk-forward.
+
+---
+
+## [2026-06-10] [Pre-registro] - Enmienda al walk-forward: M10 vs M5 + ventana 150/15
+
+**Contexto.** Raquel necesita probar que STRATA bate al agente como INVERSIÓN, no solo M8: se añade
+**M10 vs M5** (el modelo de mejor accuracy) al rolling. Y se ajusta la ventana sliding.
+
+**Cambios sobre el pre-registro original [2026-06-09]:**
+1. **Ventana sliding 120/5 → 150/15.** Justificación: 120/5 daba 57 ventanas con 96% de solape
+   (N efectivo de Bartlett ≈0.6, dependencia altísima); 150/15 da ~17 ventanas con menos solape →
+   más independientes y honestas. CONSECUENCIA: el `frac_positive` dejará de reproducir el 0.737 del
+   proyecto anterior — es esperado y es DESCRIPTIVO (no decide nada). **El cambio NO toca el veredicto**:
+   el test confirmatorio es el **bootstrap diario pareado**, independiente del tamaño de ventana.
+2. **M10 vs M5 añadido como 2º contraste confirmatorio** (junto a M8 vs M5). Multiplicidad declarada:
+   ahora hay 2 confirmatorios; se reportan AMBOS sin cherry-picking. También M10 vs M8 como complemento.
+   - H1 (M10 vs M5): mediana ΔSharpe(M10−M5) con IC95 bootstrap estacionario pareado que excluye 0.
+   - McNemar M10 vs M5 estratificado por régimen (¿rescata M10 también en bajista, donde M8 dio p=1.0?).
+3. **M10 = CPCV-OOF purgado** (decisión canónica §11): única vía en 18 meses; es validación cruzada,
+   NO walk-forward estricto (entrenar XGBoost solo-pasado por ventana daría ~60 días → ruido). Se documenta.
+
+**Límite duro REAFIRMADO (lo que Raquel detectó):** el rescate (M8/M10 vs M5) solo se mide en los ~401
+días del OOS porque el agente LLM no existe antes de 2024-10 (cutoff DeepSeek). Las "ventanas" del rolling
+son **sub-trozos solapados de un único tramo de 18 meses, NO años distintos**. La robustez multi-año real
+es SOLO la Parte A (modelo de régimen, sin agente). Esto se gritará en §13.
+
+**NO se hace:** re-calibración expanding por ventana (marginal: ≤18 meses sobre 24 años de calibración;
+el agente sigue fijo; no escapa del límite). Calibración HMM/GARCH fija pre-OOS (2000-2024-09) = anterior
+a TODA ventana → sin look-ahead, es el "calibrar una vez, desplegar" de producción.
+
+**Output esperado.** outputs/experiments/walkforward_robustez.json con claves nuevas:
+`part_b_confirmatory_m10_m5`, `stratified_mcnemar_m10_m5`, fila `m10` en master_table, y `h1_b_m10_vs_m5`
+en el veredicto.
+
+**Referencias.** experiments/walkforward_robustez.py, experiments/m10_k2.py (cableado M10), pre-registro
+[2026-06-09].
+
+**Addendum (resolución de la auditoría de la enmienda, @rigor-matematico APROBADO CON CONDICIONES):**
+1. **Multiplicidad de los 2 confirmatorios (toca el veredicto, fijado ANTES de ejecutar):** el veredicto
+   `composicion` dispara con `h1_b_m8 OR h1_b_m10`; para controlar el FWER del OR se usa la **cota inferior
+   Bonferroni IC 97.5%/brazo** (`ci_bonf2_low`, cuantil 0.0125) en cada `h1_b`, no el IC95 crudo. El IC95 se
+   reporta solo para transparencia.
+2. **Ambas ventanas:** se reporta el sliding 150/15 (enmienda) Y el 120/5 (legacy) en el JSON
+   (`part_b_sliding_legacy_120_5`); ninguno entra al veredicto (el confirmatorio es el bootstrap diario).
+3. **M10 por ventana = CV, no walk-forward:** las cifras por-ventana de M10 llevan `m10_cv_not_walkforward=true`
+   (cortes descriptivos de un OOF global purgado, no entrenamiento solo-pasado). El confirmatorio M10−M5 sí
+   es válido (OOF honesto a nivel global).
+
+---
+
+## [2026-06-10] [Hallazgo] - Walk-forward extendido a M10: rescate de accuracy cross-régimen
+
+**Contexto.** La enmienda del pre-registro ([2026-06-10] anterior) añadió M10 vs M5 al walk-forward.
+Se ejecutaron los McNemar estratificados por régimen de deriva (alcista/bajista) para M10 vs M5,
+complementando la entrada [2026-06-09] que solo medía M8. Todas las cifras proceden de
+`outputs/experiments/walkforward_robustez.json` (clave `stratified_mcnemar.m10_vs_m5`) y han sido
+auditadas por `@rigor-matematico`.
+
+**Detalle (cifras verificadas, OOS SPY N=401, enmienda walk-forward).**
+
+*Plano accuracy (métrica primaria) — el hallazgo nuevo.*
+
+| Contraste | Régimen | n | p_adj Holm | block-perm p | ΔSharpe |
+|---|---|---:|---:|---:|---:|
+| M10 vs M5 | alcista | 278 | **0.005** | **0.000** | positivo |
+| M10 vs M5 | bajista | 123 | **0.075** | **0.061** | −1.06 |
+| M8 vs M5 | alcista | 278 | 0.150 | — | +8.45 |
+| M8 vs M5 | bajista | 123 | 1.000 | — | −3.92 |
+
+**M10 rescata la accuracy direccional del agente en AMBOS régimenes** (Holm p_adj < 0.10 en ambos;
+block-permutation < 0.10 en bajista, robusto a autocorrelación). M8 solo rescata en alcista y es nulo
+en bajista. M10 es el único modelo con MCC positivo (+0.068).
+
+*Plano Sharpe (económico) — sin cambio respecto a [2026-06-09].*
+
+El confirmatorio decide por la **cota Bonferroni** (criterio pre-registrado en el addendum de la
+enmienda, NO el IC95 crudo): M8−M5 = −0.49 y M10−M5 = −0.48, ambas < 0 → **H1_b no se sostiene
+para ninguno de los dos**. El IC95 crudo de M10−M5 = [−0.02, +5.79] roza el cero pero NO es el
+criterio. El Deflated Sharpe (≈0.48) es indistinguible del azar. En bajista los ΔSharpe se invierten
+(M8 −3.92, M10 −1.06): la falsificación pre-registrada se dispara para AMBOS.
+
+**Veredicto formal:** `robustez_no_sostenida` en el plano Sharpe (el confirmatorio usa la cota
+Bonferroni; ambas < 0). La accuracy de M10 es un **hallazgo descriptivo robusto**, no una
+recategorización del veredicto confirmatorio.
+
+**Conciliación de los dos planos.** Acertar más días (accuracy) y rendir mejor en cartera (Sharpe)
+miden ejes distintos: el primero cuenta signos, el segundo pondera por magnitud del retorno. En
+bajista M10 acierta más días que M5 (rescate de accuracy real) pero su ΔSharpe es negativo porque
+las magnitudes de los retornos cuando falla compensan las ganancias de los días acertados. El
+mecanismo exacto (composición long/short, concentración del P&L bajista) no se descompone en este
+análisis y se reporta como límite.
+
+**Implicaciones para el TFG.**
+(1) La narrativa de "el rescate se invierte en bajista" era correcta **para el Sharpe** y **para M8
+    en accuracy**, pero incompleta: M10 rescata accuracy también en bajista. Las capas que afirmaban
+    "el rescate se invierte en bajista" sin distinguir M8/M10 ni accuracy/Sharpe se corrigen en esta
+    sesión (ver auditoría de coherencia 2026-06-10).
+(2) El veredicto del TFG es: STRATA-SPY recupera accuracy direccional (robusto cross-régimen para
+    M10); su ventaja en P&L es frágil y condicional. La falsificación opera sobre el Sharpe, no
+    sobre la accuracy.
+(3) La frase de defensa canónica para la pregunta "¿funciona en bajista?" es: "M10 rescata accuracy
+    en bajista (Holm 0.075, block-perm 0.061 robusto a autocorrelación); M8 no. Pero el ΔSharpe se
+    invierte en bajista para ambos: lo que falla es el rendimiento económico, no el acierto de
+    dirección."
+
+**Referencias.** `outputs/experiments/walkforward_robustez.json` (claves `stratified_mcnemar.m10_vs_m5`,
+`part_b_confirmatory.m10_vs_m5`, `verdict`); `notebooks/_build.py` §13–§14; BITACORA pre-registro
+[2026-06-10] enmienda walk-forward.

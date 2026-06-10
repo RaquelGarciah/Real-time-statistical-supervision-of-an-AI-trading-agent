@@ -20,7 +20,10 @@
 | M2 (régimen×GARCH, sin agente) | — | +~0 | DM M8 vs M2: p=0.44 | Ablación sin agente |
 
 **Métrica primaria: accuracy direccional** (el Sharpe es ilustración frágil; Deflated Sharpe M8 ≈ 0.10).
-**Rescate condicional:** walk-forward §13 muestra ΔSharpe invertido en el tramo bajista (−3.92, n=123 ≥ 60) — falsificación pre-registrada disparada. "STRATA-SPY = disciplina de riesgo condicional al alza."
+**Dos planos (walk-forward §13):**
+- *Plano accuracy:* M10 rescata accuracy en AMBOS regímenes (bajista Holm p_adj=0.075, block-perm p=0.061). M8 solo en alcista (Holm p_adj=0.15) y nulo en bajista (p=1.0). MCC M10=+0.068 (único positivo).
+- *Plano Sharpe:* rescate NO robusto. Criterio confirmatorio = cota Bonferroni: M8−M5=−0.49; M10−M5=−0.48; ambas <0 → H1_b False. IC95 crudo M10−M5=[−0.02,+5.79] NO es el criterio. ΔSharpe se invierte en bajista: M8=−3.92, M10=−1.06 (n=123 ≥ 60) — falsificación pre-registrada disparada para ambos.
+**Veredicto formal:** `robustez_no_sostenida` (plano Sharpe). "STRATA-SPY recupera accuracy cross-régimen para M10; su ventaja económica es condicional al alza."
 
 ### Tests pareados canónicos
 
@@ -30,7 +33,10 @@
 | McNemar (τ=0.40 default) | M8 vs M5 | **0.088** | Rechaza H0 a α=0.10 (blindaje dual) |
 | Block permutation | M8 vs M5 | **0.044** | Controla autocorrelación |
 | Diebold-Mariano | M10 vs M8 P&L | **0.67** | Equivalentes en P&L |
-| Walk-forward B-conf | mediana ΔSharpe IC95 | [−0.21, +5.71] | Incluye 0 — rescate no robusto multi-ventana |
+| Walk-forward B-conf M8−M5 | cota Bonferroni (DECIDE) | −0.49 | H1_b False — rescate en Sharpe no robusto |
+| Walk-forward B-conf M10−M5 | cota Bonferroni (DECIDE) | −0.48 | H1_b False — ídem; IC95=[−0.02,+5.79] NO es el criterio |
+| McNemar M10 vs M5 bajista | Holm p_adj | **0.075** | M10 rescata accuracy en bajista (block-perm 0.061) |
+| McNemar M10 vs M5 alcista | Holm p_adj | **0.005** | M10 rescata accuracy en alcista (block-perm 0.000) |
 
 ---
 
@@ -159,7 +165,7 @@ Hit rate M5 vs M8 **mejora en 8/10 activos**. Sign test panel `p ≈ 0.109` (bor
 
 ## La narrativa de cierre (frase canónica — usar §14 del notebook)
 
-> *"Un agente LLM perdedor direccional (38.4%, < azar, sign test p<0.001) es rescatado por supervisión estadística clásica: la accuracy sube 0.384 → 0.436 (regla M8) → 0.539 (XGBoost M10 sobre features STRATA), y regla a mano y caja negra son equivalentes en P&L (DM p=0.67). La señal informativa es la de STRATA: ablación sin features de régimen/RAM/PSA/GSO cae a Sharpe +0.21. Ningún sistema bate B&H pasivo (0.569 accuracy) — STRATA reduce el daño, no genera alfa. El rescate es condicional al régimen alcista (walk-forward §13: ΔSharpe = −3.92 en el tramo bajista n=123 ≥ 60, falsificación pre-registrada disparada); el modelo K=3 sí generaliza inter-época (15/16 orígenes). La aportación es un protocolo de supervisión estadística interpretable que recupera accuracy direccional de un agente perdedor y delimita honestamente dónde funciona y dónde no."*
+> *"Un agente LLM perdedor direccional (38.4%, < azar, sign test p<0.001) es rescatado por supervisión estadística clásica: la accuracy sube 0.384 → 0.436 (regla M8) → 0.539 (XGBoost M10 sobre features STRATA), y regla a mano y caja negra son equivalentes en P&L (DM p=0.67). La señal informativa es la de STRATA: ablación sin features de régimen/RAM/PSA/GSO cae a Sharpe +0.21. Ningún sistema bate B&H pasivo (0.569 accuracy) — STRATA reduce el daño, no genera alfa. En el plano accuracy, M10 rescata al agente en ambos regímenes (bajista Holm p_adj=0.075, block-perm p=0.061; alcista Holm p_adj=0.005); M8 solo en alcista y nulo en bajista. En el plano Sharpe el rescate es condicional al alza para ambos modelos (walk-forward §13: ΔSharpe se invierte en bajista, M8=−3.92 / M10=−1.06, n=123 ≥ 60; cota Bonferroni M8−M5=−0.49 y M10−M5=−0.48 → H1_b False; falsificación pre-registrada disparada); el modelo K=3 sí generaliza inter-época (15/16 orígenes). La aportación es un protocolo de supervisión estadística interpretable que recupera accuracy direccional de un agente perdedor —robusto en ambos regímenes para M10— y delimita honestamente dónde funciona y dónde no."*
 
 ---
 
