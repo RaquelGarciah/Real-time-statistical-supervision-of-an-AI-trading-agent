@@ -481,6 +481,34 @@ ML con todo dentro no lo hace mejor.
 
 # ---------------------------------------------------------------------------
 md(r"""
+### 8.1 ¿Cómo mide Diebold-Mariano que dos P&L son "indistinguibles"?
+
+DM no compara dos números agregados (dos Sharpes, dos P&L totales): compara los dos modelos
+**día a día, de forma pareada**, sobre las mismas fechas.
+
+**Serie de diferencia.** La "pérdida" de cada día es el retorno con signo negativo, $L_t=-r_t$
+(perder = retorno negativo). La diferencia diaria es
+$$d_t = L^{M10}_t - L^{M8}_t = r^{M8}_t - r^{M10}_t,$$
+o sea, cuánto gana M8 *de más* que M10 ese día. Bajo $H_0:\ \mathbb E[d_t]=0$ (rinden igual),
+$$\mathrm{DM}=\frac{\bar d}{\sqrt{s_d^2/n}}\ \sim\ \mathcal N(0,1),$$
+con $\bar d$ la media de las diferencias y $s_d^2$ su varianza (horizonte $h=1$: la corrección
+HAC de Newey-West solo entra para $h>1$). Se lee el $p$ a dos colas.
+
+**Por qué DM y no comparar los dos Sharpes sueltos.** (1) Es **pareado**: ambos modelos viven
+los **mismos días**, así que al restar día a día **el movimiento común del mercado se cancela** y
+queda solo la diferencia atribuible a los modelos → mucha más potencia. (2) Testea la **diferencia
+directa**, no un cociente (el Sharpe es un cociente con distribución muestral incómoda).
+
+**Lo que salió y la lectura honesta.** $\mathrm{DM}(M10\text{ vs }M8)=-0.43$, $p=0.666$: **no se
+rechaza $H_0$** → no hay diferencia *detectable* en el P&L diario. Cautela clave: *no rechazar* **no
+es** *demostrar que son iguales* (eso sería afirmar la nula). Por eso se corre **además TOST**
+(test de equivalencia), que dio $p=0.42$ → **tampoco** demuestra equivalencia. La frase exacta:
+*"indistinguibles en P&L (DM p=0.67); con N≈400 no hay potencia para afirmar equivalencia formal"*,
+nunca *"probadas iguales"*. Y M10 **sí** gana en lo que importa: accuracy 0.539 vs 0.436.
+""")
+
+# ---------------------------------------------------------------------------
+md(r"""
 ## 9. ¿Predice alguna variable sola la dirección? El descriptivo
 
 Antes de cualquier modelo, el tutor pidió un **descriptivo**: para cada variable continua,
