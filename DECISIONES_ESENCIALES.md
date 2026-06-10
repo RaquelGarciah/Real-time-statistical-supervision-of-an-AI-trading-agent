@@ -64,7 +64,7 @@ Decisiones **descartadas** explícitamente: Nemotron como LLM principal (reempla
 - Régimen: probabilidades `filtered` (no smoothed) — solo información hasta `t`.
 - `signal_lag = 1`: la posición en `t` multiplica al retorno en `t+1`.
 
-**Por qué.** El protocolo de medición dual (`same-day` para sanity + `causal` para reportar) reveló que las variantes A, B, D y el GSO relativo introducían look-ahead. Override C + régimen filtered es la **única** combinación que sobrevive al test causal con Sharpe positivo (+0.66 sobre SPY).
+**Por qué.** El protocolo de medición dual (`same-day` para sanity + `causal` para reportar) reveló que las variantes A, B, D y el GSO relativo introducían look-ahead. Override C + régimen filtered es la **única** combinación que sobrevive al test causal con Sharpe positivo. **Cifra canónica actual: +0.67** (K=3, τ=0.5, notebook canónico 2026-06-08); el +0.66 citado en la justificación del proyecto anterior corresponde a K sin fijar y τ=0.40 — misma decisión, cifra actualizada.
 
 **Dónde está justificada.**
 - `_archivo_proyecto_anterior/docs/hallazgos_strata.md` (techo supervisión, protocolo dual)
@@ -110,13 +110,13 @@ El `RAM_score` es **literalmente una masa de probabilidad** sobre regímenes don
 ## 8. Umbrales STRATA fijos calibrados ex-ante
 
 **Qué.**
-- RAM: **low 0.20 / medium 0.40 / high 0.70** (defaults razonables, robustos por construcción del score como probabilidad).
+- RAM: **low 0.25 / medium (τ) 0.50 / high 0.70**. El gate operativo que dispara M7 (reduce) y M8 (override) es `medium = τ = 0.5` (regla de mayoría: el régimen contrario es el más probable). `low` y `high` solo re-etiquetan severidad — no afectan al P&L (BITACORA [2026-06-09]). Se mantiene el blindaje dual: el McNemar se reporta con τ=0.5 **y** con el default conservador 0.40 para demostrar que el rescate no depende del umbral elegido.
 - PSA: **P95 / P99** sobre el periodo de calibración.
 - GSO: **P95 / P99** sobre el periodo de calibración.
 
 Guardados en `cache/models/strata_thresholds.json`.
 
-**Por qué.** Calibración ex-ante = sin look-ahead. Los percentiles sobre 24 años son estables. Defendible: 6 hiperparámetros fijos vs los ~4500 splits de un XGBoost.
+**Por qué.** El RAM score es cuasi-binario (masa en ~0 y ~1, valle vacío en el medio): el acierto direccional es plano para cualquier τ∈[0.3, 0.9] ≈ 0.556 en calibración, lo que hace τ=0.5 identificable sin ajuste. El cruce isotónico fino degeneraba por confound del drift (SPY sube 54.4% del tiempo). τ=0.5 tiene varianza de estimación cero y es la regla de mayoría natural. Calibración ex-ante = sin look-ahead. Defendible: los umbrales fijos de STRATA son estables por construcción; el umbral aprendido de XGBoost no (estabilidad temporal §11).
 
 **Dónde está justificada.** `_archivo_proyecto_anterior/docs/decisiones.md` + `cache/models/strata_thresholds.json`.
 
@@ -197,7 +197,7 @@ Guardados en `cache/models/strata_thresholds.json`.
 | 5 | M8 = override C + filtered + signal_lag=1 | STRATA | Viva |
 | 6 | Prior RAM data-driven por activo | STRATA | Viva |
 | 7 | Política RAM simétrica con leverage | STRATA | Viva |
-| 8 | Umbrales fijos ex-ante (RAM 0.2/0.4/0.7, PSA/GSO P95/P99) | STRATA | Viva |
+| 8 | Umbrales fijos ex-ante (RAM 0.25/τ=0.5/0.70, PSA/GSO P95/P99; blindaje dual τ=0.5 y 0.40) | STRATA | Viva |
 | 9 | M7 reduce = PSA cp_prob_delta + hazard 1/60 | STRATA | Viva (control de daños) |
 | 10 | M10 con CPCV-within-OOS, embargo 5, n_splits 6 | Validación | Viva |
 | 11 | Pre-registro en BITACORA obligatorio | Metodología | **Viva, obligatoria** |

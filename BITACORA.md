@@ -1064,3 +1064,42 @@ esperado, no leak.
 
 **Referencias.** experiments/walkforward_robustez.py, outputs/experiments/walkforward_robustez.json,
 BITACORA pre-registro [2026-06-09].
+
+---
+
+## [2026-06-10] [Decisión] - Lectura accuracy-first: M10 co-protagonista de M8 (no rival)
+
+**Contexto.** Tras el walk-forward (Sharpe de M8 frágil: DSR≈0.50, condicional al alza), se fija el
+marco de lectura del TFG: la métrica primaria es la **accuracy direccional**, no el Sharpe. Raquel y
+el tutor priorizan acertar el signo (matriz de confusión), no el Sharpe (que el tutor "no ve claro").
+
+**Detalle (cifras del canónico, verificadas).**
+- **Escalera de accuracy:** M5 (agente) 0.384 (< azar, sign test p=4·10⁻⁶) → M8 (regla) 0.436 →
+  **M10 (XGBoost sobre features STRATA) 0.539** → B&H 0.569. M10 es el mejor decodificador direccional.
+- **M10 ≈ M8 en P&L:** Diebold-Mariano p=0.666 (no se detecta diferencia; TOST p=0.42 NO prueba
+  equivalencia). Son indistinguibles económicamente.
+- **La señal es de STRATA:** ablación — sin las features régimen/RAM/PSA/GSO el M10 cae de Sharpe
+  +0.64 a +0.21; SHAP las pone arriba. Son ellas las informativas.
+- **El Sharpe es la métrica frágil:** DSR M8 = 0.50 (≈ azar) y el rescate es condicional al alza
+  (walk-forward §13). Por eso NO se ancla la tesis en el Sharpe.
+
+**Decisión.** M8 y M10 son **dos consumidores de la misma señal de supervisión STRATA**: M8 = regla
+interpretable (white box, transparencia/atribución), M10 = modelo aprendido (best accuracy). Se
+**abraza M10 al menos tanto como M8** porque (1) la accuracy es la métrica primaria (de Raquel y del
+tutor) y M10 gana ahí; (2) la accuracy es robusta al drift, el Sharpe no; (3) en P&L son equivalentes
+(DM p=0.67), así que elegir M10 no pierde nada económico. NO contradice la hipótesis §2.3 (M10 no bate
+a M8 en DM-P&L: confirmado p=0.67); M10 gana en un eje distinto (accuracy), consistente con "la señal
+es lo que importa, no el modelo concreto".
+
+**El hallazgo de STRATA (frase canónica).** "Un agente LLM perdedor direccional (38.4%, < azar) es
+RESCATADO por supervisión estadística clásica: la accuracy sube 0.384→0.436 (regla)→0.539 (aprendido),
+la señal informativa es la de STRATA (ablación+SHAP), y regla a mano y caja negra son equivalentes en
+P&L (DM p=0.67). STRATA reduce el daño recuperando accuracy direccional; no genera alfa (M10 0.539 <
+B&H 0.569)."
+
+**Implicaciones para el TFG.** §11 (M10) y §14 (lectura) se redactan con M10 como co-protagonista por
+accuracy, no como "rival que no debe ganar". El Sharpe queda como ilustración económica, nunca como
+evidencia primaria.
+
+**Referencias.** notebooks/strata_canonical.ipynb §9/§10/§11/§14, outputs/experiments/
+walkforward_robustez.json, BITACORA [2026-06-09] [Hallazgo] walk-forward.

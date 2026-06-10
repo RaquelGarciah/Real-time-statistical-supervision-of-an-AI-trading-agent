@@ -1,13 +1,44 @@
 # Resultados objetivo — cifras de referencia (no objetivo único)
 
-Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo proyecto debe **replicarlas o superarlas con mejor rigor**. Si las cambia por un diseño más limpio, hay que justificar la diferencia.
-
-**Fuente primaria:** `_archivo_proyecto_anterior/outputs_canonicos/m{5,8,10}*.json` y `statistical_tests.json`.
-**Fuente secundaria** (accuracy/AUC/Brier/MCC contra ground truth binario): notebook `strata_final.ipynb` del proyecto anterior, sesión 2026-06-02 → 2026-06-07. Esas cifras se recalculan en el nuevo notebook canónico desde los net_returns y weights del JSON.
+**ESTRUCTURA:** §1 = cifras canónicas del nuevo proyecto (fuente única de verdad para la memoria LaTeX). §2 = tabla del proyecto anterior (referencia histórica, no canónica).
 
 ---
 
-## Tabla maestra (SPY OOS, N ≈ 400 días)
+## §1. Cifras canónicas — nuevo proyecto (notebook strata_canonical.ipynb, 2026-06-08)
+
+**Fuente:** `notebooks/strata_canonical.ipynb` (K=3, τ=0.5, OOS 2024-10-01→2026-06, N=401). Estas son las cifras que van a la memoria LaTeX.
+
+### Tabla maestra canónica (SPY OOS, N=401 días)
+
+| Estrategia | Accuracy | Sharpe | McNemar vs M5 | Lectura |
+|---|---:|---:|---:|---|
+| B&H (referencia pasiva) | 0.569 | ≈ B&H | — | Techo del problema |
+| M5 (agente solo) | 0.384 | −1.82 | — | Perdedor direccional (sign test p=4·10⁻⁶) |
+| M7 (reduce) | 0.384 | −1.41 | trivial (b=c=0) | Reduce daño en P&L (DM p=0.095), no accuracy |
+| M8 (STRATA override C) | 0.436 | +0.67 | **p=0.069 (τ=0.5) / 0.088 (τ=0.40)** | Rescata accuracy; Sharpe frágil (DSR≈0.10) |
+| M10 (XGBoost CPCV) | **0.539** | +0.64 | DM M10 vs M8: p=0.67 | Mejor accuracy; equivalente a M8 en P&L |
+| M2 (régimen×GARCH, sin agente) | — | +~0 | DM M8 vs M2: p=0.44 | Ablación sin agente |
+
+**Métrica primaria: accuracy direccional** (el Sharpe es ilustración frágil; Deflated Sharpe M8 ≈ 0.10).
+**Rescate condicional:** walk-forward §13 muestra ΔSharpe invertido en el tramo bajista (−3.92, n=123 ≥ 60) — falsificación pre-registrada disparada. "STRATA-SPY = disciplina de riesgo condicional al alza."
+
+### Tests pareados canónicos
+
+| Test | Comparación | p-valor | Lectura |
+|---|---|---:|---|
+| McNemar (τ=0.5) | M8 vs M5 | **0.069** | Rechaza H0 a α=0.10 |
+| McNemar (τ=0.40 default) | M8 vs M5 | **0.088** | Rechaza H0 a α=0.10 (blindaje dual) |
+| Block permutation | M8 vs M5 | **0.044** | Controla autocorrelación |
+| Diebold-Mariano | M10 vs M8 P&L | **0.67** | Equivalentes en P&L |
+| Walk-forward B-conf | mediana ΔSharpe IC95 | [−0.21, +5.71] | Incluye 0 — rescate no robusto multi-ventana |
+
+---
+
+## §2. Tabla del proyecto anterior (referencia histórica — NO usar en memoria LaTeX)
+
+Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo proyecto las ha replicado con mejor rigor (K=3 fijo, τ=0.5, walk-forward, accuracy-first). Si en la memoria aparece una cifra, debe venir de §1.
+
+**Fuente primaria:** `_archivo_proyecto_anterior/outputs_canonicos/m{5,8,10}*.json` y `statistical_tests.json`.
 
 | Estrategia | Accuracy | AUC | Log-loss | Brier | MCC | Sharpe | €1000→ |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -16,7 +47,7 @@ Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo pro
 | M8 (STRATA override C) | 0.460 | 0.471 | 1.640 | 0.312 | −0.090 | **+0.66** | **1064** |
 | M10 (XGBoost CPCV) | 0.530 | 0.504 | 0.785 | 0.284 | +0.022 | **+0.69** | **1035** |
 
-Sharpe y €1000→ en negrita = directamente de los JSON canónicos. Accuracy/AUC/log-loss/Brier/MCC del notebook (recalcular).
+*Diferencias respecto al canónico actual: K no fijo vs K=3; τ=0.40 vs τ=0.5; N=400 vs 401; M10 accuracy 0.530 vs 0.539; M8 Sharpe 0.66 vs 0.67; DM p=0.75 vs 0.67. Las diferencias son menores y esperadas por el rediseño.*
 
 ### Métricas auxiliares del backtest (JSON canónico)
 
@@ -126,9 +157,9 @@ Hit rate M5 vs M8 **mejora en 8/10 activos**. Sign test panel `p ≈ 0.109` (bor
 
 ---
 
-## La narrativa de cierre (frase a memorizar)
+## La narrativa de cierre (frase canónica — usar §14 del notebook)
 
-> *"El agente LLM sin supervisar pierde dinero (€903 sobre €1000) y acierta direccionalmente menos del 50% (sign test p<0.001). STRATA lo rescata con significancia pareada (McNemar p≈0.088, Δ€161). Un meta-learner XGBoost validado con CPCV llega al mismo techo (€1035) sin ser distinguible estadísticamente de la regla a mano (DM p≈0.75), y SHAP confirma que las features informativas son exactamente las que STRATA codifica explícitamente. Ningún sistema bate B&H pasivo (+32%) sobre 400 días de SPY — resultado coherente con la literatura sobre eficiencia direccional de índices agregados. La aportación del TFG es un protocolo de supervisión estadística que rescata a un agente LLM perdedor, no un sistema que bate al mercado."*
+> *"Un agente LLM perdedor direccional (38.4%, < azar, sign test p<0.001) es rescatado por supervisión estadística clásica: la accuracy sube 0.384 → 0.436 (regla M8) → 0.539 (XGBoost M10 sobre features STRATA), y regla a mano y caja negra son equivalentes en P&L (DM p=0.67). La señal informativa es la de STRATA: ablación sin features de régimen/RAM/PSA/GSO cae a Sharpe +0.21. Ningún sistema bate B&H pasivo (0.569 accuracy) — STRATA reduce el daño, no genera alfa. El rescate es condicional al régimen alcista (walk-forward §13: ΔSharpe = −3.92 en el tramo bajista n=123 ≥ 60, falsificación pre-registrada disparada); el modelo K=3 sí generaliza inter-época (15/16 orígenes). La aportación es un protocolo de supervisión estadística interpretable que recupera accuracy direccional de un agente perdedor y delimita honestamente dónde funciona y dónde no."*
 
 ---
 
