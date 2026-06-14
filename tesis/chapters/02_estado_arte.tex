@@ -1,13 +1,34 @@
 \chapter{Estado del arte}
 \label{cap:estado-arte}
 
-% Objetivo: ~2 páginas. Qué está pasando con los agentes LLM y la IA en mercados,
-% literatura sobre supervisión en tiempo de ejecución, y el hueco que llena este TFG.
-% Citas OBLIGATORIAS (revisor-bibliografico buscará los papers académicos del estado del arte).
+Este trabajo se sitúa en el cruce de tres líneas que rara vez se han tratado juntas: los agentes basados en grandes modelos de lenguaje (LLM) que toman decisiones financieras, la supervisión en tiempo de ejecución de sistemas de aprendizaje automático, y el uso del régimen de mercado y la gestión de volatilidad como capa de control. Reviso cada una por separado y, al cerrar, explico el hueco que STRATA pretende ocupar.
 
-% [PENDIENTE DE REDACCIÓN — pipeline /redaccion-capitulo]
-% Estructura prevista:
-%   - Agentes LLM aplicados a decisiones financieras (estado actual, limitaciones).
-%   - Detección de anomalías / supervisión runtime de sistemas automáticos.
-%   - Detección de regímenes y gestión de riesgo clásica como capa de control.
-%   - El hueco: supervisión estadística interpretable sobre un agente LLM. Aquí entra STRATA.
+\section{Agentes LLM para decisiones financieras}
+\label{sec:agentes-llm}
+
+El uso de modelos de lenguaje como motor de decisión financiera se consolidó cuando se demostró que un LLM adaptado al dominio podía sostener un razonamiento económico coherente sobre texto financiero, y no limitarse a clasificar sentimiento \cite{yang2023fingpt}. A partir de ahí la pregunta dejó de ser si un modelo entiende los mercados y pasó a ser cómo organizar varios modelos para que decidan. La propuesta más cercana al sistema que aquí superviso es la arquitectura multiagente en la que distintas personalidades deliberan y un gestor de riesgo interno modera la posición resultante \cite{xiao2024tradingagents}. Conviene fijar un matiz que orienta todo el trabajo: ese control de riesgo es interno al agente y heurístico; vive dentro del mismo sistema que toma la decisión y comparte sus sesgos. No es una capa estadística externa que audite la decisión desde fuera con un modelo propio del mercado. Esa distinción es justo lo que motiva STRATA.
+
+La evaluación rigurosa de estos agentes es reciente y todavía escasa. Trabajos de benchmarking sistemático muestran que el rendimiento depende fuertemente del protocolo de medición y que muchos resultados optimistas no resisten una validación temporal honesta \cite{li2025deepfund}. A esa fragilidad metodológica se suma una fragilidad sistémica: pequeñas perturbaciones en la información de entrada pueden volcar las decisiones del agente, lo que sugiere que su aparente competencia es menos robusta de lo que parece \cite{yan2025tradetrap}. Hay además un riesgo propio de estos modelos, el \emph{look-ahead bias}: si el periodo de evaluación cae dentro del corpus de entrenamiento del LLM, el modelo puede ``recordar'' el futuro en lugar de inferirlo \cite{benhenda2026lookahead}. Por eso mi ventana fuera de muestra (OOS) arranca después del corte de entrenamiento del modelo empleado, una decisión de diseño que retomo en el capítulo~\ref{cap:marco-teorico}.
+
+El agente concreto que estudio, una réplica de AI Hedge Fund con cinco personalidades inversoras, ilustra estos problemas cuando opera sin supervisión externa. En SPY y sobre la ventana OOS pierde dinero: su acierto direccional es de tan solo $0{,}384$ (un $38{,}4\%$, por debajo del azar) y una inversión inicial de \euro{}1000 termina en \euro{}904. % fuente: tesis/tables/tabla_m5_m8.tex (m5) — prohibido escribir 903 (cifra histórica)
+Lo más revelador es el patrón del error: el agente muestra un sesgo corto sistemático en un mercado que, en ese tramo, fue alcista. % VERIFICAR: cuantificar el % de posiciones cortas trazado al OOS actual; NO usar el 76% histórico
+Ese desajuste entre la dirección del agente y la del mercado es el síntoma que una capa de supervisión podría corregir.
+
+\section{Supervisión en tiempo de ejecución de sistemas ML y agentes}
+\label{sec:supervision}
+
+Vigilar un sistema mientras decide, y no solo evaluarlo después, enlaza con la tradición de la detección de anomalías, donde el problema central es declarar qué cuenta como ``normal'' y medir lo que se aparta de ello \cite{chandola2009anomaly}. Trasladado a un agente que actúa de forma autónoma, el enfoque más próximo al mío es el \emph{runtime enforcement}: imponer durante la ejecución un conjunto de restricciones que el agente no puede violar. La formulación más madura describe esas restricciones como reglas declarativas que un supervisor comprueba en cada paso \cite{wang2025agentspec}. En paralelo, han empezado a articularse marcos de fiabilidad pensados específicamente para la IA agéntica, que tratan la supervisión como propiedad del sistema y no como añadido posterior \cite{flehmig2025reliability}.
+
+STRATA se inscribe en esta familia, pero con una elección distinta. A diferencia de los enfoques basados en reglas declarativas, adopto detectores estadísticos clásicos e interpretables —un modelo de Markov oculto para el régimen (RAM), un detector bayesiano de puntos de cambio para la coherencia temporal del agente (PSA) y un GARCH para la volatilidad (GSO)— que comparan la decisión del agente contra un modelo explícito del mercado. No afirmo que la literatura carezca de componentes estadísticos; afirmo que aquí la supervisión se construye enteramente sobre ellos, de modo que cada intervención queda atada a un objeto matemático que puedo nombrar y atribuir.
+
+\section{Régimen de mercado y gestión de riesgo como capa de control}
+\label{sec:regimen}
+
+La idea de que los mercados alternan entre estados con dinámicas distintas se formalizó con los modelos de cambio de régimen, donde un proceso oculto gobierna qué distribución genera cada observación \cite{hamilton1989}. Su valor no es solo descriptivo: condicionar la asignación de activos al régimen estimado mejora las decisiones de cartera de forma económicamente apreciable \cite{ang2002regime, guidolin2007regime}. Sobre el eje continuo de la volatilidad, la práctica de dimensionar la posición para alcanzar una volatilidad objetivo —el \emph{volatility targeting}— mejora las propiedades de la serie de retornos y es el ancla teórica del detector GSO \cite{moreira2017}.
+
+Hay aquí un matiz que me obligo a hacer explícito, porque sostiene buena parte de la tesis y a la vez la limita. El régimen funciona como proxy direccional únicamente de forma condicional, gracias al \emph{leverage effect} de los índices agregados: en SPY los estados de alta volatilidad coinciden con tramos bajistas, de modo que conocer el régimen informa sobre el signo del retorno. El régimen no predice el retorno; el régimen ordena las decisiones del agente. Esa coincidencia no se da por igual en valores individuales con apalancamiento débil, lo que delimita el alcance de la técnica y se documenta como limitación. De esta tensión entre régimen, cambio de opinión y volatilidad nace el diseño de los tres detectores RAM, PSA y GSO que desarrollo en el capítulo~\ref{cap:marco-teorico}.
+
+\section*{El hueco que llena STRATA}
+\addcontentsline{toc}{section}{El hueco que llena STRATA}
+
+Las tres líneas anteriores se tocan, pero no se han combinado del modo que aquí propongo. Hasta donde alcanza esta revisión, no he encontrado un sistema que supervise en tiempo de ejecución las decisiones de un agente LLM mediante detectores estadísticos clásicos e interpretables, que sea evaluable con tests pareados frente al agente sin supervisar y cuyo efecto pueda atribuirse detector a detector. La propuesta de este trabajo es esa: una capa de auditoría que no sustituye al agente sino que lo corrige cuando su decisión contradice un modelo explícito del mercado, y que rinde cuentas de cada intervención. Que los tres detectores midan ejes distintos —régimen, coherencia temporal y volatilidad— es una decisión de diseño que busca ortogonalidad; la evidencia de hasta qué punto se consigue corresponde al capítulo~\ref{cap:marco-practico} y no la adelanto aquí como propiedad demostrada.
