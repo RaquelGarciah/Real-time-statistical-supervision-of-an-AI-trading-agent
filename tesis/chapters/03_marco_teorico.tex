@@ -1,23 +1,223 @@
 \chapter{Marco teórico}
 \label{cap:marco-teorico}
 
-% Objetivo: 20-25 páginas. EXTENSO, ORDENADO y RIGUROSO. Todo concepto y toda la base
-% matemática usada, con sus citas. Desarrollar la TEORÍA de los tests empleados. Explicar
-% también los conceptos económicos (Sharpe, drawdown, leverage effect…) porque el tribunal
-% no sabe economía. Fija la NOTACIÓN que usa el resto de la memoria (ver glosario.md).
-% Es el PRIMER capítulo que se redacta.
+% Objetivo global del capítulo: 20-25 páginas. EXTENSO, ORDENADO y RIGUROSO. Todo concepto y
+% toda la base matemática usada, con sus citas. Fija la NOTACIÓN que usa el resto de la memoria.
+% [REDACTADO: 3.0, 3.1, 3.2. El resto queda en esqueleto al final del fichero.]
 
-% [PENDIENTE DE REDACCIÓN — pipeline /redaccion-capitulo. Esqueleto de secciones:]
+Este capítulo reúne la base matemática sobre la que se construye STRATA y fija la notación que se usa en el resto de la memoria. El orden es deliberado. Primero se desarrollan las herramientas estadísticas por separado (Parte A: la serie de precios, el modelo de cambio de régimen, la volatilidad condicional y la detección de puntos de cambio); después se monta STRATA encima de ellas (Parte B), conectando cada detector con la pieza teórica que lo sostiene. Quien conozca series temporales puede leer la Parte A en diagonal; quien no conozca la parte económica encontrará cada concepto definido la primera vez que aparece.
 
 \section{Preliminares y notación}
 \label{sec:preliminares}
-% Serie de precios, log-retornos, volatilidad realizada. Notación canónica.
+
+Trabajamos con una serie de precios diarios de un activo. Denotamos por $P_t > 0$ el precio de cierre del día $t$, con $t \in \{0, 1, \dots, T\}$. La cantidad relevante no es el precio en sí, sino su variación relativa de un día al siguiente. Definimos el \emph{log-retorno}
+\[
+\reglog \;=\; \log\!\left(\frac{P_t}{P_{t-1}}\right) \;=\; \log P_t - \log P_{t-1}, \qquad t \ge 1,
+\]
+donde $\log$ es el logaritmo natural. El log-retorno mide el crecimiento del precio en escala logarítmica; es positivo cuando el precio sube y negativo cuando baja.
+
+Conviene compararlo con el \emph{retorno simple} $R_t = (P_t - P_{t-1})/P_{t-1} = P_t/P_{t-1} - 1$, que es la definición intuitiva (la fracción ganada o perdida). Ambos se relacionan por $\reglog = \log(1 + R_t)$. La razón de preferir el log-retorno es su aditividad temporal. Consideremos el retorno acumulado entre los días $t_0$ y $t_0 + n$. En escala logarítmica,
+\[
+\log\!\left(\frac{P_{t_0+n}}{P_{t_0}}\right)
+= \log\!\left(\prod_{j=1}^{n} \frac{P_{t_0+j}}{P_{t_0+j-1}}\right)
+= \sum_{j=1}^{n} \log\!\left(\frac{P_{t_0+j}}{P_{t_0+j-1}}\right)
+= \sum_{j=1}^{n} r^{\log}_{t_0+j}.
+\]
+El log-retorno de varios días es la suma de los log-retornos diarios. El retorno simple, en cambio, se compone de forma multiplicativa, $1 + R_{[t_0, t_0+n]} = \prod_{j=1}^{n}(1 + R_{t_0+j})$, lo que complica cualquier análisis que sume o promedie a lo largo del tiempo. Esta aditividad es la que justifica modelar $\reglog$ en lo que sigue: las sumas de variables aleatorias son más tratables que los productos, y los modelos lineales en el tiempo se expresan de forma natural.
+
+Fijamos también la convención temporal que gobierna toda la validación y todo el backtest. La decisión de cartera tomada con la información disponible hasta el día $t$ no puede recompensarse con el movimiento de ese mismo día, que ya ha ocurrido. Por eso el retorno que se contabiliza frente a una posición tomada en $t$ es el del día siguiente,
+\[
+\rnext \;=\; \log\!\left(\frac{P_{t+1}}{P_t}\right).
+\]
+Esta convención (la posición de $t$ multiplica al retorno de $t+1$) se justifica en detalle en la Sección~\ref{sec:cpcv} como condición de ausencia de fuga temporal. Aquí basta con dejarla fijada: cuando más adelante se escriba un producto entre una posición y un retorno, el retorno será $\rnext$ salvo que se indique lo contrario.
+
+Por último, una medida de cuánto se mueve el activo en un tramo de tiempo. Dada una ventana de $h$ días que termina en $t$, definimos la \emph{volatilidad realizada}
+\[
+RV_t \;=\; \sqrt{\sum_{j=0}^{h-1} \big(r^{\log}_{t-j}\big)^2}\,,
+\]
+esto es, la raíz de la suma de cuadrados de los log-retornos de la ventana. $RV_t$ es un estimador no paramétrico de la dispersión local de los retornos: crece cuando el activo encadena días de movimientos grandes y se reduce en los tramos planos. A diferencia de la volatilidad condicional $\sigmat$ que se introduce en la Sección~\ref{sec:garch}, $RV_t$ no presupone ningún modelo; es una lectura directa de los datos.
+
+Las series de retornos financieros no se comportan como ruido blanco gaussiano. Tres regularidades empíricas, documentadas de forma sistemática en la literatura y conocidas como \emph{hechos estilizados}, motivan los modelos del resto del capítulo \cite{engle1982}. La primera es que la distribución de los retornos tiene \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituir la gaussiana por una distribución de colas anchas como la $t$ de Student en el modelo de volatilidad. La segunda es el \emph{agrupamiento de volatilidad}: los días de gran movimiento tienden a seguirse unos a otros, de modo que la magnitud de los retornos sí está correlada en el tiempo aunque su signo apenas lo esté; esto es lo que captura un modelo GARCH. La tercera es que los retornos en niveles presentan \emph{poca autocorrelación}, casi nula a partir del primer rezago, mientras que sus cuadrados o sus valores absolutos sí la presentan. La combinación de las tres sugiere que el comportamiento del activo alterna entre estados o regímenes con dinámicas distintas, idea que formaliza el modelo de cambio de régimen de la sección siguiente.
 
 \section{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
-% Cadena de Markov oculta, emisiones gaussianas, EM/Baum-Welch, forward (posterior
-% filtrado, causal) vs forward-backward (suavizado, mira el futuro), Viterbi.
-% Selección del número de estados. Citas: Baum 1970, Rabiner 1989, Viterbi 1967, Hamilton 1989.
+
+\subsection{Cambio de régimen en series financieras}
+\label{sec:hmm-regimen}
+
+Un único modelo con parámetros constantes describe mal una serie financiera larga. Un mercado en tendencia alcista tranquila y un mercado en plena caída no comparten ni media ni volatilidad de los retornos, y forzar un solo conjunto de parámetros para ambos promedia dos comportamientos que conviene separar. La alternativa clásica es admitir que la serie atraviesa distintos \emph{regímenes}, cada uno con su propia ley de probabilidad, y que el régimen vigente cambia en el tiempo de forma no observable directamente. Hamilton formalizó esta idea para series económicas mediante un proceso de Markov sobre los estados no observados \cite{hamilton1989}: el régimen sigue una cadena de Markov y, condicionado a él, la serie observada se distribuye según los parámetros de ese régimen.
+
+En el caso que ocupa a esta memoria interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura no se impone a mano sino que emerge de la estimación, como se discute en la Sección~\ref{sec:hmm-K}. El instrumento concreto es el modelo oculto de Markov gaussiano, que se define a continuación.
+
+\subsection{Definición del HMM gaussiano}
+\label{sec:hmm-def}
+
+Un \emph{modelo oculto de Markov} (HMM, por sus siglas en inglés) consta de una secuencia de estados ocultos y una secuencia de observaciones generadas por esos estados \cite{rabiner1989}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$, con $K$ el número de regímenes. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden: dado el estado en $t$, el estado en $t+1$ no depende del pasado anterior,
+\[
+\Prob(z_{t+1} = j \mid z_t = i, z_{t-1}, \dots, z_1) = \Prob(z_{t+1} = j \mid z_t = i).
+\]
+Recogemos estas probabilidades en la \emph{matriz de transición} $A \in \mathbb{R}^{K \times K}$, de entradas
+\[
+A_{ij} = \Prob(z_{t+1} = j \mid z_t = i), \qquad A_{ij} \ge 0, \quad \sum_{j=1}^{K} A_{ij} = 1 \;\;\forall i,
+\]
+y la ley del estado inicial en la \emph{distribución inicial} $\pi = (\pi_1, \dots, \pi_K)$ con $\pi_k = \Prob(z_1 = k)$ y $\sum_k \pi_k = 1$.
+
+El estado no se observa; lo que se observa es $x_t$, el vector de características del día $t$ (en nuestro caso, esencialmente el log-retorno y una medida de volatilidad). Suponemos \emph{emisiones gaussianas}: condicionada al régimen $k$, la observación es normal multivariante,
+\[
+x_t \mid z_t = k \;\sim\; \mathcal{N}(\muk, \Sigma_k),
+\]
+con $\muk$ el vector de medias del régimen $k$ y $\Sigma_k$ su matriz de covarianzas. Escribimos la densidad de emisión como
+\[
+b_k(x) \;=\; \mathcal{N}(x \mid \muk, \Sigma_k).
+\]
+Hay dos hipótesis de independencia condicional que el modelo asume y que conviene enunciar, porque son la palanca de toda derivación posterior. La observación de cada día depende solo del estado de ese día,
+\[
+\Prob(x_t \mid z_t, z_{t-1}, \dots, z_1, x_{t-1}, \dots, x_1) = \Prob(x_t \mid z_t) = b_{z_t}(x_t),
+\tag{$\ast$}
+\]
+y la dinámica de los estados es markoviana de primer orden, como ya se ha dicho.
+
+El conjunto de parámetros es $\lambda = (A, \pi, \{\muk, \Sigma_k\}_{k=1}^{K})$. Para una secuencia observada $x_{1:T} = (x_1, \dots, x_T)$ y una trayectoria oculta $z_{1:T}$, la probabilidad conjunta se factoriza según el grafo del modelo:
+\[
+\Prob(x_{1:T}, z_{1:T} \mid \lambda)
+= \pi_{z_1}\, b_{z_1}(x_1) \prod_{t=2}^{T} A_{z_{t-1} z_t}\, b_{z_t}(x_t).
+\]
+La verosimilitud de los datos observados se obtiene marginalizando sobre todas las trayectorias ocultas posibles,
+\[
+\Prob(x_{1:T} \mid \lambda) = \sum_{z_{1:T}} \Prob(x_{1:T}, z_{1:T} \mid \lambda).
+\]
+Esta suma recorre $K^T$ trayectorias, así que evaluarla término a término es inviable salvo para $T$ minúsculos. El algoritmo \emph{forward} la calcula en tiempo lineal en $T$, y es el objeto de la subsección siguiente.
+
+\subsection{Algoritmo forward}
+\label{sec:hmm-forward}
+
+Definimos la \emph{variable forward}
+\[
+\alpha_t(k) \;=\; \Prob(x_{1:t},\, z_t = k \mid \lambda),
+\]
+la probabilidad conjunta de haber observado el tramo inicial $x_{1:t}$ y encontrarse en el estado $k$ en el instante $t$. La verosimilitud completa se recupera de ella sin más que marginalizar el último estado: $\Prob(x_{1:T} \mid \lambda) = \sum_{k} \alpha_T(k)$. El resultado central es que $\alpha_t$ admite una recursión.
+
+\begin{proposicion}[Recursión forward]
+\label{prop:forward}
+Para $t \ge 1$ se tiene la inicialización $\alpha_1(k) = \pi_k\, b_k(x_1)$ y, para todo $j \in \{1, \dots, K\}$,
+\[
+\alpha_{t+1}(j) \;=\; b_j(x_{t+1}) \sum_{k=1}^{K} \alpha_t(k)\, A_{kj}.
+\]
+\end{proposicion}
+
+\begin{proof}
+La inicialización es inmediata: $\alpha_1(k) = \Prob(x_1, z_1 = k) = \Prob(z_1 = k)\,\Prob(x_1 \mid z_1 = k) = \pi_k\, b_k(x_1)$, usando $(\ast)$ en el segundo factor.
+
+Para el paso recursivo partimos de la definición e introducimos el estado anterior $z_t$ marginalizando sobre sus $K$ valores posibles:
+\[
+\alpha_{t+1}(j)
+= \Prob(x_{1:t+1},\, z_{t+1} = j)
+= \sum_{k=1}^{K} \Prob(x_{1:t+1},\, z_t = k,\, z_{t+1} = j).
+\]
+Descomponemos cada sumando separando la última observación $x_{t+1}$ del resto mediante la regla del producto,
+\[
+\Prob(x_{1:t+1}, z_t = k, z_{t+1} = j)
+= \Prob(x_{t+1} \mid x_{1:t}, z_t = k, z_{t+1} = j)\,
+  \Prob(x_{1:t}, z_t = k, z_{t+1} = j).
+\]
+Por la independencia condicional de las emisiones $(\ast)$, la observación $x_{t+1}$ depende solo de su propio estado $z_{t+1} = j$, de modo que el primer factor es
+\[
+\Prob(x_{t+1} \mid x_{1:t}, z_t = k, z_{t+1} = j) = \Prob(x_{t+1} \mid z_{t+1} = j) = b_j(x_{t+1}).
+\]
+El segundo factor se descompone a su vez aislando la transición $z_t = k \to z_{t+1} = j$:
+\[
+\Prob(x_{1:t}, z_t = k, z_{t+1} = j)
+= \Prob(z_{t+1} = j \mid x_{1:t}, z_t = k)\, \Prob(x_{1:t}, z_t = k).
+\]
+Por la propiedad de Markov de la cadena, la transición no depende de las observaciones pasadas ni de los estados anteriores a $z_t$, luego $\Prob(z_{t+1} = j \mid x_{1:t}, z_t = k) = A_{kj}$. El factor restante es, por definición, $\alpha_t(k)$. Reuniendo los tres trozos,
+\[
+\Prob(x_{1:t+1}, z_t = k, z_{t+1} = j) = b_j(x_{t+1})\, A_{kj}\, \alpha_t(k),
+\]
+y al sumar en $k$ el factor $b_j(x_{t+1})$ no depende del índice de la suma y sale fuera:
+\[
+\alpha_{t+1}(j) = b_j(x_{t+1}) \sum_{k=1}^{K} \alpha_t(k)\, A_{kj},
+\]
+que es lo que se quería probar.
+\end{proof}
+
+La recursión reduce el coste de $K^T$ a $\mathcal{O}(T K^2)$ operaciones: en cada paso se actualizan $K$ variables y cada una suma sobre $K$ términos. En la práctica los $\alpha_t(k)$ decaen exponencialmente con $t$ y se trabaja con su logaritmo o con una normalización por paso para evitar el desbordamiento numérico, pero la estructura de la recursión es la enunciada.
+
+\subsection{Posterior filtrado frente a posterior suavizado}
+\label{sec:hmm-filtrado}
+
+La variable forward responde a una probabilidad conjunta, pero lo que interesa para decidir es la probabilidad del régimen \emph{dado} lo observado. Definimos el \emph{posterior filtrado}
+\[
+\gammaf(k) \;=\; \Prob(z_t = k \mid x_{1:t}),
+\]
+la probabilidad de estar en el régimen $k$ en el instante $t$ condicionada únicamente a las observaciones disponibles hasta ese instante. Se obtiene normalizando la variable forward sobre los estados.
+
+\begin{proposicion}[Filtrado a partir del forward]
+\label{prop:filtrado}
+Para todo $t \ge 1$ y todo $k$,
+\[
+\gammaf(k) \;=\; \frac{\alpha_t(k)}{\sum_{j=1}^{K} \alpha_t(j)}.
+\]
+\end{proposicion}
+
+\begin{proof}
+Por la definición de probabilidad condicional y la de $\alpha_t$,
+\[
+\gammaf(k) = \Prob(z_t = k \mid x_{1:t})
+= \frac{\Prob(x_{1:t}, z_t = k)}{\Prob(x_{1:t})}
+= \frac{\alpha_t(k)}{\sum_{j=1}^{K} \alpha_t(j)},
+\]
+donde en el denominador se ha usado $\Prob(x_{1:t}) = \sum_j \Prob(x_{1:t}, z_t = j) = \sum_j \alpha_t(j)$.
+\end{proof}
+
+El adjetivo \emph{filtrado} es preciso y tiene una consecuencia que es el eje de toda la memoria. En su definición, $\gammaf(k)$ condiciona solo sobre $x_{1:t}$, es decir, sobre el pasado y el presente. No usa ninguna observación posterior a $t$. La recursión de la Proposición~\ref{prop:forward} lo confirma a nivel de cómputo: $\alpha_t(k)$ se construye a partir de $\alpha_{t-1}(\cdot)$ y de $x_t$ exclusivamente, sin que en ningún momento intervenga $x_{t+1}, x_{t+2}, \dots$ Por tanto, la estimación del régimen en $t$ es \emph{causal}: podría calcularse en tiempo real, el mismo día $t$, con la información que existe ese día.
+
+Esto contrasta con el \emph{posterior suavizado}
+\[
+\Prob(z_t = k \mid x_{1:T}),
+\]
+que condiciona sobre la secuencia completa hasta el final $T$, incluyendo $x_{t+1:T}$. El suavizado es una estimación mejor del régimen pasado precisamente porque incorpora lo que ocurrió después: el conocimiento del futuro afina el juicio sobre el presente. Se calcula con el algoritmo forward-backward, que combina la variable forward con una variable backward que recorre la secuencia en sentido inverso \cite{baum1970, rabiner1989}. Esa misma virtud lo descalifica para nuestro uso. Emplear el suavizado dentro de un sistema de decisión introduciría \emph{look-ahead}: la decisión del día $t$ quedaría contaminada por información de días posteriores que en operativa real no se conocen. Por esta razón, \textbf{STRATA usa exclusivamente el posterior filtrado $\gammaf$}, nunca el suavizado. La causalidad del filtrado, demostrada arriba a partir de la estructura de la recursión, es lo que garantiza que el sistema sea reproducible en tiempo real y que la validación de los capítulos posteriores no incurra en fuga temporal.
+
+\subsection{Estimación: el algoritmo de Baum-Welch (EM)}
+\label{sec:hmm-em}
+
+Hasta aquí se ha supuesto conocido el conjunto de parámetros $\lambda$. En la práctica $\lambda$ debe estimarse a partir de los datos, y como los estados $z_{1:T}$ no se observan no puede maximizarse la verosimilitud directamente. El algoritmo de Baum-Welch resuelve esto como una instancia del esquema de esperanza-maximización (EM): alterna una estimación de los estados ocultos con una reestimación de los parámetros, garantizando que la verosimilitud no decrece en cada iteración \cite{baum1970, rabiner1989}.
+
+En el \emph{paso E} (esperanza) se calculan, con los parámetros actuales, los posteriores de los estados y de las transiciones. Se necesitan el posterior suavizado puntual $\Prob(z_t = k \mid x_{1:T})$ y el posterior suavizado de pares $\Prob(z_t = i, z_{t+1} = j \mid x_{1:T})$, ambos obtenidos con el algoritmo forward-backward. Conviene subrayar que aquí sí se emplea el suavizado, y es legítimo: el ajuste del modelo se hace una sola vez, fuera de línea, sobre el periodo de calibración completo, no como parte de una decisión en tiempo real. La causalidad solo se exige en la fase de explotación, donde rige el filtrado.
+
+En el \emph{paso M} (maximización) se reestiman los parámetros maximizando la esperanza calculada en el paso E, lo que da fórmulas cerradas. La distribución inicial y la matriz de transición se actualizan como frecuencias esperadas,
+\[
+\hat{\pi}_k = \Prob(z_1 = k \mid x_{1:T}),
+\qquad
+\hat{A}_{ij} = \frac{\sum_{t=1}^{T-1} \Prob(z_t = i, z_{t+1} = j \mid x_{1:T})}{\sum_{t=1}^{T-1} \Prob(z_t = i \mid x_{1:T})},
+\]
+y las medias y covarianzas de cada régimen, como promedios ponderados por el posterior del estado,
+\[
+\hat{\mu}_k = \frac{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})\, x_t}{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})},
+\qquad
+\hat{\Sigma}_k = \frac{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})\, (x_t - \hat{\mu}_k)(x_t - \hat{\mu}_k)^{\!\top}}{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})}.
+\]
+El algoritmo itera paso E y paso M hasta que la verosimilitud se estabiliza. Que la sucesión de verosimilitudes sea monótona no decreciente y que el procedimiento converja a un punto estacionario es un resultado conocido de la teoría de EM, que aquí se enuncia sin demostrar y se remite a la referencia \cite{baum1970, rabiner1989}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla y de partir de una inicialización razonable, como se documenta en el capítulo de metodología.
+
+\subsection{El algoritmo de Viterbi}
+\label{sec:hmm-viterbi}
+
+El filtrado y el suavizado responden a una pregunta puntual: cuál es la probabilidad del régimen \emph{en un instante dado}. Una pregunta distinta es cuál es la \emph{trayectoria} de estados más probable en su conjunto, esto es, la secuencia $z_{1:T}^{\ast}$ que maximiza la probabilidad conjunta a posteriori,
+\[
+z_{1:T}^{\ast} = \arg\max_{z_{1:T}} \Prob(z_{1:T} \mid x_{1:T}, \lambda).
+\]
+Esto es el estimador MAP de la trayectoria completa, y lo resuelve el algoritmo de Viterbi mediante programación dinámica, con una recursión análoga a la del forward pero sustituyendo la suma sobre estados por un máximo \cite{viterbi1967}. La distinción es importante y no anecdótica: encadenar los modos del filtrado instante a instante, $\arg\max_k \gammaf(k)$ para cada $t$, no produce en general la misma secuencia que Viterbi, porque la concatenación de óptimos puntuales puede dar una trayectoria que la matriz de transición considera improbable o incluso imposible. Viterbi optimiza la trayectoria como un todo y respeta las transiciones. En esta memoria el detector de régimen se apoya en el filtrado puntual por la exigencia de causalidad de la Sección~\ref{sec:hmm-filtrado}; Viterbi se usa de forma auxiliar para la lectura interpretativa de la secuencia de regímenes sobre el periodo de calibración, donde la trayectoria global es lo que se quiere visualizar.
+
+\subsection{Selección del número de estados}
+\label{sec:hmm-K}
+
+Queda fijar $K$, el número de regímenes. Un valor demasiado pequeño no distingue estados de mercado realmente diferentes; uno demasiado grande sobreajusta y fragmenta la serie en regímenes sin contenido interpretable, además de multiplicar los parámetros a estimar. El criterio que seguimos combina dos exigencias. La primera es estadística: para cada candidato de $K$ se ajusta el HMM sobre el tramo de entrenamiento y se evalúa la \emph{log-verosimilitud held-out} sobre un tramo de validación posterior en el tiempo, nunca solapado con el de entrenamiento, de modo que la comparación respeta el orden temporal de la serie y no premia el sobreajuste \cite{rabiner1989}. La segunda es de interpretabilidad: los regímenes resultantes deben admitir una lectura económica clara y estable, los tres estados de Calma, Estrés y Crisis introducidos en la Sección~\ref{sec:hmm-regimen}. La combinación de ambos criterios fija $K = 3$ para el caso central de la memoria. El detalle cuantitativo de la log-verosimilitud held-out por cada valor de $K$ se recoge en la Tabla~\ref{tab:k-selection}.
+
+% TODO: Tabla 3.1 autogenerada desde outputs/experiments/k_selection.json
+% \input{tables/k_selection.tex}  % \label{tab:k-selection}
+
+% ===========================================================================
+% [ESQUELETO PENDIENTE — secciones por redactar tras este bloque]
+% ===========================================================================
 
 \section{Volatilidad condicional: ARCH/GARCH(1,1)-t}
 \label{sec:garch}
