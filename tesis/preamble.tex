@@ -1,0 +1,65 @@
+% ============================================================================
+% preamble.tex — paquetes, tipografía y comandos de la memoria del TFG (STRATA)
+% Plantilla limpia propia (no hay plantilla UCM obligatoria salvo la portada).
+% Documento A4 vertical, español. Citación NUMÉRICA con biblatex (backend biber).
+% ============================================================================
+
+% --- Idioma y codificación ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{microtype}
+\frenchspacing
+
+% --- Geometría A4 ---
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3cm,right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Matemáticas ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[chapter]
+\newtheorem{proposicion}[teorema]{Proposición}
+\newtheorem{lema}[teorema]{Lema}
+\newtheorem{corolario}[teorema]{Corolario}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+
+% --- Figuras, tablas, código ---
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{eurosym}
+
+% --- Notación canónica del proyecto (coherente con glosario.md y el código) ---
+\newcommand{\sigmat}{\sigma_t}                 % volatilidad condicional GARCH
+\newcommand{\muk}{\mu_k}                        % media del régimen k
+\newcommand{\rnext}{r_{t+1}}                    % retorno del día siguiente
+\newcommand{\reglog}{r_t^{\log}}               % log-retorno
+\newcommand{\gammaf}{\gamma^{f}_t}             % posterior filtrado del HMM
+\newcommand{\RAM}{\mathrm{RAM}}
+\newcommand{\PSA}{\mathrm{PSA}}
+\newcommand{\GSO}{\mathrm{GSO}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\sign}{\operatorname{signo}}
+\newcommand{\indic}[1]{\mathbf{1}\{#1\}}
+
+% --- Bibliografía: numérica en texto [n], lista numerada estilo APA-español ---
+\usepackage[backend=biber,style=numeric,sorting=none,language=spanish]{biblatex}
+\addbibresource{bibliography.bib}
+
+% --- Hipervínculos (al final) ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}

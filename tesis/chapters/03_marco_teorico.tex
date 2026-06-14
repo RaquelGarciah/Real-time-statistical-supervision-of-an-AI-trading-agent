@@ -1,0 +1,50 @@
+\chapter{Marco teórico}
+\label{cap:marco-teorico}
+
+% Objetivo: 20-25 páginas. EXTENSO, ORDENADO y RIGUROSO. Todo concepto y toda la base
+% matemática usada, con sus citas. Desarrollar la TEORÍA de los tests empleados. Explicar
+% también los conceptos económicos (Sharpe, drawdown, leverage effect…) porque el tribunal
+% no sabe economía. Fija la NOTACIÓN que usa el resto de la memoria (ver glosario.md).
+% Es el PRIMER capítulo que se redacta.
+
+% [PENDIENTE DE REDACCIÓN — pipeline /redaccion-capitulo. Esqueleto de secciones:]
+
+\section{Preliminares y notación}
+\label{sec:preliminares}
+% Serie de precios, log-retornos, volatilidad realizada. Notación canónica.
+
+\section{Modelos de cambio de régimen: HMM gaussiano}
+\label{sec:hmm}
+% Cadena de Markov oculta, emisiones gaussianas, EM/Baum-Welch, forward (posterior
+% filtrado, causal) vs forward-backward (suavizado, mira el futuro), Viterbi.
+% Selección del número de estados. Citas: Baum 1970, Rabiner 1989, Viterbi 1967, Hamilton 1989.
+
+\section{Volatilidad condicional: ARCH/GARCH(1,1)-t}
+\label{sec:garch}
+% De ARCH a GARCH, estacionariedad (alpha+beta<1), innovaciones Student-t, estimación MV.
+% Citas: Engle 1982, Bollerslev 1986/1987.
+
+\section{Detección bayesiana de puntos de cambio (BOCPD)}
+\label{sec:bocpd}
+% Run-length, recursión online, hazard. Cita: Adams & MacKay 2007 (y Fearnhead 2006).
+
+\section{Conceptos económicos para el tribunal}
+\label{sec:economia}
+% Posición/exposición, leverage effect (Black 1976, Christie 1982), volatility targeting
+% (Moreira & Muir 2017), ratio de Sharpe (Sharpe 1966/1994), Sortino, drawdown, Calmar.
+
+\section{Validación sin fuga temporal}
+\label{sec:cpcv}
+% Causalidad (signal_lag=1), purga y embargo, CPCV. Citas: López de Prado 2018; Bailey & LdP 2014.
+
+\section{Contraste de hipótesis (desarrollo de los tests usados)}
+\label{sec:tests}
+% Sign test (binomial exacto, Conover 1999); McNemar pareado + corrección de Edwards 1948
+% (McNemar 1947); Diebold-Mariano (1995); TOST/equivalencia (Schuirmann 1987); bootstrap
+% estacionario (Politis & Romano 1994); Deflated Sharpe Ratio y multiplicidad
+% (López de Prado 2014; Harvey, Liu & Zhu 2016). Desarrollar la teoría, no solo enunciar.
+
+\section{STRATA dentro del marco}
+\label{sec:strata-marco}
+% Definición formal de la función de supervisión, los tres detectores ortogonales
+% (RAM/PSA/GSO) y la capa de intervención. Conecta cada pieza con las secciones anteriores.
