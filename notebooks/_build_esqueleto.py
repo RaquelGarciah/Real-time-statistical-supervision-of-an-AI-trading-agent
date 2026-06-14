@@ -231,75 +231,97 @@ contrastes que blindan contra "lo hace un modelo cualquiera" y "vale solo el ré
 md(r"""
 ## 7. Los tests estadísticos — qué hacen y por qué ese (el corazón del rigor)
 
-Para cada uno: la **pregunta**, $H_0$ + **estadístico** (resumido), **por qué** se eligió y la
-**objeción** que cubre. Implementados en `core/stats.py` / `core/cpcv.py`.
+**Cómo leer cada test.** Un contraste tiene una **hipótesis nula $H_0$** (lo "aburrido": no hay
+efecto) y una **alternativa $H_1$** (lo que quiero demostrar). El $p$-valor mide *cómo de sorprendentes
+serían los datos si $H_0$ fuera cierta*. **Rechazar $H_0$** (cuando $p<\alpha$) = los datos son
+incompatibles con "no hay efecto" → hay evidencia de $H_1$. **No rechazar** ≠ "$H_0$ es cierta": solo
+"no hay evidencia suficiente". Uso $\alpha=0.10$ (pre-declarado, por la baja potencia con $N\approx400$).
+Implementados en `core/stats.py` / `core/cpcv.py`.
 
-### 7.1 McNemar pareado — *¿STRATA acierta el signo más que el agente?*
-- $H_0:\ P(b)=P(c)$, donde sobre los **mismos días** $b$ = días en que M5 acierta y M8 falla, $c$ =
-  M5 falla y M8 acierta. Estadístico $\chi^2=\dfrac{(|b-c|-1)^2}{b+c}$ (Edwards); **binomial exacto**
-  si $b+c<25$. Solo cuentan los **discordantes** (los empates no informan).
-- **Por qué:** es **pareado** (mismo mercado los mismos días) → mucha más potencia que comparar dos
-  accuracies sueltas; y mide *acierto*, que es la métrica primaria.
-- **Cubre:** *"¿es significativo?"* — McNemar M8 vs M5 $p\approx0.069$ ($\tau$) / $0.088$ (default).
+### 7.1 McNemar pareado — *¿STRATA cambia el acierto direccional del agente?*
+Sobre los **mismos días**, mira solo los **discordantes**: $b$ = M5 acierta y M8 falla; $c$ = M5 falla
+y M8 acierta (los empates no informan).
+- **$H_0$:** $P(b)=P(c)$ — M8 y M5 aciertan por igual; STRATA no cambia nada.
+- **$H_1$:** $P(b)\neq P(c)$ — uno acierta más en los días en que difieren.
+- **Rechazar $H_0$ ⇒** STRATA **sí** altera el acierto del agente de forma sistemática (no por azar);
+  con $c>b$ eso es **rescate**.
+- Estadístico $\chi^2=\dfrac{(|b-c|-1)^2}{b+c}$ (Edwards), **binomial exacto** si $b+c<25$.
+- **Por qué:** pareado (mismos días) → mucha más potencia que comparar dos accuracies sueltas; mide
+  *acierto* (métrica primaria). **Resultado:** M8 vs M5 $p=0.069$ ($\tau$) / 0.088 → **rechaza a
+  $\alpha=0.10$** (hay rescate); *borderline* a 0.05. **Cubre:** *"¿es significativo?"*
 
 ### 7.2 Sign test — *¿el agente acierta distinto del azar?*
-- $H_0:\ p=0.5$; binomial exacto a dos colas (Conover 1999) sobre los aciertos. IC Clopper-Pearson.
-- **Cubre:** la premisa "agente perdedor" (M5: $p<10^{-5}$, acc 0.384 < 0.5).
+- **$H_0$:** $p_{\text{acierto}}=0.5$ (es una moneda). **$H_1$:** $p\neq0.5$.
+- **Rechazar $H_0$ ⇒** el agente NO es azar. Binomial exacto a dos colas (Conover 1999) + IC
+  Clopper-Pearson.
+- **Resultado:** M5 rechaza **por debajo** (acc 0.384, $p<10^{-5}$) → **perdedor sistemático** (la
+  premisa del TFG). **Cubre:** "el agente es malo de verdad, no por mala suerte".
 
 ### 7.3 Diebold-Mariano — *¿dos estrategias rinden igual en P&L?*
-- Serie de diferencia diaria $d_t = L^{A}_t-L^{B}_t$ (pérdida = $-r$). $H_0:\ \mathbb E[d_t]=0$;
-  $\mathrm{DM}=\bar d/\sqrt{s_d^2/n}\sim\mathcal N(0,1)$. **Pareado** → cancela el movimiento común.
-- **Cubre:** *"el XGBoost debería batir a tu regla"* — M10 vs M8 da $p=0.67$: **indistinguibles** en
-  P&L (no rechaza $H_0$). Ojo: "no rechazar" ≠ "iguales" (por eso también TOST).
+Serie de diferencia diaria $d_t = L^A_t-L^B_t$ con pérdida $L=-r$.
+- **$H_0$:** $\mathbb E[d_t]=0$ — rinden igual en P&L. **$H_1$:** $\mathbb E[d_t]\neq0$ — una rinde más.
+- **Rechazar $H_0$ ⇒** una estrategia bate a la otra. $\mathrm{DM}=\bar d/\sqrt{s_d^2/n}\sim\mathcal N(0,1)$.
+- **Resultado:** M10 vs M8 $p=0.67$ → **NO se rechaza** → indistinguibles en P&L. *Ojo:* "no rechazar"
+  no prueba que sean iguales (para eso, TOST). **Cubre:** *"el XGBoost debería batir a tu regla a mano"*.
 
-### 7.4 TOST (equivalencia) — *¿son M10 y M8 equivalentes dentro de un margen?*
-- Dos contrastes unilaterales (Schuirmann 1987): se declara equivalencia si $|\Delta|$ está dentro de
-  un margen pre-declarado. Aquí $p\approx0.42$ → **no** se demuestra equivalencia formal (poca
-  potencia con $N\approx400$). Honesto: "no distinguibles", no "probadas iguales".
+### 7.4 TOST (equivalencia, Schuirmann 1987) — *¿M10 y M8 son equivalentes dentro de un margen $\delta$?*
+Aquí las hipótesis van **al revés** (lo que quiero demostrar es la igualdad):
+- **$H_0$:** $|\Delta|\ge\delta$ — son **distintas**. **$H_1$:** $|\Delta|<\delta$ — equivalentes.
+- **Rechazar $H_0$ ⇒** declarar **equivalencia** formal.
+- **Resultado:** $p=0.42$ → **NO se rechaza** → no se demuestra equivalencia (poca potencia, $N\approx400$).
+  Honesto: digo "no distinguibles", no "probadas iguales".
 
-### 7.5 Bootstrap estacionario (Politis-Romano 1994) — *IC que respeta la autocorrelación*
-- Remuestrea **bloques** de longitud geométrica media $\sqrt N$ → preserva la dependencia serial de
-  los retornos. Es el **test confirmatorio** del walk-forward: mediana de $\Delta$Sharpe con su IC.
-- **Cubre:** dar un IC honesto en series autocorrelacionadas (no IC ingenuo).
+### 7.5 Bootstrap estacionario (Politis-Romano 1994) — *¿el rescate en Sharpe es robusto?*
+Remuestrea **bloques** de longitud media $\sqrt N$ (preserva la autocorrelación) y da el IC de la
+mediana de $\Delta$Sharpe. Es el **test confirmatorio** del walk-forward; se usa como contraste:
+- **$H_0$:** mediana $\Delta$Sharpe $\le 0$ (STRATA no mejora el P&L). **$H_1$:** $>0$.
+- **Rechazar $H_0$ ⇒** el IC **excluye el 0 por abajo** → rescate económico robusto.
+- **Resultado:** la cota inferior (con corrección Bonferroni por 2 contrastes) es **$<0$** → **NO se
+  rechaza** → el rescate en Sharpe **no es robusto**. **Cubre:** IC honesto en series dependientes.
 
 ### 7.6 Deflated Sharpe (López de Prado 2014) — *¿el Sharpe sobrevive a haber probado muchas cosas?*
-- Ajusta el Sharpe por el número de configuraciones probadas ($n_{\text{trials}}$): $P(\text{Sharpe
-  verdadero}>0)$. Con $n_{\text{trials}}=50$ (cota inferior; el conteo real supera 100) da
-  $\approx \mathbf{0.08}$ → **el Sharpe NO es robusto** (canónico §9).
-- **Cubre:** *"¿no estarás haciendo data-snooping con el Sharpe?"* → sí lo descuento, y sale frágil;
-  por eso la evidencia es el McNemar (acierto), no el Sharpe.
+**No es un $p$-valor con $H_0/H_1$**: es una **probabilidad**, $DSR=P(\text{Sharpe verdadero}>0)$ tras
+descontar el nº de configuraciones probadas ($n_{\text{trials}}$). Convence si es **alto** (p. ej.
+$>0.95$). **Resultado:** con $n_{\text{trials}}=50$ da $\approx\mathbf{0.08}$ → casi seguro el Sharpe
+es **azar**. **Cubre:** *"¿data-snooping con el Sharpe?"* → por eso la evidencia es el McNemar, no el Sharpe.
 
-### 7.7 Block-permutation — *McNemar robusto a autocorrelación*
-- Permuta etiquetas A/B por **bloques** $\sqrt N$ para construir la distribución nula respetando la
-  dependencia temporal. Blinda al McNemar cuando los días no son independientes.
+### 7.7 Block-permutation — *¿la diferencia de acierto es real o artefacto de autocorrelación?*
+- **$H_0$:** M8 y M5 son **intercambiables** por bloques (mismo acierto). **$H_1$:** no lo son.
+- **Rechazar $H_0$ ⇒** la diferencia de acierto es **real**, no un espejismo de la dependencia temporal.
+- Permuta etiquetas A/B por bloques $\sqrt N$. **Resultado:** M10 vs M5 en bajista $p=0.061$ → rechaza a
+  $\alpha=0.10$. Blinda al McNemar cuando los días no son independientes.
 
-### 7.8 Holm-Bonferroni — *control de multiplicidad*
-- Cuando se hacen varios contrastes (p. ej. McNemar por régimen), corrige los p-valores paso a paso
-  para controlar el error familiar (FWER). **Cubre:** *"has probado muchos cortes, ¿no es p-hacking?"*
+---
+**Lo siguiente NO son contrastes de hipótesis** (no tienen $H_0/H_1$): son una corrección, una cantidad,
+un esquema de validación o un criterio. Conviene tenerlo claro para no confundir al tribunal.
 
-### 7.9 N efectivo de Bartlett (1946) — *no inflar la muestra*
-- Ventanas solapadas no son independientes: $N_{\text{eff}}=N\frac{1-\hat\rho}{1+\hat\rho}$. Sirve
-  para **no** contar 57 ventanas solapadas como 57 datos. **Cubre:** *"¿el 73.7% de ventanas no es
-  evidencia?"* → con $\rho\approx0.98$, $N_{\text{eff}}\approx0.6$: es descriptivo, no prueba.
+### 7.8 Holm-Bonferroni — *corrección de multiplicidad (no es un test)*
+Cuando hago **varios** contrastes (p. ej. McNemar por régimen), ajusta los $p$-valores paso a paso para
+controlar el error familiar (FWER). "**Sobrevivir Holm**" = un contraste sigue significativo **después**
+de la corrección. **Cubre:** *"probaste muchos cortes, ¿no es p-hacking?"*
 
-### 7.10 CPCV — *validación de ML sin fuga* (López de Prado 2018, §7.4)
-- *Combinatorial Purged Cross-Validation*: $\binom{6}{2}=15$ particiones; **purga** del train los
-  eventos que solapan con el test y añade **embargo = 5** días. Con $t_1=\text{índice}.shift(-1)$
-  (etiqueta de hoy = retorno de mañana). **Cubre:** *"KFold está sesgado en series temporales"*.
+### 7.9 N efectivo de Bartlett (1946) — *una cantidad, no un test*
+Tamaño muestral **efectivo** bajo autocorrelación: $N_{\text{eff}}=N\frac{1-\hat\rho}{1+\hat\rho}$.
+Sirve para **no** contar 57 ventanas solapadas como 57 datos. **Cubre:** *"¿el 73.7% de ventanas no es
+evidencia?"* → con $\rho\approx0.98$, $N_{\text{eff}}\approx0.6$: descriptivo, no prueba.
 
-### 7.11 TreeSHAP — *¿qué features usa el meta-learner?*
-- Atribución de Shapley exacta para árboles (Lundberg 2017); $|SHAP|$ medio *out-of-fold*. **Cubre:**
-  *"¿XGBoost bate a STRATA o la redescubre?"* → top-5 = `ram_score`, `garch_sigma`, `psa_score`,
-  `crisis_prob`, `stress_prob` (**ninguna personalidad**) → **la redescubre**: la señal es de STRATA.
-  La ablación lo confirma (quitar las features STRATA tumba a M10: Sharpe $+0.64\to+0.21$).
-- **Detalle defensivo:** el tutor **predijo** que SHAP coronaría las probabilidades del agente ("la
-  mejor variable será la de la IA, y tu volatilidad no valdrá nada"). El resultado es **el contrario**:
-  arriba están las features de régimen/STRATA y ninguna personalidad. Su propia predicción, comprobada,
-  juega a favor del diseño.
+### 7.10 CPCV — *esquema de validación sin fuga, no un test* (López de Prado 2018, §7.4)
+*Combinatorial Purged Cross-Validation*: $\binom{6}{2}=15$ particiones; **purga** del train los eventos
+que solapan con el test y añade **embargo = 5** días; $t_1=\text{índice}.shift(-1)$ (etiqueta hoy =
+retorno mañana). **Cubre:** *"KFold está sesgado en series temporales"*.
 
-### 7.12 Held-out likelihood — *elegir K sin mirar el futuro*
-- Verosimilitud por observación del HMM ajustado en $[0,a)$ y evaluado en el bloque $[a,b)$ posterior.
-  Criterio honesto de selección de K (§4.1). **Cubre:** *"¿de dónde sale K=3?"*
+### 7.11 TreeSHAP — *atribución de importancia, no un test*
+Reparte la predicción entre las features (Shapley exacto para árboles, Lundberg 2017); $|SHAP|$ medio
+*out-of-fold*. **Resultado:** top-5 = `ram_score`, `garch_sigma`, `psa_score`, `crisis_prob`,
+`stress_prob` (**ninguna personalidad**) → el meta-learner **redescubre** STRATA; la señal es de STRATA
+(la ablación lo confirma: quitarlas tumba a M10, $+0.64\to+0.21$). **Detalle defensivo:** el tutor
+**predijo** que SHAP coronaría las probabilidades del agente; el resultado es **el contrario** → su
+propia predicción, comprobada, juega a favor.
+
+### 7.12 Held-out likelihood — *criterio de selección de modelo, no un test*
+Verosimilitud por observación del HMM ajustado en $[0,a)$ y evaluado en el bloque posterior $[a,b)$:
+**mayor LL/obs = describe mejor los datos no vistos**. Confirma que K=3 mejora a K=2 (§4.1). No tiene
+$p$-valor; es comparativo entre modelos. **Cubre:** *"¿de dónde sale K=3?"*
 """)
 
 # ============================================================================ §8
