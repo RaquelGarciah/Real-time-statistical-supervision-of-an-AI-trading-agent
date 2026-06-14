@@ -3,7 +3,7 @@
 
 % Objetivo global del capítulo: 20-25 páginas. EXTENSO, ORDENADO y RIGUROSO. Todo concepto y
 % toda la base matemática usada, con sus citas. Fija la NOTACIÓN que usa el resto de la memoria.
-% [REDACTADO: 3.0, 3.1, 3.2, 3.3, 3.4. El resto queda en esqueleto al final del fichero.]
+% [REDACTADO: 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7. El resto queda en esqueleto al final del fichero.]
 
 Este capítulo reúne la base matemática sobre la que se construye STRATA y fija la notación que se usa en el resto de la memoria. El orden es deliberado. Primero se desarrollan las herramientas estadísticas por separado (Parte A: la serie de precios, el modelo de cambio de régimen, la volatilidad condicional y la detección de puntos de cambio); después se monta STRATA encima de ellas (Parte B), conectando cada detector con la pieza teórica que lo sostiene. Quien conozca series temporales puede leer la Parte A en diagonal; quien no conozca la parte económica encontrará cada concepto definido la primera vez que aparece.
 
@@ -417,27 +417,201 @@ independiente de $r$. Esta elección equivale a suponer que la longitud de los t
 
 La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación dentro de un tramo en una familia exponencial con su \emph{previa conjugada}: la posterior de los parámetros del tramo pertenece entonces a la misma familia que la previa, y la predictiva del dato nuevo tiene expresión analítica que se actualiza de forma incremental al llegar cada observación. Esta conjugación es lo que hace que la recursión de la Proposición~\ref{prop:bocpd} sea barata de evaluar día a día. La especificación concreta del modelo de observación de PSA se detalla en el capítulo de metodología. Como contexto, el trabajo de Fearnhead sobre inferencia exacta para modelos multipunto desarrolla los métodos de cálculo de estas distribuciones predictivas y de la partición en tramos sobre los que se apoya el enfoque online \cite{fearnhead2006}.
 
-% ===========================================================================
-% [ESQUELETO PENDIENTE — secciones por redactar tras este bloque]
-% ===========================================================================
-
-\section{Conceptos económicos para el tribunal}
+\section{Conceptos económicos para un tribunal sin economía}
 \label{sec:economia}
-% Posición/exposición, leverage effect (Black 1976, Christie 1982), volatility targeting
-% (Moreira & Muir 2017), ratio de Sharpe (Sharpe 1966/1994), Sortino, drawdown, Calmar.
+
+Las herramientas anteriores producen, a partir de los precios, una lectura del estado del mercado: en qué régimen se encuentra, con qué volatilidad y si el comportamiento del agente se ha roto. Falta el otro extremo del problema, el lado económico: qué hace el agente con esa información, cómo se mide si lo hace bien y por qué la estructura concreta del activo central de la memoria permite que un detector estadístico de régimen tenga contenido direccional. Esta sección define esos conceptos partiendo de cero, sin suponer formación económica previa. El énfasis está en lo que cada noción significa y en dónde entra después en STRATA; las cifras concretas pertenecen al capítulo de resultados.
+
+\subsection{Posición y exposición}
+\label{sec:economia-posicion}
+
+Una decisión de cartera sobre un único activo se resume en un número, la \emph{posición} (o \emph{peso}) $w_t$, que indica cuánto capital se compromete en el activo el día $t$ y en qué sentido. Adoptamos la convención normalizada
+\[
+w_t \in [-1, +1],
+\]
+de modo que el signo y el módulo tienen lecturas separadas. El signo marca la dirección de la apuesta: $w_t > 0$ es una posición \emph{larga} (se gana si el precio sube), $w_t < 0$ es una posición \emph{corta} (se gana si el precio baja) y $w_t = 0$ significa estar \emph{fuera} del mercado, sin exposición. El módulo $|w_t|$ es la fracción del capital expuesta, entre el $0$ y el $100\,\%$: $|w_t| = 1$ es exposición plena y $|w_t| = 0{,}3$ compromete un treinta por ciento del capital, dejando el resto sin invertir. La ganancia o pérdida de la posición a lo largo de un día se obtiene multiplicando $w_t$ por el retorno que el activo realiza al día siguiente; con la convención temporal de la Sección~\ref{sec:preliminares}, el resultado de la posición tomada en $t$ es $w_t \cdot \rnext$. Una posición larga gana cuando $\rnext > 0$, una corta gana cuando $\rnext < 0$, y en ambos casos la magnitud de la ganancia escala con $|w_t|$.
+
+Esta normalización es la que permite que las tres intervenciones de STRATA actúen sobre un mismo objeto. Reducir el tamaño de una apuesta es encoger $|w_t|$ sin tocar el signo; sustituir una decisión es cambiar el propio $w_t$, signo incluido. Toda la maquinaria posterior opera sobre este número.
+
+\subsection{El leverage effect}
+\label{sec:economia-leverage}
+
+Una regularidad empírica de los índices bursátiles agregados es que el retorno y la volatilidad están correlados negativamente: cuando el mercado cae, su volatilidad tiende a subir, y los tramos tranquilos suelen coincidir con mercado al alza. Black documentó este fenómeno y lo bautizó \emph{leverage effect}, atribuyéndolo en parte a que una caída del precio de las acciones eleva el apalancamiento financiero relativo de las empresas y, con él, el riesgo percibido \cite{black1976}; Christie lo estudió de forma sistemática y confirmó la asimetría entre los efectos de los movimientos al alza y a la baja sobre la volatilidad \cite{christie1982}.
+
+La consecuencia es la que da contenido al detector RAM. En un índice como el SPY, el régimen de alta volatilidad que el HMM identifica como Crisis coincide, por el leverage effect, con un mercado a la baja, y el régimen de baja volatilidad coincide con mercado al alza. El régimen, que en principio es solo una clasificación por nivel de agitación, adquiere así una lectura \emph{direccional}: saber que el mercado está en Crisis es, indirectamente, saber que tiende a caer. Esto es lo que hace que un modelo de volatilidad como el HMM pueda usarse para juzgar si la dirección de la apuesta del agente es coherente con el estado del mercado. Conviene subrayar que esta correspondencia entre nivel de volatilidad y dirección es una propiedad de los índices agregados, no una ley universal: en acciones individuales con leverage effect débil la asociación se diluye, y entonces el régimen pierde valor direccional. Es una limitación que se documenta de forma explícita y que delimita el alcance de RAM.
+
+\subsection{Volatility targeting}
+\label{sec:economia-voltarget}
+
+Una idea clásica en gestión de carteras es dimensionar la posición no en términos fijos, sino para alcanzar un nivel de riesgo objetivo. La estrategia de \emph{volatility targeting} fija una volatilidad deseada $\sigma^\star$ para la cartera y ajusta el tamaño de la posición de forma inversamente proporcional a la volatilidad estimada del activo,
+\[
+|w_t| \;\propto\; \frac{\sigma^\star}{\sigmat},
+\]
+de modo que cuando la volatilidad $\sigmat$ sube se reduce la exposición, y cuando baja se amplía, manteniendo el riesgo de la cartera aproximadamente constante en el tiempo. Moreira y Muir mostraron que escalar la exposición en sentido inverso a la volatilidad, lejos de penalizar el rendimiento, lo mejora en términos ajustados por riesgo, porque la volatilidad alta tiende a anticipar peores retornos sin que la prima de riesgo aumente en la misma proporción \cite{moreira2017}.
+
+Este principio es el ancla teórica del detector GSO. Si el agente toma una posición de tamaño $|w_t|$ desproporcionado respecto a la volatilidad condicional $\sigmat$ del momento, GSO lo interpreta como una sobreexposición incompatible con el riesgo vigente y acota el tamaño hacia lo que el volatility targeting prescribiría. La volatilidad $\sigmat$ que entra en ese juicio es exactamente la del GARCH$(1,1)$-$t$ de la Sección~\ref{sec:garch}.
+
+\subsection{El ratio de Sharpe}
+\label{sec:economia-sharpe}
+
+Para comparar estrategias no basta con mirar cuánto ganan: una estrategia que gana mucho a costa de oscilaciones violentas no es comparable con otra que gana algo menos de forma estable. El \emph{ratio de Sharpe} resume rendimiento y riesgo en un solo número, dividiendo el retorno medio en exceso por la volatilidad de ese retorno \cite{sharpe1994}. Sea $r$ el retorno de la estrategia en un periodo y $r_f$ el \emph{retorno libre de riesgo}, lo que se obtendría sin asumir riesgo alguno (por ejemplo, en deuda pública a corto plazo). El ratio de Sharpe se define como
+\[
+S \;=\; \frac{\E[r] - r_f}{\sqrt{\Var(r)}},
+\]
+esto es, el retorno medio por encima del activo sin riesgo dividido por la desviación típica del retorno. El numerador mide cuánto se gana de más por asumir riesgo; el denominador mide el riesgo asumido. Un Sharpe alto indica que cada unidad de riesgo se remunera bien. Como se calcula sobre retornos diarios pero se reporta en escala anual, se \emph{anualiza} multiplicando por $\sqrt{252}$, bajo el supuesto de retornos diarios aproximadamente independientes, donde $252$ es el número aproximado de días de mercado en un año.
+
+El ratio de Sharpe es la medida estándar de rendimiento ajustado por riesgo, pero conviene tratarlo con cautela y por eso esta memoria no lo reporta nunca aislado. Es \emph{frágil} en dos sentidos. Primero, no es robusto: penaliza por igual la variabilidad al alza y a la baja, aunque al inversor solo le preocupe la segunda, y un puñado de retornos extremos puede distorsionar la varianza del denominador. Segundo, su interpretación como cantidad estable supone implícitamente que los retornos son aproximadamente normales e independientes, hipótesis que los hechos estilizados de la Sección~\ref{sec:preliminares} desmienten. Por eso un Sharpe muestral elevado puede ser fruto del azar o de haber probado muchas estrategias, problema que aborda el Deflated Sharpe Ratio de la Sección~\ref{sec:tests}.
+
+\subsection{Sortino, drawdown máximo y Calmar}
+\label{sec:economia-otros}
+
+El ratio de Sharpe admite refinamientos que corrigen alguna de sus limitaciones y que se usan en la memoria como medidas complementarias. Las presentamos como definiciones operativas estándar, derivadas del Sharpe o de la trayectoria de la cartera, sin atribuirles una referencia académica fundacional única.
+% [buscar cita Sortino/Calmar para revisor-bibliografico]
+
+El \emph{ratio de Sortino} responde a la objeción de que penalizar la variabilidad al alza no tiene sentido. En lugar de la desviación típica completa del denominador del Sharpe, usa solo la \emph{desviación a la baja}, calculada sobre los retornos que quedan por debajo de un umbral de referencia (típicamente cero o el retorno libre de riesgo). Si $r^- = \min(r - r_f,\, 0)$ recoge solo las desviaciones negativas, el ratio de Sortino es
+\[
+\mathrm{Sortino} \;=\; \frac{\E[r] - r_f}{\sqrt{\E[(r^-)^2]}},
+\]
+con el mismo numerador que el Sharpe pero un denominador que mide únicamente el riesgo de pérdida. Una estrategia con muchas subidas bruscas y pocas bajadas tendrá un Sortino más alto que su Sharpe.
+
+El \emph{drawdown máximo} mide el riesgo de forma distinta, no por la dispersión sino por la peor racha. Dada la trayectoria acumulada del valor de la cartera, el drawdown en un instante es la caída relativa desde el máximo alcanzado hasta entonces, y el drawdown máximo es la mayor de esas caídas pico-valle a lo largo de todo el periodo. Si $V_t$ es el valor de la cartera en $t$,
+\[
+\mathrm{MDD} \;=\; \max_{t}\left(1 - \frac{V_t}{\max_{s \le t} V_s}\right),
+\]
+de modo que un drawdown máximo del $40\,\%$ significa que, en el peor momento, la cartera llegó a perder un cuarenta por ciento desde su techo previo. Es la medida que mejor refleja lo que un inversor sufre en la práctica.
+
+Por último, el \emph{ratio de Calmar} combina rendimiento y peor racha en un solo número, dividiendo el retorno anualizado por el drawdown máximo (en valor absoluto),
+\[
+\mathrm{Calmar} \;=\; \frac{\text{retorno anualizado}}{\mathrm{MDD}}.
+\]
+A diferencia del Sharpe, que mide el riesgo por la volatilidad, el Calmar lo mide por la mayor pérdida sufrida, y premia las estrategias que evitan caídas profundas. En la memoria estas tres cantidades acompañan al Sharpe para dar una imagen más completa del comportamiento de cada estrategia, siempre como enriquecimiento ilustrativo y nunca como prueba estadística.
 
 \section{Validación sin fuga temporal}
 \label{sec:cpcv}
-% Causalidad (signal_lag=1), purga y embargo, CPCV. Citas: López de Prado 2018; Bailey & LdP 2014.
 
-\section{Contraste de hipótesis (desarrollo de los tests usados)}
+Una estrategia que parece excelente sobre datos pasados puede ser un espejismo si su evaluación ha usado, aunque sea de forma sutil, información que no estaba disponible en el momento de decidir. Esta sección desarrolla las salvaguardas que impiden esa contaminación, conocida como \emph{fuga temporal} o \emph{look-ahead}, y que son condición necesaria para que las cifras del capítulo de resultados sean creíbles. El hilo conductor es el mismo que recorre la Parte A: solo se permite usar información del pasado y del presente, nunca del futuro.
+
+\subsection{Causalidad: la regla signal\_lag=1}
+\label{sec:cpcv-causalidad}
+
+La regla básica ya se fijó en la Sección~\ref{sec:preliminares} y conviene ahora justificarla como condición de ausencia de fuga. La posición $w_t$ se decide con la información disponible hasta el cierre del día $t$. El retorno de ese mismo día, $r_t$, ya se ha producido cuando se decide: forma parte de la información que entra en la decisión. Contabilizar la ganancia como $w_t \cdot r_t$ sería, por tanto, recompensar la posición con un movimiento que ya se conocía al tomarla, lo que equivale a permitir que la decisión mire su propio resultado. Es \emph{look-ahead} en su forma más directa y produce backtests artificialmente brillantes que se desploman en operativa real.
+
+La regla correcta, que en el código lleva el nombre \texttt{signal\_lag=1}, es contabilizar la posición de $t$ contra el retorno del día siguiente:
+\[
+\text{resultado del día} \;=\; w_t \cdot \rnext.
+\]
+La posición se fija en $t$ y se evalúa con el primer retorno que aún no se conocía, el de $t+1$. Esta es la única convención que reportamos. Encaja con el filtrado causal de la Sección~\ref{sec:hmm-filtrado}: el régimen $\gammaf$ que alimenta la decisión en $t$ se calcula solo con $x_{1:t}$, y la decisión resultante se enfrenta a $\rnext$, de modo que en ninguna etapa, ni en la inferencia del estado del mercado ni en la contabilidad del resultado, interviene información posterior a $t$. La construcción es la recomendada en la literatura sobre evaluación de estrategias financieras, que insiste en alinear el etiquetado de cada decisión con el horizonte en el que se materializa su resultado \cite{lopezdeprado2018}.
+
+\subsection{Purga y embargo}
+\label{sec:cpcv-purga}
+
+La regla anterior basta cuando cada decisión se evalúa con un único retorno futuro. Cuando se validan modelos que aprenden de los datos, separando un tramo de entrenamiento de un tramo de prueba, aparece una fuga más sutil en la \emph{frontera} entre ambos tramos. Si la etiqueta de una muestra de entrenamiento se construye con información que se solapa temporalmente con el tramo de prueba, el modelo habrá visto, de forma indirecta, datos del periodo sobre el que luego se le evalúa. Dos mecanismos corrigen esto \cite{lopezdeprado2018}.
+
+La \emph{purga} elimina del conjunto de entrenamiento aquellas muestras cuyo intervalo de evaluación (el periodo durante el cual se materializa su etiqueta) se solapa con el intervalo del conjunto de prueba. Si una decisión de entrenamiento se resuelve en un retorno que cae dentro del periodo de prueba, esa decisión se descarta del entrenamiento, porque conservarla filtraría información del futuro de prueba hacia el pasado de entrenamiento. El \emph{embargo} añade un margen de seguridad temporal: tras el final del tramo de prueba se descartan también las primeras muestras del entrenamiento posterior, durante un número de días $\ge 5$ en esta memoria, para neutralizar la autocorrelación serial que podría comunicar información a través de la frontera incluso cuando no hay solapamiento estricto de etiquetas. Purga y embargo juntos garantizan que entrenamiento y prueba estén separados de verdad, no solo en el índice temporal sino en la información que cada uno encierra.
+
+\subsection{Combinatorial Purged Cross-Validation}
+\label{sec:cpcv-cpcv}
+
+La validación cruzada convencional por particiones (KFold) reparte las muestras en bloques al azar, entrena en unos y evalúa en otro, y rota. Sobre datos independientes es un procedimiento impecable, pero sobre una serie temporal es inadmisible: al barajar las observaciones, mezcla el orden del tiempo y coloca en el conjunto de entrenamiento muestras posteriores a las de prueba. El modelo aprende, literalmente, del futuro respecto del periodo en el que se le evalúa, lo que invalida toda conclusión. Por eso la memoria proscribe el KFold convencional en series temporales, con una única excepción deliberada que se documenta como denuncia del propio sesgo.
+
+La alternativa que se adopta es la \emph{validación cruzada combinatoria con purga} (CPCV, \emph{Combinatorial Purged Cross-Validation}) \cite{lopezdeprado2018}. La idea es dividir la serie en bloques \emph{contiguos} en el tiempo y formar múltiples combinaciones de bloques de prueba, entrenando en el resto y aplicando en cada combinación la purga y el embargo de la subsección anterior en la frontera entre entrenamiento y prueba. Al ser los bloques contiguos, se respeta el orden temporal dentro de cada uno; al combinar varias elecciones de bloques de prueba, se obtienen muchas trayectorias de validación distintas en lugar de una sola, lo que da una estimación más estable del comportamiento fuera de muestra y permite cuantificar su variabilidad.
+
+Esa multiplicidad tiene un coste que conviene anticipar. Generar muchas particiones, o más en general probar muchas configuraciones de una estrategia, multiplica las oportunidades de que un buen resultado aparezca por puro azar: con suficientes intentos, alguno parecerá excelente aunque no haya señal real. Es el problema de \emph{selección} o \emph{multiplicidad}, y es exactamente lo que motiva el Deflated Sharpe Ratio que se desarrolla en la Sección~\ref{sec:tests} \cite{bailey2014}: una corrección que descuenta del Sharpe observado el efecto de haber buscado entre muchas alternativas, para distinguir el rendimiento genuino del afortunado.
+
+\section{Contraste de hipótesis}
 \label{sec:tests}
-% Sign test (binomial exacto, Conover 1999); McNemar pareado + corrección de Edwards 1948
-% (McNemar 1947); Diebold-Mariano (1995); TOST/equivalencia (Schuirmann 1987); bootstrap
-% estacionario (Politis & Romano 1994); Deflated Sharpe Ratio y multiplicidad
-% (López de Prado 2014; Harvey, Liu & Zhu 2016). Desarrollar la teoría, no solo enunciar.
+
+Toda cifra que la memoria reporta como evidencia va acompañada de un contraste estadístico que mide si esa cifra es compatible con el azar o lo excede de forma significativa. Esta sección desarrolla la teoría de los contrastes usados, cada uno con su hipótesis nula, su estadístico, la distribución de ese estadístico cuando la nula es cierta y el lugar de la memoria donde se aplica. La filosofía es uniforme: se fija una hipótesis nula que representa la ausencia del efecto buscado, se calcula un estadístico cuya distribución bajo esa nula se conoce, y se rechaza la nula solo si el valor observado es tan extremo que sería improbable bajo ella.
+
+\subsection{Test del signo binomial}
+\label{sec:tests-sign}
+
+La primera pregunta sobre el agente es elemental: ¿acierta la dirección del mercado más de lo que acertaría al azar? Acertar la dirección significa que el signo de la posición coincide con el signo del retorno realizado. Si el agente no tuviera ninguna capacidad, cada acierto sería como lanzar una moneda equilibrada.
+
+\emph{Hipótesis nula.} La probabilidad de acierto direccional es $p = 0{,}5$; el agente acierta el signo por azar.
+
+\emph{Estadístico y distribución bajo la nula.} Sobre $n$ decisiones, se cuenta el número $X$ de aciertos. Bajo $H_0$, cada decisión es un ensayo de Bernoulli independiente con probabilidad $0{,}5$, de modo que
+\[
+X \;\sim\; \mathrm{Binomial}(n,\, 0{,}5).
+\]
+El contraste es exacto: el $p$-valor se calcula directamente con la distribución binomial, sumando la probabilidad de observar un número de aciertos al menos tan extremo como el observado, sin recurrir a ninguna aproximación normal \cite{conover1999}.
+
+\emph{Uso en la memoria.} Se aplica al acierto direccional del agente sin supervisar (M5) para contrastar si su tasa de acierto difiere significativamente de $0{,}5$. La hipótesis central de la memoria parte precisamente del caso en que el agente acierta menos de la mitad de las veces, que es cuando STRATA tiene margen para rescatarlo.
+
+\subsection{Test de McNemar pareado}
+\label{sec:tests-mcnemar}
+
+La comparación realmente informativa no es la tasa de acierto absoluta de una estrategia, sino si una estrategia acierta más que otra sobre \emph{las mismas} decisiones. Como STRATA (M8) y el agente sin supervisar (M5) se enfrentan exactamente a los mismos días y a los mismos retornos, sus aciertos están pareados, y un contraste que ignore ese emparejamiento desperdicia información. El test de McNemar está diseñado para datos pareados de respuesta binaria \cite{mcnemar1947}.
+
+Se organiza la comparación en una tabla $2\times 2$ que clasifica cada día según acierte o falle cada estrategia. Las casillas que importan son las \emph{discordancias}: sea $b$ el número de días en que M8 acierta y M5 falla, y $c$ el número de días en que M5 acierta y M8 falla. Los días en que ambas aciertan o ambas fallan no aportan información sobre cuál es mejor y no entran en el estadístico.
+
+\emph{Hipótesis nula.} Las discordancias son simétricas, $b = c$: ninguna de las dos estrategias tiene más probabilidad que la otra de acertar cuando difieren. Equivale a que la supervisión no cambia el acierto.
+
+\emph{Estadístico y distribución bajo la nula.} Con la corrección de continuidad de Edwards \cite{edwards1948}, el estadístico es
+\[
+\chi^2 \;=\; \frac{\big(|b - c| - 1\big)^2}{b + c} \;\sim\; \chi^2_1,
+\]
+una chi-cuadrado con un grado de libertad cuando $H_0$ es cierta. La corrección, restar $1$ al valor absoluto de la diferencia, ajusta el hecho de que se aproxima una distribución discreta por una continua y evita inflar la significación cuando las discordancias son pocas. Cuando $b + c$ es pequeño, la aproximación chi-cuadrado deja de ser fiable y se usa en su lugar el contraste binomial exacto: bajo $H_0$, condicionado al total de discordancias $b+c$, el número $b$ sigue una $\mathrm{Binomial}(b+c,\, 0{,}5)$.
+
+\emph{Uso en la memoria.} Es el contraste central de la hipótesis falsable: M8 frente a M5 sobre el acierto direccional pareado. El criterio de éxito pre-registrado es un $p$-valor por debajo de $0{,}10$.
+
+\subsection{Test de Diebold-Mariano}
+\label{sec:tests-dm}
+
+El acierto direccional es binario y deja fuera la magnitud del resultado. Para comparar dos estrategias por su rendimiento continuo, el resultado económico día a día, se usa el contraste de Diebold y Mariano, concebido para comparar la exactitud predictiva de dos procedimientos \cite{diebold1995}. Se parte de una función de pérdida que mide lo mal que lo hace cada estrategia en cada día (en la memoria, la pérdida ligada al resultado de la posición) y se forma el \emph{diferencial de pérdida} diario $d_t$, la diferencia entre la pérdida de una estrategia y la de la otra.
+
+\emph{Hipótesis nula.} Las dos estrategias tienen igual exactitud predictiva, es decir, el diferencial de pérdida tiene media poblacional cero: $\E[d_t] = 0$.
+
+\emph{Estadístico y distribución bajo la nula.} Sea $\bar d$ la media muestral del diferencial. El estadístico es
+\[
+DM \;=\; \frac{\bar d}{\sqrt{\widehat{\Var}(\bar d)}} \;\sim\; N(0, 1),
+\]
+asintóticamente normal estándar bajo $H_0$. La clave está en el denominador: como los diferenciales diarios están autocorrelados, su varianza no puede estimarse como si fueran independientes, y se usa un estimador de la \emph{varianza de largo plazo} robusto a heterocedasticidad y autocorrelación (HAC), que acumula las autocovarianzas relevantes del diferencial. Sin esa corrección, el contraste sobreestimaría la significación.
+
+\emph{Uso en la memoria.} Compara el meta-learner XGBoost (M10) frente a STRATA (M8) sobre el resultado económico. Dentro de la hipótesis de universalidad, lo que se busca es \emph{no} rechazar la igualdad: que el meta-learner no bata significativamente a la regla estadística.
+
+\subsection{Contrastes de equivalencia (TOST)}
+\label{sec:tests-tost}
+
+No rechazar una hipótesis nula no es lo mismo que demostrar que es cierta: la ausencia de evidencia de diferencia no es evidencia de ausencia de diferencia. Para \emph{afirmar} que dos estrategias son equivalentes hace falta un contraste diseñado a tal fin, no la mera ausencia de significación en un contraste de diferencia. El procedimiento de los dos contrastes unilaterales (TOST, \emph{Two One-Sided Tests}) cumple ese papel \cite{schuirmann1987}. Se fija de antemano una \emph{banda de equivalencia} $[-\delta, \delta]$, el margen dentro del cual dos estrategias se consideran indistinguibles a efectos prácticos.
+
+\emph{Hipótesis nula.} La de \emph{no equivalencia}: la diferencia verdadera entre las dos estrategias cae \emph{fuera} de la banda, es decir, $\Delta \le -\delta$ o bien $\Delta \ge \delta$.
+
+\emph{Estadístico y distribución bajo la nula.} La nula compuesta se descompone en dos contrastes unilaterales que se resuelven por separado: uno contrasta $\Delta \le -\delta$ y el otro $\Delta \ge \delta$, cada uno con su estadístico tipo $t$ (o normal en muestras grandes). Se declara la equivalencia solo si \emph{ambos} se rechazan al nivel fijado, lo que sitúa la diferencia dentro de la banda con la confianza deseada. La inversión de los papeles habituales (la equivalencia pasa a ser la hipótesis alternativa) es lo que permite afirmar equivalencia en sentido estadístico, y no solo no poder distinguir.
+
+\emph{Uso en la memoria.} Permite declarar M10 $\approx$ M8 de forma afirmativa, reforzando el contraste de Diebold-Mariano: no solo el meta-learner no bate a la regla, sino que ambas son equivalentes dentro de una banda acordada.
+
+\subsection{Bootstrap estacionario}
+\label{sec:tests-bootstrap}
+
+Muchas cantidades de interés, como la diferencia de ratios de Sharpe entre dos estrategias, no tienen una distribución muestral de forma cerrada manejable, sobre todo cuando los retornos están autocorrelados. El \emph{bootstrap} estima la distribución de un estadístico remuestreando los propios datos, pero el bootstrap clásico, que remuestrea observaciones individuales de forma independiente, destruye la dependencia serial de una serie temporal y subestima la variabilidad. El \emph{bootstrap estacionario} de Politis y Romano resuelve esto remuestreando \emph{bloques} de observaciones consecutivas en lugar de observaciones sueltas, con longitud de bloque aleatoria de distribución geométrica \cite{politis1994}. Al pegar bloques contiguos se preserva la estructura de dependencia local; al hacer la longitud aleatoria se evita el artefacto de un tamaño de bloque fijo y se garantiza que las series remuestreadas sean estacionarias.
+
+\emph{Uso en la memoria.} Se emplea para construir intervalos de confianza del diferencial de ratios de Sharpe, $\Delta$Sharpe, entre estrategias: se remuestrean muchas trayectorias por bloques, se recalcula el estadístico en cada una y se toma el intervalo a partir de la distribución resultante. La longitud media de bloque se fija en función del tamaño de muestra, del orden de $\sqrt{N}$ con $N$ el número de observaciones, criterio habitual para equilibrar sesgo y varianza.
+
+\subsection{Deflated Sharpe Ratio}
+\label{sec:tests-dsr}
+
+El último contraste cierra el problema de multiplicidad anticipado en la Sección~\ref{sec:cpcv}. Un ratio de Sharpe muestral elevado puede no reflejar habilidad si se ha obtenido tras probar muchas estrategias, o si la muestra es corta, o si los retornos se alejan de la normalidad. El \emph{Deflated Sharpe Ratio} (DSR) corrige el Sharpe observado por estos tres factores y lo convierte en una probabilidad: la de que el Sharpe verdadero sea positivo, una vez descontado lo que cabría esperar por azar tras la búsqueda realizada \cite{bailey2014}.
+
+\emph{Hipótesis nula.} El Sharpe verdadero de la estrategia es nulo (o no supera el máximo que el azar produciría dado el número de pruebas realizadas); el Sharpe observado es fruto de la selección y del ruido muestral.
+
+\emph{Mecánica del ajuste.} La corrección parte del hecho de que, al probar $N$ estrategias independientes sin habilidad alguna, el máximo de sus Sharpe muestrales crece con $N$ por puro azar; el DSR descuenta ese máximo esperado. Además incorpora la longitud de la muestra y los momentos de orden superior de los retornos (asimetría y curtosis), porque la distribución del estimador del Sharpe se desvía de la normal cuando los retornos tienen colas pesadas, justo el caso financiero. El resultado es un Sharpe ``desinflado'' acompañado de un $p$-valor; un DSR que sigue siendo significativo es evidencia de que el rendimiento sobrevive al escrutinio de la multiplicidad. El problema de fondo, que la abundancia de estrategias probadas en finanzas produce hallazgos espurios con alta frecuencia, está documentado de forma amplia y motiva exigir umbrales de significación más severos que los habituales en otras disciplinas \cite{harvey2016}.
+
+\emph{Uso en la memoria.} Se aplica al ratio de Sharpe de STRATA (M8) para comprobar si su rendimiento ajustado por riesgo sobrevive a la corrección por multiplicidad, no-normalidad y longitud de muestra, en lugar de reportar el Sharpe muestral en bruto.
+
+% ===========================================================================
+% [ESQUELETO PENDIENTE — secciones por redactar tras este bloque]
+% ===========================================================================
 
 \section{STRATA dentro del marco}
 \label{sec:strata-marco}
 % Definición formal de la función de supervisión, los tres detectores ortogonales
 % (RAM/PSA/GSO) y la capa de intervención. Conecta cada pieza con las secciones anteriores.
+
+\section{Los tres detectores}
+\label{sec:detectores}
+% RAM (HMM, sec 3.2), PSA (BOCPD, sec 3.4), GSO (GARCH, sec 3.3). Ortogonalidad de los ejes.
+
+\section{La capa de intervención}
+\label{sec:intervencion}
+% warn / reduce / override; override-C; gate tau. Conecta con w_t (sec 3.5.1).
