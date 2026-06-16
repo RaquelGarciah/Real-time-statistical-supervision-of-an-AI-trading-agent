@@ -1794,3 +1794,124 @@ dirección diaria con muestra corta.
 **Referencias.** `experiments/m10_improve_smci.py`, `outputs/experiments/m10_improve_smci.json`, pre-registro
 + enmiendas B1–B5 [2026-06-16]. Auditoría @rigor-matematico (diseño BLOQUEADO→B1–B5 aplicadas→APROBADO;
 resultados APROBADO con condición: ningún claim inferencial sobre M10-base sin McNemar/sign pareados).
+
+## [2026-06-16] [Pre-registro] - Experimento m10-pivot-scan (elección rigurosa del activo de pivote)
+
+**Contexto.** El proyecto pivota a UN solo activo. Pregunta: ¿en qué activo la M10 DESPLEGABLE bate a M5, M8
+y B&H en accuracy, de forma significativa y robusta? Métrica clave = accuracy direccional; se enriquece con
+Sharpe, equity y Deflated Sharpe. La M10 desplegable = walk-forward expandible (reentreno mensual, solo
+pasado) → TODO el OOS es test válido para una config FIJA (no hay selección por activo → no hay split
+val/test necesario; más potencia que la loncha 40%).
+
+**Hipótesis (ex-ante, mecanística).** En la cohorte de activos donde B&H es **mal apostador direccional**
+(accuracy B&H ≤ 0.5 en OOS, i.e. cayeron/laterales), una M10 desplegable de config FIJA bate a B&H (y a
+M5/M8) en accuracy, porque puede ponerse corta donde el pasivo pierde. Cohorte declarada ANTES de mirar:
+los de B&H≤0.5 (candidatos: MSTR, MARA, SMCI, UNG; se confirma con el dato).
+
+**H0.** En todo activo, accuracy(M10) ≤ max(M5, M8, B&H) **o** no significativa vs B&H.
+
+**Configs FIJAS a priori (NO tuneadas por activo → sin sobreajuste de selección).** Tres, motivadas a
+priori, no elegidas sobre los datos:
+- **base** = 22 features, thr 0.5, 1 semilla (M10-WF canónica, la desplegable de referencia).
+- **ens** = 22 features, thr 0.5, ensemble 10 semillas (reducción de varianza, siempre defendible).
+- **aug** = 22 features + señal real causal (momentum 5/21/63, vol relativa, racha), ensemble 10 semillas.
+WF N0=150, step=21, embargo=5, expandible. Seed 42.
+
+**Estadístico.** Por activo×config: accuracy de M10/M5/M8/B&H; McNemar y block-permutation (autocorr-robusto)
+de M10 vs M5/M8/B&H; sign test M10 vs 0.5; Sharpe causal (lag=1), equity final, Deflated Sharpe (n_trials =
+nº configs probadas). **Familia confirmatoria primaria = McNemar M10-vs-B&H sobre 3 configs × 10 activos
+(Holm-30).** vs M5/M8 = secundario (reportado, Holm aparte).
+
+**Criterio de éxito (caso de estudio FUERTE).** ≥1 activo de la cohorte B&H-débil donde, sobre todo el OOS:
+accuracy(M10) > M5 **y** > M8 **y** > B&H, con **McNemar vs B&H bajo Holm-30 p_adj<0.10**, sign vs 0.5
+p<0.10, y Sharpe/equity coherentes (mismo signo de ventaja). Ese es el activo de pivote.
+
+**Criterio de éxito PARCIAL (defendible, lo que el tutor aceptó).** M10 > M5/M8/B&H **nominalmente** en un
+activo B&H-débil, con significancia limitada por n; el resto = trabajo futuro. Se reporta como tal, sin
+inflar.
+
+**Criterio de fracaso (pre-registrado).** Ningún activo da victoria significativa NI nominal robusta → se
+reporta negativo (coherente con mercado casi eficiente) y la contribución es metodológica. No se baja el
+listón ni se re-selecciona config tras ver resultados.
+
+**Anti-cherry-pick.** Cohorte ex-ante (B&H≤0.5, mecanística); se reportan los 10 activos; Holm-30; DSR por
+las configs probadas; configs fijas (no tuneadas por activo).
+
+**Output.** `outputs/experiments/m10_pivot_scan.json`. Script: `experiments/m10_pivot_scan.py`.
+**Notebook entregable:** `notebooks/m10_better_smci.ipynb` (todas las pruebas, gráficas y conclusiones).
+
+## [2026-06-16] [Pre-registro] - Experimento m10-smci-advanced (mejorar M10 en SMCI: métodos avanzados)
+
+**Contexto.** Raquel pide agotar las palancas sobre SMCI (no pivotar aún). El M10-WF base/ensemble topa en
+accuracy 0.524 (bate a M5/M8/B&H nominal, NO significativo: McNemar vs B&H p≈0.39). El ensemble mantiene
+accuracy y mejora Sharpe (0.73→1.23) y equity (1.32×→1.98×) → se conserva. Criterio de Raquel: a igual
+accuracy, ganar en Sharpe/equity cuenta.
+
+**Hipótesis (exploratoria).** Alguna de estas reformulaciones —motivadas a priori por la literatura—
+mejora la accuracy direccional de M10 en SMCI (o, a igual accuracy, su Sharpe/equity), de forma desplegable:
+1. **Triple-barrier target** (López de Prado 2018, cap. 3): etiqueta de entrenamiento por TP=+kσ_t / SL=−kσ_t
+   / barrera temporal H días (denoising del label); se ENTRENA con triple-barrier pero se EVALÚA la dirección
+   contra sign(r_{t+1}) para comparabilidad con M5/M8/B&H.
+2. **Modelos especializados por régimen HMM**: 3 XGBoost (ponderados por P_estado del HMM en el fit) y mezcla
+   p1 = Σ_s P_s(t)·model_s(x_t).
+3. **Stacking M5→M10**: añadir size del agente (M5/M8) como feature de M10 (walk-forward causal; conocido en t).
+4. **Voting M5+M10**: acuerdo → seguir; desacuerdo → (cobertura completa) seguir M10 / (activos) abstener.
+5. **Abstención condicional**: al régimen (abstener solo en Estrés) y al acuerdo de las 5 personalidades.
+
+**H0.** Ninguna variante supera al mejor M10 fijo (ensemble) en accuracy a cobertura completa con
+significancia, ni bate a M5/M8/B&H significativamente.
+
+**Diseño.** Walk-forward expandible desplegable, config FIJA a priori por método (sin tuneo por activo →
+todo el OOS = test, ~250 días). Ensemble 10 semillas donde aplique. **Triple-barrier: embargo = H+1 = 6**
+(la etiqueta usa H días futuros; el embargo impide que la etiqueta del último día de train alcance el bloque
+predicho → sin look-ahead). Métrica primaria = **accuracy a COBERTURA COMPLETA** vs sign(r_{t+1}); la
+abstención se reporta con accuracy en días activos Y cobertura (no comparable a B&H si <100%).
+
+**Estadístico.** Por método: accuracy, Sharpe causal (lag=1), equity, DSR (n_trials = nº métodos);
+McNemar + block-permutation M10 vs M5/M8/B&H; sign vs 0.5. **Holm** sobre la familia método-vs-B&H.
+
+**Criterio de éxito (FUERTE).** ≥1 método con accuracy > M5/M8/B&H, McNemar vs B&H bajo Holm p_adj<0.10 y
+sign vs 0.5 p<0.10. **Éxito SECUNDARIO (criterio de Raquel):** método con accuracy ≥ base y Sharpe/equity
+mejores con DSR>0.
+
+**Criterio de fracaso (pre-registrado).** Ninguna variante alcanza significancia en accuracy → se reporta
+honestamente (dirección diaria de SMCI casi-eficiente); el entregable es el mejor M10 desplegable (ensemble:
+accuracy 0.524 nominal + Sharpe/equity fuertes) + la demostración metodológica. No se baja el listón ni se
+re-selecciona tras ver el test.
+
+**Anti-cherry-pick.** Métodos motivados a priori (literatura), no tuneados por activo; Holm sobre todos;
+DSR; se reportan todos los métodos (también los que empeoran).
+
+**Output.** `outputs/experiments/m10_smci_advanced.json`. Script: `experiments/m10_smci_advanced.py`.
+Notebook entregable: `notebooks/m10_better_smci.ipynb`.
+
+## [2026-06-16] [Hallazgo] - SMCI a fondo: ninguna de 12 variantes desplegables bate a B&H en accuracy (significativo); ensemble = mejor M10 (Sharpe/equity nominal)
+
+**Contexto.** Por petición de Raquel, agotar las palancas para mejorar M10 en SMCI antes de pivotar de activo.
+Tres experimentos: tuning en validación (m10_improve_smci), configs fijas (m10_smci_deep), métodos avanzados
+(m10_smci_advanced: triple-barrier, modelos por régimen, stacking, voting, abstención).
+
+**Detalle.** Sobre el OOS desplegable de SMCI (n=250, walk-forward, B&H=0.484 benchmark justo): **techo de
+accuracy = 0.524** (base = ensemble), superior NOMINAL a M5 (0.484), M8 (0.496), B&H (0.484). **Ninguna de las
+12 variantes** alcanza significancia vs B&H (McNemar Holm p_adj=1.0; sign vs 0.5 p≥0.49 en TODAS). Triple-
+barrier (0.488, embargo=H+1 verificado sin look-ahead), regime_models (0.50), stack_agent (0.492) NO mejoran;
+varios degradan. Abstención no concentra acierto (activos≈completa → la confianza no discrimina). El tuning en
+validación se desploma en test (−0.10, sobreajuste de selección). **Única mejora robusta = ensemble** (10
+semillas): misma accuracy, Sharpe 0.73→1.23, equity 1.32×→1.98× — pero **DSR=0.47<0.5** → no significativo
+tras deflactar; nominal/ilustrativo (CLAUDE.md §4).
+
+**Implicaciones para el TFG.** Negativo honesto pre-registrado: la dirección DIARIA de SMCI es casi-eficiente
+para estos detectores; el rescate significativo de STRATA en SPY (M10=0.539, leverage effect) NO aparece en un
+stock individual con leverage débil (limitación prevista en CLAUDE.md §3). Contribución metodológica:
+(i) demostración del sobreajuste de selección + validación≠test; (ii) mapa exhaustivo de 12 métodos con
+significancia; (iii) ensemble como mejor M10 desplegable (ventaja nominal en accuracy y riesgo-retorno,
+honestamente etiquetada). Entregable: `notebooks/m10_better_smci.ipynb` (15 celdas, 5 gráficas).
+
+**Claims auditados @rigor-matematico.** PERMITIDO: superioridad nominal de base/ens; triple-barrier sin
+look-ahead que no mejora; ensemble mejora Sharpe/equity nominal. PROHIBIDO: cualquier "significativo" en
+accuracy o en Sharpe/equity; Sharpe sin DSR adjunto. Veredicto: APROBADO con condiciones (γ filtrado
+confirmado; strata_real colapso = posible prior-flip; SMCI≠SPY documentado).
+
+**Referencias.** `experiments/m10_{improve_smci,smci_deep,smci_advanced}.py`,
+`outputs/experiments/m10_{improve_smci,smci_deep,smci_advanced}.json`, `notebooks/m10_better_smci.ipynb`,
+pre-registros [2026-06-16].
