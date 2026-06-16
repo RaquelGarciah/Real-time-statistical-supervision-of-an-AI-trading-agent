@@ -1,0 +1,235 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "seed": 42,
+    "signal_lag": 1,
+    "n_oos": 400,
+    "test_start_idx": 250,
+    "test_span": [
+      "2025-10-02",
+      "2026-05-11"
+    ],
+    "burnins": [
+      100,
+      120,
+      140,
+      160,
+      180,
+      200
+    ],
+    "configs": [
+      "base",
+      "ens"
+    ],
+    "n_seeds": 10,
+    "criterio": "elegir (config,burn-in) por accuracy en VALIDACIÓN; test intacto",
+    "regla": "test no se toca para elegir → selección honesta (validación≠test)"
+  },
+  "grid": [
+    {
+      "config": "base",
+      "burnin": 100,
+      "val_acc": 0.4667,
+      "val_sharpe": -1.374,
+      "val_equity": 0.4091,
+      "val_n": 150,
+      "test_acc": 0.5533,
+      "test_sharpe": 1.837,
+      "test_equity": 2.1279,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 120,
+      "val_acc": 0.5,
+      "val_sharpe": -1.339,
+      "val_equity": 0.5103,
+      "val_n": 130,
+      "test_acc": 0.5267,
+      "test_sharpe": 1.067,
+      "test_equity": 1.417,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 140,
+      "val_acc": 0.4636,
+      "val_sharpe": -1.203,
+      "val_equity": 0.6168,
+      "val_n": 110,
+      "test_acc": 0.5667,
+      "test_sharpe": 2.309,
+      "test_equity": 2.7214,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 160,
+      "val_acc": 0.4556,
+      "val_sharpe": -1.682,
+      "val_equity": 0.6345,
+      "val_n": 90,
+      "test_acc": 0.5533,
+      "test_sharpe": 1.609,
+      "test_equity": 1.8871,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 180,
+      "val_acc": 0.4857,
+      "val_sharpe": -2.778,
+      "val_equity": 0.5783,
+      "val_n": 70,
+      "test_acc": 0.56,
+      "test_sharpe": 1.738,
+      "test_equity": 2.02,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 200,
+      "val_acc": 0.54,
+      "val_sharpe": 0.53,
+      "val_equity": 1.0244,
+      "val_n": 50,
+      "test_acc": 0.56,
+      "test_sharpe": 2.187,
+      "test_equity": 2.5534,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 100,
+      "val_acc": 0.4667,
+      "val_sharpe": -1.319,
+      "val_equity": 0.4203,
+      "val_n": 150,
+      "test_acc": 0.5733,
+      "test_sharpe": 2.533,
+      "test_equity": 3.057,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 120,
+      "val_acc": 0.5,
+      "val_sharpe": -0.656,
+      "val_equity": 0.6667,
+      "val_n": 130,
+      "test_acc": 0.5667,
+      "test_sharpe": 2.288,
+      "test_equity": 2.6933,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 140,
+      "val_acc": 0.4727,
+      "val_sharpe": -1.125,
+      "val_equity": 0.6319,
+      "val_n": 110,
+      "test_acc": 0.5733,
+      "test_sharpe": 2.65,
+      "test_equity": 3.2458,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 160,
+      "val_acc": 0.4444,
+      "val_sharpe": -3.483,
+      "val_equity": 0.4245,
+      "val_n": 90,
+      "test_acc": 0.52,
+      "test_sharpe": 1.583,
+      "test_equity": 1.8635,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 180,
+      "val_acc": 0.5143,
+      "val_sharpe": -1.716,
+      "val_equity": 0.6949,
+      "val_n": 70,
+      "test_acc": 0.56,
+      "test_sharpe": 2.122,
+      "test_equity": 2.4706,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 200,
+      "val_acc": 0.52,
+      "val_sharpe": -0.358,
+      "val_equity": 0.9106,
+      "val_n": 50,
+      "test_acc": 0.58,
+      "test_sharpe": 2.702,
+      "test_equity": 3.332,
+      "test_n": 150
+    }
+  ],
+  "elegida": {
+    "config": "base",
+    "burnin": 200,
+    "val_acc": 0.54,
+    "val_sharpe": 0.53,
+    "val_equity": 1.0244,
+    "val_n": 50,
+    "test_acc": 0.56,
+    "test_sharpe": 2.187,
+    "test_equity": 2.5534,
+    "test_n": 150
+  },
+  "ref_validacion": {
+    "m5": {
+      "acc": 0.4,
+      "sharpe": -0.591,
+      "equity": 0.9925
+    },
+    "m8": {
+      "acc": 0.44,
+      "sharpe": 1.921,
+      "equity": 1.0288
+    },
+    "bh": {
+      "acc": 0.52,
+      "sharpe": 0.371,
+      "equity": 1.0027
+    }
+  },
+  "ref_test": {
+    "m5": {
+      "acc": 0.5333,
+      "sharpe": 0.679,
+      "equity": 1.0341
+    },
+    "m8": {
+      "acc": 0.5333,
+      "sharpe": 0.678,
+      "equity": 1.034
+    },
+    "bh": {
+      "acc": 0.4467,
+      "sharpe": -0.867,
+      "equity": 0.4826
+    }
+  },
+  "diagnostico_test": {
+    "frac_largo": 0.42,
+    "frac_corto": 0.58,
+    "frac_up_test": 0.447,
+    "siempre_corto_acc": 0.5533,
+    "siempre_largo_bh_acc": 0.4467,
+    "mcnemar_vs_bh_p": 0.0863,
+    "block_perm_vs_bh_p": 0.0067,
+    "mcnemar_vs_m5_p": 0.7077,
+    "sign_vs_0.5_p": 0.1649,
+    "sign_ci95": [
+      0.4767,
+      0.6409
+    ]
+  }
+}

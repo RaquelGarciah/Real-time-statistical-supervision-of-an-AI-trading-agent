@@ -1915,3 +1915,25 @@ confirmado; strata_real colapso = posible prior-flip; SMCI≠SPY documentado).
 **Referencias.** `experiments/m10_{improve_smci,smci_deep,smci_advanced}.py`,
 `outputs/experiments/m10_{improve_smci,smci_deep,smci_advanced}.json`, `notebooks/m10_better_smci.ipynb`,
 pre-registros [2026-06-16].
+
+## [2026-06-16] [Hallazgo] - SMCI selección de burn-in en validación: M10 bate a B&H sig. en test, pero por sesgo a corto en tramo bajista (no habilidad)
+
+**Contexto.** Raquel señala (correctamente) que elegir burn-in/config en VALIDACIÓN no es p-hacking; pide
+elegir la estrategia de mayor accuracy/Sharpe/equity. `m10_smci_select.py`: validación=[N0:250], test=[250:fin]
+(intacto), barrido burn-in {100..200} × {base, ens}.
+
+**Detalle.** Elegida por accuracy de validación: base / burn-in 200 (val_acc=0.54 sobre ~50 días → selección
+ruidosa). En TEST (n=150, 2025-10-02→2026-05-11): M10 acc=0.56, Sharpe +2.19, equity 2.55× > M5/M8 (0.533) y
+B&H (0.447, eq 0.48×). **Bate a B&H significativamente** (block-perm p=0.0067, McNemar p=0.086). PERO el test
+es bajista (44.7% días alcistas), M10 está 58% corto, y el trivial **"siempre corto" = 0.553 ≈ M10 (0.56)**.
+M10 **no** bate al agente (McNemar vs M5 p=0.71) ni a la moneda (sign vs 0.5 p=0.16, IC95 [0.477,0.641]).
+
+**Implicaciones para el TFG.** Es el problema de SPY AL REVÉS: en SPY B&H gana en mercado alcista (siempre-
+largo); aquí M10 "gana a B&H" por estar net-short en un tramo que cae. Defendible como "M10 bate al pasivo en
+el periodo de test (block-perm p=0.007)" SOLO si se presenta junto al benchmark siempre-corto (0.553) y se
+dice que no bate al agente ni a la moneda. NO presentar como habilidad direccional significativa. La sub-
+ventana de test (B&H 0.447) es bajista, no el ≈50% justo del OOS completo (B&H 0.484). Documentado en
+`notebooks/m10_better_smci.ipynb` §E con gráficas (accuracy por burn-in en validación + test vs trivial).
+
+**Referencias.** `experiments/m10_smci_select.py`, `outputs/experiments/m10_smci_select.json`,
+`notebooks/m10_better_smci.ipynb` §E.

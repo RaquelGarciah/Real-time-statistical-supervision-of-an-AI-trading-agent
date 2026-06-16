@@ -62,6 +62,7 @@ os.chdir(_ROOT)                                   # ejecutar desde la raíz del 
 IMP = json.load(open("outputs/experiments/m10_improve_smci.json"))   # A: tuning en validación
 DEEP = json.load(open("outputs/experiments/m10_smci_deep.json"))     # B: configs fijas a priori
 ADV = json.load(open("outputs/experiments/m10_smci_advanced.json"))  # C: métodos avanzados
+SEL = json.load(open("outputs/experiments/m10_smci_select.json"))    # E: selección de burn-in en validación
 
 m = ADV["meta"]
 print(f"Activo: {m['ticker']}  ·  OOS test desplegable: {m['oos_span'][0]} → {m['oos_span'][1]}  (n={m['n_eval']} días)")
@@ -229,6 +230,76 @@ ax.set_ylabel("accuracy"); ax.set_title("Abstención: activos ≈ completa → l
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()""")
 
 # ---------------------------------------------------------------------------------------------
+md(r"""## §E · Elegir la mejor estrategia por **selección en validación** (no p-hacking)
+
+Elegir el **burn-in** y la **config** mirando un conjunto de **validación** (y reportar en **test** intacto)
+**no es p-hacking** — es selección de hiperparámetros, lo correcto. P-hacking sería elegirlos mirando el test.
+
+**Protocolo:** validación = `[burn-in : día 250]`, test = `[día 250 : fin]` (últimos ~150 días, **intacto**,
+se toca una vez). Para cada (config, burn-in) se mide accuracy en validación; se elige el mejor; se reporta en
+test. Barrido de burn-ins **{100,…,200}** × {base 1-seed, ensemble 10-seed}.""")
+
+code(r"""grid = SEL["grid"]; best = SEL["elegida"]; BG = SEL["meta"]["burnins"]
+fig, ax = plt.subplots(figsize=(10, 4.3))
+x = np.arange(len(BG)); w = 0.38
+for i, (cfg, col) in enumerate((("base", "#7fb2d6"), ("ens", "#2c7fb7"))):
+    vals = [next(g["val_acc"] for g in grid if g["config"] == cfg and g["burnin"] == b) for b in BG]
+    bars = ax.bar(x + (i - 0.5) * w, vals, w, label=f"{cfg}", color=col, edgecolor="black", lw=0.6)
+    for b, v in zip(bars, vals):
+        ax.text(b.get_x() + b.get_width() / 2, v + 0.003, f"{v:.2f}", ha="center", fontsize=8)
+ax.axhline(0.5, color="black", ls="--", lw=1, label="azar (0.5)")
+ax.set_xticks(x); ax.set_xticklabels(BG); ax.set_xlabel("burn-in (días de entrenamiento inicial)")
+ax.set_ylim(0.40, 0.58); ax.set_ylabel("accuracy en VALIDACIÓN")
+ax.set_title(f"SMCI · accuracy en validación por burn-in → elegido: {best['config']}/{best['burnin']}")
+ax.legend(fontsize=8); plt.tight_layout(); plt.show()
+print(f"Elegido en validación: {best['config']} / burn-in {best['burnin']}  (val_acc={best['val_acc']}, val_n días variable)")
+print("OJO: la validación de burn-in alto tiene MUY pocos días (p.ej. N0=200 → ~50 d) → selección ruidosa.")""")
+
+md(r"""### §E.1 · La estrategia elegida en **test** — y el matiz que la define
+
+La elegida (base, burn-in 200) en test: **accuracy 0.56, Sharpe +2.19, equity 2.55×**, batiendo a M5/M8
+(0.533) y a B&H (0.447, equity 0.48×). **Pero** el test resultó un tramo **bajista** (solo 44.7 % de días
+suben) y M10 está **58 % corto**. El benchmark trivial **"siempre corto" saca 0.553** ≈ M10 (0.56). Es el
+**problema de SPY al revés**: M10 "gana a B&H" sobre todo por estar **corto en un mercado que cae**.""")
+
+code(r"""d = SEL["diagnostico_test"]; rt = SEL["ref_test"]; b = SEL["elegida"]
+labels = ["M10\n(elegida)", "M5\n(agente)", "M8\n(regla)", "B&H\n(siempre largo)", "SIEMPRE\nCORTO"]
+acc = [b["test_acc"], rt["m5"]["acc"], rt["m8"]["acc"], rt["bh"]["acc"], d["siempre_corto_acc"]]
+cols = ["#2c7fb7", "#9e9e9e", "#f0a830", "#4caf50", "#c44e52"]
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(13, 4.4))
+bars = a1.bar(labels, acc, color=cols, edgecolor="black", lw=0.7)
+a1.axhline(0.5, color="black", ls="--", lw=1)
+for bb, v in zip(bars, acc):
+    a1.text(bb.get_x() + bb.get_width() / 2, v + 0.004, f"{v:.3f}", ha="center", fontsize=9)
+a1.set_ylim(0.40, 0.60); a1.set_ylabel("accuracy (test, n=150)")
+a1.set_title("Accuracy en test — M10 ≈ 'siempre corto' (mercado bajista)")
+# Sharpe + equity
+arms = ["M10", "M5", "M8", "B&H"]
+sr = [b["test_sharpe"], rt["m5"]["sharpe"], rt["m8"]["sharpe"], rt["bh"]["sharpe"]]
+eq = [b["test_equity"], rt["m5"]["equity"], rt["m8"]["equity"], rt["bh"]["equity"]]
+xx = np.arange(len(arms)); w = 0.38
+a2.bar(xx - w / 2, sr, w, label="Sharpe", color="#2c7fb7", edgecolor="black", lw=0.6)
+a2.bar(xx + w / 2, eq, w, label="equity (×)", color="#f0a830", edgecolor="black", lw=0.6)
+a2.axhline(0, color="black", lw=0.8); a2.set_xticks(xx); a2.set_xticklabels(arms)
+a2.set_title("Sharpe y equity en test (ilustrativo)"); a2.legend(fontsize=8)
+for i, (s, e) in enumerate(zip(sr, eq)):
+    a2.text(i - w / 2, s + 0.05, f"{s:+.1f}", ha="center", fontsize=8)
+    a2.text(i + w / 2, e + 0.05, f"{e:.1f}", ha="center", fontsize=8)
+plt.tight_layout(); plt.show()
+print(f"M10 elegida: {b['test_acc']} acc · posición {d['frac_corto']:.0%} corto · días alcistas {d['frac_up_test']:.0%}")
+print(f"Significancia en test:  vs B&H  McNemar p={d['mcnemar_vs_bh_p']}  block-perm p={d['block_perm_vs_bh_p']}  → BATE a B&H")
+print(f"                        vs M5   McNemar p={d['mcnemar_vs_m5_p']}  → NO bate al agente")
+print(f"                        vs 0.5  sign test p={d['sign_vs_0.5_p']}  IC95={d['sign_ci95']}  → NO bate a la moneda")""")
+
+md(r"""**Lectura honesta de §E.** Elegir el burn-in en validación es legítimo y la estrategia resultante **bate a
+B&H de forma significativa** en el test (block-perm p=0.007). Pero: (i) **no bate al agente** (M5, p=0.71) ni a
+una **moneda** (sign test p=0.16); (ii) el test es bajista y M10 está net-short, así que "siempre corto" (0.553)
+casi iguala a M10 (0.56) → la ventaja sobre B&H es **el sesgo a corto en un mercado que cae**, no habilidad
+direccional fina; (iii) la validación de burn-in alto son ~50 días → selección ruidosa. **Defendible como
+"M10 bate al pasivo en el periodo de test"**, siempre que se presente con el benchmark "siempre-corto" al lado;
+**no** como "habilidad direccional significativa".""")
+
+# ---------------------------------------------------------------------------------------------
 md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)
 
 **Lo que se puede afirmar (PERMITIDO):**
@@ -256,7 +327,14 @@ ventaja nominal en accuracy y en riesgo-retorno honestamente etiquetada.
 
 **Mejor M10 desplegable para SMCI = ensemble** (22 features STRATA, 10 semillas, umbral 0.5): accuracy 0.524
 (> M5/M8/B&H nominal), Sharpe +1.23, equity 1.98×. *Trabajo futuro:* OOS más largo para ganar potencia (el
-agente solo existe post-cutoff del LLM → límite duro de muestra).""")
+agente solo existe post-cutoff del LLM → límite duro de muestra).
+
+**Matiz de §E (selección en validación).** Si se elige el burn-in en validación (legítimo), la estrategia
+resultante (base, burn-in 200) **bate a B&H de forma significativa** en el tramo de test (block-perm p=0.007).
+Pero ese test es **bajista** y M10 está net-short, así que "siempre corto" (0.553) casi iguala a M10 (0.56), y
+M10 **no** bate al agente (p=0.71) ni a una moneda (p=0.16). Es el problema de SPY **al revés**: la ventaja
+sobre el pasivo es el **sesgo a corto en un mercado que cae**, no habilidad direccional. Defendible como "bate
+al pasivo en el periodo", no como "habilidad significativa".""")
 
 nb = new_notebook(cells=cells, metadata={
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
