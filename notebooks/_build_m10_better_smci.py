@@ -366,6 +366,35 @@ sin rescate). Es la **explicación honesta** de por qué SPY es el caso central 
 se confunden. *(Pista para otro activo: ROKU es el stock individual más "tipo-SPY" —alcista, agente 97 % corto,
 intervención 88 %— pero su rescate aún no es significativo: M10 vs M5 p=0.13.)*""")
 
+md(r"""### §F.2 · El criterio del tutor y el muro estructural
+
+El tutor pide **un activo donde M10 gane en accuracy a TODO** (M5, M8 **y** B&H). Buscando en el panel: **SMCI
+es el ÚNICO** que lo cumple. La razón de que sea tan raro —y de que no sea significativo— es estructural. El
+agente LLM es **corto-sesgado en los 10 activos** (71–100 % corto), lo que parte el universo en dos:
+
+| | **B&H batible** (cae/lateral) | **B&H no batible** (sube) |
+|---|---|---|
+| **Agente correcto** (corto, activo cae) | UNG, MSTR, **SMCI**, MARA → *M10 ≈ agente, sin rescate* | — |
+| **Agente equivocado** (corto, activo sube) | *(casilla vacía)* | SPY, NVDA, BAC, TSLA, XLE, ROKU → *M10 rescata al agente pero B&H gana* |
+
+**Batir a TODO exige B&H batible (activo cae) Y agente equivocado** → la casilla está **vacía**: en los activos
+que caen, el agente ya va corto (correcto), así que M10 no se separa de él. SMCI es el caso umbral (lateral,
+agente corto algo destemplado) donde M10 asoma por encima de los tres — por poco y sin significancia.""")
+
+code(r"""pa = PAN["por_activo"]; tks = [t for t in PAN["meta"]["panel"] if "error" not in pa[t]]
+margen = [round(pa[t]["accuracy"]["m10"] - max(pa[t]["accuracy"]["m5"], pa[t]["accuracy"]["m8"], pa[t]["accuracy"]["bh"]), 3) for t in tks]
+order = np.argsort(margen)[::-1]
+tks = [tks[i] for i in order]; margen = [margen[i] for i in order]
+fig, ax = plt.subplots(figsize=(12, 4.2))
+bars = ax.bar(tks, margen, color=["#2ca02c" if mg > 0 else "#c44e52" for mg in margen], edgecolor="black", lw=0.7)
+ax.axhline(0, color="black", lw=0.9)
+for b, v in zip(bars, margen):
+    ax.text(b.get_x() + b.get_width() / 2, v + (0.003 if v >= 0 else -0.009), f"{v:+.3f}", ha="center", fontsize=9)
+ax.set_ylabel("acc(M10) − máx(M5, M8, B&H)")
+ax.set_title("¿Bate M10 a TODO en accuracy? Solo si la barra es > 0  →  ÚNICO: SMCI")
+plt.tight_layout(); plt.show()
+print("Único activo con acc(M10) > M5 y > M8 y > B&H:", [t for t, mg in zip(tks, margen) if mg > 0])""")
+
 # ---------------------------------------------------------------------------------------------
 md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)
 
