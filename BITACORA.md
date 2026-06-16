@@ -1211,3 +1211,586 @@ análisis y se reporta como límite.
 **Referencias.** `outputs/experiments/walkforward_robustez.json` (claves `stratified_mcnemar.m10_vs_m5`,
 `part_b_confirmatory.m10_vs_m5`, `verdict`); `notebooks/_build.py` §13–§14; BITACORA pre-registro
 [2026-06-10] enmienda walk-forward.
+
+---
+
+## [2026-06-14] [Pre-registro] - Réplica multi-activo: recalibración por activo (NVDA)
+
+**Contexto.** Decisión de la autora: testear si STRATA generaliza a stocks individuales recalibrando
+**COMPLETAMENTE** sobre el histórico propio de cada activo, no reutilizando los modelos de SPY. Caso
+central: NVIDIA (NVDA), valor de crecimiento con leverage débil. Propósito: delimitar el dominio de
+validez de STRATA.
+
+**Hipótesis.** Si STRATA rescata porque explota el leverage effect (alto vol → bajista, en índices),
+NVDA (acción individual, leverage effect débil) debería **NO** ser rescatada. Los percentiles de
+severidad PSA/GSO se heredan de SPY (umbral no re-calibrado) — decisión de no-intervención: el SIGNO
+lo fija RAM (intervention.py), PSA/GSO solo escalan magnitud → no pueden invertir dirección.
+
+**H0.** STRATA (M8) no rescata a NVDA: accuracy/McNemar pareado sin mejora significativa.
+
+**Estadístico.**
+- *Primario (dirección):* McNemar pareado M8 vs M5, a α=0.10, con estratificación post-hoc por régimen
+  HMM (Calma/Estrés/Crisis) y sign test direccional del régimen en calibración (¿es informativo?).
+- *Secundario (economía):* ΔSharpe(M8−M5) con IC95 bootstrap estacionario (pareado, bloques √N);
+  cota **Bonferroni α=0.05/2 = 0.025** (ajuste por multiplicidad contra SPY: 2 activos centrales con
+  contrastes confirmatorios). Deflated Sharpe.
+- *Robustez:* MCC, AUC, log-loss de M8 vs M5. Nº de intervenciones RAM.
+
+**Criterio de éxito H0.** McNemar M8 vs M5 **NO significativo** (p≥0.10) **O** ΔSharpe(M8−M5) con cota
+Bonferroni < 0 (IC95 bajo cero). La hipótesis se sostiene si NVDA es *robustez_no_sostenida*.
+
+**Criterio de fracaso H0 (regla prior-flip, pre-registrada):** si el signo de la media de retornos por
+régimen en calibración **≠ signo en los primeros 60 días OOS**, el prior de RAM no es válido en NVDA
+(fallo de transferencia). Marca un **vacío de información** (no hay signo que invertir). En ese caso,
+el test de rescue se reporta pero se declara *inconclusivo_prior_flip=True*. Valor umbral: sign test
+binomial exacto sobre los días de calibración (Calma acierta positivo, Crisis acierta negativo, neutral
+en Estrés); si p>0.05 la dirección es demasiado ruidosa para construir un prior.
+
+**Config congelada.**
+- HMM **recalibrado de cero sobre NVDA 2000-01-01 → 2024-09-30**: K∈{2,3} (exploración; el criterio
+  K-por-activo ya se probó en abril y se descartó, pero K=2 o K=3 dependen del activo).
+- Percentiles de severidad PSA/GSO: **HEREDADOS de SPY** (P95/P99/máx de `cache/models/strata_thresholds.json`).
+  Justificación: los umbrales codifican "¿cuándo es PSA/GSO severo?" en unidades del histórico SPY; un
+  recalibrado per-activo metería n_obs de libertad (los 10 activos tendrían percentiles distintos → p-hacking
+  latente). RAM se recalibra por activo (prior por régimen del activo) pero PSA/GSO se heredan (decisión
+  que declara el no-recalibrado como **parámetro de robustez**, no grado de libertad).
+- RAM: **prior régimen→signo data-driven por activo** (orden por volatilidad del HMM recalibrado de NVDA;
+  su validez se mide con μ por estado y la regla prior-flip). La compuerta **τ=0.5 se mantiene** (criterio
+  parameter-free, igual que en SPY); no se recalibra τ por activo.
+- Signal_lag=1; OOS 2024-10-01 → 2026-05-20 (~409 días); semilla 42.
+
+**Datos.** NVDA, 24 años calibración 2000-01-01 → 2024-09-30 (6204 días); OOS 2024-10-01 → 2026-05-20
+(409 días). Caché: `cache/models/hmm_nvda.pkl`, `cache/models/calibration_summary_nvda.json`.
+
+**Output esperado.** `outputs/experiments/walkforward_robustez_nvda.json` con: meta, M5/M8 tabla maestra
+(accuracy, auc, log_loss, brier, mcc, sharpe, equity_final), McNemar M8 vs M5, sign test directional
+régimen (calib + OOS), prior_flip (calib vs OOS60), ΔSharpe(M8−M5) con IC95 bootstrap y cota Bonferroni,
+Deflated Sharpe, nº intervenciones, panel_drift (si aplica). Script: `experiments/recalibrate_nvda.py`.
+
+**Documento de salida.** Apéndice A (§A.1–§A.3) del notebook canónico: "Réplica multi-activo —
+recalibración por activo: NVDA".
+
+---
+
+## [2026-06-14] [Hallazgo] - NVDA: STRATA NO rescata; leverage effect no se cumple; dominio delimitado
+
+**Contexto.** Ejecutado el pre-registro anterior (recalibración NVDA, HMM K=3 calibrado 2000–2024-09 sobre
+NVDA, π SAM/GSO heredados, OOS 2024-10 → 2026-05, ~409 días). Auditado por @rigor-matematico en diseño
+(APROBADO) y en resultados (APROBADO CON 6 CONDICIONES; se aplicaron todas).
+
+**Detalle (cifras verificadas contra `walkforward_robustez_nvda.json` y `calibration_summary_nvda.json`).**
+
+*Modelo HMM K=3 sobre NVDA.* El HMM se calibra bien en densidad: held-out LL/obs K3 **−1.687** vs K2
+**−1.985** (ΔLL = **+0.298**, corte 2020, n_eval=1194); y K3 domina a K2 en **93.8 %** de los 16 orígenes
+anuales inter-época (incl. 2008/2020). La maquinaria de régimen transfiere a NVDA.
+
+*El leverage effect NO se cumple en NVDA — y de forma robusta.* Media de retorno diario por estado en la
+calibración completa 2000–2024: **Calma +0.00150, Estrés +0.00044, Crisis +0.00173** — las **tres
+positivas**, y el estado de MÁXIMA volatilidad (Crisis) es el **más alcista** (μ_Crisis > μ_Calma). No es un
+artefacto de la ventana: en el mapa de dirección origen a origen del walk-forward, **el estado Crisis es
+alcista en los 16 orígenes** (μ>0 siempre, +0.005 en plena crisis 2008). En SPY, Crisis es bajista (leverage)
+y da sentido a "Crisis → short"; en NVDA, RAM fija el signo por Calma-vs-Crisis y mapea **Crisis → short**,
+que es un **error sistemático**. El único estado con drift negativo es el de volatilidad **media** (Estrés),
+que RAM **no usa** para el signo y que además se desvanece tras 2016: aparece en el **100 %** de los orígenes
+≤2015 vs **12 %** ≥2016 (no-estacionariedad estructural; re-caracterización post-2016, era IA). Sign test
+direccional del régimen (acc≥0.5 por origen del walk-forward): **k=6/14, p=0.79** → no informativo.
+
+**Aplicación OOS (2024-10-01 → 2026-05-20, n=409).** Escalera de accuracy (métrica primaria) + Sharpe
+(ilustrativo, no load-bearing):
+
+| Métrica | M5 (agente) | M8 (STRATA) | M10 (XGBoost) |
+|---------|-------------|-------------|---------------|
+| Accuracy | 0.477 | 0.509 | **0.440** (peor) |
+| MCC | +0.008 | −0.023 | −0.137 |
+| AUC | 0.504 | 0.491 | 0.432 (peor que azar) |
+| Sharpe causal | −0.573 | +0.677 | −1.953 |
+| equity €1000 | 945 | 1090 | 204 |
+
+Confirmatorio (bootstrap estacionario pareado; veredicto por cota Bonferroni de 2): **M8−M5** mediana
+ΔSharpe **+1.27**, IC95 **[−0.37, +2.99]** (cruza 0), cota Bonf **−0.57<0** → H1 falsa; **M10−M5** mediana
+−1.40 (no robusto); **M10−M8** mediana −2.66, IC95 [−4.18, −0.96] **excluye 0** (M10 peor que M8). McNemar
+estratificado por régimen y por signo de drift: **ningún estrato sobrevive Holm (p_adj=1.0 en todos)**.
+Deflated Sharpe M8 ≈ **0.50** (n_trials=3, subestima; con el grid real ≥10 cae por debajo de 0.5).
+
+**Hallazgo clave:** M8 no rescata a NVDA **en dirección** (accuracy +0.03 dentro del ruido, MCC<0, AUC<0.5,
+McNemar p_adj=1.0). M10 (XGBoost) **empeora** (AUC 0.43 < 0.5 = evidencia activa de no-señal, no falta de
+potencia). El Sharpe de M8 sube (−0.57→+0.68) pero **no es rescate y no se apoya en él**: (1) no robusto
+(IC95 cruza 0, cota Bonferroni −0.57<0); (2) contaminado — los umbrales PSA/GSO son de SPY y la magnitud
+depende de un GARCH no regenerable; (3) Deflated Sharpe ≈ azar. La lectura plausible (no load-bearing) es
+cabalgar el drift alcista (drift OOS +0.375) + control de magnitud, consistente con que en régimen bajista
+M8 *empeora* (ΔSharpe −2.44). El veredicto se apoya **solo en métricas direccionales invariantes a magnitud**.
+
+**Vacío de información (prior-flip, regla pre-registrada).**
+
+El signo de la media por régimen en calibración (Calma +, Crisis +) se mantiene en los primeros 60 OOS,
+así que prior_flip = False. PERO es un **vacío vacuo**: no hay inversión porque NVDA es prácticamente
+neutral (sign test calib p=0.79 confirma que el régimen es ruido). El guardarraíl que delimitó el
+dominio fue la **prueba directa** de que el prior es informativo (sign test), no el flip de signo.
+
+**Panel (nota exploratoria).**
+
+De los 10 activos del panel de robustez walk-forward, 6/10 tienen prior_flip calib→OOS (XLE, UNG,
+MSTR, SMCI, ROKU, MARA): el prior direccional de SPY **no transfiere**. En 5/10 el acierto del régimen
+en calibración es <0.5 (no informativo). Esto es consistente con CLAUDE.md §1: el leverage effect (clave)
+es **específico de índices con volatilidad sistémica compartida**, no de stocks individuales.
+
+**Veredicto (pre-registrado):** `robustez_no_sostenida`. STRATA-NVDA no rescata.
+
+**Implicaciones para el TFG.**
+(1) Refuerza la constitución del proyecto (CLAUDE.md §1, caso central SPY justificado). STRATA se
+   delimita honestamente: funciona donde el leverage effect es fuerte (índices); falla en stocks
+   individuales sin esa asunción.
+(2) La aportación se **refuerza** con esta réplica: no es un rescate "universal" (overclaim común en ML),
+   sino disciplinado (funciona en su dominio, falla reconocidamente fuera).
+(3) El panel multi-activo (walk-forward) revela la misma limitación: prior_flip en 6/10 activos. NVDA
+   es el prototipo que lo ilustra con claridad (caso de tesis honesto).
+(4) Protocolo de rigor verificado: pre-registro antes de mirar, regla de falsificación disparada (vacío
+   de prior), Bonferroni aplicada como pre-registrado, Deflated Sharpe bajo → evidencia es el McNemar
+   (dirección), no el Sharpe.
+
+**Referencias.** `experiments/recalibrate_nvda.py`, `cache/models/hmm_nvda.pkl`,
+`cache/models/calibration_summary_nvda.json`, `outputs/experiments/walkforward_robustez_nvda.json`,
+`notebooks/_build.py` (Apéndice A §A.1–§A.3), BITACORA pre-registro [2026-06-14].
+
+---
+
+## [2026-06-15] [Pre-registro] - M10 walk-forward causal: ¿es desplegable a diario? (SPY + NVDA)
+
+**Contexto.** CPCV (Decisión #10, viva) da una estimación insesgada y controla *backtest overfitting*, pero
+en cada combinación **entrena con bloques cronológicamente posteriores al test** (purga/embargo solo limpian
+el solape de etiquetas, no el orden temporal). Por tanto **no simula el uso diario en producción**, y bajo
+cambio de régimen puede **halagar** a M10. El "M10 por ventana" de `walkforward_robustez.py` está marcado
+`m10_cv_not_walkforward=True`: es un *corte* del CPCV-OOF global, NO un reentrenamiento causal. No existe aún
+una validación causal de M10. El tutor lo pidió explícitamente (transcripción: *"lánzalo en diferentes
+periodos de inicio… puede que tuvieras suerte en el periodo"* y *"es el target de mañana y la restricción de
+hoy"*). Este experimento es **validación adicional**, NO sustituye la Decisión #10 (CPCV sigue siendo el
+estimador insesgado canónico).
+
+**Hipótesis.** Si M10 captura señal real (no artefacto de CPCV viendo el futuro), un walk-forward **causal**
+(entrenar solo con el pasado, reentreno mensual) **conserva** el rescate de accuracy de M10 sobre M5 en SPY.
+Si en cambio el rescate de M10 era un efecto de CPCV-mira-el-futuro, el walk-forward causal lo **derrumba**.
+
+**H0.** En el tramo de test, la accuracy direccional de **M10-WF causal = M10-CPCV** (McNemar pareado, sin
+diferencia) **y** M10-WF no bate a M5 (sign/McNemar p≥0.10). [Es decir: ni CPCV halaga, ni hay rescate causal.]
+
+**Estadístico.**
+- *Primario (desplegabilidad):* McNemar pareado de aciertos direccionales **M10-WF vs M5** (¿rescata causalmente?)
+  y **M10-WF vs M10-CPCV** (¿CPCV halagaba?), a α=0.10, sobre el MISMO tramo de test `[N0:fin]`.
+- *Secundario (economía, frágil):* ΔSharpe(M10-WF − M5) con IC95 bootstrap estacionario pareado (bloque √N).
+- *Sanity anti-leakage:* doble protocolo same-day (lag=0) vs causal (lag=1); si el causal sale mejor que el
+  same-day, hay look-ahead (regla LECCIONES #2).
+
+**Criterio de éxito (desplegabilidad SOSTENIDA, SPY).** accuracy(M10-WF) > accuracy(M5) con McNemar/sign p<0.10
+en `[N0:fin]` **Y** McNemar(M10-WF vs M10-CPCV) p≥0.10 (CPCV no halagaba de forma significativa).
+
+**Criterio de fracaso / falsificación (pre-registrado).** Si accuracy(M10-WF) cae a ≤0.5 **o** ≤ accuracy(M5)
+en `[N0:fin]` mientras M10-CPCV>0.5 en ese mismo tramo ⇒ **CPCV estaba halagando a M10; M10 NO es desplegable
+a diario**. Se reporta honestamente. (En NVDA, donde M10 ya falla con CPCV, se espera que M10-WF también falle:
+chequeo de consistencia, no de rescate.)
+
+**Config congelada.** Ventana **expandible anclada**; `N0=150` días iniciales (coherente con la ventana 150 ya
+pre-registrada en `walkforward_robustez`), **reentreno cada `step=21`** (mensual), **embargo=5** entre fin de
+train y test, `t1=índice.shift(-1)`, `signal_lag=1`, XGBoost con los MISMOS `PARAMS` que M10-CPCV, semilla 42.
+22 features idénticas. Comparación apples-to-apples: M5/M8/M10-CPCV/M10-WF/B&H evaluados TODOS en `[N0:fin]`.
+
+**Limitación declarada (potencia).** El agente solo existe en el OOS (~400 días) ⇒ tramo de test ~250 días y
+modelos iniciales entrenados con ~150 días (vs ~267 efectivos de CPCV). Es un test **indicativo de
+desplegabilidad**, no inter-época; baja potencia, un cambio de régimen puede dominar. Se reporta como tal.
+
+**Datos.** SPY (~402 días OOS) y NVDA (409). Cachés existentes (hmm.pkl / hmm_nvda.pkl, garch_<tk>.pkl, agente).
+
+**Output esperado.** `outputs/experiments/walkforward_m10_causal.json` con, por activo: config (N0/step/embargo,
+test_span, n_retrains), métricas por brazo en `[N0:fin]` (accuracy, auc, mcc, sharpe), McNemar M10-WF vs M5 y
+vs M10-CPCV, ΔSharpe(M10-WF−M5) IC95, sanity dual, verdict. Script: `experiments/walkforward_m10_causal.py`.
+
+**Documento de salida.** Sección de desplegabilidad en el canónico (§A.2c / o §13-bis) + entrada [Hallazgo].
+
+---
+
+## [2026-06-15] [Hallazgo] - M10 SÍ es desplegable causalmente en SPY (no es artefacto de CPCV); NVDA no
+
+**Contexto.** Ejecutado el pre-registro anterior. Auditado por @rigor-matematico en diseño (APROBADO CON
+CONDICIONES: guarda AUC, MCC por brazo, p separados, notas potencia/FWER) y en resultados (APROBADO CON
+CONDICIONES: claims permitidos/prohibidos). Todas aplicadas.
+
+**Detalle (cifras de `walkforward_m10_causal.json`, tramo de test causal `[N0=150:fin]`, reentreno mensual).**
+
+*SPY* (test 2025-05-09→2026-05-11, n=251, 12 reentrenos):
+- accuracy: M5 0.367 · M8 0.442 · M10-CPCV (tramo) 0.514 · **M10-WF causal 0.534** · B&H 0.566. MCC: M10-WF
+  +0.065 (>0), M5 −0.138. AUC M10-WF 0.541.
+- **McNemar M10-WF vs M5: p<0.001** (90 aciertos WF-solo vs 48 M5-solo) → el rescate de accuracy **sobrevive
+  al walk-forward causal**. **McNemar M10-WF vs M10-CPCV: p=0.65** (no-rechazo) → **sin evidencia de que CPCV
+  halague**, y eso con el WF en desventaja de muestra (≈145 días iniciales vs ≈267 de CPCV).
+- ΔSharpe(M10-WF−M5) mediana +3.43, IC95 [0.41, 6.40] (excluye 0) — corroboración económica **subordinada**
+  (sin DSR, contaminada por umbrales): NO load-bearing.
+
+*NVDA* (test 2025-05-08→2026-05-19, n=259, 13 reentrenos):
+- accuracy M10-WF 0.510, no bate a M5 (McNemar p=0.44), MCC≈0, AUC 0.47<0.5, ΔSharpe IC95 cruza 0. WF≠CPCV
+  marginal (p=0.073) pero **ambos en/por debajo del azar** → consistente: M10 no rescata a NVDA por ninguna vía.
+
+**Lo afirmable (y lo que NO).**
+- SÍ: "en SPY el rescate direccional de M10 es **desplegable a diario** (walk-forward causal mes a mes) y **no
+  un artefacto de CPCV viendo el futuro**". Es la respuesta directa a la objeción del tutor.
+- NO (límites obligatorios): el rescate es **relativo a M5**, NO habilidad absoluta — el **sign test M10-WF
+  vs azar NO es significativo** (k=134/251, p=0.31, IC95 [0.470, 0.597] contiene 0.5); M10-WF **no supera a
+  B&H** (0.566); es **una ventana OOS de 12 meses**, no inter-época; "WF vs CPCV p=0.65" es **no-rechazo, no
+  equivalencia** (baja potencia, n=251).
+
+**Sanity same-day/causal — reinterpretado, no recalculado.** El flag `sanity_ok=False` (SPY-M10-WF) salta
+porque Sharpe causal +0.36 y same-day −0.31 tienen signo opuesto. La heurística (sign-match) está calibrada
+para el **agente** (reacciona a hoy ⇒ no-leak = same-day≥causal). M10 es un **forecaster explícito de
+r_{t+1}**: causal>0 con same-day≤0 es la **firma de que predice mañana** (una fuga inflaría el same-day). El
+patrón se repite en M10-CPCV (+1.53/−0.12) y es el espejo del agente (M5 −3.07/+0.51) → **ausencia de
+look-ahead**. Se deja el `False` en el JSON (output honesto del check pre-registrado) y se documenta; NO se
+ajusta el umbral para forzar `True` (sería p-hacking del propio sanity).
+
+**Implicaciones para el TFG.**
+(1) Cierra la objeción "CPCV ve el futuro / ¿esto funciona en tiempo real?" — el tutor la planteó
+   explícitamente. M10 aguanta validación **causal** estricta en SPY.
+(2) CPCV sigue siendo el estimador insesgado canónico (Decisión #10); esto es validación **adicional**, no
+   sustitución. No-rechazo WF-vs-CPCV ≠ "CPCV es perfecto".
+(3) Refuerza la lectura accuracy-first: la evidencia load-bearing es accuracy/McNemar/MCC; el Sharpe (aunque
+   su IC excluya 0) es ilustrativo.
+(4) Coherente con el resto: M10 recupera dirección frente al agente perdedor, no bate al mercado, y la
+   frontera del leverage effect (no transfiere a NVDA) se mantiene también en el plano causal.
+
+**Referencias.** `experiments/walkforward_m10_causal.py`, `outputs/experiments/walkforward_m10_causal.json`,
+`notebooks/_build.py` (Apéndice A §A.2c), pre-registro BITACORA [2026-06-15].
+
+---
+
+## [2026-06-15] [Pre-registro] - Recon: ¿qué activo del panel da M10 causal (desplegable) > B&H en accuracy?
+
+**Contexto.** El tutor pide basar el trabajo en un **caso de estudio** donde M10 (o variante) **desplegable**
+bata **en accuracy a todo** (M5/M8/B&H). v7 ya mostró (con DSR) que ningún M10 bate a B&H **en EQUITY** en
+SPY → tesis "disciplina de riesgo, no alfa". Esto es DISTINTO: **accuracy direccional** (no equity) sobre el
+**panel** (no solo SPY). Reconocimiento **exploratorio barato** previo a decidir si hace falta construir la
+M10-v3 causal completa. NO sustituye decisiones vivas.
+
+**Hipótesis.** Existe ≥1 activo del panel donde la **M10 causal walk-forward (vanilla, desplegable)** tiene
+accuracy direccional **> B&H y > M5/M8** en el tramo de test. Plausible en activos con B&H débil (laterales/
+bajistas: acc B&H ≈ % días alcistas ≈ 0.5), no en toros fuertes (SPY 0.566, NVDA 0.552).
+
+**Criterio.** Reportar **los 10 activos** (anti-cherry-pick); marcar candidatos con acc(M10-WF) > acc(B&H) y
+> M5/M8. **NO se selecciona caso de estudio aún**: si hay candidato, pasa a fase siguiente (M10-v3 causal +
+@rigor-matematico + validación). Si ninguno, también es resultado (coherente con v7).
+
+**Config.** HMM K=3 + GARCH ajustados **por activo on-the-fly** (como `_oos_m5_m8`); causal WF expandible
+`N0=150/step=21/embargo=5`; `signal_lag=1`; seed 42. Accuracy direccional en el tramo `[N0:fin]`.
+
+**Output.** `outputs/experiments/m10_causal_panel_recon.json`. Script: `experiments/m10_causal_panel_recon.py`.
+
+**Resultado del recon (2026-06-15).** Candidatos M10-WF causal > B&H en accuracy: **MSTR, SMCI, MARA** (los de
+B&H débil). Único que bate a TODO (M5/M8/B&H): **SMCI** (M10-WF 0.522 vs M8 0.494, M5 0.482, B&H 0.486).
+Margen FINO y no significativo de momento (~0.7 SE sobre 0.5; n=249) → requiere M10-v3 + tests (fase siguiente).
+
+---
+
+## [2026-06-15] [Pre-registro] - M10-v3 causal (desplegable): caso de estudio donde bate a todo en accuracy
+
+**Contexto.** El recon señala SMCI (y MSTR/MARA) como candidatos, pero el M10 vanilla no da margen significativo.
+Construimos la **M10-v3 desplegable** (las 4 mejoras de `M10_V3_GUIA.md`/`chat_m10.md`, pero **causales**, no
+con estadísticas globales del OOS como la versión documentada — esa es look-ahead) y testeamos si bate a todo
+**en accuracy** de forma **significativa y robusta a multiplicidad** en algún activo. Distinto de v7 (equity en
+SPY, refutado): aquí es **accuracy direccional** sobre el panel. Consistente con "disciplina de riesgo, no alfa":
+batir en *acierto* no implica batir en *equity*.
+
+**Hipótesis.** Existe ≥1 activo (candidato SMCI) donde la **M10-v3 causal** tiene accuracy direccional en días
+activos **> M5, M8 y B&H**, con significancia que sobrevive corrección de multiplicidad, y **> 0.5** (habilidad
+real, no solo relativa).
+
+**H0.** En todo activo, accuracy(M10-v3, días activos) ≤ max(M5, M8, B&H) **o** no significativa; y/o no supera
+a 0.5 (sign test). [No hay caso de estudio defendible.]
+
+**Estadístico.** McNemar pareado M10-v3 vs M5/M8/B&H **sobre los mismos días activos**; sign test de la accuracy
+de M10-v3 vs 0.5; **Holm-Bonferroni sobre TODOS los contrastes McNemar del panel** (10 activos × {vs M5, vs M8,
+vs B&H} = 30 tests) — control de multiplicidad completo, no solo vs B&H (enmienda auditoría B1). Secundario
+(económico, ilustrativo, sin elevar): equity/Sharpe con DSR si se mencionara.
+
+**Métrica doble (enmienda auditoría B2/B3).** Se reporta accuracy en **días activos** Y a **cobertura completa**
+(dirección de v3 sin abstención, comparable a B&H que opera el 100%), para los 4 brazos; además **% días
+alcistas en activos vs global** (detectar si la abstención selecciona días) y **AUC + Brier** de v3 (probar que
+la isotónica calibra).
+
+**Criterio de éxito (caso de estudio SOSTENIDO).** En el activo elegido: accuracy(M10-v3) > M5, M8 y B&H
+**tanto en días activos como a cobertura completa** (no es artefacto de abstención) **Y** McNemar vs B&H con
+Holm p_adj<0.10 (pool de 30) **Y** sign test vs 0.5 p<0.10 (skill absoluto) **Y** composición direccional de
+días activos no sesgada (|%alcista_activos − %alcista_global| pequeño). El activo se **justifica ex-ante**.
+
+**Criterio de fracaso (pre-registrado).** Si ningún activo cumple lo anterior tras multiplicidad ⇒ se reporta
+**negativo** (refuerza "disciplina de riesgo, no alfa"; coherente con v7). No se baja el listón post-hoc.
+
+**M10-v3 CAUSAL (config congelada).** Por reentreno mensual (expandible, `N0=150/step=21/embargo=5`): (1)
+XGBoost **80×prof3** (capacidad reducida, Hastie 2009); (2) **isotónica causal** ajustada sobre un split de
+calibración interno del propio train (últimas ~20% obs del pasado, NO el test; Niculescu-Mizil 2005); (3)
+**abstención** del 30% menos confiado con **umbral del cuantil del pasado** (Cortes-DeSalvo-Mohri 2016), NO del
+OOS global; (4) **renorm P95** del pasado (solo afecta magnitud/equity, NO la accuracy). `signal_lag=1`, seed 42.
+
+**Accuracy con abstención.** Métrica primaria = accuracy en **días activos** + **cobertura** (% días operados);
+comparación **pareada sobre los mismos días activos** vs M5/M8/B&H. Se reporta cobertura siempre (la abstención
+cambia el denominador; B&H opera el 100%).
+
+**Anti-cherry-pick.** Se corre en **los 10 activos** (se reportan todos), no solo SMCI; multiplicidad corregida;
+caso de estudio justificado ex-ante; validación ya causal (walk-forward).
+
+**Output.** `outputs/experiments/m10_v3_causal_panel.json`. Script: `experiments/m10_v3_causal_panel.py`.
+
+---
+
+## [2026-06-15] [Hallazgo] - M10-v3 causal NO bate a todo en accuracy en ningún activo del panel
+
+**Detalle.** Ejecutado el pre-registro anterior. `caso_estudio_sostenido = []`. **Brier de M10-v3 > 0.25 en los
+10 activos** (0.264–0.297) → peor que el predictor trivial 0.5: **no hay habilidad probabilística** causal.
+AUC ≈ 0.41–0.54. El candidato del recon (SMCI vanilla 0.522) se desploma a 0.39 con la v3 causal (anti-
+predictivo). Los únicos contrastes que rechazan Holm-30 son v3 **perdiendo** (BAC/MSTR vs M5/M8). La abstención
+apenas dispara (cobertura 0.88–1.0) porque la confianza es uniformemente baja.
+
+**Implicación.** Confirma que los números buenos de M10-v3 (`chat_m10.md`/`M10_V3_GUIA.md`: acc 0.604, equity
+1.148) eran **artefacto de look-ahead** (isotónica/abstención/P95 globales + CPCV). Hecha **causal/desplegable**,
+la señal desaparece. Extiende v7: M10 no bate a B&H ni en equity (v7) ni en accuracy (esto), en ningún activo.
+
+**Referencias.** `experiments/m10_v3_causal_panel.py`, `outputs/experiments/m10_v3_causal_panel.json`.
+
+---
+
+## [2026-06-15] [Pre-registro] - Caso de estudio: M10 desplegable (split val/test 60/40) vs M5 y B&H en accuracy
+
+**Contexto.** El tutor pide un caso de estudio donde M10 (o M8) **desplegable** bata a **M5 y B&H en accuracy**.
+El recon mostró que en activos de **B&H débil** (cayeron/laterales: MSTR/MARA/SMCI/UNG con B&H≤0.5) hay
+candidatos. Nueva pieza (idea de Raquel): **split cronológico validación/test** para **optimizar la config en
+validación (pasado) y reportar en test intacto (futuro)** — desplegable y honesto. Foco **M10** (M8 como brazo
+de referencia). Distinto de v7 (equity) y del M10-v3 causal (sin optimización): aquí accuracy + optimización
+honesta en validación.
+
+**Hipótesis (mecanística, ex-ante).** En activos donde el pasivo es mal apostador direccional (**B&H accuracy
+≤ 0.5 en VALIDACIÓN**), una M10 desplegable optimizada en validación bate a M5 **y** a B&H en accuracy **sobre
+el test no visto**. Predice los activos antes de mirar (MSTR/MARA/SMCI/UNG) → no es "buscar hasta encontrar".
+
+**H0.** En todo activo, accuracy(M10 test) ≤ max(M5, B&H) **o** no significativa.
+
+**Estadístico.** McNemar pareado M10 vs M5 y vs B&H **en test**; sign test M10 vs 0.5; **Holm** sobre los
+contrastes McNemar del panel en test. Secundario ilustrativo: Sharpe (sin elevar; sin DSR no se reclama).
+
+**Config congelada.** Split **cronológico 60/40** de `valid` (validación = primeros 60%, test = últimos 40%,
+INTACTO). Optimización **SOLO en validación**: grid pre-registrado de **6 configs** = capacidad `{(80,3),(300,4)}`
+× feature set `{ALL-22, régimen+STRATA-7, agente-15}`; **selección por accuracy de validación a COBERTURA
+COMPLETA** (así la abstención no manipula la selección). XGBoost entrenado en un sub-split interno de validación
+(fit 80% / calib 20%) con **isotónica** ajustada en el calib y aplicada al test (causal). La **abstención 30%**
+(umbral del calib de validación) se aplica como **overlay FIJO** y se reporta aparte (test activo vs completo).
+`signal_lag=1`, seed 42.
+
+**Criterio de éxito (SOSTENIDO).** ≥1 activo del cohorte B&H-débil donde **en test**: accuracy(M10) > M5 **y** >
+B&H **a cobertura completa** (no solo en activos), McNemar vs B&H con Holm p_adj<0.10, sign test vs 0.5 p<0.10,
+y sin sesgo de composición (|frac_up_test − frac_up_val| < 0.05). Activo justificado ex-ante.
+
+**Criterio de fracaso.** Ninguno lo cumple → **negativo** (coherente con v7 / mercados eficientes). El test se
+toca **una sola vez**; no se re-optimiza tras verlo, no se baja el listón.
+
+**Anti-cherry-pick.** Cohorte B&H-débil por hipótesis ex-ante (B&H≤0.5 en validación); se reportan **los 10**;
+Holm en test; M8/M5/B&H como brazos de referencia.
+
+**Output.** `outputs/experiments/m10_valtest_casestudy.json`. Script: `experiments/m10_valtest_casestudy.py`.
+
+---
+
+## [2026-06-16] [Hallazgo] - M10 val/test 60/40 NO da caso de estudio: negativo robusto en accuracy
+
+**Detalle.** `caso_estudio_sostenido = []`. Único "M10 > M5 y B&H" nominal = **UNG** (0.509 vs 0.497/0.497),
+pero **moneda** (sign vs 0.5 p=0.87, McNemar vs B&H p=0.50) y **fuera del cohorte** (B&H val 0.510 > 0.5). En
+el cohorte B&H-débil (TSLA/MSTR/SMCI/MARA) ninguno: en MSTR/MARA el mejor es **M5**. Cuando la validación
+eligió una config "confiada" (regime_strata7), el test se **invirtió** (NVDA M10=0.189, SMCI M10=0.150 ≪
+azar; sign p=0.00 por ser *anti-predictivo*) → demostración limpia de que no hay señal y que optimizar sobre
+validación sobreajusta ruido. **Tercera búsqueda negativa** (tras recon vanilla y M10-v3 causal): una M10
+desplegable no bate a B&H en accuracy en ningún activo del panel a horizonte diario.
+
+**Referencias.** `experiments/m10_valtest_casestudy.py`, `outputs/experiments/m10_valtest_casestudy.json`.
+
+---
+
+## [2026-06-16] [Pre-registro] - Horizonte semanal (5 días): ¿M10/M8 baten a M5 y B&H en accuracy?
+
+**Contexto.** A horizonte **diario** la dirección es casi paseo aleatorio (Brier>0.25, sin edge) → ningún
+M10/M8 desplegable bate a B&H en accuracy (3 búsquedas negativas). **Hipótesis mecanística nueva:** el régimen
+HMM es un objeto **persistente multi-día** y el *leverage effect* opera a escala de **semanas**; predecir el
+signo del retorno a **5 días** debería tener más señal/ruido y el régimen informarlo mejor. Último intento
+honesto antes de cerrar. **Limitación dominante declarada:** OOS ~400 días ≈ **~80 semanas efectivas** → muy
+poca potencia; un positivo puede no ser significativo y un negativo no es prueba de ausencia.
+
+**Hipótesis (ex-ante).** En activos donde el pasivo es mal apostador a 5 días (**frac. semanas alcistas ≤ 0.5
+en validación**), **M10 o M8** baten a M5 **y** a B&H en **accuracy direccional a 5 días** sobre el test no
+visto. Cohorte ex-ante = los de B&H-semanal débil (esperado: MSTR/MARA/SMCI/...).
+
+**H0.** En todo activo, accuracy(M10 y M8 a 5d) ≤ max(M5, B&H) **o** no significativa (block-permutation).
+
+**Diseño.** Target `y5_t = signo(Σ r_{t+1..t+5})` (log-retornos). **Solapado diario** (~400 obs) → estimación
+de accuracy estable, pero **significancia corregida por autocorrelación**: **block-permutation test**
+(bloque ≈ 5–10) para los pareados, y **N_eff de Bartlett** reportado. Split **cronológico 60/40** con **purga
+de 5 días** en la frontera (las etiquetas de train no solapan el test → sin fuga). M10 = XGBoost (config FIJA
+cap80×3/all22, **sin grid** por N pequeña) entrenado en validación, predice test. M8 = regla override-C
+(determinista, desplegable). `signal_lag` implícito en el target a 5 días; seed 42.
+
+**Estadístico.** Accuracy a 5d en test de M5/M8/M10/B&H; **block-permutation** M10/M8 vs M5 y vs B&H; sign
+test vs 0.5 con N_eff; AUC de M10. **Holm** sobre los contrastes del panel en test.
+
+**Criterio de éxito (SOSTENIDO).** ≥1 activo del cohorte B&H-débil donde **en test**: accuracy(M10 **o** M8) >
+M5 **y** > B&H, **block-permutation vs B&H** con Holm p_adj<0.10, sign vs 0.5 p<0.10, y (si es M10) AUC>0.5.
+
+**Criterio de fracaso.** Ninguno lo cumple → **negativo / cierre** (coherente con mercados eficientes; tesis
+"disciplina de riesgo, no alfa"). Test se toca una vez; no se prueban otros horizontes (5d pre-fijado, NO
+3d/10d → evitar p-hacking de horizonte).
+
+**Anti-cherry-pick.** Cohorte ex-ante por B&H-semanal≤0.5 en validación; se reportan los 10; Holm; horizonte
+único pre-registrado.
+
+**Output.** `outputs/experiments/m10_weekly_horizon.json`. Script: `experiments/m10_weekly_horizon.py`.
+
+---
+
+## [2026-06-16] [Error] - El signo del régimen en RAM regresó a HARDCODE, invertido en activos individuales
+
+**Contexto.** Auditoría @harvard-professor buscando qué suprime la accuracy de M8/M10. Hallazgo: el signo de
+RAM/override-C está **hardcodeado** (`strata/detectors.py:209`: `regime_sign = 1 si calm_prob≥crisis_prob,
+si no −1` = Calma→long, Crisis→short), **idéntico para los 10 activos**. Viola `CLAUDE.md §9` ("prior RAM
+data-driven por activo, nunca Crisis⇒short hardcoded") y es **incoherente** con la Parte A del propio
+`walkforward_robustez.py` (que usa signo data-driven `direction_map_frozen`).
+
+**Detalle (μ por estado, calibración 2000→2024-09, recalculado con venv).** MARA: Calma **−0.0019** (baja),
+Crisis **+0.0056** (sube) → el hardcode pone M8 **corto en el estado más alcista y largo en el bajista**
+(signo invertido en AMBOS extremos). NVDA: Crisis +0.0017 > Calma +0.0015 (Crisis es el más alcista → M8
+corto donde sube). SMCI: Calma −0.00001, Crisis +0.0016 (inversión). En estos activos M8 corrige al agente
+**en la dirección equivocada por diseño**.
+
+**Implicaciones para el TFG.** Corregir el signo a **data-driven por activo** (signo del drift medio de cada
+estado, congelado en calibración) antes de reportar M8. Es obligatorio por coherencia con §9 y cierra un
+vector de ataque del tribunal. Honesto: la regla **prior-flip** ya documenta dónde el signo de calibración
+NO transfiere al OOS.
+
+**Referencias.** `strata/detectors.py:209`, `strata/intervention.py:158`, `walkforward_robustez.py:308-338`.
+
+---
+
+## [2026-06-16] [Pre-registro] - M8 con signo de régimen DATA-DRIVEN (arreglo del bug) vs M5 y B&H en accuracy
+
+**Contexto.** Arreglo del [Error] anterior. El signo de override-C pasa de hardcode (Calma→long/Crisis→short)
+a **data-driven por activo**: `sign_dd[estado] = +1` para el estado de mayor μ de calibración (long_state),
+**−1** para el de menor μ (short_state), **0** para el intermedio (neutro, como Estrés). Congelado en
+calibración → sin look-ahead. M8 es regla determinista → **todo el OOS (~400 días) es test válido** (más
+potencia que los splits de M10).
+
+**Hipótesis (ex-ante, mecanística).** En los activos donde el hardcode estaba **invertido** (sign_dd ≠
+hardcode: MARA/NVDA/SMCI y los que salgan), **M8-dd** (signo corregido) bate a M5 **y** a B&H en accuracy
+direccional OOS, con significancia. El arreglo no toca activos donde el signo ya coincidía (p.ej. SPY).
+
+**H0.** En todo activo, accuracy(M8-dd) ≤ max(M5, B&H) **o** no significativa.
+
+**Diseño.** Por activo: HMM K=3 + μ por estado en calibración → `long_s=argmax μ`, `short_s=argmin μ`.
+**M8-dd = override-C FIEL** pero con esos `long_s/short_s` **data-driven** en vez de Calma/Crisis fijos
+(misma mecánica: inconsistencia = masa del estado extremo OPUESTO al agente; si ≥ τ=0.5, override a
+`regime_sign` = signo del extremo dominante). Para SPY se reduce al original; para MARA/NVDA/SMCI voltea el
+signo. Comparar accuracy de **M5, M8-original (hardcode), M8-dd, B&H** sobre todo el OOS. **prior-flip** =
+diagnóstico de los estados extremos sobre los primeros 60 días OOS (no garantía sobre todo el OOS); se
+reporta μ_OOS_60 junto a μ_calib. Empate de μ → activo no evaluable. `signal_lag` implícito (target
+r_{t+1}); seed 42.
+
+**Estadístico.** Block-permutation (autocorr-robusto) y McNemar M8-dd vs M5 y vs B&H; sign test M8-dd vs 0.5;
+**Holm** sobre los contrastes del panel.
+
+**Criterio de éxito (SOSTENIDO).** ≥1 activo del cohorte invertido donde **M8-dd > M5 y > B&H** en accuracy,
+**block-permutation vs B&H con Holm p_adj<0.10**, **sign vs 0.5 p<0.10**, y prior_flip=False (el signo de
+calibración transfiere al OOS).
+
+**Criterio de fracaso.** Ninguno lo cumple → el bug del signo es real y se corrige por coherencia, pero no
+produce un caso de estudio que bata a B&H (límite de mercado eficiente). Honesto, sin bajar el listón.
+
+**Anti-cherry-pick.** Cohorte ex-ante = activos con sign_dd≠hardcode (mecanístico, antes de mirar OOS); se
+reportan los 10; Holm; prior-flip declarado.
+
+**Output.** `outputs/experiments/m8_datadriven_sign.json`. Script: `experiments/m8_datadriven_sign.py`.
+
+## [2026-06-16] [Pre-registro] - Experimento m10-improve-smci (mejora honesta de accuracy de M10)
+
+**Contexto.** Antes de cerrar SMCI como caso de estudio, Raquel pide intentar **subir la accuracy de M10**
+con palancas legítimas, eligiéndolas en validación y reportando en test (validación≠test). El M10-WF base
+sobre SMCI da 0.524 (M5 0.484, M8 0.496, B&H 0.484).
+
+**Hipótesis.** Un conjunto pequeño y pre-registrado de hiperparámetros de M10 —elegidos SOLO en validación—
+mejora la accuracy direccional de M10 sobre el test no visto frente al M10-base (all22/thr0.5/flat/1-seed),
+y al menos lo mantiene por encima de M5/M8/B&H.
+
+**H0.** En test, accuracy(M10-sel) ≤ accuracy(M10-base) **o** ≤ max(M5, M8, B&H) **o** no significativa.
+
+**Palancas (las 5 que eligió Raquel, como HIPERPARÁMETROS, no modelo congelado).**
+1. **Umbral ≠ 0.5** — grid {0.45…0.55}, elegido en validación.
+2. **Selección de features** — {all22 / régimen+STRATA-7 / agente-15 / STRATA7+señal-real / all22+señal-real}.
+3. **Pesos por recencia** — semivida {flat, 252, 126} días (no estacionariedad de SMCI).
+4. **Ensemble de semillas** — 10 semillas (reduce varianza); se reporta 1-seed como referencia.
+5. **Features con señal real, CAUSALES** — momentum 5/21/63, vol relativa rv21/rv63, racha de signo.
+   Conocidas en t, predicen r_{t+1}. Esto define una **variante M10-aumentada** (los detectores STRATA no
+   cambian); se documenta como tal, no como STRATA core.
+
+**Diseño (desplegable + honesto).** OOS SMCI = 400 días válidos. Split cronológico 60/40: validación =
+primeros 240, test = últimos 160 (intacto, se toca **una vez**). Selección = walk-forward DENTRO de
+[N0=150 : split] (nunca ve el test); se elige (feature set, recencia, umbral) que maximiza accuracy en los
+~90 días de validación evaluables. Test = walk-forward con **pasado expandible** (reentreno cada 21 d,
+embargo 5, incluye validación) prediciendo [split:fin] con la config congelada. El reentreno en test es lo
+que hace el despliegue real (arregla el colapso del modelo congelado 60/40 = 0.150).
+
+**Estadístico.** McNemar y block-permutation (autocorr-robusto) de M10-sel vs M5/M8/B&H; **Holm** sobre los
+3 contrastes; sign test M10-sel vs 0.5. Mejora sobre base = acc(M10-sel) − acc(M10-base) en test.
+
+**Criterio de éxito.** En test: acc(M10-sel) > acc(M10-base) **y** > max(M5, M8, B&H), con McNemar vs B&H
+bajo Holm p_adj<0.10 y sign vs 0.5 p<0.10. (Éxito parcial defendible: mejora nominal sobre base + sigue
+batiendo a M5/M8/B&H, aunque la significancia quede corta por n_test=160.)
+
+**Criterio de fracaso (pre-registrado).** La config elegida en validación NO mejora (o empeora) en test →
+se reporta honestamente que las palancas no aportan señal desplegable y se cierra SMCI con el M10-base.
+NO se re-optimiza tras ver el test ni se baja el listón post-hoc.
+
+**Riesgos declarados.** Validación corta (~90 días) → selección ruidosa; test corto (160) → potencia
+limitada para significancia. Por eso el grid es pequeño y pre-registrado y el test se lee una sola vez.
+
+**Output.** `outputs/experiments/m10_improve_smci.json`. Script: `experiments/m10_improve_smci.py`.
+
+**Enmiendas tras auditoría @rigor-matematico (BLOQUEOS B1–B5, aplicadas antes de ejecutar).**
+- **B1.** Documentado en `wf_p1` que la etiqueta tiene horizonte 1 día y por qué EMBARGO=5 purga la frontera
+  (López de Prado 2018, sec. 7.4; purga unilateral por ser solo-pasado).
+- **B2.** Split alineado a múltiplo de STEP desde N0 (`split = N0 + STEP·⌊(0.6n−N0)/STEP⌋`) → en test el
+  primer reentreno cae EXACTO en split (entrena `[:split−5]`, predice desde split). Elimina el acoplamiento
+  de rejilla en la frontera 60/40. `split_efectivo` se registra en `meta`.
+- **B3.** `acc_val` del ganador es el MÁXIMO sobre 5×3×11 = 165 combinaciones en ~84 días → optimista, NO
+  insesgado. Se marca explícito en `meta` (`acc_val_es_maximo_sobre_grid`, `nota_b3`) y se reporta la
+  dispersión del grid (`grid_validacion`). El test es la única lectura honesta.
+- **B4.** Decisión pre-ejecución: el **sign-test vs 0.5 es sanity ORTOGONAL** (null distinto: ¿mejor que
+  moneda?), NO confirmatorio. Holm cubre solo los 3 McNemar (vs M5/M8/B&H). Documentado en `nota_b4`.
+- **B5.** Assert `360≤n≤440` (aborta si el split se movería sin traza). Docstring alineado a 5 feature-sets.
+- **A2/A3 (advertencias).** Cobertura de M5/M8 (días con apuesta ≠0) reportada; M8 se compara como
+  override-C canónico (signo hardcoded, posiblemente invertido en SMCI por leverage débil — ver
+  m8_datadriven_sign). Notas en `meta`.
+
+## [2026-06-16] [Hallazgo] - Mejorar M10 con tuning en SMCI NO transfiere a test (sobreajuste de selección)
+
+**Contexto.** Antes de cerrar SMCI como caso de estudio, se intentó subir la accuracy de M10 con 5 palancas
+pre-registradas (umbral≠0.5, selección de features, recencia, ensemble de semillas, features de señal real
+causales), eligiéndolas SOLO en validación (84 días) y reportando en test (166 días, intacto).
+
+**Detalle.** La config ganadora en validación (all22+señal-real / recencia hl126 / umbral 0.47) alcanzó
+acc_val=0.5595 —máximo sobre 165 combinaciones, optimista por construcción— y **colapsó a 0.4759 en test**
+(−0.0836 val→test): firma cuantitativa del **sobreajuste de selección** (maximizar sobre 165 celdas en 84
+días selecciona ruido). En test: M10-sel=0.4759, M5=0.512, M8=0.524, B&H=0.470, y el M10-base sin tunear
+(all22/thr0.5/flat/1-seed)=0.578. **Mejora sobre base = −0.1024.** Ningún brazo bate significativamente a
+B&H ni al azar (McNemar M10-sel vs B&H p=1.0; sign vs 0.5 p=0.587; IC95 [0.398,0.555] contiene 0.5).
+
+**Veredicto pre-registrado.** Se cumple el **criterio de FRACASO**: las palancas elegidas en validación no
+aportan señal desplegable. SMCI se cierra con el **M10-base** (sin tuning). No se re-optimiza tras ver el
+test ni se baja el listón (sería look-ahead de selección).
+
+**Implicaciones para el TFG.** (1) Valor METODOLÓGICO, no de rendimiento: demostración por construcción del
+riesgo de sobreajuste de selección y de por qué se respeta validación≠test (anti-p-hacking). Capítulo
+defendible. (2) Claims permitidos: el tuning se refuta; M10-base bate nominalmente (descriptivo, 1 seed,
+una loncha, sin test pareado → NO inferenciable). Claims prohibidos: "tuning mejora", "0.578 demuestra que
+M10 funciona", re-selección de config tras ver el test. (3) Coherente con v7 / mercado casi eficiente en
+dirección diaria con muestra corta.
+
+**Referencias.** `experiments/m10_improve_smci.py`, `outputs/experiments/m10_improve_smci.json`, pre-registro
++ enmiendas B1–B5 [2026-06-16]. Auditoría @rigor-matematico (diseño BLOQUEADO→B1–B5 aplicadas→APROBADO;
+resultados APROBADO con condición: ningún claim inferencial sobre M10-base sin McNemar/sign pareados).

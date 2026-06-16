@@ -1,0 +1,230 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "seed": 42,
+    "signal_lag": 1,
+    "n_valid": 400,
+    "n_val": 234,
+    "n_test": 166,
+    "N0": 150,
+    "step": 21,
+    "embargo": 5,
+    "n_seeds": 10,
+    "thr_grid": [
+      0.45,
+      0.46,
+      0.47,
+      0.48,
+      0.49,
+      0.5,
+      0.51,
+      0.52,
+      0.53,
+      0.54,
+      0.55
+    ],
+    "halflives": [
+      "flat",
+      "hl252",
+      "hl126"
+    ],
+    "test_span": [
+      "2025-09-10",
+      "2026-05-11"
+    ],
+    "frac_up_val": 0.4615,
+    "frac_up_test": 0.4699,
+    "cobertura_test_m5_m8": {
+      "m5": 0.988,
+      "m8": 0.988
+    },
+    "split_efectivo": 234,
+    "n_combinaciones_grid": 165,
+    "acc_val_es_maximo_sobre_grid": true,
+    "nota_b3": "acc_val del ganador = MÁXIMO sobre 165 combinaciones (5 features × 3 recencias × 11 umbrales) en ~84 días → optimista, NO estimador insesgado; el test es la lectura honesta.",
+    "nota_b4": "Holm cubre los 3 McNemar (familia bate-competidores); sign-test vs 0.5 = sanity ortogonal, fuera de Holm.",
+    "nota_a2": "M10/B&H apuestan el 100% de los días; M5/M8 pueden ser neutrales (size=0 cuenta como fallo). n_obs común → comparación pareada; ver cobertura_test_m5_m8.",
+    "nota_m8": "M8 = override-C canónico (signo de régimen hardcoded Calma→long/Crisis→short). En SMCI (leverage débil) ese signo puede estar invertido (ver m8_datadriven_sign); se compara contra el M8 tal cual está desplegado.",
+    "scheme": "split 60/40 alineado a STEP; palancas elegidas SOLO en validación (WF interno); test WF pasado-expandible, una vez",
+    "pre_registro": "BITACORA 2026-06-16 (enmiendas B1–B5 aplicadas)"
+  },
+  "grid_validacion": [
+    {
+      "features": "all22+real",
+      "recency": "hl126",
+      "thr": 0.47,
+      "acc_val": 0.5595,
+      "acc_val_thr05": 0.5595
+    },
+    {
+      "features": "all22+real",
+      "recency": "hl252",
+      "thr": 0.55,
+      "acc_val": 0.5476,
+      "acc_val_thr05": 0.5
+    },
+    {
+      "features": "strata7+real",
+      "recency": "hl252",
+      "thr": 0.46,
+      "acc_val": 0.5357,
+      "acc_val_thr05": 0.5238
+    },
+    {
+      "features": "strata7+real",
+      "recency": "hl126",
+      "thr": 0.45,
+      "acc_val": 0.5357,
+      "acc_val_thr05": 0.4881
+    },
+    {
+      "features": "all22+real",
+      "recency": "flat",
+      "thr": 0.54,
+      "acc_val": 0.5357,
+      "acc_val_thr05": 0.5238
+    },
+    {
+      "features": "regime_strata7",
+      "recency": "hl252",
+      "thr": 0.55,
+      "acc_val": 0.5238,
+      "acc_val_thr05": 0.4643
+    },
+    {
+      "features": "strata7+real",
+      "recency": "flat",
+      "thr": 0.45,
+      "acc_val": 0.5238,
+      "acc_val_thr05": 0.5
+    },
+    {
+      "features": "regime_strata7",
+      "recency": "flat",
+      "thr": 0.47,
+      "acc_val": 0.5,
+      "acc_val_thr05": 0.4881
+    },
+    {
+      "features": "regime_strata7",
+      "recency": "hl126",
+      "thr": 0.49,
+      "acc_val": 0.4881,
+      "acc_val_thr05": 0.4881
+    },
+    {
+      "features": "agent15",
+      "recency": "hl252",
+      "thr": 0.54,
+      "acc_val": 0.4643,
+      "acc_val_thr05": 0.4286
+    },
+    {
+      "features": "agent15",
+      "recency": "hl126",
+      "thr": 0.49,
+      "acc_val": 0.4643,
+      "acc_val_thr05": 0.4643
+    },
+    {
+      "features": "agent15",
+      "recency": "flat",
+      "thr": 0.55,
+      "acc_val": 0.4524,
+      "acc_val_thr05": 0.4405
+    },
+    {
+      "features": "all22",
+      "recency": "flat",
+      "thr": 0.52,
+      "acc_val": 0.4405,
+      "acc_val_thr05": 0.4286
+    },
+    {
+      "features": "all22",
+      "recency": "hl252",
+      "thr": 0.5,
+      "acc_val": 0.4405,
+      "acc_val_thr05": 0.4405
+    },
+    {
+      "features": "all22",
+      "recency": "hl126",
+      "thr": 0.45,
+      "acc_val": 0.4405,
+      "acc_val_thr05": 0.4405
+    }
+  ],
+  "config_elegida": {
+    "features": "all22+real",
+    "recency": "hl126",
+    "thr": 0.47,
+    "acc_val": 0.5595,
+    "acc_val_thr05": 0.5595
+  },
+  "config_base": {
+    "features": "all22",
+    "recency": "flat",
+    "thr": 0.52,
+    "acc_val": 0.4405,
+    "acc_val_thr05": 0.4286
+  },
+  "test": {
+    "accuracy": {
+      "m10_sel": 0.4759,
+      "m10_base": 0.5783,
+      "m5": 0.512,
+      "m8": 0.5241,
+      "bh": 0.4699,
+      "m10_sel_1seed": 0.506
+    },
+    "tests": {
+      "vs_m5": {
+        "mcnemar_p": 0.6061,
+        "block_perm_p": 0.6006,
+        "b_opp": 50,
+        "c_m10": 44
+      },
+      "vs_m8": {
+        "mcnemar_p": 0.4655,
+        "block_perm_p": 0.5928,
+        "b_opp": 50,
+        "c_m10": 42
+      },
+      "vs_bh": {
+        "mcnemar_p": 1.0,
+        "block_perm_p": 1.0,
+        "b_opp": 35,
+        "c_m10": 36
+      },
+      "vs_azar": {
+        "k": 79,
+        "n": 166,
+        "p": 0.5871,
+        "ci95": [
+          0.398,
+          0.5547
+        ]
+      }
+    },
+    "holm_3": {
+      "vs_m8": {
+        "p_raw": 0.4655,
+        "p_adj": 1.0,
+        "reject": false
+      },
+      "vs_m5": {
+        "p_raw": 0.6061,
+        "p_adj": 1.0,
+        "reject": false
+      },
+      "vs_bh": {
+        "p_raw": 1.0,
+        "p_adj": 1.0,
+        "reject": false
+      }
+    },
+    "bate_m5_m8_bh": false,
+    "mejora_sobre_base": -0.1024
+  }
+}
