@@ -1937,3 +1937,30 @@ ventana de test (B&H 0.447) es bajista, no el ≈50% justo del OOS completo (B&H
 
 **Referencias.** `experiments/m10_smci_select.py`, `outputs/experiments/m10_smci_select.json`,
 `notebooks/m10_better_smci.ipynb` §E.
+
+## [2026-06-16] [Hallazgo] - Por qué M5/M8/M10 no se separan en SMCI: el agente está 95% corto (alineado con el régimen)
+
+**Contexto.** Raquel detecta que en SMCI M8≈M5 y M10 no bate al agente; pide el punto clave.
+
+**Detalle.** El agente (M5) está **95% corto** en SMCI (2% largo, 3% neutral). STRATA interviene solo **3%**
+de los días (M8≠M5) porque override-C dispara ante incoherencia agente↔régimen, y el agente —ya corto— COINCIDE
+con el régimen (alta vol→corto) → no hay nada que corregir → M8≈M5. M10 también es corto-sesgado (58%) →
+discordantes McNemar equilibrados (b=65,c=75,p=0.45) → no se separa del agente. En SMCI, M5/M8/M10 son la misma
+apuesta ("corto SMCI").
+
+**Barrido del panel (`panel_intervention_scan.py`).** Mide discrepancia agente↔régimen, intervención STRATA y
+rescate M10 vs M5 en los 10 activos. **Confirma el mecanismo del TFG:** STRATA rescata donde el agente discrepa
+de un régimen que acierta. Ranking discrepancia: ROKU 0.95, MARA 0.83, XLE 0.80, ..., SPY 0.66, ..., SMCI 0.17,
+MSTR 0.07. **SPY es el ÚNICO con rescate significativo** (M10 vs M5 p=0.0005; M8 vs M5 p=0.051) porque cumple
+las dos condiciones: agente discrepa Y régimen acierta (leverage effect fuerte en índice). Stocks individuales
+con alta discrepancia (ROKU interv 88% p=0.13, NVDA, XLE) no llegan a significativo (leverage débil → régimen
+no apunta fiable). SMCI al fondo (interv 3%) → sin rescate, como se observó.
+
+**Implicaciones para el TFG.** Explicación honesta y defendible de (i) por qué SPY es el caso central, (ii) por
+qué en SMCI los tres modelos se confunden, (iii) por qué nada es significativo en SMCI. Coherente con CLAUDE.md
+§3 (leverage effect). Pista: ROKU es el stock individual más "tipo-SPY" (alcista, agente 97% corto, interv 88%)
+pero rescate aún no significativo. Documentado en `notebooks/m10_better_smci.ipynb` §F (tabla SPY↔SMCI + 2
+gráficas de panel).
+
+**Referencias.** `experiments/panel_intervention_scan.py`, `outputs/experiments/panel_intervention_scan.json`,
+`notebooks/m10_better_smci.ipynb` §F.

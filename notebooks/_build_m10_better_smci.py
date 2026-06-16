@@ -63,6 +63,7 @@ IMP = json.load(open("outputs/experiments/m10_improve_smci.json"))   # A: tuning
 DEEP = json.load(open("outputs/experiments/m10_smci_deep.json"))     # B: configs fijas a priori
 ADV = json.load(open("outputs/experiments/m10_smci_advanced.json"))  # C: métodos avanzados
 SEL = json.load(open("outputs/experiments/m10_smci_select.json"))    # E: selección de burn-in en validación
+PAN = json.load(open("outputs/experiments/panel_intervention_scan.json"))  # F: intervención y discrepancia panel
 
 m = ADV["meta"]
 print(f"Activo: {m['ticker']}  ·  OOS test desplegable: {m['oos_span'][0]} → {m['oos_span'][1]}  (n={m['n_eval']} días)")
@@ -298,6 +299,72 @@ casi iguala a M10 (0.56) → la ventaja sobre B&H es **el sesgo a corto en un me
 direccional fina; (iii) la validación de burn-in alto son ~50 días → selección ruidosa. **Defendible como
 "M10 bate al pasivo en el periodo de test"**, siempre que se presente con el benchmark "siempre-corto" al lado;
 **no** como "habilidad direccional significativa".""")
+
+# ---------------------------------------------------------------------------------------------
+md(r"""## §F · El punto clave: por qué M5, M8 y M10 **no se separan** en SMCI
+
+Mirando las curvas (§C.2) M8 y M5 casi coinciden y M10 no bate al agente. La causa está en **cómo se
+posiciona el agente** en SMCI:
+
+- **El agente (M5) está 95 % CORTO** en SMCI (2 % largo, 3 % neutral). Es bajista casi permanente.
+- **STRATA interviene solo el 3 % de los días** (M8 ≠ M5) → por eso M8 ≈ M5. *Override-C* dispara cuando el
+  agente es **incoherente con el régimen** (que tira a corto en alta vol, *leverage effect*). Pero el agente
+  **ya está corto** → coincide con el régimen → **no hay nada que corregir**.
+- **M10 también es corto-sesgado** (58 %) → coincide con el agente el 43 % de los días y los discordantes de
+  McNemar están equilibrados (b=65, c=75, p=0.45) → **no hay potencia para separarlos**.
+
+En SMCI, **M5, M8 y M10 son la misma apuesta** ("corto SMCI") → ninguno se separa. STRATA rescata donde el
+agente va **a contracorriente** del régimen (hay algo que corregir), no donde ya está alineado.""")
+
+code(r"""smci = PAN["por_activo"]["SMCI"]; spy = PAN["por_activo"]["SPY"]
+print("                         SPY (caso central)      SMCI")
+print(f"  agente corto/largo     {spy['agente_corto']:.0%} corto / {spy['agente_largo']:.0%} largo      {smci['agente_corto']:.0%} corto / {smci['agente_largo']:.0%} largo")
+print(f"  discrepancia régimen   {spy['discrepancia_agente_regimen']:.2f}                   {smci['discrepancia_agente_regimen']:.2f}")
+print(f"  intervención STRATA    {spy['intervencion_strata']:.0%}                    {smci['intervencion_strata']:.0%}")
+print(f"  acc  M5 → M10          {spy['accuracy']['m5']} → {spy['accuracy']['m10']}        {smci['accuracy']['m5']} → {smci['accuracy']['m10']}")
+print(f"  McNemar M10 vs M5      p={spy['mcnemar_m10_vs_m5_p']}  (rescate SIG)    p={smci['mcnemar_m10_vs_m5_p']}  (sin rescate)")""")
+
+md(r"""### §F.1 · El panel lo confirma: STRATA aporta donde el agente discrepa del régimen
+
+Barremos los 10 activos midiendo **discrepancia agente↔régimen** (cuánto va el agente a contracorriente),
+**intervención de STRATA**, y si **M10 rescata al agente** (Δacc y McNemar). SMCI está al fondo de la
+discrepancia → por eso no hay rescate. **SPY es el único con rescate significativo** (M10 vs M5 p=0.0005):
+cumple las dos condiciones — el agente discrepa **y** el régimen acierta (leverage effect fuerte en el índice).""")
+
+code(r"""pa = PAN["por_activo"]; tickers = [t for t in PAN["meta"]["panel"] if "error" not in pa[t]]
+tickers = sorted(tickers, key=lambda t: -pa[t]["intervencion_strata"])
+interv = [pa[t]["intervencion_strata"] for t in tickers]
+disc = [pa[t]["discrepancia_agente_regimen"] for t in tickers]
+x = np.arange(len(tickers)); w = 0.4
+fig, ax = plt.subplots(figsize=(12, 4.3))
+ax.bar(x - w / 2, disc, w, label="discrepancia agente↔régimen", color="#2c7fb7", edgecolor="black", lw=0.6)
+ax.bar(x + w / 2, interv, w, label="intervención STRATA (M8≠M5)", color="#f0a830", edgecolor="black", lw=0.6)
+for i, t in enumerate(tickers):
+    if t in ("SMCI", "SPY"):
+        ax.annotate(t, (i, max(disc[i], interv[i]) + 0.03), ha="center", fontsize=9, fontweight="bold")
+ax.set_xticks(x); ax.set_xticklabels(tickers); ax.set_ylim(0, 1.05)
+ax.set_title("Panel · discrepancia agente↔régimen e intervención STRATA (SMCI al fondo → sin rescate)")
+ax.legend(fontsize=8); plt.tight_layout(); plt.show()
+
+# Rescate de M10 sobre el agente, coloreado por significancia
+gap = [round(pa[t]["accuracy"]["m10"] - pa[t]["accuracy"]["m5"], 3) for t in tickers]
+sig = [pa[t]["mcnemar_m10_vs_m5_p"] < 0.10 for t in tickers]
+fig, ax = plt.subplots(figsize=(12, 4))
+bars = ax.bar(x, gap, color=["#2ca02c" if s else "#bbbbbb" for s in sig], edgecolor="black", lw=0.6)
+ax.axhline(0, color="black", lw=0.8)
+for i, t in enumerate(tickers):
+    ax.text(i, gap[i] + (0.004 if gap[i] >= 0 else -0.012), f"{gap[i]:+.2f}", ha="center", fontsize=8)
+ax.set_xticks(x); ax.set_xticklabels(tickers)
+ax.set_ylabel("acc(M10) − acc(M5)"); ax.set_title("Rescate de M10 sobre el agente (verde = McNemar p<0.10 → SOLO SPY)")
+plt.tight_layout(); plt.show()
+print("Solo SPY tiene rescate significativo (M10 vs M5 p=0.0005). SMCI: Δ=+0.04 nominal, p=0.45 (no sig).")""")
+
+md(r"""**Conclusión de §F.** El barrido **valida el mecanismo del TFG**: STRATA/M10 rescata al agente **solo donde
+el agente fila a contracorriente de un régimen que acierta** — y eso ocurre en **SPY** (índice, leverage effect
+fuerte; M10 vs M5 p=0.0005), no en SMCI (el agente ya está corto, alineado con el régimen → intervención 3 %,
+sin rescate). Es la **explicación honesta** de por qué SPY es el caso central y por qué en SMCI los tres modelos
+se confunden. *(Pista para otro activo: ROKU es el stock individual más "tipo-SPY" —alcista, agente 97 % corto,
+intervención 88 %— pero su rescate aún no es significativo: M10 vs M5 p=0.13.)*""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)

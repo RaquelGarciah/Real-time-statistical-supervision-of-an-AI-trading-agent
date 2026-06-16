@@ -1,0 +1,292 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ],
+    "N0": 150,
+    "seed": 42,
+    "regimen_dir": "calm_prob>=crisis_prob → largo (+1), si no corto (−1) [leverage effect]",
+    "nota": "STRATA luce donde el agente DISCREPA del régimen (alta discrepancia → más intervención → posible batir al agente)"
+  },
+  "por_activo": {
+    "SPY": {
+      "n_eval": 251,
+      "frac_up": 0.566,
+      "agente_largo": 0.215,
+      "agente_corto": 0.709,
+      "agente_neutral": 0.076,
+      "intervencion_strata": 0.339,
+      "discrepancia_agente_regimen": 0.655,
+      "accuracy": {
+        "m5": 0.3665,
+        "m8": 0.4422,
+        "m10": 0.5339,
+        "bh": 0.5657
+      },
+      "mcnemar_m10_vs_m5_p": 0.0005,
+      "m10_disc_bc": [
+        48,
+        90
+      ],
+      "mcnemar_m8_vs_m5_p": 0.0509,
+      "m8_disc_bc": [
+        33,
+        52
+      ],
+      "m10_bate_m5_nom": true,
+      "m8_bate_m5_nom": true
+    },
+    "NVDA": {
+      "n_eval": 259,
+      "frac_up": 0.552,
+      "agente_largo": 0.212,
+      "agente_corto": 0.761,
+      "agente_neutral": 0.027,
+      "intervencion_strata": 0.664,
+      "discrepancia_agente_regimen": 0.782,
+      "accuracy": {
+        "m5": 0.4672,
+        "m8": 0.5212,
+        "m10": 0.4942,
+        "bh": 0.5521
+      },
+      "mcnemar_m10_vs_m5_p": 0.6384,
+      "m10_disc_bc": [
+        78,
+        85
+      ],
+      "mcnemar_m8_vs_m5_p": 0.3216,
+      "m8_disc_bc": [
+        79,
+        93
+      ],
+      "m10_bate_m5_nom": true,
+      "m8_bate_m5_nom": true
+    },
+    "BAC": {
+      "n_eval": 246,
+      "frac_up": 0.561,
+      "agente_largo": 0.183,
+      "agente_corto": 0.793,
+      "agente_neutral": 0.024,
+      "intervencion_strata": 0.553,
+      "discrepancia_agente_regimen": 0.783,
+      "accuracy": {
+        "m5": 0.4512,
+        "m8": 0.5163,
+        "m10": 0.4309,
+        "bh": 0.561
+      },
+      "mcnemar_m10_vs_m5_p": 0.7267,
+      "m10_disc_bc": [
+        68,
+        63
+      ],
+      "mcnemar_m8_vs_m5_p": 0.1984,
+      "m8_disc_bc": [
+        60,
+        76
+      ],
+      "m10_bate_m5_nom": false,
+      "m8_bate_m5_nom": true
+    },
+    "TSLA": {
+      "n_eval": 251,
+      "frac_up": 0.53,
+      "agente_largo": 0.004,
+      "agente_corto": 0.996,
+      "agente_neutral": 0.0,
+      "intervencion_strata": 0.394,
+      "discrepancia_agente_regimen": 0.55,
+      "accuracy": {
+        "m5": 0.4741,
+        "m8": 0.4781,
+        "m10": 0.49,
+        "bh": 0.5299
+      },
+      "mcnemar_m10_vs_m5_p": 0.7642,
+      "m10_disc_bc": [
+        48,
+        52
+      ],
+      "mcnemar_m8_vs_m5_p": 1.0,
+      "m8_disc_bc": [
+        49,
+        50
+      ],
+      "m10_bate_m5_nom": true,
+      "m8_bate_m5_nom": true
+    },
+    "XLE": {
+      "n_eval": 248,
+      "frac_up": 0.565,
+      "agente_largo": 0.157,
+      "agente_corto": 0.835,
+      "agente_neutral": 0.008,
+      "intervencion_strata": 0.613,
+      "discrepancia_agente_regimen": 0.797,
+      "accuracy": {
+        "m5": 0.4476,
+        "m8": 0.5282,
+        "m10": 0.4839,
+        "bh": 0.5645
+      },
+      "mcnemar_m10_vs_m5_p": 0.5232,
+      "m10_disc_bc": [
+        74,
+        83
+      ],
+      "mcnemar_m8_vs_m5_p": 0.1233,
+      "m8_disc_bc": [
+        66,
+        86
+      ],
+      "m10_bate_m5_nom": true,
+      "m8_bate_m5_nom": true
+    },
+    "UNG": {
+      "n_eval": 247,
+      "frac_up": 0.486,
+      "agente_largo": 0.012,
+      "agente_corto": 0.988,
+      "agente_neutral": 0.0,
+      "intervencion_strata": 0.121,
+      "discrepancia_agente_regimen": 0.263,
+      "accuracy": {
+        "m5": 0.5101,
+        "m8": 0.502,
+        "m10": 0.4899,
+        "bh": 0.4858
+      },
+      "mcnemar_m10_vs_m5_p": 0.7042,
+      "m10_disc_bc": [
+        58,
+        53
+      ],
+      "mcnemar_m8_vs_m5_p": 0.8551,
+      "m8_disc_bc": [
+        16,
+        14
+      ],
+      "m10_bate_m5_nom": false,
+      "m8_bate_m5_nom": false
+    },
+    "MSTR": {
+      "n_eval": 251,
+      "frac_up": 0.45,
+      "agente_largo": 0.004,
+      "agente_corto": 0.996,
+      "agente_neutral": 0.0,
+      "intervencion_strata": 0.004,
+      "discrepancia_agente_regimen": 0.068,
+      "accuracy": {
+        "m5": 0.5538,
+        "m8": 0.5578,
+        "m10": 0.502,
+        "bh": 0.4502
+      },
+      "mcnemar_m10_vs_m5_p": 0.2944,
+      "m10_disc_bc": [
+        72,
+        59
+      ],
+      "mcnemar_m8_vs_m5_p": 1.0,
+      "m8_disc_bc": [
+        0,
+        1
+      ],
+      "m10_bate_m5_nom": false,
+      "m8_bate_m5_nom": true
+    },
+    "SMCI": {
+      "n_eval": 250,
+      "frac_up": 0.484,
+      "agente_largo": 0.02,
+      "agente_corto": 0.952,
+      "agente_neutral": 0.028,
+      "intervencion_strata": 0.028,
+      "discrepancia_agente_regimen": 0.165,
+      "accuracy": {
+        "m5": 0.484,
+        "m8": 0.496,
+        "m10": 0.524,
+        "bh": 0.484
+      },
+      "mcnemar_m10_vs_m5_p": 0.4469,
+      "m10_disc_bc": [
+        65,
+        75
+      ],
+      "mcnemar_m8_vs_m5_p": 0.4531,
+      "m8_disc_bc": [
+        2,
+        5
+      ],
+      "m10_bate_m5_nom": true,
+      "m8_bate_m5_nom": true
+    },
+    "ROKU": {
+      "n_eval": 250,
+      "frac_up": 0.548,
+      "agente_largo": 0.028,
+      "agente_corto": 0.968,
+      "agente_neutral": 0.004,
+      "intervencion_strata": 0.884,
+      "discrepancia_agente_regimen": 0.948,
+      "accuracy": {
+        "m5": 0.444,
+        "m8": 0.528,
+        "m10": 0.516,
+        "bh": 0.548
+      },
+      "mcnemar_m10_vs_m5_p": 0.1268,
+      "m10_disc_bc": [
+        53,
+        71
+      ],
+      "mcnemar_m8_vs_m5_p": 0.1785,
+      "m8_disc_bc": [
+        100,
+        121
+      ],
+      "m10_bate_m5_nom": true,
+      "m8_bate_m5_nom": true
+    },
+    "MARA": {
+      "n_eval": 248,
+      "frac_up": 0.468,
+      "agente_largo": 0.016,
+      "agente_corto": 0.98,
+      "agente_neutral": 0.004,
+      "intervencion_strata": 0.484,
+      "discrepancia_agente_regimen": 0.83,
+      "accuracy": {
+        "m5": 0.5282,
+        "m8": 0.5282,
+        "m10": 0.4839,
+        "bh": 0.4677
+      },
+      "mcnemar_m10_vs_m5_p": 0.3593,
+      "m10_disc_bc": [
+        65,
+        54
+      ],
+      "mcnemar_m8_vs_m5_p": 0.9273,
+      "m8_disc_bc": [
+        60,
+        60
+      ],
+      "m10_bate_m5_nom": false,
+      "m8_bate_m5_nom": false
+    }
+  }
+}
