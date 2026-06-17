@@ -13,8 +13,8 @@ Esta carpeta **no duplica** los documentos canónicos: los **indexa**.
 
 ## Fuentes canónicas (fuera de esta carpeta, no duplicar)
 - **Decisiones:** `DECISIONES_ESENCIALES.md` (16, #13–16 = pivot SMCI).
-- **Cifras:** `RESULTADOS_OBJETIVO.md` (§1 SPY método · §1bis SMCI).
-- **Recorrido SMCI:** `docs/chats/decision_activo/smci.md`. **SPY mecanismo:** `…/spy_understandStrata.md`.
+- **Cifras del caso:** `RESULTADOS_OBJETIVO.md §1bis` (SMCI).
+- **Recorrido completo de SMCI:** `docs/chats/decision_activo/smci.md`.
 - **Citas/literatura:** `decisiones_respaldadas_literatura.md`, `tesis/bibliography.bib`,
   `tesis_assets/fuentes_bibliograficas/papers.md`.
 - **Negativos (lo que probé y descarté):** `falsacion/INDICE.md`.

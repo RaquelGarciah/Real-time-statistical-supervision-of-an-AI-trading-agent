@@ -22,8 +22,10 @@ los 3 modos (warn/reduce/override). **Sin** la matemática todavía.
 
 **§3 STRATA aplicado: construcción, calibración y umbrales** (máximo rigor + justificación económica + citas):
 - 3.1 Datos y calibración (2000→2024-09, una vez; estabilidad estructural — cita Bai–Perron).
-- 3.2 **RAM**: del HMM al `RAM_score`. Leverage effect (Black 1976; Christie 1982). Prior **data-driven** por
-  activo (signo de μ_k). Umbrales 0,25 / **τ=0,50** / 0,70; por qué τ=0,5.
+- 3.2 **RAM**: del HMM al `RAM_score`. El *leverage effect* (Black 1976; Christie 1982) motiva por qué el
+  régimen de volatilidad puede tener contenido direccional, pero **en una acción individual es débil**; por eso
+  el prior es **data-driven por activo** (signo de μ_k por estado en calibración), no hardcodeado. Umbrales
+  0,25 / **τ=0,50** / 0,70; por qué τ=0,5.
 - 3.3 **GSO**: del GARCH a la banda. Volatility targeting (Moreira–Muir 2017). Umbrales P95/P99. Limitación:
   GSO no dispara (hallazgo negativo).
 - 3.4 **PSA**: del BOCPD al score. `cp_prob_delta`, hazard 1/60, umbrales P95/P99.
