@@ -869,6 +869,15 @@ embargo = 1 es **corrección del protocolo**, no un truco para "sacar significan
   barrido (Bonferroni-5: $0.047\times5\approx0.24$) ni el Holm de la familia {vs M5, M8, B&H}. Se
   reporta como **sensibilidad**, no como hallazgo confirmatorio.
 
+**El barrido completo (embargo 1,2,3,5,10,21) confirma que la accuracy es RUIDO, no señal**
+(`experiments/embargo_sweep.py`): el rango entre embargos es $0.032$ en SPY y $0.040$ en SMCI, ambos
+$\approx$ **1 desviación binomial** ($\pm0.0316$ para $n\approx250$). Y van en **direcciones opuestas**:
+en SPY el "mejor" es embargo 5, en SMCI es embargo 1 — se contradicen, luego no hay regla que extraer.
+La causa mecánica: quitar 4 días de entrenamiento desplaza $p_1$ en $\sim0.06$ y **voltea el signo del
+10 % de las posiciones**. Que un cambio tan pequeño mueva tanto es, en sí, **la prueba de que M10 no
+tiene señal direccional** (un modelo con señal sería estable). Cambiar la semilla mueve la accuracy lo
+mismo que cambiar el embargo.
+
 > **Regla:** elijo embargo = 1 **por principio** (horizonte = 1), justificado a priori — *no* por su
 > p-valor. Y digo yo misma que la significancia no sobrevive. Esa es la defensa sólida.
 """)
@@ -889,6 +898,50 @@ for embargo in (5, 1):
           f"  -> gap={gap}d {'(sin solape)' if gap >= 1 else '(SOLAPE)'}")
 # Con horizonte 1, embargo=1 ya deja gap>=1 -> sin solape de etiquetas -> sin fuga.
 ''')
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 14c. El momentum y M10 sobre SPY: por qué el momentum NO entra al modelo
+
+Exploración (2026-06-17) de si añadir *momentum* a M10 mejora, y si se puede decidir **a priori**.
+Conclusión: el momentum **no es un componente desplegable**, y el M10 canónico no tiene alfa direccional.
+
+### El cuadro de M10 canónico (ALL22, sin momentum) sobre SPY — embargo = 1
+
+`experiments/spy_m10_full_report.py` (OOS 2025-05→2026-05, $n=251$):
+
+| modelo | accuracy | Sharpe | equity | maxDD | AUC | log-loss | Brier |
+|---|---|---|---|---|---|---|---|
+| M5 (agente) | 0.367 | −2.73 | 0.932 | −0.069 | — | — | — |
+| M8 (STRATA) | 0.442 | **+1.60** | **1.097** | −0.060 | — | — | — |
+| M10 (ALL22) | 0.494 | −0.60 | 0.920 | −0.161 | 0.531 | 0.856 | 0.308 |
+| B&H | 0.566 | +2.20 | 1.302 | −0.098 | — | — | — |
+
+Tests de M10: vs M5 **McNemar $p=0.007$** (corrige al agente); vs M8 $p=0.29$ (universalidad); vs B&H
+$p=0.13$; **sign vs 0.5 $p=0.90$**; IC95 del exceso de accuracy $[-0.058,+0.042]$ (cruza el 0).
+
+Lectura: el M10 desplegable es **una moneda que pierde dinero** (acc 0.494, AUC 0.53, log-loss $>0.693$,
+equity $<1$). Su único valor —igual que el de M8— es **corregir al agente** ($p=0.007$), no generar alfa.
+Y la regla determinista **M8 le gana al ML** económicamente (Sharpe $+1.60$ vs $-0.60$): universalidad.
+
+### El momentum: significativo en SPY, pero no robusto ni justificable a priori
+
+Con momentum, SPY/aug subía a accuracy $0.59$ y era significativo vs azar — pero:
+
+1. **No bate a B&H** y el motor era el momentum, no STRATA (`spy_momentum_ablation.py`): el momentum solo
+   da Sharpe alto con accuracy de moneda (0.52); STRATA+régimen añade los puntos significativos.
+2. **No se puede decidir a priori si meterlo.** Una regla "mete momentum si funcionó el último año"
+   acierta 7/10 (`momentum_decision_rule.py`) **pero no es robusta**: el supuesto (que el rendimiento del
+   momentum persiste) **es falso** — sobre 708 puntos de 24 años, Spearman señal↔resultado $=0.03$
+   (`momentum_rule_robustness.py`); y el 7/10 oscila entre 2/10 y 8/10 según parámetros (ruido).
+3. **A horizonte mensual** (Moskowitz, Ooi & Pedersen 2012) el momentum es real en calibración (acc 0.55)
+   pero **no transfiere** al OOS (`momentum_tsmom_monthly.py`): OOS corto y alcista, B&H gana.
+
+> **Frase:** *"El momentum no entra al modelo: demuestro (708 puntos, sin look-ahead) que su beneficio no
+> persiste, así que no hay regla a priori para incluirlo. El M10 desplegable es STRATA puro, que no
+> predice dirección mejor que el azar; su valor es corregir al agente ($p=0.007$), no batir al mercado."*
+
+""")
 
 # ---------------------------------------------------------------------------
 md(r"""

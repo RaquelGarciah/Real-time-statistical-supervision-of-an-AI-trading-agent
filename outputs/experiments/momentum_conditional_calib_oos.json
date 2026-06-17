@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "eff_w": 63,
+    "l_mom": 21,
+    "calib_end": "2024-09-30",
+    "oos_start": "2024-10-01",
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ]
+  },
+  "resumen": {
+    "theta_eff_ratio": 0.1751,
+    "q1_calib": 0.0793,
+    "calib_acc_por_tercil": {
+      "bajo": 0.5023,
+      "medio": 0.5051,
+      "alto": 0.5191,
+      "n_alto": 15701
+    },
+    "monotona_en_calib": true,
+    "oos_acc_trending": 0.5099,
+    "oos_n_trending": 1059,
+    "oos_sign_p_trending": 0.5187,
+    "oos_acc_flat": 0.4998,
+    "oos_n_flat": 3003,
+    "oos_sign_p_flat": 0.9854,
+    "activos_que_confirman": "6/10",
+    "EXITO_PREREGISTRADO": false
+  },
+  "por_activo_oos": {
+    "SPY": {
+      "acc_trend": 0.5252,
+      "n_trend": 139,
+      "acc_flat": 0.5267,
+      "n_flat": 281,
+      "confirma": false
+    },
+    "NVDA": {
+      "acc_trend": 0.5294,
+      "n_trend": 85,
+      "acc_flat": 0.5031,
+      "n_flat": 326,
+      "confirma": true
+    },
+    "BAC": {
+      "acc_trend": 0.4759,
+      "n_trend": 145,
+      "acc_flat": 0.4766,
+      "n_flat": 256,
+      "confirma": false
+    },
+    "TSLA": {
+      "acc_trend": 0.483,
+      "n_trend": 147,
+      "acc_flat": 0.5058,
+      "n_flat": 259,
+      "confirma": false
+    },
+    "XLE": {
+      "acc_trend": 0.5663,
+      "n_trend": 83,
+      "acc_flat": 0.5156,
+      "n_flat": 320,
+      "confirma": true
+    },
+    "UNG": {
+      "acc_trend": 0.4074,
+      "n_trend": 54,
+      "acc_flat": 0.5431,
+      "n_flat": 348,
+      "confirma": false
+    },
+    "MSTR": {
+      "acc_trend": 0.5359,
+      "n_trend": 153,
+      "acc_flat": 0.4862,
+      "n_flat": 253,
+      "confirma": true
+    },
+    "SMCI": {
+      "acc_trend": 0.5104,
+      "n_trend": 96,
+      "acc_flat": 0.4757,
+      "n_flat": 309,
+      "confirma": true
+    },
+    "ROKU": {
+      "acc_trend": 0.4844,
+      "n_trend": 64,
+      "acc_flat": 0.4751,
+      "n_flat": 341,
+      "confirma": true
+    },
+    "MARA": {
+      "acc_trend": 0.5484,
+      "n_trend": 93,
+      "acc_flat": 0.4839,
+      "n_flat": 310,
+      "confirma": true
+    }
+  }
+}

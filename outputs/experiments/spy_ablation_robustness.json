@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "n_eval": 251,
+    "bh_acc": 0.5657,
+    "n_blocks": 5,
+    "seeds_per_block": 10,
+    "oos": [
+      "2025-05-09",
+      "2026-05-11"
+    ]
+  },
+  "por_bloque": [
+    {
+      "block": 0,
+      "seeds": [
+        42,
+        51
+      ],
+      "momentum_solo": {
+        "acc": 0.5219,
+        "sharpe": 2.138,
+        "sign_p": 0.528
+      },
+      "strata7+mom": {
+        "acc": 0.5857,
+        "sharpe": 3.089,
+        "sign_p": 0.0079
+      },
+      "all22+mom": {
+        "acc": 0.5896,
+        "sharpe": 2.559,
+        "sign_p": 0.0054
+      },
+      "strata_sobre_mom": {
+        "delta_acc": 0.0638,
+        "mcnemar_p": 0.0894,
+        "dias_solo_mom": 31,
+        "dias_strata": 47
+      },
+      "quitar_agente_mejora": true
+    },
+    {
+      "block": 1,
+      "seeds": [
+        52,
+        61
+      ],
+      "momentum_solo": {
+        "acc": 0.5219,
+        "sharpe": 2.23,
+        "sign_p": 0.528
+      },
+      "strata7+mom": {
+        "acc": 0.5737,
+        "sharpe": 2.843,
+        "sign_p": 0.0229
+      },
+      "all22+mom": {
+        "acc": 0.6016,
+        "sharpe": 3.132,
+        "sign_p": 0.0015
+      },
+      "strata_sobre_mom": {
+        "delta_acc": 0.0518,
+        "mcnemar_p": 0.1715,
+        "dias_solo_mom": 32,
+        "dias_strata": 45
+      },
+      "quitar_agente_mejora": false
+    },
+    {
+      "block": 2,
+      "seeds": [
+        62,
+        71
+      ],
+      "momentum_solo": {
+        "acc": 0.5179,
+        "sharpe": 2.088,
+        "sign_p": 0.6137
+      },
+      "strata7+mom": {
+        "acc": 0.5857,
+        "sharpe": 2.997,
+        "sign_p": 0.0079
+      },
+      "all22+mom": {
+        "acc": 0.5936,
+        "sharpe": 3.305,
+        "sign_p": 0.0036
+      },
+      "strata_sobre_mom": {
+        "delta_acc": 0.0678,
+        "mcnemar_p": 0.0718,
+        "dias_solo_mom": 31,
+        "dias_strata": 48
+      },
+      "quitar_agente_mejora": false
+    },
+    {
+      "block": 3,
+      "seeds": [
+        72,
+        81
+      ],
+      "momentum_solo": {
+        "acc": 0.5259,
+        "sharpe": 2.183,
+        "sign_p": 0.4489
+      },
+      "strata7+mom": {
+        "acc": 0.5777,
+        "sharpe": 2.436,
+        "sign_p": 0.0163
+      },
+      "all22+mom": {
+        "acc": 0.5976,
+        "sharpe": 3.399,
+        "sign_p": 0.0024
+      },
+      "strata_sobre_mom": {
+        "delta_acc": 0.0518,
+        "mcnemar_p": 0.1715,
+        "dias_solo_mom": 32,
+        "dias_strata": 45
+      },
+      "quitar_agente_mejora": false
+    },
+    {
+      "block": 4,
+      "seeds": [
+        82,
+        91
+      ],
+      "momentum_solo": {
+        "acc": 0.5179,
+        "sharpe": 2.225,
+        "sign_p": 0.6137
+      },
+      "strata7+mom": {
+        "acc": 0.5857,
+        "sharpe": 2.873,
+        "sign_p": 0.0079
+      },
+      "all22+mom": {
+        "acc": 0.5976,
+        "sharpe": 3.248,
+        "sign_p": 0.0024
+      },
+      "strata_sobre_mom": {
+        "delta_acc": 0.0678,
+        "mcnemar_p": 0.0647,
+        "dias_solo_mom": 29,
+        "dias_strata": 46
+      },
+      "quitar_agente_mejora": false
+    }
+  ],
+  "resumen": {
+    "acc_momentum_solo": {
+      "media": 0.5211,
+      "min": 0.5179,
+      "max": 0.5259
+    },
+    "acc_strata7+mom": {
+      "media": 0.5817,
+      "min": 0.5737,
+      "max": 0.5857
+    },
+    "sharpe_strata7+mom": {
+      "media": 2.8476,
+      "min": 2.436,
+      "max": 3.089
+    },
+    "C1_strata_sobre_mom": {
+      "delta_acc_media": 0.0606,
+      "delta_acc_min": 0.0518,
+      "bloques_delta_positivo": 5,
+      "bloques_mcnemar_sig_0.10": 3
+    },
+    "C2_quitar_agente_mejora": 1,
+    "n_bloques": 5
+  }
+}

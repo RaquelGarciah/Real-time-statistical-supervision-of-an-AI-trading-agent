@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "seed": 42,
+    "n_seeds": 10,
+    "signal_lag": 1,
+    "n_eval": 251,
+    "oos": [
+      "2025-05-09",
+      "2026-05-11"
+    ],
+    "bh_accuracy": 0.5657
+  },
+  "feature_sets": {
+    "momentum_solo": {
+      "n_features": 5,
+      "accuracy": 0.5219,
+      "sharpe_causal": 2.138,
+      "dsr": 0.8028,
+      "equity_final": 1.2926,
+      "sign_vs_azar_p": 0.528,
+      "mcnemar_vs_bh_p": 0.3749
+    },
+    "strata_regime7": {
+      "n_features": 7,
+      "accuracy": 0.5378,
+      "sharpe_causal": 1.744,
+      "dsr": 0.6718,
+      "equity_final": 1.2318,
+      "sign_vs_azar_p": 0.2558,
+      "mcnemar_vs_bh_p": 0.569
+    },
+    "agent15": {
+      "n_features": 15,
+      "accuracy": 0.5458,
+      "sharpe_causal": 1.275,
+      "dsr": 0.488,
+      "equity_final": 1.1626,
+      "sign_vs_azar_p": 0.1648,
+      "mcnemar_vs_bh_p": 0.6606
+    },
+    "all22": {
+      "n_features": 22,
+      "accuracy": 0.5259,
+      "sharpe_causal": 0.469,
+      "dsr": 0.2016,
+      "equity_final": 1.052,
+      "sign_vs_azar_p": 0.4489,
+      "mcnemar_vs_bh_p": 0.4113
+    },
+    "strata7+mom": {
+      "n_features": 12,
+      "accuracy": 0.5857,
+      "sharpe_causal": 3.089,
+      "dsr": 0.9591,
+      "equity_final": 1.448,
+      "sign_vs_azar_p": 0.0079,
+      "mcnemar_vs_bh_p": 0.7205
+    },
+    "all22+mom": {
+      "n_features": 27,
+      "accuracy": 0.5896,
+      "sharpe_causal": 2.559,
+      "dsr": 0.8891,
+      "equity_final": 1.3599,
+      "sign_vs_azar_p": 0.0054,
+      "mcnemar_vs_bh_p": 0.6534
+    }
+  },
+  "aporta_strata_sobre_momentum": {
+    "mcnemar_all22mom_vs_momsolo_p": 0.0718,
+    "dias_solo_mom_acierta": 31,
+    "dias_all22mom_acierta": 48,
+    "delta_accuracy": 0.0677
+  }
+}
