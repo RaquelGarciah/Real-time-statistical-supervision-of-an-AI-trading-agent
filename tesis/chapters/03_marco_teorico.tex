@@ -518,7 +518,7 @@ Una estrategia que parece excelente sobre datos pasados puede ser un espejismo s
 \subsection{Causalidad: la regla signal\_lag=1}
 \label{sec:cpcv-causalidad}
 
-La regla básica ya se fijó en la Sección~\ref{sec:preliminares} y conviene ahora justificarla como condición de ausencia de fuga. La posición $w_t$ se decide con la información disponible hasta el cierre del día $t$. El retorno de ese mismo día, $r_t$, ya se ha producido cuando se decide: forma parte de la información que entra en la decisión. Contabilizar la ganancia como $w_t \cdot r_t$ sería, por tanto, recompensar la posición con un movimiento que ya se conocía al tomarla, lo que equivale a permitir que la decisión mire su propio resultado. Es \emph{look-ahead} en su forma más directa y produce backtests artificialmente brillantes que se desploman en operativa real.
+La Sección~\ref{sec:preliminares} fijó esta regla; aquí se ve por qué es condición de ausencia de fuga. La posición $w_t$ se decide con la información disponible hasta el cierre del día $t$. El retorno de ese mismo día, $r_t$, ya se ha producido cuando se decide: forma parte de la información que entra en la decisión. Contabilizar la ganancia como $w_t \cdot r_t$ sería, por tanto, recompensar la posición con un movimiento que ya se conocía al tomarla, lo que equivale a permitir que la decisión mire su propio resultado. Es \emph{look-ahead} en su forma más directa y produce backtests artificialmente brillantes que se desploman en operativa real.
 
 La regla correcta, que en el código lleva el nombre \texttt{signal\_lag=1}, es contabilizar la posición de $t$ contra el retorno del día siguiente:
 \[
