@@ -64,6 +64,7 @@ DEEP = json.load(open("outputs/experiments/m10_smci_deep.json"))     # B: config
 ADV = json.load(open("outputs/experiments/m10_smci_advanced.json"))  # C: métodos avanzados
 SEL = json.load(open("outputs/experiments/m10_smci_select.json"))    # E: selección de burn-in en validación
 PAN = json.load(open("outputs/experiments/panel_intervention_scan.json"))  # F: intervención y discrepancia panel
+ROLL = json.load(open("outputs/experiments/m10_smci_rolling.json"))        # G: rolling-window
 
 m = ADV["meta"]
 print(f"Activo: {m['ticker']}  ·  OOS test desplegable: {m['oos_span'][0]} → {m['oos_span'][1]}  (n={m['n_eval']} días)")
@@ -394,6 +395,48 @@ ax.set_ylabel("acc(M10) − máx(M5, M8, B&H)")
 ax.set_title("¿Bate M10 a TODO en accuracy? Solo si la barra es > 0  →  ÚNICO: SMCI")
 plt.tight_layout(); plt.show()
 print("Único activo con acc(M10) > M5 y > M8 y > B&H:", [t for t, mg in zip(tks, margen) if mg > 0])""")
+
+# ---------------------------------------------------------------------------------------------
+md(r"""## §G · ¿Gana M10 de forma **consistente** o solo en un tramo? (rolling-window)
+
+Test de estabilidad **intra-OOS**: accuracy en **ventanas deslizantes** (42/63/84 d) del M10 ensemble sobre
+todo el OOS desplegable (250 d). Responde a si la ventaja es consistente o suerte de un sub-periodo.
+
+**Lectura:** M10 bate a **B&H** en la **mayoría** de ventanas y cada vez más con el horizonte (57 % → 76 % →
+82 %) — porque en ventanas largas domina la caída de SMCI y el sesgo a corto de M10 ayuda. Pero contra el
+**agente (M5)** y la **regla (M8)** está cerca de la **moneda** (50–65 %). Y **globalmente nada es
+significativo** (autocorr-robusto: vs B&H p=0.26, vs M5 p=0.36, sign vs 0.5 p=0.49). Es decir: gana al pasivo
+de forma **moderadamente consistente** (sobre todo a horizontes largos), pero **no** se separa del agente/regla
+ni alcanza significancia.""")
+
+code(r"""R = ROLL["rolling63"]; x = np.arange(len(R["fecha_fin"])); fechas = R["fecha_fin"]
+fig, ax = plt.subplots(figsize=(12, 4.6))
+for k, (c, lw, lab) in {"m10": ("#2c7fb7", 2.3, "M10 (ens)"), "bh": ("#4caf50", 1.6, "B&H"),
+                        "m5": ("#9e9e9e", 1.3, "M5 (agente)"), "m8": ("#f0a830", 1.3, "M8 (regla)")}.items():
+    ax.plot(x, R[k], color=c, lw=lw, label=lab)
+ax.axhline(0.5, color="black", ls="--", lw=1, label="azar (0.5)")
+ticks = list(range(0, len(x), 6))
+ax.set_xticks(ticks); ax.set_xticklabels([fechas[i] for i in ticks], rotation=45, ha="right", fontsize=8)
+ax.set_ylabel("accuracy rodante (ventana 63 d)")
+ax.set_title("SMCI · accuracy rodante 63 d — M10 lidera en tramos bajistas, no consistentemente sobre el agente")
+ax.legend(fontsize=8, ncol=5, loc="upper center"); plt.tight_layout(); plt.show()""")
+
+code(r"""frac = ROLL["frac_ventanas_m10_gana"]; Ws = ROLL["meta"]["windows"]
+x = np.arange(len(Ws)); w = 0.26
+fig, ax = plt.subplots(figsize=(9, 4.2))
+for i, (opp, c, lab) in enumerate((("bh", "#4caf50", "vs B&H"), ("m5", "#9e9e9e", "vs M5"), ("m8", "#f0a830", "vs M8"))):
+    vals = [frac[str(W)][f"m10_gt_{opp}"] for W in Ws]
+    bars = ax.bar(x + (i - 1) * w, vals, w, label=lab, color=c, edgecolor="black", lw=0.6)
+    for b, v in zip(bars, vals):
+        ax.text(b.get_x() + b.get_width() / 2, v + 0.01, f"{v:.0%}", ha="center", fontsize=8)
+ax.axhline(0.5, color="black", ls="--", lw=1, label="50 % (moneda)")
+ax.set_xticks(x); ax.set_xticklabels([f"{W} d" for W in Ws]); ax.set_ylim(0, 1.0)
+ax.set_ylabel("fracción de ventanas en que M10 gana"); ax.set_xlabel("tamaño de ventana")
+ax.set_title("Fracción de ventanas en que M10 bate a cada estrategia")
+ax.legend(fontsize=8); plt.tight_layout(); plt.show()
+sg = ROLL["significancia_global"]
+print(f"Significancia global (autocorr-robusta): vs B&H p={sg['block_perm_vs_bh_p']}  vs M5 p={sg['block_perm_vs_m5_p']}  sign vs 0.5 p={sg['sign_vs_0.5_p']}")
+print("→ M10 gana al pasivo en la mayoría de ventanas (más a horizontes largos), pero NO al agente/regla, y nada es significativo.")""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)
