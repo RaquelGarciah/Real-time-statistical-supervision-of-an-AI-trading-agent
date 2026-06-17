@@ -282,6 +282,39 @@ la cobertura. Por ello se descarta y el modelo final opera a cobertura completa.
 
 ---
 
+## 12. Baseline de no-habilidad = **clase mayoritaria (ZeroR)** / *no-information rate* — [2026-06-17]
+
+**Decisión.** El baseline trivial contra el que se mide la accuracy direccional no es solo B&H ("siempre
+largo"), sino el **clasificador de clase mayoritaria** (regla **ZeroR**): predecir siempre la **dirección
+dominante**. Su accuracy = frecuencia de la clase predominante = *no-information rate* (NIR). En SMCI, donde
+predominan los días bajistas, **se materializa como "siempre corto"**.
+
+**Respaldo en literatura.**
+- **ZeroR / clase mayoritaria** (Witten, Frank, Hall & Pal 2016, *Data Mining*): el baseline de no-habilidad
+  estándar en clasificación; predecir siempre la clase más frecuente, contra el que se evalúan los modelos.
+- **No-information rate + test** (Kuhn 2008, *caret*): define el NIR = "the largest class percentage in the
+  data" y propone el **test binomial unilateral** (accuracy del modelo > NIR). Es el contraste correcto:
+  comparar la accuracy contra la **clase mayoritaria**, no contra el 0.5 ingenuo.
+
+**Por qué importa (y por qué es más fuerte que B&H).** B&H = "siempre largo" solo es buen baseline si suben
+más días. En un activo bajista/lateral como SMCI, la clase mayoritaria ("siempre corto", NIR=0.516) es un
+**listón más duro** que B&H (0.484). M10 (0.552) **bate a los dos** → tiene discriminación direccional real,
+no un simple sesgo a un lado. Es el argumento que **mata la objeción "M10 solo gana por estar corto"**: en
+los tramos bajistas la clase mayoritaria ES "siempre corto", y M10 también la supera.
+
+**Frase para la memoria.** *"El baseline de no-habilidad es el clasificador de clase mayoritaria (regla ZeroR
+[Witten et al. 2016]), cuya accuracy iguala la frecuencia de la clase predominante —el no-information rate
+[Kuhn 2008]—; en SMCI, donde predomina la clase 'baja', equivale a una posición permanentemente corta. M10 la
+supera (0.552 > 0.516), además de superar a B&H, lo que descarta que su ventaja sea un mero sesgo direccional."*
+
+**Honestidad.** El margen sobre la clase mayoritaria (+3.6 pts en el OOS) es **más estrecho** que sobre B&H
+(+6.8) — como debe ser, es un baseline más exigente. El contraste honesto de significancia es el **binomial
+vs NIR** (Kuhn 2008), no vs 0.5.
+
+**Citas:** `witten2016datamining`, `kuhn2008caret`. (Añadidas a `bibliography.bib` [2026-06-17].)
+
+---
+
 ## Referencias (verificadas; APA-español)
 
 *Todas las claves están en `tesis/bibliography.bib`. Las del embargo y el ensemble (decisiones #1–#2) fueron
@@ -336,6 +369,10 @@ establecido del proyecto (docstrings de `core/` y `strata/`).*
   Kingdom inflation. *Econometrica, 50*(4), 987–1008. `[engle1982]`
 - Fearnhead, P. (2006). Exact and efficient Bayesian inference for multiple changepoint problems.
   *Statistics and Computing, 16*(2), 203–213. `[fearnhead2006]`
+- Kuhn, M. (2008). Building predictive models in R using the caret package. *Journal of Statistical
+  Software, 28*(5), 1–26. https://doi.org/10.18637/jss.v028.i05 `[kuhn2008caret]`
+- Witten, I. H., Frank, E., Hall, M. A. y Pal, C. J. (2016). *Data Mining: Practical Machine Learning Tools
+  and Techniques* (4.ª ed.). Burlington, MA: Morgan Kaufmann. `[witten2016datamining]`
 - Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the
   business cycle. *Econometrica, 57*(2), 357–384. `[hamilton1989]`
 - López de Prado, M. (2018). *Advances in Financial Machine Learning* (cap. 7 y 12). John Wiley & Sons.
