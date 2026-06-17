@@ -64,8 +64,10 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
   no-information rate = siempre la dirección dominante; en SMCI "siempre corto", 0.516 — Witten et al. 2016;
   Kuhn 2008). M10 (0.552) bate a **ambos** → su ventaja **no es un mero sesgo a corto**.
 - **Significancia:** **nominal, no plena.** Test correcto = **binomial M10 vs NIR** (clase mayoritaria) = 0.141
-  (no sig); block-perm vs B&H 0.047 (no sobrevive Bonferroni-5 ≈ 0.28); sign vs 0.5 p=0.11; no bate al agente.
-  **DSR=0.72 < 0.95.**
+  (no sig); block-perm vs B&H 0.047 (no sobrevive Bonferroni-5 ≈ 0.28); sign vs 0.5 p=0.057 (binomial 1-cola;
+  0.114 sign bilateral), full OOS n=250; no bate al agente (McNemar 0.16). **DSR=0.72 < 0.95** (n_trials=6, Sharpe
+  diario; con conteo conservador de 25 configs baja a 0.43). Ablación: las 7 features STRATA suben la accuracy de
+  M10 de 0.468 (solo-agente) a 0.552 (McNemar 0.053, casi sig.) → el meta-aprendiz sí usa la señal de STRATA.
 - **Robustez a la partición (respaldo):** con 3 splits estándar (60/40, 70/30, 80/20; burn-in 150), M10 bate a
   M5/M8/B&H **y a la clase mayoritaria** en validación Y test en los tres (val 0.52–0.535, test 0.60–0.62) → la
   conclusión no depende del corte. Fuente: `experiments/m10_smci_valtest_robustez.py`. (Al achicar el test la

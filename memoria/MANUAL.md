@@ -66,9 +66,10 @@ temporal**, con vocación de generalizar a cualquier agente y cualquier activo.
   signo(p1−0,5), cobertura 100 %. **No** es CPCV; **no** lleva momentum/aug ni abstención.
 - **Resultado (OOS 250 d):** **M10 0,552 > "mayoritaria" 0,516 > M8 0,496 > M5 0,484 = B&H 0,484**; Sharpe M10
   1,84; equity 3,24×. **M10 es el único que supera a todos los baselines y a lo trivial.**
-- **Interpretabilidad:** ablación **M10 solo-agente = 0,476 ≈ M5** (las 7 señales STRATA aportan ≈ +5 pp;
-  `smci_config_study.json`). SHAP sobre el ensemble SMCI: **pendiente de ejecutar** (Fase 4) — no se afirma hasta
-  tenerlo.
+- **Interpretabilidad:** ablación en el notebook definitivo (walk-forward ensemble, embargo=1): **M10 solo-agente
+  = 0,468 → 0,552 con las 22** (las 7 señales STRATA aportan ≈ +8 pp; McNemar 0,053, casi sig.) → el meta-aprendiz
+  sí usa la señal de STRATA. SHAP (in-sample, modelo full-fit): las 7 features STRATA/régimen pesan **41,4 %** del
+  total. Fuente única: `notebooks/STRATA_SMCI.ipynb` §7–§7b.
 - **Honestidad:** la ventaja es **nominal, no significativa** (ver tests en §6). **Robusta** a la partición y al
   rolling. **Significancia plena = trabajo futuro** (muestra ≈250 días; el agente solo existe en el OOS
   posterior al cutoff del LLM).
