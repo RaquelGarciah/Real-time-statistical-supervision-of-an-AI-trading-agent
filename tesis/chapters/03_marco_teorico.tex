@@ -43,7 +43,7 @@ Las series de retornos financieros no se comportan como ruido blanco gaussiano. 
 \section{STRATA a nivel técnico}
 \label{sec:strata-tecnico}
 
-Antes de desarrollar la matemática conviene fijar qué es STRATA y qué papel juega cada pieza, sin entrar todavía en los modelos.
+Esta sección fija qué es STRATA y qué papel cumple cada pieza, dejando los modelos para después.
 
 Cada día, el agente de trading toma una decisión sobre el activo que resumimos en una terna: un \emph{signo} (comprar o vender), un \emph{tamaño} y una \emph{confianza}. Esa terna determina una \emph{posición} $w_t \in [-1, +1]$, donde el signo marca la dirección (larga si $w_t > 0$, corta si $w_t < 0$) y el módulo $|w_t|$ es la fracción de capital expuesta; la posición tomada en $t$ se evalúa contra el retorno del día siguiente, $w_t \cdot \rnext$, según la convención causal de la Sección~\ref{sec:preliminares}. STRATA no decide por el agente: \emph{supervisa} esa decisión. Formalmente es una aplicación
 \[
