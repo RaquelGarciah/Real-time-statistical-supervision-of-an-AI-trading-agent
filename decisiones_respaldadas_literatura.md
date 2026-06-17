@@ -90,7 +90,152 @@ comparación con B&H.
 
 ---
 
-## Referencias (verificadas por @experto-citas; APA-español)
+## 3. Modelo de régimen (RAM): HMM gaussiano **K=3 estados**, **filtrado** (causal)
+
+**Decisión.** El detector RAM usa un **HMM gaussiano de 3 estados** (Calma/Estrés/Crisis) sobre
+`[log-retorno, volatilidad realizada 21d]`, y se usa la posterior **filtrada** `γ^f_t = P(s_t | x_{1:t})`
+(solo pasado), no la suavizada (que mira todo el histórico).
+
+**Respaldo en literatura.**
+- **Regime-switching y HMM** (Hamilton 1989; Rabiner 1989): los modelos de cambio de régimen son el marco
+  estándar para series con estados latentes; K=3 (calma/estrés/crisis) es el número canónico e interpretable.
+- **Filtrado vs suavizado** (Rabiner 1989, algoritmo *forward*, ecs. 18–20): la posterior filtrada usa solo
+  información hasta `t` → **causal, sin look-ahead** (el suavizado *forward-backward* usaría el futuro).
+- Ajuste por Baum-Welch/EM (Baum et al. 1970); estado más probable por Viterbi (1967).
+
+**[tutor] — dicho literal en la reunión 2026-06-16:** *"el K es igual a tres ya solo por la literatura y
+porque es más interpretable […] K igual a dos da peor accuracy"*. Es decir: K=3 **elegido por literatura +
+interpretabilidad**, con K=2 descartado empíricamente.
+
+**Honestidad.** El régimen captura **volatilidad**, no dirección; funciona como proxy direccional **solo**
+donde se cumple el leverage effect (ver decisión #4). La feature es **volatilidad realizada** (observada), no
+VIX implícito (forward-looking), por coherencia con el HMM gaussiano.
+
+**Citas:** `hamilton1989`, `rabiner1989`, `baum1970`, `viterbi1967`. (Ya en `bibliography.bib`.)
+
+---
+
+## 4. Leverage effect → **SPY como caso central** y régimen como proxy direccional
+
+**Decisión.** El caso central del método es **SPY** (índice), y la política RAM (Calma→penaliza short,
+Crisis→penaliza long) se justifica porque el régimen de volatilidad sirve de **proxy de dirección**.
+
+**Respaldo en literatura.**
+- **Leverage effect** (Black 1976; Christie 1982): en índices agregados hay correlación negativa fuerte
+  (~−0.7) entre retorno y volatilidad → la alta volatilidad coincide con caídas. Por eso el HMM de régimen
+  actúa **implícitamente como detector direccional** en SPY.
+
+**[tutor]:** en la reunión 2026-06-16 Raquel apoya la elección de los regímenes en que *"hay mucha literatura
+de esto de los regímenes"*.
+
+**Honestidad.** El leverage effect es propiedad de **índices**, **débil en valores individuales** → es la
+razón estructural de por qué STRATA rescata en SPY (significativo) y **no** en SMCI (ver §F de
+`m10_better_smci.ipynb` y DECISIONES_ESENCIALES #1, #16).
+
+**Citas:** `black1976`, `christie1982`. (Ya en `bibliography.bib`.)
+
+---
+
+## 5. Volatilidad condicional (GSO): **GARCH(1,1) Student-t**
+
+**Decisión.** El detector GSO usa la previsión de volatilidad de un **GARCH(1,1) con innovaciones t de
+Student** para acotar el tamaño de la posición.
+
+**Respaldo en literatura.** ARCH (Engle 1982) → GARCH (Bollerslev 1986) → GARCH-t para colas pesadas de los
+retornos financieros (Bollerslev 1987). Es el modelo estándar de volatilidad condicional; la t de Student
+captura las colas que la normal infravalora.
+
+**Citas:** `engle1982`, `bollerslev1986`, `bollerslev1987`. (Ya en `bibliography.bib`.)
+
+---
+
+## 6. Coherencia temporal del agente (PSA): **BOCPD**
+
+**Decisión.** El detector PSA usa *Bayesian Online Changepoint Detection* sobre el historial de sizing del
+agente para detectar cambios estructurales de opinión (hazard 1/60).
+
+**Respaldo en literatura.** Adams & MacKay (2007) — algoritmo BOCPD online; Fearnhead (2006) — inferencia
+exacta para múltiples puntos de cambio. Es el marco bayesiano canónico para detección de rupturas en tiempo
+real, sin mirar el futuro.
+
+**Citas:** `adams2007`, `fearnhead2006`. (Ya en `bibliography.bib`.)
+
+---
+
+## 7. Validación cruzada de contraste: **CPCV / Purged CV**
+
+**Decisión.** La versión **no desplegable** de M10 (contraste) usa **Combinatorial Purged Cross-Validation**
+(`n_splits=6, n_test_splits=2`, embargo=5, `t1=índice.shift(-1)`). Es el contrapunto a la versión desplegable
+walk-forward (decisiones #1 y #2).
+
+**Respaldo en literatura.** López de Prado (2018), cap. 7 (purga/embargo) y cap. 12 (CPCV): metodología
+diseñada para series financieras con muestra pequeña, que evita el sesgo del KFold y el desperdicio de un
+walk-forward simple. **Aquí su embargo=5 es coherente** porque CPCV sí tiene folds bidireccionales (a
+diferencia del walk-forward, decisión #1).
+
+**Honestidad.** CPCV **ve bloques cronológicamente futuros** → da una estimación de backtest insesgada pero
+**no simula despliegue**; por eso M10-CPCV se reporta solo como contraste (en SMCI da 0.448, peor que el WF).
+
+**Citas:** `lopezdeprado2018`. (Ya en `bibliography.bib`.)
+
+---
+
+## 8. Batería de contraste estadístico (la usada en TODO este trabajo)
+
+**Decisión.** Toda cifra se contrasta con tests apropiados, no con diferencias simples:
+- **McNemar pareado** (corrección de continuidad; binomial exacto si b+c<25) para comparar accuracy de dos
+  estrategias sobre los mismos días → McNemar (1947), Edwards (1948).
+- **Diebold-Mariano** para comparar precisión predictiva / P&L → Diebold & Mariano (1995).
+- **Sign test** (binomial exacto) contra 0.5 → Conover (1999).
+- **Bootstrap estacionario / permutación por bloques** (bloque medio √N) para IC y p-valores robustos a
+  autocorrelación → Politis & Romano (1994).
+- **TOST** (two one-sided tests) para contrastes de **equivalencia** ("P&L indistinguible") → Schuirmann (1987).
+
+**Respaldo en literatura.** Cada test es el estándar para su pregunta; la elección de versiones
+**autocorr-robustas** (bootstrap estacionario, block-permutation) es deliberada porque los retornos diarios
+están serialmente correlados.
+
+**Honestidad.** Son los tests con los que se concluye que en SMCI **nada es significativo** tras corrección;
+se aplican igual aunque el resultado sea negativo (anti-p-hacking).
+
+**Citas:** `mcnemar1947`, `edwards1948`, `diebold1995`, `conover1999`, `politis1994`, `schuirmann1987`.
+(Ya en `bibliography.bib`.)
+
+---
+
+## 9. **Deflated Sharpe Ratio** (corrección por multiplicidad)
+
+**Decisión.** Todo Sharpe se reporta con su **Deflated Sharpe Ratio**, que corrige por el número de
+configuraciones probadas (`n_trials`).
+
+**Respaldo en literatura.** Bailey & López de Prado (2014): bajo `n_trials` pruebas sobre la misma serie, la
+esperanza del **máximo** Sharpe muestral es positiva aunque todos los Sharpes verdaderos sean cero; el DSR
+deflacta esa selección. Es la defensa formal contra el *backtest overfitting*.
+
+**Honestidad.** Es justo lo que hace que el Sharpe del ensemble (1.84) se quede en **DSR=0.72 < 0.95** →
+ilustrativo, no significativo. CLAUDE.md §4 prohíbe reportar Sharpe sin DSR.
+
+**Citas:** `bailey2014`. (Ya en `bibliography.bib`.)
+
+---
+
+## 10. Sizing por **volatility targeting** (GSO)
+
+**Decisión.** La magnitud de la posición escala inversamente a la volatilidad: `peso ∝ target_vol/σ_t`.
+
+**Respaldo en literatura.** Moreira & Muir (2017), *volatility-managed portfolios*: gestionar la exposición
+por volatilidad mejora el perfil riesgo-retorno. Es el fundamento del componente de **magnitud** del GSO
+(separado del **signo**, que lo fija el régimen).
+
+**Citas:** `moreira2017`. (Ya en `bibliography.bib`.)
+
+---
+
+## Referencias (verificadas; APA-español)
+
+*Todas las claves están en `tesis/bibliography.bib`. Las del embargo y el ensemble (decisiones #1–#2) fueron
+verificadas explícitamente por `@experto-citas` [2026-06-17]; el resto provienen del marco metodológico ya
+establecido del proyecto (docstrings de `core/` y `strata/`).*
 
 - Breiman, L. (1996). Bagging predictors. *Machine Learning, 24*(2), 123–140. https://doi.org/10.1007/BF00058655
 - Bergmeir, C. y Benítez, J. M. (2012). On the use of cross-validation for time series predictor evaluation.
@@ -108,5 +253,48 @@ comparación con B&H.
 - Tashman, L. J. (2000). Out-of-sample tests of forecasting accuracy: an analysis and review.
   *International Journal of Forecasting, 16*(4), 437–450. https://doi.org/10.1016/S0169-2070(00)00065-0
 
+*Marco metodológico ya establecido del proyecto (claves preexistentes en `bibliography.bib`):*
+
+- Adams, R. P. y MacKay, D. J. C. (2007). *Bayesian online changepoint detection*. arXiv:0710.3742. `[adams2007]`
+- Bailey, D. H. y López de Prado, M. (2014). The Deflated Sharpe Ratio: correcting for selection bias,
+  backtest overfitting, and non-normality. *Journal of Portfolio Management, 40*(5). `[bailey2014]`
+- Baum, L. E., Petrie, T., Soules, G. y Weiss, N. (1970). A maximization technique occurring in the
+  statistical analysis of probabilistic functions of Markov chains. *Annals of Mathematical Statistics,
+  41*(1), 164–171. `[baum1970]`
+- Black, F. (1976). Studies of stock price volatility changes. *Proceedings of the American Statistical
+  Association, Business and Economic Statistics Section*, 177–181. `[black1976]`
+- Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. *Journal of
+  Econometrics, 31*(3), 307–327. `[bollerslev1986]`
+- Bollerslev, T. (1987). A conditionally heteroskedastic time series model for speculative prices and rates
+  of return. *Review of Economics and Statistics, 69*(3), 542–547. `[bollerslev1987]`
+- Christie, A. A. (1982). The stochastic behavior of common stock variances. *Journal of Financial
+  Economics, 10*(4), 407–432. `[christie1982]`
+- Conover, W. J. (1999). *Practical Nonparametric Statistics* (3.ª ed.). Wiley. `[conover1999]`
+- Diebold, F. X. y Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic
+  Statistics, 13*(3), 253–263. `[diebold1995]`
+- Edwards, A. L. (1948). Note on the "correction for continuity" in testing the significance of the
+  difference between correlated proportions. *Psychometrika, 13*(3), 185–187. `[edwards1948]`
+- Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United
+  Kingdom inflation. *Econometrica, 50*(4), 987–1008. `[engle1982]`
+- Fearnhead, P. (2006). Exact and efficient Bayesian inference for multiple changepoint problems.
+  *Statistics and Computing, 16*(2), 203–213. `[fearnhead2006]`
+- Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the
+  business cycle. *Econometrica, 57*(2), 357–384. `[hamilton1989]`
+- López de Prado, M. (2018). *Advances in Financial Machine Learning* (cap. 7 y 12). John Wiley & Sons.
+  `[lopezdeprado2018]`
+- McNemar, Q. (1947). Note on the sampling error of the difference between correlated proportions or
+  percentages. *Psychometrika, 12*(2), 153–157. `[mcnemar1947]`
+- Moreira, A. y Muir, T. (2017). Volatility-managed portfolios. *Journal of Finance, 72*(4), 1611–1644.
+  `[moreira2017]`
+- Politis, D. N. y Romano, J. P. (1994). The stationary bootstrap. *Journal of the American Statistical
+  Association, 89*(428), 1303–1313. `[politis1994]`
+- Rabiner, L. R. (1989). A tutorial on hidden Markov models and selected applications in speech recognition.
+  *Proceedings of the IEEE, 77*(2), 257–286. `[rabiner1989]`
+- Schuirmann, D. J. (1987). A comparison of the two one-sided tests procedure and the power approach for
+  assessing the equivalence of average bioavailability. *Journal of Pharmacokinetics and Biopharmaceutics,
+  15*(6), 657–680. `[schuirmann1987]`
+- Viterbi, A. J. (1967). Error bounds for convolutional codes and an asymptotically optimum decoding
+  algorithm. *IEEE Transactions on Information Theory, 13*(2), 260–269. `[viterbi1967]`
+
 *Todas las claves están en `tesis/bibliography.bib`. Para añadir una decisión nueva: verifica la cita con
-`@experto-citas` antes de escribirla aquí.*
+`@experto-citas` antes de escribirla aquí, y amplía `bibliography.bib` si la clave no existe.*
