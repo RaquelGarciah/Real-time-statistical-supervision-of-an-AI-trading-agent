@@ -56,6 +56,10 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
 
 - **Significancia:** **nominal, no plena.** block-perm M10 vs B&H = 0.047 (NO sobrevive Bonferroni-5 ≈ 0.28
   del barrido de embargo); sign vs 0.5 p=0.11; no bate al agente significativamente. **DSR=0.72 < 0.95.**
+- **Robustez a la partición (respaldo):** con 3 splits validación/test estándar (60/40, 70/30, 80/20; burn-in
+  150), M10 bate a M5/M8/B&H **en validación Y en test en los tres** (val 0.52–0.535, test 0.60–0.62) → la
+  conclusión no depende del corte. Fuente: `experiments/m10_smci_valtest_robustez.py`. (Al achicar el test la
+  accuracy sube pero pierde potencia: sign p 0.057→0.119; por eso el número headline es el de todo el OOS.)
 - **Por qué no es significativo:** en SMCI el agente ya está 95 % corto (alineado con el régimen) → M5/M8/M10
   son la misma apuesta corta; STRATA rescata solo donde el agente discrepa de un régimen que acierta (SPY,
   M10 vs M5 p=0.0041). SMCI es el único activo del panel donde M10 > M5, M8 y B&H (muro estructural 2×2).

@@ -162,9 +162,17 @@ individual y M10, corto, pierde).
 `m10_smci_select.py`: validación = primeros días, test = últimos ~150 (intacto). Elegir (config, burn-in) por
 accuracy en validación (legítimo, **no** p-hacking). Elegida: **ensemble / burn-in 180** → en test **acc
 0.587, Sharpe 2.30, equity 2.71×**, batiendo a M5/M8 (0.533) y B&H (0.447). En **esa ventana** incluso bate a
-B&H significativamente (McNemar p=0.026, block-perm 0.014) y a la moneda (sign 0.041). **Matiz honesto:** el
-test es bajista, M10 está 54 % corto, "siempre corto" saca 0.553 (cerca), **no** bate al agente (p=0.40) y es
-**una sola ventana**. Defendible como "bate al pasivo en el periodo", no como "habilidad robusta".
+B&H significativamente (McNemar p=0.026, block-perm 0.014) y a la moneda (sign 0.041). **Matiz honesto:** ese
+split (burn-in 180 → validación de solo 70 días) era **desequilibrado** (validación alcista / test bajista),
+así que el contraste estaba sesgado.
+
+**Fase 7bis — Robustez a la partición (el respaldo correcto).** `m10_smci_valtest_robustez.py`: en vez de un
+split raro, se prueban **3 ratios estándar** (60/40, 70/30, 80/20; burn-in 150 fijo, embargo=1). **En los
+tres, M10 bate a M5, M8 y B&H tanto en validación como en test** (validación 0.52–0.535, test 0.60–0.62), con
+regímenes equilibrados. → la conclusión "M10 gana a todo" **no depende del corte**. Es el respaldo de
+**consistencia** del resultado principal (todo el OOS, 0.552). Honesto: al achicar el test la accuracy sube
+(0.60→0.62) pero pierde potencia (sign p 0.057→0.119); por eso el número que se reporta es el de **todo el
+OOS (0.552)**, y los splits son respaldo, **no** se elige el de mayor accuracy (eso sería *split-shopping*).
 
 ### Fase 8 — Ensemble (lícito) y abstención (literatura, descartada)
 

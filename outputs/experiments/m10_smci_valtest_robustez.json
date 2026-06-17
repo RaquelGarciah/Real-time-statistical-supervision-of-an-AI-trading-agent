@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "embargo": 1,
+    "n_seeds": 10,
+    "burn_in": 150,
+    "oos_n": 400,
+    "scored": 250,
+    "splits_val_frac": [
+      0.6,
+      0.7,
+      0.8
+    ],
+    "modelo": "M10-WF ensemble (XGBoost 300x4, 10 semillas, 22 features STRATA, umbral 0.5)",
+    "nota": "PRINCIPAL = todo el OOS; los splits son RESPALDO de robustez (no split-shopping): ratios estándar a priori, lectura = consistencia",
+    "pre_registro": "BITACORA 2026-06-17"
+  },
+  "principal_todo_oos": {
+    "n": 250,
+    "frac_up": 0.484,
+    "m10": {
+      "acc": 0.552,
+      "sharpe": 1.836,
+      "equity": 3.2375
+    },
+    "m5": {
+      "acc": 0.484,
+      "sharpe": -0.235,
+      "equity": 0.9782
+    },
+    "m8": {
+      "acc": 0.496,
+      "sharpe": 0.334,
+      "equity": 1.0245
+    },
+    "bh": {
+      "acc": 0.484,
+      "sharpe": 0.034,
+      "equity": 0.7124
+    },
+    "m10_gana_a_todo": true
+  },
+  "robustez_splits": [
+    {
+      "frac_val": 0.6,
+      "v_end_idx": 300,
+      "val_span": [
+        "2025-05-09",
+        "2025-12-11"
+      ],
+      "test_span": [
+        "2025-12-12",
+        "2026-05-11"
+      ],
+      "validacion": {
+        "n": 150,
+        "frac_up": 0.507,
+        "m10": {
+          "acc": 0.52,
+          "sharpe": 0.801,
+          "equity": 1.2043
+        },
+        "m5": {
+          "acc": 0.44,
+          "sharpe": -0.554,
+          "equity": 0.9772
+        },
+        "m8": {
+          "acc": 0.46,
+          "sharpe": 0.581,
+          "equity": 1.0235
+        },
+        "bh": {
+          "acc": 0.5067,
+          "sharpe": 0.14,
+          "equity": 0.9166
+        },
+        "m10_gana_a_todo": true
+      },
+      "test": {
+        "n": 100,
+        "frac_up": 0.45,
+        "m10": {
+          "acc": 0.6,
+          "sharpe": 3.148,
+          "equity": 2.8322
+        },
+        "m5": {
+          "acc": 0.55,
+          "sharpe": 0.075,
+          "equity": 1.001
+        },
+        "m8": {
+          "acc": 0.55,
+          "sharpe": 0.075,
+          "equity": 1.001
+        },
+        "bh": {
+          "acc": 0.45,
+          "sharpe": -0.076,
+          "equity": 0.7772
+        },
+        "m10_gana_a_todo": true,
+        "tests": {
+          "mcnemar_vs_bh_p": 0.0637,
+          "block_perm_vs_bh_p": 0.0733,
+          "mcnemar_vs_m5_p": 0.5419,
+          "sign_vs_0.5_p": 0.0569,
+          "frac_corto_m10": 0.57,
+          "siempre_corto_acc": 0.55
+        }
+      },
+      "m10_gana_ambas": true
+    },
+    {
+      "frac_val": 0.7,
+      "v_end_idx": 325,
+      "val_span": [
+        "2025-05-09",
+        "2026-01-20"
+      ],
+      "test_span": [
+        "2026-01-21",
+        "2026-05-11"
+      ],
+      "validacion": {
+        "n": 175,
+        "frac_up": 0.486,
+        "m10": {
+          "acc": 0.5257,
+          "sharpe": 1.073,
+          "equity": 1.4101
+        },
+        "m5": {
+          "acc": 0.4686,
+          "sharpe": -0.307,
+          "equity": 0.9848
+        },
+        "m8": {
+          "acc": 0.4857,
+          "sharpe": 0.676,
+          "equity": 1.0315
+        },
+        "bh": {
+          "acc": 0.4857,
+          "sharpe": -0.047,
+          "equity": 0.8327
+        },
+        "m10_gana_a_todo": true
+      },
+      "test": {
+        "n": 75,
+        "frac_up": 0.48,
+        "m10": {
+          "acc": 0.6133,
+          "sharpe": 3.166,
+          "equity": 2.3571
+        },
+        "m5": {
+          "acc": 0.52,
+          "sharpe": -0.153,
+          "equity": 0.9933
+        },
+        "m8": {
+          "acc": 0.52,
+          "sharpe": -0.153,
+          "equity": 0.9933
+        },
+        "bh": {
+          "acc": 0.48,
+          "sharpe": 0.152,
+          "equity": 0.8555
+        },
+        "m10_gana_a_todo": true,
+        "tests": {
+          "mcnemar_vs_bh_p": 0.2031,
+          "block_perm_vs_bh_p": 0.2242,
+          "mcnemar_vs_m5_p": 0.2301,
+          "sign_vs_0.5_p": 0.0639,
+          "frac_corto_m10": 0.667,
+          "siempre_corto_acc": 0.52
+        }
+      },
+      "m10_gana_ambas": true
+    },
+    {
+      "frac_val": 0.8,
+      "v_end_idx": 350,
+      "val_span": [
+        "2025-05-09",
+        "2026-02-25"
+      ],
+      "test_span": [
+        "2026-02-26",
+        "2026-05-11"
+      ],
+      "validacion": {
+        "n": 200,
+        "frac_up": 0.48,
+        "m10": {
+          "acc": 0.535,
+          "sharpe": 1.061,
+          "equity": 1.4772
+        },
+        "m5": {
+          "acc": 0.48,
+          "sharpe": -0.387,
+          "equity": 0.9779
+        },
+        "m8": {
+          "acc": 0.495,
+          "sharpe": 0.461,
+          "equity": 1.0242
+        },
+        "bh": {
+          "acc": 0.48,
+          "sharpe": 0.082,
+          "equity": 0.8643
+        },
+        "m10_gana_a_todo": true
+      },
+      "test": {
+        "n": 50,
+        "frac_up": 0.5,
+        "m10": {
+          "acc": 0.62,
+          "sharpe": 3.681,
+          "equity": 2.1074
+        },
+        "m5": {
+          "acc": 0.5,
+          "sharpe": 0.071,
+          "equity": 1.0003
+        },
+        "m8": {
+          "acc": 0.5,
+          "sharpe": 0.071,
+          "equity": 1.0003
+        },
+        "bh": {
+          "acc": 0.5,
+          "sharpe": -0.072,
+          "equity": 0.8242
+        },
+        "m10_gana_a_todo": true,
+        "tests": {
+          "mcnemar_vs_bh_p": 0.3613,
+          "block_perm_vs_bh_p": 0.3905,
+          "mcnemar_vs_m5_p": 0.2632,
+          "sign_vs_0.5_p": 0.1189,
+          "frac_corto_m10": 0.6,
+          "siempre_corto_acc": 0.5
+        }
+      },
+      "m10_gana_ambas": true
+    }
+  ],
+  "m10_gana_a_todo_en_todos": true
+}

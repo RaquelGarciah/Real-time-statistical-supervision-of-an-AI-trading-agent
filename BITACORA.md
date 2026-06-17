@@ -2032,3 +2032,23 @@ principio (horizonte=1). Cota honesta del barrido: Bonferroni-5 (0.047×5≈0.24
 **Datos.** OOS SMCI ~250 d (post burn-in 150), N0=150, STEP=21, expandible, semilla 42, bloque block-perm √N.
 **Output.** Re-ejecución de m10_smci_{deep,advanced,rolling,select} + panel + improve con EMBARGO=1;
 `outputs/experiments/m10_smci_embargo.json` (barrido de robustez). Citas: tesis/bibliography.bib.
+
+## [2026-06-17] [Hallazgo] - SMCI: el resultado de M10 es robusto a la partición validación/test
+
+**Contexto.** Para respaldar el resultado principal (M10-WF ensemble, embargo=1, todo el OOS: accuracy 0.552
+> M5/M8/B&H nominal), Raquel pide comprobar que no depende de cómo se parta en validación/test.
+
+**Detalle.** `m10_smci_valtest_robustez.py`: 3 splits cronológicos estándar pre-especificados (60/40, 70/30,
+80/20; burn-in 150 fijo). **En los tres, M10 bate a M5, M8 y B&H tanto en validación como en test** (val
+0.520/0.526/0.535; test 0.600/0.613/0.620). Regímenes de las ventanas equilibrados (% alcistas 0.45–0.51). El
+p1 del walk-forward se calcula una vez (ens 10 semillas, emb=1) y se reparte por ventana. **Honesto:** al
+achicar el test (100→75→50 d) la accuracy sube (0.60→0.62) pero la potencia cae (sign vs 0.5 p=0.057→0.064→
+0.119); por eso el número headline es el de **todo el OOS (0.552, n=250)** y los 3 splits son **respaldo de
+CONSISTENCIA**, no split-shopping (ratios a priori; lectura = invarianza al corte, no elegir el mejor).
+
+**Implicaciones para el TFG.** Refuerza el caso de estudio sin sobre-vender: "M10 gana a todo, y la conclusión
+es invariante a la partición". Corrige el split desequilibrado anterior de m10_smci_select (burn-in 180 →
+validación de 70 d, alcista). Documentado en `notebooks/m10_better_smci.ipynb` §E.2 (gráfica val/test × 3
+splits), RESULTADOS_OBJETIVO §1bis, smci.md Fase 7bis.
+
+**Referencias.** `experiments/m10_smci_valtest_robustez.py`, `outputs/experiments/m10_smci_valtest_robustez.json`.

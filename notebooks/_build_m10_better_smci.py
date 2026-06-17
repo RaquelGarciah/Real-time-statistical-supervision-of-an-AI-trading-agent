@@ -68,6 +68,7 @@ SEL = json.load(open("outputs/experiments/m10_smci_select.json"))    # E: selecc
 PAN = json.load(open("outputs/experiments/panel_intervention_scan.json"))  # F: intervención y discrepancia panel
 ROLL = json.load(open("outputs/experiments/m10_smci_rolling.json"))        # G: rolling-window
 EMB = json.load(open("outputs/experiments/m10_smci_embargo.json"))         # 0bis: robustez al embargo
+ROB = json.load(open("outputs/experiments/m10_smci_valtest_robustez.json"))  # E.2: robustez a la partición
 
 m = ADV["meta"]
 print(f"Activo: {m['ticker']}  ·  OOS test desplegable: {m['oos_span'][0]} → {m['oos_span'][1]}  (n={m['n_eval']} días)")
@@ -386,6 +387,46 @@ periodo de test"** —con el benchmark "siempre-corto" al lado y reconociendo qu
 como "habilidad direccional robusta y significativa sobre todo el OOS".""")
 
 # ---------------------------------------------------------------------------------------------
+md(r"""### §E.2 · Robustez a la partición validación/test (respaldo del resultado principal)
+
+El **resultado principal** es el de **todo el OOS (250 d): M10 = 0.552 > M5/M8/B&H** (nominal, §C/§D). Para
+**respaldar** que no depende de cómo se parta, repetimos el split validación/test con **3 ratios estándar
+pre-especificados** (60/40, 70/30, 80/20; burn-in 150 fijo, embargo=1). **En los tres, M10 bate a M5, M8 y
+B&H tanto en validación como en test.** No es *split-shopping*: los ratios se fijan a priori y la lectura es
+la **consistencia**, no quedarse con el de mayor accuracy.""")
+
+code(r"""rs = ROB["robustez_splits"]; full = ROB["principal_todo_oos"]
+labels = [f"{int(s['frac_val']*100)}/{int((1-s['frac_val'])*100)}" for s in rs]
+x = np.arange(len(rs)); w = 0.38
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(14, 4.8), sharey=True)
+for ax, win, ttl in ((a1, "validacion", "VALIDACIÓN"), (a2, "test", "TEST")):
+    m10 = [s[win]["m10"]["acc"] for s in rs]; bh = [s[win]["bh"]["acc"] for s in rs]
+    b1 = ax.bar(x - w / 2, m10, w, label="M10 (ens)", color="#2c7fb7", edgecolor="black", lw=0.8)
+    b2 = ax.bar(x + w / 2, bh, w, label="B&H", color="#4caf50", edgecolor="black", lw=0.8)
+    ax.axhline(0.5, color="black", ls="--", lw=1, label="azar (0.5)")
+    ax.axhline(full["m10"]["acc"], color="#d62728", ls=":", lw=1.4, label=f"M10 todo OOS ({full['m10']['acc']})")
+    for bb in list(b1) + list(b2):
+        ax.text(bb.get_x() + bb.get_width() / 2, bb.get_height() + 0.004, f"{bb.get_height():.3f}", ha="center", fontsize=9, fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels([f"{l}\n(test {s['test']['n']}d)" for l, s in zip(labels, rs)], fontsize=9)
+    ax.set_ylim(0.42, 0.66); ax.set_title(f"{ttl} — M10 bate a B&H en los 3 splits", fontsize=11)
+    ax.legend(fontsize=8, loc="upper left"); ax.grid(axis="y", alpha=0.25)
+a1.set_ylabel("accuracy direccional", fontsize=11)
+fig.suptitle("SMCI · robustez a la partición: M10 > B&H en validación Y en test, en los 3 splits (embargo=1)", fontsize=12, fontweight="bold")
+plt.tight_layout(); plt.show()
+
+print(f"PRINCIPAL (todo el OOS, n={full['n']}): M10={full['m10']['acc']} > M5={full['m5']['acc']} M8={full['m8']['acc']} B&H={full['bh']['acc']}")
+print(f"\n{'split':>7} {'val: M10 / B&H (gana)':>26} {'test: M10 / B&H (gana)':>26} {'test n':>7} {'sign p':>7} {'%alc test':>9}")
+for s in rs:
+    v, t = s["validacion"], s["test"]
+    print(f"{int(s['frac_val']*100):>4}/{int((1-s['frac_val'])*100):<2} "
+          f"{v['m10']['acc']:>8} / {v['bh']['acc']:<6} {str(v['m10_gana_a_todo']):>5}   "
+          f"{t['m10']['acc']:>8} / {t['bh']['acc']:<6} {str(t['m10_gana_a_todo']):>5}   "
+          f"{t['n']:>5}  {t['tests']['sign_vs_0.5_p']:>6}  {t['frac_up']:>8}")
+print(f"\nM10 gana a TODO en el OOS completo Y en val+test de los 3 splits: {ROB['m10_gana_a_todo_en_todos']}")
+print("Aviso honesto: al achicar el test la accuracy sube (0.60→0.62) pero pierde potencia (sign p 0.057→0.119)")
+print("→ el número que se REPORTA es 0.552 (todo el OOS); los splits son respaldo de CONSISTENCIA.")""")
+
+# ---------------------------------------------------------------------------------------------
 md(r"""## §F · El punto clave: por qué M5, M8 y M10 **no se separan** en SMCI
 
 Mirando las curvas (§C.2) M8 y M5 casi coinciden y M10 no bate al agente. La causa está en **cómo se
@@ -532,6 +573,9 @@ md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)
 - En SMCI (OOS n=250, B&H≈0.48 → benchmark justo), el **M10-WF ensemble** alcanza accuracy **0.552**, superior
   **nominalmente** a M5 (0.484), M8 (0.496) y B&H (0.484); en rolling-window gana a B&H y al agente en la
   **mayoría** de sub-periodos.
+- **Robusto a la partición (§E.2):** con 3 splits validación/test estándar (60/40, 70/30, 80/20), **M10 bate a
+  M5, M8 y B&H tanto en validación como en test en los tres** → la conclusión no depende del corte. (El número
+  que se reporta es el de todo el OOS, 0.552; los splits son respaldo de consistencia, no split-shopping.)
 - La ventaja vs B&H es **borderline** (block-perm p=0.047) pero **no significativa tras corrección honesta**:
   no sobrevive la multiplicidad del barrido de embargo (Bonferroni-5 ≈ 0.28) ni el Holm de la familia; sign vs
   0.5 p=0.11; no bate al agente (vs M5 p=0.10). El **techo** es **0.552 nominal**.
