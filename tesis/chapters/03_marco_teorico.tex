@@ -49,7 +49,7 @@ Cada día, el agente de trading toma una decisión sobre el activo que resumimos
 \[
 \mathrm{STRATA}\colon (\text{terna del agente},\ \text{estado del mercado}) \longmapsto \text{señales de supervisión},
 \]
-que a partir de la decisión del agente y de una lectura estadística del mercado produce un conjunto de \emph{señales} sobre esa decisión. Insistimos en esta distinción a lo largo de la memoria: STRATA no predice el retorno, sino que mide en qué grado la decisión del agente es coherente con el estado del mercado.
+que a partir de la decisión del agente y de una lectura estadística del mercado produce un conjunto de \emph{señales} sobre esa decisión. STRATA no predice el retorno: mide en qué grado la decisión del agente es coherente con el estado del mercado.
 
 Las señales provienen de tres detectores, cada uno a cargo de un eje distinto. El primero, \textbf{RAM}, mira el régimen: comprueba si la dirección de la apuesta encaja con el estado de mercado que el modelo oculto de Markov de la Sección~\ref{sec:hmm} considera vigente. \textbf{PSA}, en cambio, no mira el mercado sino al propio agente; con la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} vigila si éste cambia de criterio de forma estructural, y no como una simple fluctuación. Queda \textbf{GSO}, que se ocupa del tamaño: contrasta el módulo de la posición con la volatilidad que estima el GARCH de la Sección~\ref{sec:garch}, y salta cuando la apuesta es grande para lo agitado que está el mercado. Los tres ejes son ortogonales, un régimen discreto, la coherencia interna del agente y la volatilidad continua, y por eso tiene sentido combinarlos: cada detector ve algo que los otros dos no pueden ver.
 
@@ -88,7 +88,7 @@ con $\muk$ el vector de medias del régimen $k$ y $\Sigma_k$ su matriz de covari
 \[
 b_k(x) \;=\; \mathcal{N}(x \mid \muk, \Sigma_k).
 \]
-Hay dos hipótesis de independencia condicional que el modelo asume y que conviene enunciar, porque son la palanca de toda derivación posterior. La observación de cada día depende solo del estado de ese día,
+El modelo asume dos hipótesis de independencia condicional, palanca de toda derivación posterior. La observación de cada día depende solo del estado de ese día,
 \[
 \Prob(x_t \mid z_t, z_{t-1}, \dots, z_1, x_{t-1}, \dots, x_1) = \Prob(x_t \mid z_t) = b_{z_t}(x_t),
 \tag{$\ast$}
