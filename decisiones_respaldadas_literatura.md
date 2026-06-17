@@ -231,6 +231,57 @@ por volatilidad mejora el perfil riesgo-retorno. Es el fundamento del componente
 
 ---
 
+## 11. Abstención selectiva: propuesta por la literatura, **evaluada y descartada** en SMCI
+
+> Esta NO es una decisión adoptada, sino un método de la literatura que **probamos por rigor y descartamos**
+> porque en nuestros datos no funciona. Es un resultado **negativo defendible** y muy útil para la memoria:
+> "la literatura lo propone, lo implementamos, y no mejora — y entendemos por qué".
+
+**Qué propone la literatura.** La *clasificación selectiva* / *aprendizaje con rechazo* dice que un modelo
+puede **abstenerse** de predecir en los casos de **baja confianza** y así **reducir el error en los casos que
+sí predice** — el clásico *trade-off error–rechazo* (Chow 1970) o *riesgo–cobertura* (El-Yaniv & Wiener 2010).
+La regla óptima de Chow rechaza donde la **probabilidad a posteriori (la confianza) es baja**.
+
+**La condición que la hace funcionar.** El beneficio existe **solo si la señal de rechazo está alineada con
+dónde se equivoca el modelo** — es decir, si la confianza **ordena bien la dificultad** (correlaciona con el
+acierto). Cortes, DeSalvo & Mohri (2016) lo formalizan: una función de rechazo **desacoplada** de dónde yerra
+el clasificador (p.ej. un umbral de confianza fijo) es **subóptima**. Esa condición es la que falla en SMCI.
+
+**Qué probamos (nuestro experimento).** Implementamos tres formas de abstención sobre el M10 ensemble
+(`m10_smci_advanced.py`, §C.3 del notebook):
+- **abst_regime**: abstenerse menos cuando el régimen HMM es decisivo (Calma/Crisis claras), más en Estrés.
+- **abst_accord**: abstenerse menos cuando las 5 personalidades del agente coinciden en dirección.
+- **vote_m5_m10**: actuar solo cuando M10 y el agente (M5) coinciden.
+
+**Qué salió (embargo=1, OOS SMCI).** A **cobertura completa** son idénticas al ensemble (0.552, porque no
+cambian la posición los días que sí actúan). Pero en los **días activos** —donde se supone que debería subir
+el acierto— **no sube; incluso baja**:
+
+| Método | accuracy completa | cobertura | **accuracy en días activos** |
+|---|---|---|---|
+| ensemble (sin abstención) | 0.552 | 100 % | 0.552 |
+| abst_regime | 0.552 | 75 % | **0.489** ← más baja que la completa |
+| abst_accord | 0.552 | 77 % | 0.513 |
+| vote_m5_m10 | 0.552 | 46 % | 0.557 (≈ completa) |
+
+**Conexión con la literatura (lo importante).** El resultado es **exactamente lo que predice la teoría cuando
+su premisa no se cumple**: en SMCI la confianza del modelo, el régimen y el acuerdo del agente **no
+discriminan** qué días son más fáciles → la función de rechazo no está alineada con el error (condición de
+Cortes et al. 2016) → abstenerse no reduce el error, y la abstención por régimen incluso **descarta días
+buenos** (0.489 < 0.552). Además, abstenerse baja la **cobertura**, rompiendo la comparación justa con B&H
+(que apuesta el 100 %).
+
+**Frase para la memoria.** *"Evaluamos la abstención selectiva (Chow 1970; Cortes, DeSalvo & Mohri 2016):
+abstenerse en los días de baja confianza mejora la accuracy únicamente si la señal de rechazo está alineada
+con el error del modelo. En SMCI esa condición no se cumple —la confianza, el régimen y el acuerdo del agente
+no ordenan la dificultad—, de modo que la abstención no mejora la accuracy en los días operados (e incluso la
+reduce: 0.489 vs 0.552 en la variante por régimen) y además rompe la comparabilidad con el pasivo al reducir
+la cobertura. Por ello se descarta y el modelo final opera a cobertura completa."*
+
+**Citas:** `chow1970`, `cortes2016rejection`, `elyaniv2010`. (Añadidas a `bibliography.bib` [2026-06-17].)
+
+---
+
 ## Referencias (verificadas; APA-español)
 
 *Todas las claves están en `tesis/bibliography.bib`. Las del embargo y el ensemble (decisiones #1–#2) fueron
@@ -269,7 +320,14 @@ establecido del proyecto (docstrings de `core/` y `strata/`).*
   of return. *Review of Economics and Statistics, 69*(3), 542–547. `[bollerslev1987]`
 - Christie, A. A. (1982). The stochastic behavior of common stock variances. *Journal of Financial
   Economics, 10*(4), 407–432. `[christie1982]`
+- Chow, C. K. (1970). On optimum recognition error and reject tradeoff. *IEEE Transactions on Information
+  Theory, 16*(1), 41–46. https://doi.org/10.1109/TIT.1970.1054406 `[chow1970]`
 - Conover, W. J. (1999). *Practical Nonparametric Statistics* (3.ª ed.). Wiley. `[conover1999]`
+- Cortes, C., DeSalvo, G. y Mohri, M. (2016). Learning with rejection. En *Algorithmic Learning Theory (ALT
+  2016)*, LNCS (Vol. 9925, pp. 67–82). Cham: Springer. https://doi.org/10.1007/978-3-319-46379-7_5
+  `[cortes2016rejection]`
+- El-Yaniv, R. y Wiener, Y. (2010). On the foundations of noise-free selective classification. *Journal of
+  Machine Learning Research, 11*, 1605–1641. `[elyaniv2010]`
 - Diebold, F. X. y Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic
   Statistics, 13*(3), 253–263. `[diebold1995]`
 - Edwards, A. L. (1948). Note on the "correction for continuity" in testing the significance of the
