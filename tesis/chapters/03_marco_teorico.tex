@@ -471,39 +471,10 @@ El detector PSA vigila si el agente cambia de criterio de forma estructural, no 
 
 Las tres señales alimentan una capa de intervención que actúa sobre la posición $w_t$ en uno de tres modos. El modo \emph{warn} solo registra. El modo \emph{reduce} atenúa el tamaño cuando se supera el umbral correspondiente, encogiendo $|w_t|$ sin tocar el signo. El modo \emph{override} sustituye la decisión: cuando el RAM score supera el gate $\tau = 0{,}50$, la posición se reemplaza por la más próxima dentro de la banda admisible que marca el régimen, signo incluido. Esta variante, que denotamos \emph{override C}, usa las probabilidades de régimen filtradas y la convención causal $w_t \cdot \rnext$, de modo que en ninguna etapa interviene información posterior a $t$. La regla de referencia M8 es exactamente esta configuración: override C sobre el régimen filtrado, con $\mathrm{signal\_lag} = 1$.
 
-\section{Conceptos económicos para un tribunal sin economía}
-\label{sec:economia}
+\section{Métricas de evaluación}
+\label{sec:metricas}
 
-Las herramientas anteriores producen, a partir de los precios, una lectura del estado del mercado: en qué régimen se encuentra, con qué volatilidad y si el comportamiento del agente se ha roto. Falta el otro extremo del problema, el lado económico: qué hace el agente con esa información, cómo se mide si lo hace bien y por qué la estructura concreta del activo central de la memoria permite que un detector estadístico de régimen tenga contenido direccional. Esta sección define esos conceptos partiendo de cero, sin suponer formación económica previa. El énfasis está en lo que cada noción significa y en dónde entra después en STRATA; las cifras concretas pertenecen al capítulo de resultados.
-
-\subsection{Posición y exposición}
-\label{sec:economia-posicion}
-
-Una decisión de cartera sobre un único activo se resume en un número, la \emph{posición} (o \emph{peso}) $w_t$, que indica cuánto capital se compromete en el activo el día $t$ y en qué sentido. Adoptamos la convención normalizada
-\[
-w_t \in [-1, +1],
-\]
-de modo que el signo y el módulo tienen lecturas separadas. El signo marca la dirección de la apuesta: $w_t > 0$ es una posición \emph{larga} (se gana si el precio sube), $w_t < 0$ es una posición \emph{corta} (se gana si el precio baja) y $w_t = 0$ significa estar \emph{fuera} del mercado, sin exposición. El módulo $|w_t|$ es la fracción del capital expuesta, entre el $0$ y el $100\,\%$: $|w_t| = 1$ es exposición plena y $|w_t| = 0{,}3$ compromete un treinta por ciento del capital, dejando el resto sin invertir. La ganancia o pérdida de la posición a lo largo de un día se obtiene multiplicando $w_t$ por el retorno que el activo realiza al día siguiente; con la convención temporal de la Sección~\ref{sec:preliminares}, el resultado de la posición tomada en $t$ es $w_t \cdot \rnext$. Una posición larga gana cuando $\rnext > 0$, una corta gana cuando $\rnext < 0$, y en ambos casos la magnitud de la ganancia escala con $|w_t|$.
-
-Esta normalización es la que permite que las tres intervenciones de STRATA actúen sobre un mismo objeto. Reducir el tamaño de una apuesta es encoger $|w_t|$ sin tocar el signo; sustituir una decisión es cambiar el propio $w_t$, signo incluido. Toda la maquinaria posterior opera sobre este número.
-
-\subsection{El leverage effect}
-\label{sec:economia-leverage}
-
-Una regularidad empírica de los índices bursátiles agregados es que el retorno y la volatilidad están correlados negativamente: cuando el mercado cae, su volatilidad tiende a subir, y los tramos tranquilos suelen coincidir con mercado al alza. Black documentó este fenómeno y lo bautizó \emph{leverage effect}, atribuyéndolo en parte a que una caída del precio de las acciones eleva el apalancamiento financiero relativo de las empresas y, con él, el riesgo percibido \cite{black1976}; Christie lo estudió de forma sistemática y confirmó la asimetría entre los efectos de los movimientos al alza y a la baja sobre la volatilidad \cite{christie1982}.
-
-La consecuencia es la que da contenido al detector RAM. En un índice como el SPY, el régimen de alta volatilidad que el HMM identifica como Crisis coincide, por el leverage effect, con un mercado a la baja, y el régimen de baja volatilidad coincide con mercado al alza. El régimen, que en principio es solo una clasificación por nivel de agitación, adquiere así una lectura \emph{direccional}: saber que el mercado está en Crisis es, indirectamente, saber que tiende a caer. Esto es lo que hace que un modelo de volatilidad como el HMM pueda usarse para juzgar si la dirección de la apuesta del agente es coherente con el estado del mercado. Conviene subrayar que esta correspondencia entre nivel de volatilidad y dirección es una propiedad de los índices agregados, no una ley universal: en acciones individuales con leverage effect débil la asociación se diluye, y entonces el régimen pierde valor direccional. Es una limitación que se documenta de forma explícita y que delimita el alcance de RAM.
-
-\subsection{Volatility targeting}
-\label{sec:economia-voltarget}
-
-Una idea clásica en gestión de carteras es dimensionar la posición no en términos fijos, sino para alcanzar un nivel de riesgo objetivo. La estrategia de \emph{volatility targeting} fija una volatilidad deseada $\sigma^\star$ para la cartera y ajusta el tamaño de la posición de forma inversamente proporcional a la volatilidad estimada del activo,
-\[
-|w_t| \;\propto\; \frac{\sigma^\star}{\sigmat},
-\]
-de modo que cuando la volatilidad $\sigmat$ sube se reduce la exposición, y cuando baja se amplía, manteniendo el riesgo de la cartera aproximadamente constante en el tiempo. Moreira y Muir mostraron que escalar la exposición en sentido inverso a la volatilidad, lejos de penalizar el rendimiento, lo mejora en términos ajustados por riesgo, porque la volatilidad alta tiende a anticipar peores retornos sin que la prima de riesgo aumente en la misma proporción \cite{moreira2017}.
-
-Este principio es el ancla teórica del detector GSO. Si el agente toma una posición de tamaño $|w_t|$ desproporcionado respecto a la volatilidad condicional $\sigmat$ del momento, GSO lo interpreta como una sobreexposición incompatible con el riesgo vigente y acota el tamaño hacia lo que el volatility targeting prescribiría. La volatilidad $\sigmat$ que entra en ese juicio es exactamente la del GARCH$(1,1)$-$t$ de la Sección~\ref{sec:garch}.
+Para juzgar si una estrategia lo hace bien no basta con mirar cuánto gana: hay que poner el rendimiento en relación con el riesgo asumido. Esta sección define las métricas que la memoria emplea con ese fin, todas a partir de la serie de retornos de la estrategia o de la trayectoria de su capital. Una advertencia las recorre a todas: son enriquecimiento ilustrativo, no la prueba estadística del trabajo, que descansa en los contrastes de la Sección~\ref{sec:tests}.
 
 \subsection{El ratio de Sharpe}
 \label{sec:economia-sharpe}
