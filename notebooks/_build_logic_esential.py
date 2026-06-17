@@ -1014,6 +1014,53 @@ print("La señal (0.55) se conserva; el ruido del muestreo se cancela. Eso es el
 
 # ---------------------------------------------------------------------------
 md(r"""
+## 14e. Contra qué se mide la accuracy: el test binomial vs *no-information rate*
+
+Para decir que un modelo "acierta", hay que contrastarlo contra el baseline correcto. El ingenuo (0.5) es
+**demasiado fácil** cuando las clases están desbalanceadas; el correcto es la **clase mayoritaria**.
+
+### Qué es
+
+- **Baseline de no-habilidad = clase mayoritaria (regla ZeroR** [Witten et al. 2016]**):** predecir siempre
+  la dirección dominante. Su accuracy = **no-information rate (NIR)** = frecuencia de la clase más frecuente
+  = $\max(\%\text{suben}, \%\text{bajan})$ [Kuhn 2008].
+- **El test:** binomial unilateral — `binomtest(aciertos, n, p=NIR, alternative="greater")`.
+  - **H0:** accuracy del modelo $\leq$ NIR (no tiene habilidad por encima de predecir la clase dominante).
+  - Rechazar H0 ⇒ el modelo tiene **habilidad real**, no solo el sesgo de la clase mayoritaria.
+
+### Por qué es más honesto que el sign test vs 0.5
+
+Porque **0.5 no es "sin habilidad" si las clases están desbalanceadas.** En SMCI bajan más días de los que
+suben, así que **"siempre corto" ya saca 0.516 gratis**. Comparar contra 0.5 regala esa diferencia y hace que
+el modelo parezca mejor de lo que es. La celda lo muestra: el mismo M10 (0.552) pasa de "casi significativo"
+(vs 0.5) a "no significativo" (vs NIR).
+
+> **Frase:** *"No contrasto la accuracy contra 0.5 (la moneda), sino contra el no-information rate —la
+> frecuencia de la clase mayoritaria, regla ZeroR [Witten et al. 2016; Kuhn 2008]— mediante un test binomial
+> unilateral. Es el baseline de no-habilidad correcto en clases desbalanceadas y, por tanto, más exigente:
+> en SMCI lo adopto aun sabiendo que reduce la significancia de mi modelo (de 0.057 a 0.141)."*
+
+**Matiz:** este test es de **una muestra** (accuracy del modelo vs un umbral). Es complementario a **McNemar /
+block-permutation vs B&H**, que son **pareados** (comparan dos estrategias día a día). Juntos responden
+"¿mejor que el no-skill?" y "¿mejor que esta estrategia concreta?".
+""")
+
+code(r'''
+# El mismo modelo, dos baselines: 0.5 (moneda, fácil) vs NIR=clase mayoritaria (correcto, exigente).
+from scipy.stats import binomtest
+n, aciertos = 250, 138            # M10 en SMCI: accuracy 0.552 sobre 250 días
+frac_up = 0.484                   # % días que suben -> baja la mayoría
+nir = max(frac_up, 1 - frac_up)   # no-information rate = clase mayoritaria ("siempre corto")
+p_05  = binomtest(aciertos, n, 0.5, alternative="greater").pvalue
+p_nir = binomtest(aciertos, n, nir, alternative="greater").pvalue
+print(f"accuracy M10 = {aciertos/n:.3f}   |   NIR (clase mayoritaria) = {nir:.3f}  ('siempre corto')")
+print(f"  vs 0.5  (moneda, baseline INCORRECTO/fácil): p = {p_05:.3f}   -> parece casi significativo")
+print(f"  vs NIR  (clase mayoritaria, baseline CORRECTO): p = {p_nir:.3f}   -> NO significativo (honesto)")
+print(f"  la 'habilidad gratis' por el desbalance = NIR - 0.5 = {nir-0.5:.3f}  (lo que el test vs 0.5 te regala)")
+''')
+
+# ---------------------------------------------------------------------------
+md(r"""
 ## 15. Checklist — lo que debes saber recitar
 
 1. **STRATA no predice $r_{t+1}$.** Es $f:(\text{decisión}_t,\text{mercado}_t)\to
