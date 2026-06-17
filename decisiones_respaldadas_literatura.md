@@ -284,10 +284,12 @@ la cobertura. Por ello se descarta y el modelo final opera a cobertura completa.
 
 ## 12. Baseline de no-habilidad = **clase mayoritaria (ZeroR)** / *no-information rate* — [2026-06-17]
 
-**Decisión.** El baseline trivial contra el que se mide la accuracy direccional no es solo B&H ("siempre
-largo"), sino el **clasificador de clase mayoritaria** (regla **ZeroR**): predecir siempre la **dirección
-dominante**. Su accuracy = frecuencia de la clase predominante = *no-information rate* (NIR). En SMCI, donde
-predominan los días bajistas, **se materializa como "siempre corto"**.
+**Decisión.** Se compara la accuracy direccional contra **seis estrategias**: los 3 modelos (M5 agente, M8
+regla, M10 meta-learner) y **3 baselines triviales** — **B&H** (*buy-and-hold* = siempre largo), **S&H**
+(*short-and-hold* = siempre corto) y la **clase mayoritaria** (regla **ZeroR**: predecir siempre la dirección
+dominante; accuracy = *no-information rate*, NIR). B&H y S&H son las dos estrategias constantes; la clase
+mayoritaria es la mejor de las dos = `max(B&H, S&H)`. **En SMCI, donde predominan los días bajistas, la clase
+mayoritaria se materializa como S&H ("siempre corto"), NIR=0.516** (coinciden numéricamente en este activo).
 
 **Respaldo en literatura.**
 - **ZeroR / clase mayoritaria** (Witten, Frank, Hall & Pal 2016, *Data Mining*): el baseline de no-habilidad

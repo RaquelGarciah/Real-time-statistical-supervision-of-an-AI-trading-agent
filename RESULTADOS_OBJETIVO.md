@@ -52,7 +52,8 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
 | M5 (agente) | 0.484 | −0.24 | — | agente 95 % corto |
 | M8 (regla) | 0.496 | +0.33 | — | STRATA interviene solo 3 % → ≈ M5 |
 | B&H (trivial, siempre largo) | 0.484 | +0.03 | 0.71× | benchmark económico (≈ moneda) |
-| Clase mayoritaria (ZeroR / NIR) | 0.516 | — | — | baseline de no-habilidad = "siempre corto" |
+| S&H (siempre corto, espejo de B&H) | 0.516 | — | — | la otra estrategia constante |
+| Clase mayoritaria (ZeroR / NIR) | 0.516 | — | — | no-habilidad = máx(B&H, S&H); en SMCI **= S&H** ("siempre corto") |
 | **M10-WF ensemble** (10 semillas, 22 features) | **0.552** | **+1.84** | **3.24×** | bate a **todo** (incl. mayoría) **nominal** |
 
 - **Baselines:** se compara contra B&H (económico, siempre largo) **y la clase mayoritaria** (ZeroR /

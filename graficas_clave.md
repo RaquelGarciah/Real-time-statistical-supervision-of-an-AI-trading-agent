@@ -10,6 +10,31 @@
 
 ---
 
+## Estrategias / baselines a comparar (en TODA gráfica y tabla)
+
+Toda comparación de accuracy enfrenta **6 estrategias**: 3 modelos + 3 baselines triviales.
+
+| Estrategia | Qué es | Accuracy en SMCI (OOS, n=250) |
+|---|---|---|
+| **M5** | el agente LLM (posición del agente) | 0.484 |
+| **M8** | STRATA regla (override-C) | 0.496 |
+| **M10** | meta-learner (XGBoost ensemble, embargo=1) — **nuestro modelo** | **0.552** |
+| **B&H** | *buy-and-hold* = **siempre largo** (baseline económico) | 0.484 |
+| **S&H** | *short-and-hold* = **siempre corto** (el espejo de B&H) | 0.516 |
+| **Clase mayoritaria** | regla ZeroR / NIR = **siempre la dirección dominante** (baseline de no-habilidad) | 0.516 |
+
+**Aviso clave (que el tribunal puede preguntar):** en SMCI **S&H = clase mayoritaria = 0.516**, porque bajan
+más días de los que suben → la dirección dominante ES "corto". No son la misma idea (S&H es una estrategia
+constante fija; la clase mayoritaria es "la mejor de las dos constantes", `max(B&H, S&H)`), pero **en este
+activo coinciden numéricamente**. Si se reportan los dos, dejar la nota: *"en SMCI la clase mayoritaria se
+materializa como S&H (siempre corto)"*.
+
+**Por qué importan los dos baselines triviales (B&H y S&H/mayoría):** M10 (0.552) **bate a los dos** → su
+ventaja no es un sesgo a un lado. El contraste honesto de significancia es el **binomial vs NIR=0.516**
+(clase mayoritaria), no vs 0.5 (ver `decisiones_respaldadas_literatura.md` §12 y `logic_esential` §14e).
+
+---
+
 ## ⭐ LAS 6 IMPRESCINDIBLES (el hilo del caso de estudio, en orden)
 
 | # | Gráfica | Qué muestra | Por qué | Fuente |
