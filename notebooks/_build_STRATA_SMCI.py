@@ -550,7 +550,7 @@ for k in ["M10", "M8", "M5", "B&H"]:
 ax.axhline(1.0, color="k", lw=0.7)
 ax.set_ylabel("equity (€1 inicial)"); ax.set_title("Curvas de equity OOS · enriquecimiento, no prueba")
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()
-print("Sharpe nunca se reporta sin su Deflated Sharpe (Parte V): DSR M10 = 0.72 < 0.95 ⇒ no significativo.")""")
+print("Sharpe nunca se reporta sin su P(Sharpe>0) (Parte V): corregida por multiplicidad = 0.72 < 0.95 ⇒ no sig.")""")
 
 code(r"""# --- Fig. SHAP de las 22 features (qué usa el meta-aprendiz) ---
 clf_full = xgb.XGBClassifier(**PARAMS, random_state=config.SEED).fit(mv[ALL22], y)
@@ -845,7 +845,7 @@ rows = []
 for k, v in met.items():
     hk = f"{k}__vs_bh"
     rows.append({"método": k, "accuracy": v["accuracy"], "Sharpe": v["sharpe_causal"],
-                 "DSR": v["dsr"], "McNemar vs B&H (p_raw)": holm.get(hk, {}).get("p_raw"),
+                 "P(Sh>0) corr.": v["dsr"], "McNemar vs B&H (p_raw)": holm.get(hk, {}).get("p_raw"),
                  "Holm rechaza": holm.get(hk, {}).get("reject", "—")})
 metodos_tab = pd.DataFrame(rows).set_index("método").sort_values("accuracy", ascending=False)
 print("Solo 'ens' (el ensemble) alcanza 0.552; ninguno rechaza B&H bajo Holm. Triple-barrier y stacking degradan.")
@@ -868,28 +868,36 @@ ax[1].set_ylim(0.40, 0.60)
 plt.tight_layout(); plt.show()
 print("Abstener por régimen baja a 0.489 (<0.552) con cobertura 75%: la confianza NO ordena la dificultad ⇒ descartada.")""")
 
-md(r"""## §9. Lectura conjunta de los p-valores y Deflated Sharpe
+md(r"""## §9. Lectura conjunta de los p-valores y P(Sharpe>0)
 
 Los contrastes miden cosas distintas y por eso difieren: M10 es **más fuerte contra el baseline débil** (B&H,
 block-perm 0,047) y **se debilita contra los exigentes** (clase mayoritaria, multiplicidad). La conclusión
-honesta es por tanto **nominal**.""")
+honesta es por tanto **nominal**.
 
-code(r"""# --- Deflated Sharpe: la fórmula (Bailey & LdP 2014) usa SE=1/sqrt(T-1) → Sharpe POR OBSERVACIÓN (diario) ---
-from scipy.stats import skew as _sk, kurtosis as _ku
+Sobre el Sharpe damos la **probabilidad de que el Sharpe verdadero sea > 0**, en dos versiones: **sin corregir**
+(finge que solo probamos una configuración) y **corregida por multiplicidad** (penaliza el nº de configuraciones
+probadas; método de Bailey & López de Prado, 2014). El Sharpe es ilustración económica, no la prueba del TFG.""")
+
+code(r"""# --- P(Sharpe verdadero > 0): cruda (sin multiplicidad) y corregida por nº de configuraciones probadas ---
+# La fórmula usa SE=1/sqrt(T-1) ⇒ Sharpe POR OBSERVACIÓN (diario, no anualizado).
+from scipy.stats import skew as _sk, kurtosis as _ku, norm as _norm
 nr10 = NR["M10"]; nr10 = nr10[~np.isnan(nr10)]
-sr_d = float(nr10.mean() / nr10.std(ddof=1))          # Sharpe DIARIO (no anualizar dentro del DSR)
+sr_d = float(nr10.mean() / nr10.std(ddof=1))          # Sharpe diario
 sk, ku = float(_sk(nr10)), float(_ku(nr10, fisher=False))
-# n_trials = nº de CONFIGURACIONES entre las que se SELECCIONÓ (no las 10 semillas, que se promedian).
-#   n_trials=6 = los 6 métodos avanzados del fichero auditado (→ DSR≈0.72, coincide con m10_smci_advanced.json);
-#   un conteo más conservador (deep 5 + avanzados 8 + embargo 6 + splits 3 ≈ 25) deflacta aún más.
+den = float(np.sqrt(1 - sk * sr_d + (ku - 1) / 4 * sr_d**2))
+p_raw = float(_norm.cdf(sr_d * np.sqrt(len(nr10) - 1) / den))     # SIN corregir multiplicidad
+# Corregida: n_configs = nº de configuraciones entre las que se seleccionó (NO las 10 semillas, que se promedian).
+#   6 = los métodos del fichero auditado m10_smci_advanced.json; ~25 contando deep+embargo+splits.
 print(f"Serie M10 (diaria): Sharpe={sr_d:.4f} (anualizado {sr_d*ANN:+.3f}), skew={sk:+.3f}, kurtosis={ku:.2f}")
-print(f"{'n_trials':>9} | {'DSR':>6}")
+print(f"P(Sharpe>0) SIN corregir = {p_raw:.4f}  (marginal; equivale al t-Sharpe crudo, finge 1 sola configuración)")
+print(f"{'n_configs':>9} | {'P(Sharpe>0) corregida':>22}")
 for nt in (6, 10, 25, 50):
-    dsr = deflated_sharpe(sr_d, nt, len(nr10), sk, ku)
-    tag = "  <-- fichero auditado" if nt == 6 else ("  <-- conteo conservador" if nt == 25 else "")
-    print(f"{nt:>9} | {dsr:>6.3f}{tag}")
-dsr6 = deflated_sharpe(sr_d, 6, len(nr10), sk, ku)
-print(f"DSR < 0.95 para todo n_trials ≥ 6 ⇒ el Sharpe NO sobrevive la multiplicidad. Coherente con lo nominal.")
+    p = deflated_sharpe(sr_d, nt, len(nr10), sk, ku)
+    tag = "  <-- 6 métodos auditados" if nt == 6 else ("  <-- conteo conservador" if nt == 25 else "")
+    print(f"{nt:>9} | {p:>22.4f}{tag}")
+p_sh_adj = deflated_sharpe(sr_d, 6, len(nr10), sk, ku)
+print(f"Probamos ≥6 configuraciones ⇒ la cifra honesta es la CORREGIDA = {p_sh_adj:.3f} < 0.95: el Sharpe NO es")
+print(f"significativo tras multiplicidad. La cruda ({p_raw:.3f}) solo valdría si hubiéramos probado una única config.")
 
 # IC95 del exceso de P&L diario (bootstrap estacionario, Politis-Romano): contiene 0 ⇒ ventaja económica nominal.
 lo_bh, hi_bh, pe_bh = stationary_bootstrap_ci(nr10 - NR["B&H"], np.mean, n=2000, seed=config.SEED)
@@ -898,10 +906,11 @@ print(f"\nIC95 exceso P&L diario M10−B&H = [{lo_bh:+.5f}, {hi_bh:+.5f}] (punto
 print(f"IC95 exceso P&L diario M10−M5  = [{lo_m5:+.5f}, {hi_m5:+.5f}] (punto {pe_m5:+.5f})  → contiene 0: {lo_m5 < 0 < hi_m5}")
 
 resumen_p = pd.DataFrame([
-    {"contraste": "M10 vs B&H (block-perm)", "p": round(p_bp_bh, 4), "listón": "B&H (fácil, 0.484)"},
-    {"contraste": "M10 vs azar (sign, bilateral)", "p": round(p_sign, 4), "listón": "0.5"},
-    {"contraste": "M10 vs NIR (binomial, 1-cola)", "p": round(p_nir, 4), "listón": "clase mayoritaria (duro, 0.516)"},
-    {"contraste": "Sharpe (DSR, n_trials=6)", "p": round(dsr6, 4), "listón": "multiplicidad (DSR>0.95 ⇒ sig.)"},
+    {"contraste": "M10 vs B&H (block-perm)", "valor": round(p_bp_bh, 4), "tipo": "p (sig. si <0.05)", "listón": "B&H (fácil, 0.484)"},
+    {"contraste": "M10 vs azar (sign, bilateral)", "valor": round(p_sign, 4), "tipo": "p (sig. si <0.05)", "listón": "0.5"},
+    {"contraste": "M10 vs NIR (binomial, 1-cola)", "valor": round(p_nir, 4), "tipo": "p (sig. si <0.05)", "listón": "clase mayoritaria (duro, 0.516)"},
+    {"contraste": "P(Sharpe>0) sin corregir", "valor": round(p_raw, 4), "tipo": "prob. (sig. si >0.95)", "listón": "ignora multiplicidad"},
+    {"contraste": "P(Sharpe>0) corregida (≥6 configs)", "valor": round(p_sh_adj, 4), "tipo": "prob. (sig. si >0.95)", "listón": "multiplicidad (Bailey-LdP)"},
 ]).set_index("contraste")
 resumen_p""")
 
@@ -917,8 +926,9 @@ md(r"""# Parte VI · Conclusiones
    a M5, M8, B&H, S&H y a la clase mayoritaria** (0,552), con Sharpe 1,84 y equity 3,24× (economía
    ilustrativa). La ventaja es **robusta**: a la partición (3 splits, validación y test), al embargo y a la
    ventana (71–82 % de las ventanas rodantes).
-3. **Honestidad.** La ventaja es **nominal, no significativa** tras corregir por multiplicidad (DSR 0,72;
-   block-perm vs B&H 0,047 no sobrevive Bonferroni-5 ≈ 0,28; binomial vs clase mayoritaria 0,14). La
+3. **Honestidad.** La ventaja es **nominal, no significativa** tras corregir por multiplicidad (P(Sharpe>0)
+   corregida 0,72 < 0,95, cruda 0,976; block-perm vs B&H 0,047 no sobrevive Bonferroni-5 ≈ 0,28; binomial vs
+   clase mayoritaria 0,14). La
    significancia plena queda como **trabajo futuro** (muestra corta).
 4. **Mecanismo y límite.** STRATA rescata donde el agente discrepa de un régimen que acierta; en SMCI el agente
    ya va corto con el régimen, así que apenas hay margen. Coherente con el *leverage effect* débil en un valor
@@ -938,7 +948,7 @@ print(f"  pre-registro: {ROB['meta']['pre_registro']}")
 assert abs(ACC["M10"] - P["m10"]["acc"]) < 0.012, "headline en vivo ≠ JSON"
 assert abs(round(SR["M10"], 2) - P["m10"]["sharpe"]) < 0.05, "Sharpe en vivo ≠ JSON"
 assert ACC["M10"] > max(ACC["M5"], ACC["M8"], ACC["B&H"], ACC["S&H"], ACC["mayoría"]), "M10 no bate a todo"
-assert dsr6 < 0.95, "DSR debería ser < 0.95 (Sharpe no significativo tras multiplicidad)"
+assert p_sh_adj < 0.95, "P(Sharpe>0) corregida debería ser < 0.95 (no significativo tras multiplicidad)"
 assert abs(SR["M8"] - P["m8"]["sharpe"]) < 0.05 and abs(SR["M5"] - P["m5"]["sharpe"]) < 0.05, "Sharpe M5/M8 ≠ JSON"
 print("\nAUTO-TEST: cómputo en vivo coherente con el JSON auditado y M10 bate a las 5 estrategias. ✓")
 print("Todos los gates de rigor pasados (barrera temporal, asserts de coherencia, cada cifra con su test).")""")

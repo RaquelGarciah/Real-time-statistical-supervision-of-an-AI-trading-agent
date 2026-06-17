@@ -51,7 +51,7 @@ temporal**, con vocación de generalizar a cualquier agente y cualquier activo.
 4. **Demostrar la interpretabilidad por features:** que **las señales de STRATA son las informativas** para M10
    —ablación: M10 con solo las 15 features del agente cae a 0,476 ≈ M5; SHAP: las 7 señales STRATA/régimen por
    delante de las 15 del agente—. Esto hace a **M10 inseparable de STRATA** y justifica el nombre del proyecto.
-5. **Evaluar con rigor** (tests pareados, bootstrap por bloques, DSR) y **delimitar honestamente los límites**
+5. **Evaluar con rigor** (tests pareados, bootstrap por bloques, P(Sharpe>0) corregida) y **delimitar honestamente los límites**
    (no-significancia a muestra corta; generalización multi-agente/multi-activo y despliegue en vivo = trabajo
    futuro).
 
@@ -117,8 +117,9 @@ inmediatas (cap. 5). Así la aspiración deja de ser vaga: es una **limitación 
 - **sign M10 vs 0,5:** p ≈ 0,06 (binomial, `…valtest_robustez.json`) / 0,11 (`RESULTADOS §1bis`) → **reconciliar
   en cap. 4**; no significativo en ninguno.
 - **M10 vs M5 / M8:** M10 no bate al agente ni a la regla de forma significativa (margen nominal).
-- **DSR M10 = 0,72 < 0,95** → no sobrevive la deflación por multiplicidad.
-- **Ablación (interpretabilidad):** M10 solo-agente 0,476 ≈ M5 → las 7 señales STRATA aportan la ventaja.
+- **P(Sharpe>0) M10 = 0,72 < 0,95** (corregida por multiplicidad; cruda 0,976) → no sobrevive la corrección.
+- **Ablación (interpretabilidad):** M10 solo-agente 0,468 → 0,552 con las 22 (las 7 señales STRATA aportan +8 pp,
+  McNemar 0,053) → el meta-aprendiz sí usa la señal de STRATA.
 
 **Lectura:** ningún test sobrevive la corrección por multiplicidad → la ventaja es **NOMINAL**. Es lo esperable a
 ≈250 días; la significancia plena es trabajo futuro. *Fuentes:* `outputs/experiments/m10_smci_valtest_robustez.json`,
@@ -144,6 +145,6 @@ inmediatas (cap. 5). Así la aspiración deja de ser vaga: es una **limitación 
   que predice la dirección a partir de ellas. No confundir las dos cosas.
 - **Sin look-ahead:** posición de `t` × retorno de `t+1` (`signal_lag=1`); walk-forward, nunca KFold ni CPCV
   para el resultado desplegable.
-- **Cada cifra con su test** (McNemar, sign, bootstrap por bloques, DSR) y desde JSON, nunca a mano.
+- **Cada cifra con su test** (McNemar, sign, bootstrap por bloques, P(Sharpe>0) corregida) y desde JSON, nunca a mano.
 - **Honestidad:** lo nominal se dice nominal; lo no significativo, también. La significancia plena = trabajo
   futuro, no se infla.

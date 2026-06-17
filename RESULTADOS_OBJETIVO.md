@@ -19,11 +19,11 @@
 | B&H (referencia pasiva) | 0.569 | ≈ B&H | — | Techo del problema |
 | M5 (agente solo) | 0.384 | −1.82 | — | Perdedor direccional (sign test p=4·10⁻⁶) |
 | M7 (reduce) | 0.384 | −1.41 | trivial (b=c=0) | Reduce daño en P&L (DM p=0.095), no accuracy |
-| M8 (STRATA override C) | 0.436 | +0.67 | **p=0.069 (τ=0.5) / 0.088 (τ=0.40)** | Rescata accuracy; Sharpe frágil (DSR≈0.10) |
+| M8 (STRATA override C) | 0.436 | +0.67 | **p=0.069 (τ=0.5) / 0.088 (τ=0.40)** | Rescata accuracy; Sharpe frágil (P(Sharpe>0) corr.≈0.10) |
 | M10 (XGBoost CPCV) | **0.539** | +0.64 | DM M10 vs M8: p=0.67 | Mejor accuracy; equivalente a M8 en P&L |
 | M2 (régimen×GARCH, sin agente) | — | +~0 | DM M8 vs M2: p=0.44 | Ablación sin agente |
 
-**Métrica primaria: accuracy direccional** (el Sharpe es ilustración frágil; Deflated Sharpe M8 ≈ 0.10).
+**Métrica primaria: accuracy direccional** (el Sharpe es ilustración frágil; P(Sharpe>0) corregida M8 ≈ 0.10).
 **Dos planos (walk-forward §13):**
 - *Plano accuracy:* M10 rescata accuracy en AMBOS regímenes (bajista Holm p_adj=0.075, block-perm p=0.061). M8 solo en alcista (Holm p_adj=0.15) y nulo en bajista (p=1.0). MCC M10=+0.068 (único positivo).
 - *Plano Sharpe:* rescate NO robusto. Criterio confirmatorio = cota Bonferroni: M8−M5=−0.49; M10−M5=−0.48; ambas <0 → H1_b False. IC95 crudo M10−M5=[−0.02,+5.79] NO es el criterio. ΔSharpe se invierte en bajista: M8=−3.92, M10=−1.06 (n=123 ≥ 60) — falsificación pre-registrada disparada para ambos.
@@ -65,8 +65,9 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
   Kuhn 2008). M10 (0.552) bate a **ambos** → su ventaja **no es un mero sesgo a corto**.
 - **Significancia:** **nominal, no plena.** Test correcto = **binomial M10 vs NIR** (clase mayoritaria) = 0.141
   (no sig); block-perm vs B&H 0.047 (no sobrevive Bonferroni-5 ≈ 0.28); sign vs 0.5 p=0.057 (binomial 1-cola;
-  0.114 sign bilateral), full OOS n=250; no bate al agente (McNemar 0.16). **DSR=0.72 < 0.95** (n_trials=6, Sharpe
-  diario; con conteo conservador de 25 configs baja a 0.43). Ablación: las 7 features STRATA suben la accuracy de
+  0.114 sign bilateral), full OOS n=250; no bate al agente (McNemar 0.16). **P(Sharpe>0) corregida por
+  multiplicidad = 0.72 < 0.95** (cruda 0.976; ≥6 configs probadas; con 25 baja a 0.43; método Bailey-LdP 2014).
+  Ablación: las 7 features STRATA suben la accuracy de
   M10 de 0.468 (solo-agente) a 0.552 (McNemar 0.053, casi sig.) → el meta-aprendiz sí usa la señal de STRATA.
 - **Robustez a la partición (respaldo):** con 3 splits estándar (60/40, 70/30, 80/20; burn-in 150), M10 bate a
   M5/M8/B&H **y a la clase mayoritaria** en validación Y test en los tres (val 0.52–0.535, test 0.60–0.62) → la
