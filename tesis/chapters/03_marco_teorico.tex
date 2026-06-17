@@ -560,7 +560,7 @@ X \;\sim\; \mathrm{Binomial}(n,\, 0{,}5).
 \]
 El contraste es exacto: el $p$-valor se calcula directamente con la distribución binomial, sumando la probabilidad de observar un número de aciertos al menos tan extremo como el observado, sin recurrir a ninguna aproximación normal \cite{conover1999}.
 
-\emph{Uso en la memoria.} Se aplica al acierto direccional del agente sin supervisar (M5) para contrastar si su tasa de acierto difiere significativamente de $0{,}5$. La hipótesis central de la memoria parte precisamente del caso en que el agente acierta menos de la mitad de las veces, que es cuando STRATA tiene margen para rescatarlo.
+\emph{Uso en la memoria.} Se aplica al acierto direccional del agente sin supervisar (M5) para contrastar si su tasa de acierto difiere significativamente de $0{,}5$. La hipótesis central de la memoria parte precisamente del caso en que el agente acierta menos de la mitad de las veces, que es donde la supervisión de STRATA tiene margen para aportar.
 
 \subsection{Test de McNemar pareado}
 \label{sec:tests-mcnemar}
@@ -621,7 +621,7 @@ El último contraste cierra el problema de multiplicidad anticipado en la Secci�
 
 \emph{Mecánica del ajuste.} La corrección parte del hecho de que, al probar $N$ estrategias independientes sin habilidad alguna, el máximo de sus Sharpe muestrales crece con $N$ por puro azar; el DSR descuenta ese máximo esperado. Además incorpora la longitud de la muestra y los momentos de orden superior de los retornos (asimetría y curtosis), porque la distribución del estimador del Sharpe se desvía de la normal cuando los retornos tienen colas pesadas, justo el caso financiero. El resultado es un Sharpe ``desinflado'' acompañado de un $p$-valor; un DSR que sigue siendo significativo es evidencia de que el rendimiento sobrevive al escrutinio de la multiplicidad. El problema de fondo, que la abundancia de estrategias probadas en finanzas produce hallazgos espurios con alta frecuencia, está documentado de forma amplia y motiva exigir umbrales de significación más severos que los habituales en otras disciplinas \cite{harvey2016}.
 
-\emph{Uso en la memoria.} Se aplica al ratio de Sharpe de STRATA (M8) para comprobar si su rendimiento ajustado por riesgo sobrevive a la corrección por multiplicidad, no-normalidad y longitud de muestra, en lugar de reportar el Sharpe muestral en bruto.
+\emph{Uso en la memoria.} Se aplica al ratio de Sharpe del meta-learner M10 para comprobar si su rendimiento ajustado por riesgo sobrevive a la corrección por multiplicidad, no-normalidad y longitud de muestra, en lugar de reportar el Sharpe muestral en bruto.
 
 % Fin del capítulo. El contenido de STRATA (función de supervisión, los tres detectores y la capa
 % de intervención) está desarrollado en las Secciones \ref{sec:strata-tecnico} y \ref{sec:strata-aplicado}.
