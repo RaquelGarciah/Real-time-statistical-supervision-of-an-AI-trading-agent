@@ -1964,3 +1964,35 @@ gráficas de panel).
 
 **Referencias.** `experiments/panel_intervention_scan.py`, `outputs/experiments/panel_intervention_scan.json`,
 `notebooks/m10_better_smci.ipynb` §F.
+
+## [2026-06-17] [Decisión] - embargo = 1 (no 5) en la validación walk-forward de M10
+
+**Contexto.** Raquel cuestiona si el embargo=5 del walk-forward tira los días más recientes (los más
+informativos en un activo no estacionario como SMCI). Decisión: **adoptar embargo = 1** por principio.
+
+**Detalle.** Distinción clave (López de Prado 2018, cap.7 §7.4): **purga** = quita train cuya etiqueta se
+solapa con el test (tamaño = horizonte de etiqueta); **embargo** = quita unas pocas obs posteriores al test
+por autocorrelación residual (h≈0.01·T). Ambos existen porque en K-fold/CPCV los folds tienen train ANTES y
+DESPUÉS (interleaved). Mi validación es **walk-forward de origen móvil** (Tashman 2000): el test es siempre
+futuro → no hay solape bidireccional. El único solape es la **etiqueta de horizonte 1** (y_t=1[r_{t+1}>0]) →
+purga = 1. El embargo≥5 de CLAUDE.md §4 es regla de CPCV (bidireccional) y etiquetas multi-día, otro régimen.
+Cierre: Bergmeir, Hyndman & Koo (2018) — con residuos no correlados la CV con hueco mínimo es válida.
+Verificado libre de fuga: con embargo=1 hay gap de 2 días entre la última etiqueta de train y el primer
+retorno de test.
+
+**Citas verificadas (@experto-citas, todas ✅, ya en tesis/bibliography.bib):** lopezdeprado2018 (existente,
+reutilizar), tashman2000, burman1994, racine2000, bergmeir2018, bergmeir2012. Matiz aplicado: "h ∝ dependencia"
+se atribuye a Racine/posterior, no a Burman et al. (que lo dan como fracción de N).
+
+**Efecto en SMCI.** accuracy 0.524 (emb5) → 0.552 (emb1), posiciones equilibradas (47% corto, 48% días
+alcistas). **NO crea significancia:** el p=0.047 vs B&H aparece SOLO en emb=1 (pico aislado; emb 0 y 2 dan
+p≈0.12-0.13), no sobrevive Bonferroni-5 (0.24) ni Holm de familia. Se reporta como **sensibilidad**, no
+confirmatorio. embargo=1 se elige por PRINCIPIO (horizonte=1), no por el p-valor.
+
+**Implicaciones para el TFG.** Compatible con CLAUDE.md §4 (la regla ≥5 es de CPCV, no del WF). Documentado en
+`notebooks/logic_esential.ipynb` §14b (con frase de defensa lista). **Pendiente:** pre-registrar formalmente
+emb=1 antes de propagarlo como headline a los experimentos m10_smci_* y re-ejecutar (accuracy 0.552), marcando
+significancia como sensibilidad (condición de @rigor-matematico).
+
+**Referencias.** logic_esential §14b, tesis/bibliography.bib, auditoría @rigor-matematico [2026-06-17],
+verificación @experto-citas [2026-06-17].

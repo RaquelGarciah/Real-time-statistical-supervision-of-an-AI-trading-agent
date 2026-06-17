@@ -195,13 +195,46 @@ PSA ni GSO son el protagonista; RAM lo es.
 
 El GARCH da una $\sigma$ **diaria**. Se anualiza con $\sigma_{\text{anual}}=\sigma_{\text{diaria}}\cdot\sqrt{252}$
 (252 = días de bolsa/año; el $\sqrt{}$ sale de que la **varianza** escala lineal con el tiempo
-si los retornos son ~i.i.d.). Dos razones:
+si los retornos son ~i.i.d., así que la desviación típica escala con $\sqrt{T}$). Dos razones:
 
 1. **Unidad estándar e interpretable.** `target_vol = 0.10` = "quiero ~10 % de volatilidad
    **anual**" lo entiende cualquiera; un 0.63 % diario no dice nada (el VIX, etc., van anualizados).
 2. **Coherencia de unidades en la banda.** $b_t=\text{target\_vol}/\sigma_t$ exige numerador y
    denominador en las mismas unidades; como `target_vol` es anual, $\sigma_t$ debe serlo. Si
    mezclaras $\sigma$ diaria con target anual, la banda erraría por un factor $\sqrt{252}\approx16$.
+
+#### Qué tiene que ver esto con el *sizing* del agente
+
+El *sizing* del agente es $w_t$ (su `size`): **cuánto apuesta**, como fracción del capital —no
+en euros— con signo = dirección y módulo = convicción. La clave es que el **riesgo** que asume no
+es el tamaño de la apuesta a secas, sino el tamaño **multiplicado por lo nervioso que está el
+mercado**:
+
+$$\sigma_{\text{posición}}=|w_t|\cdot\sigma_t.$$
+
+Apostar el 100 % ($w_t=1$) sobre un activo plácido ($\sigma_t=8\%$) arriesga *menos* que apostar
+el 50 % ($w_t=0.5$) sobre uno que se mueve un 40 %. Por eso el GSO no fija el tamaño: fija el
+**riesgo objetivo** `target_vol` (presupuesto de volatilidad) y de ahí **deduce** el tamaño máximo
+coherente, igualando el riesgo de la posición al presupuesto:
+
+$$|w_t|\cdot\sigma_t=\text{target\_vol}\ \Longrightarrow\ \underbrace{|w_t|}_{\text{banda }b_t}=\frac{\text{target\_vol}}{\sigma_t}.$$
+
+Eso es literalmente `bound = min(1, target_vol / sigma_t_annualized)` en `gso_detector`. El GSO
+compara el `size` del agente contra esa banda; si el agente se pasa (sobreexposición), recorta.
+Esto es **volatility targeting**: apuestas menos cuando el mercado está más volátil, para que el
+riesgo de tu P&L se mantenga ~constante.
+
+Aquí es donde la división **obliga** a misma escala: `target_vol` se fija con sentido económico
+("quiero 10 % **anual**"), que es inevitablemente anual. Para que $b_t$ salga adimensional —una
+fracción de capital— $\sigma_t$ debe ser anual también. Si metieras la $\sigma$ **diaria**
+($\approx0.0095$) contra el target anual ($0.10$), saldría $b_t=0.10/0.0095\approx10$, y
+`min(1, 10)=1` **siempre** → el GSO **no saltaría jamás**.
+
+> **Matiz para el tribunal.** Como en $\text{target\_vol}/\sigma_t$ **ambos** llevan el mismo
+> $\sqrt{252}$, el factor se **cancela**: la banda no depende de anualizar... *siempre que seas
+> consistente*. El error real no es "anualizar o no", es **mezclar escalas** entre el target y
+> $\sigma_t$. La anualización es la convención que garantiza que los dos lados hablan el mismo
+> idioma — y, de paso, que `target_vol` se lea como un riesgo interpretable.
 """)
 
 # ---------------------------------------------------------------------------
@@ -717,7 +750,149 @@ calibración por régimen ≠ el signo en OOS, se documenta como caso donde la t
 
 # ---------------------------------------------------------------------------
 md(r"""
-## 14. Checklist — lo que debes saber recitar
+## 14. El HMM da VOLATILIDAD, no dirección (filtrado, leverage, prior-flip)
+
+Pregunta recurrente: *"si el HMM me da el régimen de cada día, ¿no sirve eso para
+predecir mucho?"*. Sirve — es la señal más informativa de M10 (SHAP) — pero con **dos
+límites duros** que conviene recitar, porque son justo lo que un tribunal ataca.
+
+### 14.1 Filtrado vs suavizado (la trampa de look-ahead)
+
+Hay dos formas de "etiquetar el régimen del día $t$", y solo una es legal:
+
+- **Suavizado** $P(\text{estado}_t\mid \text{TODA la serie})$ (Viterbi / posterior completo):
+  para decidir $t$ mira días **posteriores** a $t$. Sirve para *describir* el pasado, pero
+  como señal de trading es **look-ahead**: en tiempo real no tienes el futuro.
+- **Filtrado** $P(\text{estado}_t\mid \text{datos}\le t)$: solo pasado. **Es lo único legal**, y
+  es lo que STRATA usa (`predict_proba_filtered`). El régimen sirve, pero **solo el filtrado**.
+
+### 14.2 El HMM modela volatilidad; la dirección solo llega por el *leverage effect*
+
+El HMM se ajusta sobre $(r_t,\ \text{RV}_{21})$ → sus estados son regímenes de **volatilidad**
+(Calma/Estrés/Crisis), no de signo. Saber que estás en alta vol informa del **tamaño** del
+movimiento, no de su **dirección**. La dirección solo aparece **vía leverage effect** (Black 1976;
+Christie 1982): en índices, alta vol coincide con caídas. Y eso es **contemporáneo** (mismo día),
+no predictivo. Al hacerlo causal (régimen de hoy → retorno de mañana), la señal direccional casi
+se evapora. Retorno medio por régimen filtrado (`experiments/regime_direction_table.py`):
+
+| | SPY mismo-día (calib) | SPY día-sig (calib→oos) | SMCI mismo-día (calib→oos) | SMCI día-sig (calib→oos) |
+|---|---|---|---|---|
+| Calma | +0.00054 | +0.00032 → +0.00012 | −0.00034 → +0.00191 | −0.00006 → **+0.02546** |
+| Estrés | +0.00017 | +0.00033 → +0.00082 | +0.00143 → +0.00328 | +0.00117 → **−0.00384** |
+| Crisis | ≈0 | +0.00015 → +0.00329 | +0.00278 → −0.00238 | +0.00248 → **−0.00003** |
+
+**SPY:** el signo causal **transfiere** (todo positivo: deriva alcista, leverage débil pero coherente).
+**SMCI:** el signo causal **FLIPEA** en los tres regímenes calib→OOS — el régimen no predice dirección
+fuera de muestra. Esto es el **`prior-flip`**, la regla de falsación pre-registrada: donde el signo de
+calibración ≠ el de OOS, se documenta como caso donde la técnica *no* aplica. SPY (leverage) funciona;
+SMCI/TSLA/UNG (sin leverage) no. Ese es el **dominio de validez**.
+
+### 14.3 ¿Y si hacemos que el HMM prediga dirección? (la pregunta del tutor)
+
+Se puede, de tres formas: (a) cambiar las features de emisión por direccionales (momentum/signo);
+(b) HMM multivariante con una emisión direccional añadida; (c) regímenes con **media** propia
+(Hamilton 1989, *mean-switching*) — que es **lo que STRATA ya hace** con el signo data-driven
+($\mu_k$ por estado) + `prior-flip`. **Pero todas chocan con el mismo muro:** la volatilidad es
+**predecible** (clustering, por eso el GARCH funciona); la dirección a un día es **casi una
+martingala** (eficiencia de mercado). Un HMM ajustado a dirección **sobreajusta el pasado y no
+transfiere** — evidencia directa: la trendiness en calibración no predice el beneficio del momentum
+en OOS (Spearman de −0.55 a +0.45, nunca significativo sobre 10 activos), y el `prior-flip` muestra
+que el signo por régimen solo transfiere en SPY.
+
+**Consecuencias de hacerlo direccional:** pierdes la coherencia con vol/GARCH y, sobre todo, **el relato
+del leverage effect** (tu aportación teórica); RAM deja de ser "desajuste con el régimen de volatilidad";
+y ganas riesgo de overfitting sin una señal direccional fiable a cambio. Por eso el diseño actual es el
+**inteligente**: predice lo predecible (volatilidad) y cosecha dirección **solo donde la economía la
+regala** (leverage). El "HMM direccional", en su versión defendible (medias por régimen), ya está hecho,
+y su límite es justo el `prior-flip`.
+
+""")
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 14b. El embargo del walk-forward: por qué **embargo = 1** (no 5)
+
+**Decisión (2026-06-17):** en la validación walk-forward de M10 uso **embargo = 1 día**, no 5.
+Aquí está el porqué, atado a la literatura, porque es justo el detalle que un tribunal ataca.
+
+### Qué es el embargo (y qué NO es)
+
+Al validar sin mirar el futuro hay **dos** mecanismos distintos, que conviene no confundir
+(López de Prado 2018, cap. 7, §7.4):
+
+- **Purga (*purging*).** Quita del entrenamiento las observaciones cuya **etiqueta se solapa en el
+  tiempo** con la del test. Su tamaño = **horizonte de la etiqueta**.
+- **Embargo (*embargoing*).** Quita, *además*, unas pocas observaciones **inmediatamente posteriores**
+  al test, para cortar la **autocorrelación residual** en la frontera. López de Prado lo fija como una
+  fracción pequeña del total: *"A small value $h\approx 0.01\,T$ often suffices"*.
+
+Lo esencial: **ambos existen porque en K-fold / CPCV los folds de test tienen entrenamiento ANTES y
+DESPUÉS** (estructura *interleaved*, bidireccional). El embargo blinda ese borde posterior.
+
+### Por qué en *mi* validación el número correcto es 1
+
+Mi validación **no es K-fold ni CPCV**: es **walk-forward de origen móvil** (*rolling-origin*,
+Tashman 2000), donde **el test es siempre futuro respecto al entrenamiento** → el solape
+"entrenamiento *después* del test" que motiva el embargo **no existe por construcción**. Solo queda el
+solape de la **etiqueta**, y mi etiqueta tiene **horizonte 1 día**:
+$$ y_t = \mathbf{1}[\,r_{t+1} > 0\,]. $$
+La etiqueta de $t$ solo ocupa hasta $t+1$ → la purga necesaria es de **1 día**. El **embargo $\geq 5$**
+de CLAUDE.md §4 es la regla de **CPCV** (folds bidireccionales) y de **etiquetas multi-día**
+(triple-barrier): **otro régimen**, no el mío. Cierre (Bergmeir, Hyndman & Koo 2018): con **residuos
+no correlados**, la validación con hueco mínimo es **válida**; el único solape mecánico —la etiqueta
+$t+1$— se elimina con **embargo = 1**.
+
+### Frase lista para defender
+
+> *"El embargo $\geq 5$ es una recomendación calibrada para Purged/Combinatorial K-Fold con folds
+> interleaved y etiquetas multi-día (López de Prado 2018, §7.4), no para evaluación walk-forward de
+> origen móvil con etiqueta de horizonte 1. En rolling-origin (Tashman 2000) el test es siempre futuro
+> respecto al entrenamiento, lo que elimina por construcción el solape bidireccional que motiva el
+> embargo; el único solape residual —la etiqueta $y_t=\mathbf{1}[r_{t+1}>0]$— se purga con embargo = 1.
+> La validez de la validación con hueco mínimo bajo residuos no correlados está en Bergmeir, Hyndman &
+> Koo (2018)."*
+
+Apoyos sobre el **tamaño** del hueco en datos dependientes: *h-block* (Burman, Chow & Nolan 1994)
+introduce eliminar $h$ vecinos para datos dependientes; la idea de ligar $h$ a la **estructura de
+dependencia** (y *hv-block*) es de Racine (2000); Bergmeir & Benítez (2012) respalda empíricamente el
+buen comportamiento de la CV en series temporales.
+
+### Honestidad (esto va conmigo, no contra mí)
+
+embargo = 1 es **corrección del protocolo**, no un truco para "sacar significancia":
+
+- **Sí** mejora la accuracy **nominal** en SMCI: $0.524$ (embargo 5) $\to \mathbf{0.552}$ (embargo 1),
+  con posiciones equilibradas (47 % corto, 48 % de días alcistas) — no es "ponerse corto a un activo
+  que cae".
+- **No** crea significancia. El único $p<0.05$ aparece **solo** en embargo = 1 (pico aislado: embargo
+  0 y 2, igual de válidos, dan $p\approx0.12$–$0.13$); no sobrevive la corrección por multiplicidad del
+  barrido (Bonferroni-5: $0.047\times5\approx0.24$) ni el Holm de la familia {vs M5, M8, B&H}. Se
+  reporta como **sensibilidad**, no como hallazgo confirmatorio.
+
+> **Regla:** elijo embargo = 1 **por principio** (horizonte = 1), justificado a priori — *no* por su
+> p-valor. Y digo yo misma que la significancia no sobrevive. Esa es la defensa sólida.
+""")
+
+# Celda ilustrativa: el indexado del walk-forward con embargo 1 vs 5 (sin datos, solo la mecánica).
+code(r'''
+# Mecánica del embargo en el walk-forward (ilustrativo, sin datos):
+# para predecir el bloque que empieza en `start`, entreno con [:start - embargo].
+STEP = 21
+start = 171                                   # un reentreno cualquiera
+for embargo in (5, 1):
+    tr_end = start - embargo                  # última fila de train = tr_end - 1
+    ultima_etiqueta_usa = (tr_end - 1) + 1    # y_t usa r_{t+1}  (horizonte 1)
+    primer_ret_test = start + 1               # la fila `start` se evalúa contra r_{start+1}
+    gap = primer_ret_test - ultima_etiqueta_usa
+    print(f"embargo={embargo}: train=[:{tr_end}]  predice=[{start}:{start+STEP}]  "
+          f"última etiqueta de train usa r_{ultima_etiqueta_usa}, primer retorno de test r_{primer_ret_test}"
+          f"  -> gap={gap}d {'(sin solape)' if gap >= 1 else '(SOLAPE)'}")
+# Con horizonte 1, embargo=1 ya deja gap>=1 -> sin solape de etiquetas -> sin fuga.
+''')
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 15. Checklist — lo que debes saber recitar
 
 1. **STRATA no predice $r_{t+1}$.** Es $f:(\text{decisión}_t,\text{mercado}_t)\to
    \text{posición}_t$, determinista. El retorno futuro solo entra en el backtest
