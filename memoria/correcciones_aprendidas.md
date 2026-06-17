@@ -7,6 +7,10 @@
 > **Cómo se usa:** el redactor aplica estas reglas al escribir; cada gate aplica las de su categoría. Si una
 > regla nueva contradice a una vieja, gana la más reciente (y se actualiza la vieja).
 >
+> **Aplicación hacia atrás:** cuando entra una regla nueva, el agente `barrido-retroactivo` revisa **toda la
+> prosa ya escrita** y propone arreglar dónde más se incumple, para que la corrección no valga solo de ahí en
+> adelante sino también para lo ya redactado.
+>
 > **Formato de cada regla:**
 > ```
 > - **Regla:** <enunciado operativo, imperativo>

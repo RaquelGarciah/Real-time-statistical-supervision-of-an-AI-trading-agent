@@ -33,3 +33,17 @@ hacia `memoria/correcciones_aprendidas.md`.
 
 Las **exclusiones** y el **énfasis** se vuelven regla de forma inmediata (son órdenes). El **estilo** se
 refuerza con la repetición.
+
+## Bucle completo (qué pasa cuando Raquel corrige)
+1. **Diff** redactada→corregida; registro en `capN.md` (original, corregido, razón, categoría).
+2. `aprendiz-correcciones` **propone** reglas; Raquel **aprueba**; entran en `correcciones_aprendidas.md` y sus
+   párrafos buenos se guardan como muestras en `tesis_assets/estilo_raquel/`.
+3. **Barrido retroactivo** (`barrido-retroactivo`): con las reglas recién aprobadas, barre **toda la prosa ya
+   escrita** y localiza dónde más se incumplen. Devuelve incumplimientos (puntual / re-redactar).
+4. Raquel aprueba los arreglos → el hilo principal los aplica (reescritura puntual, o re-redacción de la parte
+   con `redactor-tesis`), pasa los **gates** sobre lo cambiado.
+5. Se guarda el **snapshot nuevo** en `memoria/historico_redacciones/` (cadena borrador → gates → corrección →
+   barrido).
+
+> Así una sola corrección de Raquel se aplica **hacia adelante** (futuras redacciones) **y hacia atrás** (todo lo
+> ya escrito).
