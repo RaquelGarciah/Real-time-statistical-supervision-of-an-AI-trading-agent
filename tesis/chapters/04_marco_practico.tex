@@ -60,7 +60,7 @@ La honestidad estadística exige acompañar el $0{,}552$ de su contraste. La ven
 \section{Robustez}
 \label{sec:robustez}
 
-La ventaja de M10 no depende del corte concreto de los datos. La Tabla~\ref{tab:smci-robustez} la evalúa sobre tres particiones cronológicas estándar, $60/40$, $70/30$ y $80/20$: en las tres, y tanto en el tramo de validación como en el de test, M10 supera al agente, a la regla y a comprar-y-mantener. La conclusión es invariante a dónde se corte la serie, lo que descarta que el resultado sea un artefacto de una partición afortunada.
+La ventaja de M10 no depende del corte concreto de los datos. La Tabla~\ref{tab:smci-robustez} la evalúa sobre tres particiones cronológicas estándar, $60/40$, $70/30$ y $80/20$: en las tres, y tanto en el tramo de validación como en el de test, M10 supera al agente, a la regla y a comprar-y-mantener. La conclusión es estable a las tres particiones estándar probadas, lo que hace improbable que el resultado sea un artefacto de un corte afortunado.
 
 % [Tabla/figura por generar — graficas_clave §3: robustez a la partición (3 splits val/test). Fuente: m10_smci_valtest_robustez.json / notebooks/STRATA_SMCI.ipynb.]
 
@@ -68,13 +68,13 @@ La ventaja de M10 no depende del corte concreto de los datos. La Tabla~\ref{tab:
 \centering
 \caption{Robustez a la partición: accuracy de M10 frente a los baselines en validación y test de tres cortes cronológicos. M10 gana a todos en los tres. Fuente: \texttt{m10\_smci\_valtest\_robustez.json}.}
 \label{tab:smci-robustez}
-\begin{tabular}{lcc}
+\begin{tabular}{lccc}
 \hline
-Partición (val / test) & Accuracy M10 (val) & Accuracy M10 (test) \\
+Partición (val / test) & Accuracy M10 (val) & Accuracy M10 (test) & $n_{\text{test}}$ \\
 \hline
-60 / 40 & 0,52 & 0,60--0,62 \\
-70 / 30 & 0,52--0,535 & 0,60--0,62 \\
-80 / 20 & 0,52--0,535 & 0,60--0,62 \\
+60 / 40 & 0,520 & 0,600 & 100 \\
+70 / 30 & 0,526 & 0,613 & 75 \\
+80 / 20 & 0,535 & 0,620 & 50 \\
 \hline
 \end{tabular}
 \end{table}
