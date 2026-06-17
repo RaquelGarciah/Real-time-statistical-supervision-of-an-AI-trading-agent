@@ -1887,6 +1887,11 @@ Notebook entregable: `notebooks/m10_better_smci.ipynb`.
 
 ## [2026-06-16] [Hallazgo] - SMCI a fondo: ninguna de 12 variantes desplegables bate a B&H en accuracy (significativo); ensemble = mejor M10 (Sharpe/equity nominal)
 
+> **[ACTUALIZADO 2026-06-17]** Las cifras de abajo son con **embargo=5**. Tras adoptar **embargo=1** (decisión
+> del día siguiente, por principio; ver entrada [2026-06-17]), las cifras **headline del proyecto** del
+> ensemble pasan a: **accuracy 0.552**, **Sharpe 1.84**, **equity 3.24×**, **DSR 0.72**. El veredicto
+> cualitativo NO cambia (bate a todo nominal, no significativo). Usar las cifras de embargo=1 en memoria/notebook.
+
 **Contexto.** Por petición de Raquel, agotar las palancas para mejorar M10 en SMCI antes de pivotar de activo.
 Tres experimentos: tuning en validación (m10_improve_smci), configs fijas (m10_smci_deep), métodos avanzados
 (m10_smci_advanced: triple-barrier, modelos por régimen, stacking, voting, abstención).

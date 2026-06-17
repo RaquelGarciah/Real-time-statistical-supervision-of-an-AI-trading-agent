@@ -40,6 +40,32 @@
 
 ---
 
+## §1bis. Caso de estudio SMCI (activo del tutor) — cifras canónicas (embargo=1, 2026-06-17)
+
+SPY (§1) es el **caso central del método**. **SMCI es el activo del CASO DE ESTUDIO** que pide el tutor:
+un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** bate a todo en accuracy. Fuente:
+`notebooks/m10_better_smci.ipynb` + JSON de `experiments/m10_smci_*`. Recorrido completo:
+`docs/chats/decision_activo/smci.md`.
+
+| Estrategia (OOS SMCI, n=250, walk-forward, embargo=1) | Accuracy | Sharpe | Equity | Lectura |
+|---|---|---|---|---|
+| M5 (agente) | 0.484 | −0.24 | — | agente 95 % corto |
+| M8 (regla) | 0.496 | +0.33 | — | STRATA interviene solo 3 % → ≈ M5 |
+| B&H (trivial) | 0.484 | +0.03 | 0.71× | benchmark justo (≈ moneda) |
+| **M10-WF ensemble** (10 semillas, 22 features) | **0.552** | **+1.84** | **3.24×** | bate a todo **nominal** |
+
+- **Significancia:** **nominal, no plena.** block-perm M10 vs B&H = 0.047 (NO sobrevive Bonferroni-5 ≈ 0.28
+  del barrido de embargo); sign vs 0.5 p=0.11; no bate al agente significativamente. **DSR=0.72 < 0.95.**
+- **Por qué no es significativo:** en SMCI el agente ya está 95 % corto (alineado con el régimen) → M5/M8/M10
+  son la misma apuesta corta; STRATA rescata solo donde el agente discrepa de un régimen que acierta (SPY,
+  M10 vs M5 p=0.0041). SMCI es el único activo del panel donde M10 > M5, M8 y B&H (muro estructural 2×2).
+- **Protocolo:** WF expandible, burn-in 150, reentreno 21 d, **embargo 1** (horizonte de etiqueta=1; Tashman
+  2000 / López de Prado 2018 §7.4 — ver DECISIONES_ESENCIALES #15). Ensemble = bagging (Breiman 1996).
+- **Frase de cierre SMCI:** "El M10 desplegable bate al pasivo en un benchmark justo (0.552 vs 0.484), de
+  forma nominal; la significancia plena requiere más muestra (trabajo futuro)."
+
+---
+
 ## §2. Tabla del proyecto anterior (referencia histórica — NO usar en memoria LaTeX)
 
 Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo proyecto las ha replicado con mejor rigor (K=3 fijo, τ=0.5, walk-forward, accuracy-first). Si en la memoria aparece una cifra, debe venir de §1.
@@ -159,6 +185,8 @@ Hit rate M5 vs M8 **mejora en 8/10 activos**. Sign test panel `p ≈ 0.109` (bor
 
 - **GSO no dispara con severidad medium+ en NINGÚN activo del panel.** Hallazgo metodológico negativo.
 - **SMCI = contraejemplo McNemar contra M8** (agente con información direccional complementaria al prior).
+  *[Actualizado 2026-06-17: lectura del proyecto anterior, con signo de RAM hardcodeado (corregido). En el
+  proyecto actual SMCI es el ACTIVO DEL CASO DE ESTUDIO del tutor — cifras canónicas en §1bis.]*
 - **MSTR = `prior-flip` clásico** (signo calibración ≠ signo OOS).
 
 ---

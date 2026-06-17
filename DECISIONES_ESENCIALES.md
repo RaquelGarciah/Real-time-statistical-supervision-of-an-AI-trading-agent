@@ -7,6 +7,28 @@ Decisiones **descartadas** explícitamente: Nemotron como LLM principal (reempla
 
 ---
 
+## Mapa de documentos del proyecto (para no perder el hilo)
+
+Dónde vive cada cosa, de lo general a lo concreto:
+
+| Documento | Para qué | Estado |
+|---|---|---|
+| **`CLAUDE.md`** | Constitución del proyecto (qué es STRATA, reglas, workflow) | Vivo |
+| **`DECISIONES_ESENCIALES.md`** (este) | Las 16 decisiones vivas con su porqué | Vivo |
+| **`decisiones_respaldadas_literatura.md`** | Decisiones con respaldo bibliográfico verificado (embargo, ensemble, detectores, tests, abstención) | Vivo |
+| **`RESULTADOS_OBJETIVO.md`** | Cifras canónicas para la memoria: §1 SPY (método), **§1bis SMCI (caso de estudio)** | Vivo |
+| **`BITACORA.md`** | Cuaderno de campo cronológico (pre-registros + hallazgos) | Vivo |
+| **`CONOCIMIENTO_ACUMULADO.md`** | Síntesis de hallazgos | Vivo |
+| **`docs/chats/decision_activo/smci.md`** | **Recorrido completo de la elección de SMCI** (resumen + decisiones en orden + fases) | Vivo |
+| **`notebooks/m10_better_smci.ipynb`** | **Entregable** del caso de estudio SMCI (pruebas + gráficas + conclusiones) | Vigente |
+| **`notebooks/decision_activo.ipynb`** | Registro de la *elección* del activo (protocolo inicial emb=5; ver banner) | Histórico |
+| **`notebooks/strata_canonical.ipynb`** | Notebook canónico del método (SPY) | Vivo |
+| **`notebooks/logic_esential.ipynb`** | Didáctico: conceptos esenciales (§14b embargo, §14d ensemble) | Vivo |
+
+**Dos casos, no confundir:** **SPY = caso central del método** (donde STRATA rescata significativamente, decisión #1); **SMCI = caso de estudio del tutor** (donde M10 desplegable bate a todo nominal, decisión #13).
+
+---
+
 ## 1. SPY-only en el cuerpo central del TFG
 
 **Qué.** El caso central de validación es SPY. El panel multi-activo de 10 tickers va como apéndice de robustez, no como experimento principal.
@@ -251,7 +273,8 @@ bergmeir2018, lopezdeprado2018, burman1994, racine2000, bergmeir2012); BITACORA 
 ## 16. Límite honesto: STRATA rescata donde el agente discrepa del régimen
 
 **Qué.** STRATA/M10 aporta valor (bate al agente) **solo donde el agente va a contracorriente de un régimen
-que acierta**. En SPY ocurre (M10 vs M5 McNemar p=0.0005, leverage effect fuerte). En SMCI **no**: el agente
+que acierta**. En SPY ocurre (M10 vs M5 McNemar p=0.0041 en el panel todo-OOS, embargo=1; p=0.0005 en el
+walk-forward causal n=251 — significativo en ambas muestras; leverage effect fuerte). En SMCI **no**: el agente
 ya está 95 % corto (alineado con el régimen) → STRATA interviene el 3 % → M5/M8/M10 son la misma apuesta corta
 y ninguno se separa. Ningún M10 desplegable bate a B&H/M5/M8 de forma **significativa** en SMCI.
 

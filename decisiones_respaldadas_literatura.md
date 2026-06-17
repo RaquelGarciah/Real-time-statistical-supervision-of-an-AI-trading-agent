@@ -81,7 +81,7 @@ aquí promedio modelos que difieren solo en la **semilla** (mismo dato, distinto
 variante como "bagging" sin matizar; Dietterich 2000 cubre la aleatorización del aprendiz.
 
 **Honestidad (qué NO implica).** El ensemble **reduce ruido, no crea señal**: mejora accuracy de forma
-modesta (0.52 → 0.552) y, sobre todo, Sharpe (0.85 → 1.84) y equity (1.45× → 3.24×), pero NO es cherry-pick
+modesta (0.524 → 0.552) y, sobre todo, Sharpe (0.85 → 1.84) y equity (1.45× → 3.24×), pero NO es cherry-pick
 (se promedian **las 10** semillas, no se elige la mejor) ni look-ahead. La significancia sigue sin
 sobrevivir (DSR = 0.72 < 0.95). Es la **única** palanca probada que mejora sin romper la cobertura ni la
 comparación con B&H.

@@ -40,7 +40,7 @@ Un **agente LLM** (AI Hedge Fund con 5 personalidades: Buffett, Wood, Druckenmil
 
 ## El número clave de la defensa
 
-> McNemar pareado M8 vs M5: **p ≈ 0.088** (τ=0.40 default). STRATA mejora la accuracy direccional con significancia pareada. **En el plano Sharpe el rescate es condicional al alza** (§13 walk-forward: ΔSharpe se invierte en el tramo bajista para M8 −3.92 y M10 −1.06; falsificación pre-registrada disparada para ambos). **En el plano accuracy, M10 rescata al agente en AMBOS regímenes** (bajista Holm p_adj=0.075, block-perm p=0.061). El resultado honesto es: "la dirección se recupera cross-régimen para M10; la rentabilidad económica es condicional al alza para ambos".
+> McNemar pareado M8 vs M5: **p=0.069 (τ=0.5, canónico) / 0.088 (τ=0.40, blindaje anti-p-hacking)**. STRATA mejora la accuracy direccional con significancia pareada. **En el plano Sharpe el rescate es condicional al alza** (§13 walk-forward: ΔSharpe se invierte en el tramo bajista para M8 −3.92 y M10 −1.06; falsificación pre-registrada disparada para ambos). **En el plano accuracy, M10 rescata al agente en AMBOS regímenes** (bajista Holm p_adj=0.075, block-perm p=0.061). El resultado honesto es: "la dirección se recupera cross-régimen para M10; la rentabilidad económica es condicional al alza para ambos".
 
 > **Accuracy escalera (métrica primaria):** M5 0.384 → M8 0.436 → **M10 0.539** → B&H 0.569. M10 es el mejor decodificador; ambos quedan por debajo de B&H (STRATA reduce el daño, no genera alfa).
 
@@ -89,6 +89,7 @@ Lo que también dejó claro: *"Algo que has impuesto tú a mano (tu capa de supe
 - **Activos con supervisión significativa** (sign test p<0.10 sobre P&L de intervención): SPY (+1740 bps), XLE (+1840 bps).
 - **Hit rate M5 vs M8 mejora en 8/10 activos.** Sign test panel p=0.109 (borderline).
 - **SMCI = contraejemplo McNemar contra M8** (p=0.011). Caso del *"agente con información direccional complementaria al prior"*: el agente quería short y acertaba 53%; RAM lo volteaba a long que acertaba 46%. Diferente del clásico `prior-flip` de MSTR.
+  > **[Actualizado 2026-06-17]** Esta lectura es del proyecto anterior (signo de RAM hardcodeado, invertido en SMCI — corregido). En el proyecto actual **SMCI es el ACTIVO DEL CASO DE ESTUDIO del tutor** (B&H≈0.48, benchmark justo): el M10 desplegable (WF ensemble, embargo=1) bate a M5/M8/B&H **nominalmente** (acc 0.552), pero **no significativamente** porque el agente está 95% corto → M5/M8/M10 son la misma apuesta corta y STRATA no tiene margen de rescate. STRATA rescata donde el agente discrepa de un régimen que acierta = **SPY** (M10 vs M5 p=0.0041). Recorrido completo: `docs/chats/decision_activo/smci.md`; decisiones #13–#16 en DECISIONES_ESENCIALES.md.
 - **GSO no dispara medium+ en NINGÚN activo del panel.** Limitación metodológica: la banda `target_vol/σ` rara vez se viola por el sizing del agente. GSO está calibrado demasiado laxo o el sizing del agente es naturalmente conservador. **Reportable como hallazgo metodológico negativo.**
 
 ---
