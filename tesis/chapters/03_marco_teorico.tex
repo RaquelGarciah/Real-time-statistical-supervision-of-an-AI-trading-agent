@@ -469,7 +469,7 @@ El detector PSA vigila si el agente cambia de criterio de forma estructural, no 
 \subsection{La capa de intervención}
 \label{sec:strata-intervencion}
 
-Las tres señales alimentan una capa de intervención que actúa sobre la posición $w_t$ en uno de tres modos. El modo \emph{warn} solo registra. El modo \emph{reduce} atenúa el tamaño cuando se supera el umbral correspondiente, encogiendo $|w_t|$ sin tocar el signo. El modo \emph{override} sustituye la decisión: cuando el RAM score supera el gate $\tau = 0{,}50$, la posición se reemplaza por la más próxima dentro de la banda admisible que marca el régimen, signo incluido. Esta variante, que denotamos \emph{override C}, usa las probabilidades de régimen filtradas y la convención causal $w_t \cdot \rnext$, de modo que en ninguna etapa interviene información posterior a $t$. La regla de referencia M8 es exactamente esta configuración: override C sobre el régimen filtrado, con $\mathrm{signal\_lag} = 1$.
+Las tres señales alimentan una capa de intervención sobre la posición $w_t$. \emph{Warn} solo registra y no modifica nada. \emph{Reduce} encoge $|w_t|$ sin cambiar el signo cuando se supera el umbral correspondiente. \emph{Override} va más lejos: cuando el RAM score supera el gate $\tau = 0{,}50$, reemplaza la posición por la más próxima dentro de la banda admisible que marca el régimen, signo incluido. La variante que implementamos, \emph{override-C}, trabaja solo con el posterior filtrado y con la convención causal $w_t \cdot \rnext$; en ningún paso entra información posterior a $t$. La regla de referencia M8 es exactamente esa configuración, con $\mathrm{signal\_lag} = 1$.
 
 \section{Métricas de evaluación}
 \label{sec:metricas}
