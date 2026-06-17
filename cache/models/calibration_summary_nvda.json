@@ -1,0 +1,68 @@
+{
+ "ticker": "NVDA",
+ "calibration_window": [
+  "2000-01-01",
+  "2024-09-30"
+ ],
+ "n_obs": 6204,
+ "seed": 42,
+ "hmm": {
+  "n_states": 3,
+  "best_seed": 44,
+  "logL": -9905.386663640145,
+  "transition_matrix": [
+   [
+    0.985455201141945,
+    0.013093068154969441,
+    0.0014517307030856284
+   ],
+   [
+    0.021229622793145952,
+    0.966170995433814,
+    0.012599381773040055
+   ],
+   [
+    8.405820901081562e-12,
+    0.025228580958684365,
+    0.9747714190329098
+   ]
+  ],
+  "state_labels": {
+   "0": "Calma",
+   "1": "Estrés",
+   "2": "Crisis"
+  },
+  "feature": "(log_return, realized_vol_21d_annualized)"
+ },
+ "prior_ram": {
+  "mu_state": {
+   "0": 0.001503476014120242,
+   "1": 0.00043731628506718957,
+   "2": 0.0017250343653020357
+  },
+  "leverage_effect_holds": false,
+  "prior_calma_long": true,
+  "prior_crisis_short": false,
+  "nota": "Régimen→signo: Calma→long, Crisis→short. leverage_effect_holds = μ_Crisis<μ_Calma. Validez OOS del prior se contrasta con la regla prior-flip en walkforward_robustez."
+ },
+ "k_selection": {
+  "metodo": "held-out LL/obs, ajuste en idx<cut, evaluación en idx>=cut",
+  "cut": "2020-01-01",
+  "n_eval": 1194,
+  "heldout_LL_K2": -1.9851,
+  "heldout_LL_K3": -1.6867,
+  "delta_LL_K3_menos_K2": 0.2984,
+  "k_elegido": 3
+ },
+ "garch": {
+  "omega": 0.04542885556436251,
+  "alpha": 0.05385405401487969,
+  "beta": 0.9453556921379628,
+  "nu": 4.379024671651232,
+  "alpha_mas_beta": 0.9992097461528424,
+  "estacionario": true,
+  "reproducible_desde_pipeline": false
+ },
+ "psa_gso_thresholds": "reutiliza strata_thresholds.json global (solo modulan magnitud, E4); banda GSO propia vía garch_NVDA",
+ "_nota": "Recalibración NVDA réplica de SPY. NO sobrescribe artefactos de SPY."
+}

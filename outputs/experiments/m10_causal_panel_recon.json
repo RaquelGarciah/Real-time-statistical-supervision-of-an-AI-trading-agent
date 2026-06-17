@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "seed": 42,
+    "signal_lag": 1,
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ],
+    "scheme": "causal expanding WF (N0=150,step=21,embargo=5); HMM+GARCH on-the-fly por activo",
+    "nota": "Exploratorio (recon). Reporta los 10; B&H accuracy = % días alcistas en el tramo.",
+    "pre_registro": "BITACORA 2026-06-15"
+  },
+  "por_activo": {
+    "SPY": {
+      "n_test": 251,
+      "test_span": [
+        "2025-05-09",
+        "2026-05-11"
+      ],
+      "accuracy": {
+        "m5": 0.3665,
+        "m8": 0.4422,
+        "m10_cpcv": 0.5139,
+        "m10_wf": 0.5339,
+        "bh": 0.5657
+      },
+      "best_arm": "bh",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "NVDA": {
+      "n_test": 259,
+      "test_span": [
+        "2025-05-08",
+        "2026-05-19"
+      ],
+      "accuracy": {
+        "m5": 0.4672,
+        "m8": 0.5212,
+        "m10_cpcv": 0.444,
+        "m10_wf": 0.4942,
+        "bh": 0.5521
+      },
+      "best_arm": "bh",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "BAC": {
+      "n_test": 246,
+      "test_span": [
+        "2025-05-13",
+        "2026-05-11"
+      ],
+      "accuracy": {
+        "m5": 0.4512,
+        "m8": 0.5163,
+        "m10_cpcv": 0.4959,
+        "m10_wf": 0.4309,
+        "bh": 0.561
+      },
+      "best_arm": "bh",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "TSLA": {
+      "n_test": 250,
+      "test_span": [
+        "2025-05-09",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.472,
+        "m8": 0.48,
+        "m10_cpcv": 0.416,
+        "m10_wf": 0.488,
+        "bh": 0.532
+      },
+      "best_arm": "bh",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "XLE": {
+      "n_test": 247,
+      "test_span": [
+        "2025-05-09",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.4494,
+        "m8": 0.5304,
+        "m10_cpcv": 0.4777,
+        "m10_wf": 0.4858,
+        "bh": 0.5628
+      },
+      "best_arm": "bh",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "UNG": {
+      "n_test": 246,
+      "test_span": [
+        "2025-05-12",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.5081,
+        "m8": 0.5041,
+        "m10_cpcv": 0.5203,
+        "m10_wf": 0.4878,
+        "bh": 0.4878
+      },
+      "best_arm": "m10_cpcv",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "MSTR": {
+      "n_test": 250,
+      "test_span": [
+        "2025-05-09",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.552,
+        "m8": 0.556,
+        "m10_cpcv": 0.484,
+        "m10_wf": 0.5,
+        "bh": 0.452
+      },
+      "best_arm": "m8",
+      "m10wf_bate_bh": true,
+      "m10wf_bate_todo": false
+    },
+    "SMCI": {
+      "n_test": 249,
+      "test_span": [
+        "2025-05-09",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.4819,
+        "m8": 0.494,
+        "m10_cpcv": 0.4699,
+        "m10_wf": 0.5221,
+        "bh": 0.4859
+      },
+      "best_arm": "m10_wf",
+      "m10wf_bate_bh": true,
+      "m10wf_bate_todo": true
+    },
+    "ROKU": {
+      "n_test": 249,
+      "test_span": [
+        "2025-05-12",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.4418,
+        "m8": 0.5301,
+        "m10_cpcv": 0.4779,
+        "m10_wf": 0.5181,
+        "bh": 0.5502
+      },
+      "best_arm": "bh",
+      "m10wf_bate_bh": false,
+      "m10wf_bate_todo": false
+    },
+    "MARA": {
+      "n_test": 247,
+      "test_span": [
+        "2025-05-12",
+        "2026-05-08"
+      ],
+      "accuracy": {
+        "m5": 0.5263,
+        "m8": 0.5304,
+        "m10_cpcv": 0.5061,
+        "m10_wf": 0.4818,
+        "bh": 0.4696
+      },
+      "best_arm": "m8",
+      "m10wf_bate_bh": true,
+      "m10wf_bate_todo": false
+    }
+  },
+  "candidatos_m10wf_gt_bh": [
+    "MSTR",
+    "SMCI",
+    "MARA"
+  ],
+  "candidatos_m10wf_gt_todo": [
+    "SMCI"
+  ]
+}

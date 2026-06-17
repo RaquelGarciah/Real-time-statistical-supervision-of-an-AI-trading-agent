@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "ticker": "NVDA",
+    "n_valid": 409,
+    "n_features": 22,
+    "oos": [
+      "2024-10-01",
+      "2026-05-20"
+    ],
+    "seed": 42,
+    "shap": "TreeSHAP pooled out-of-fold (pred_contribs), idéntico a §11",
+    "hmm_file": "hmm_nvda.pkl"
+  },
+  "shap_ranking": [
+    {
+      "feature": "crisis_prob",
+      "familia": "régimen",
+      "mean_abs_shap": 0.54828,
+      "rank": 1
+    },
+    {
+      "feature": "garch_sigma",
+      "familia": "régimen",
+      "mean_abs_shap": 0.53314,
+      "rank": 2
+    },
+    {
+      "feature": "psa_score",
+      "familia": "STRATA",
+      "mean_abs_shap": 0.50523,
+      "rank": 3
+    },
+    {
+      "feature": "ram_score",
+      "familia": "STRATA",
+      "mean_abs_shap": 0.35435,
+      "rank": 4
+    },
+    {
+      "feature": "calm_prob",
+      "familia": "régimen",
+      "mean_abs_shap": 0.31016,
+      "rank": 5
+    },
+    {
+      "feature": "stanley_druckenmiller_conf",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.20816,
+      "rank": 6
+    },
+    {
+      "feature": "stress_prob",
+      "familia": "régimen",
+      "mean_abs_shap": 0.19331,
+      "rank": 7
+    },
+    {
+      "feature": "michael_burry_conf",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.04991,
+      "rank": 8
+    },
+    {
+      "feature": "stanley_druckenmiller_sign",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.04881,
+      "rank": 9
+    },
+    {
+      "feature": "warren_buffett_conf",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.02931,
+      "rank": 10
+    },
+    {
+      "feature": "warren_buffett_sign",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.01207,
+      "rank": 11
+    },
+    {
+      "feature": "cathie_wood_conf",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.01178,
+      "rank": 12
+    },
+    {
+      "feature": "bill_ackman_conf",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.00762,
+      "rank": 13
+    },
+    {
+      "feature": "bill_ackman_sign",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.00625,
+      "rank": 14
+    },
+    {
+      "feature": "cathie_wood_sign",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.00564,
+      "rank": 15
+    },
+    {
+      "feature": "warren_buffett_size",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.0,
+      "rank": 16
+    },
+    {
+      "feature": "cathie_wood_size",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.0,
+      "rank": 17
+    },
+    {
+      "feature": "stanley_druckenmiller_size",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.0,
+      "rank": 18
+    },
+    {
+      "feature": "michael_burry_sign",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.0,
+      "rank": 19
+    },
+    {
+      "feature": "michael_burry_size",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.0,
+      "rank": 20
+    },
+    {
+      "feature": "bill_ackman_size",
+      "familia": "personalidad",
+      "mean_abs_shap": 0.0,
+      "rank": 21
+    },
+    {
+      "feature": "gso_score",
+      "familia": "STRATA",
+      "mean_abs_shap": 0.0,
+      "rank": 22
+    }
+  ],
+  "shap_familia_share": {
+    "personalidad": 0.1344,
+    "STRATA": 0.3044,
+    "régimen": 0.5612
+  },
+  "ram_score_rank": 4,
+  "ablation": {
+    "full_22": {
+      "n_features": 22,
+      "accuracy": 0.4401,
+      "auc": 0.4259,
+      "sharpe": -1.953
+    },
+    "sin_ram_score": {
+      "n_features": 21,
+      "accuracy": 0.4548,
+      "auc": 0.4319,
+      "sharpe": -1.624
+    },
+    "sin_strata_scores": {
+      "n_features": 19,
+      "accuracy": 0.5037,
+      "auc": 0.4574,
+      "sharpe": -0.694
+    },
+    "sin_regimen_ni_strata_solo_agente": {
+      "n_features": 15,
+      "accuracy": 0.5159,
+      "auc": 0.4886,
+      "sharpe": 0.828
+    },
+    "solo_regimen_y_strata": {
+      "n_features": 7,
+      "accuracy": 0.4499,
+      "auc": 0.4132,
+      "sharpe": -2.193
+    }
+  }
+}

@@ -92,7 +92,21 @@ PARAMS = dict(n_estimators=300, max_depth=4, learning_rate=0.05, subsample=0.8,
 # Mapa brazo → columna de sizing en el master.
 _SIZE_COL = {"m5": "agent_size", "m8": "final_size", "m10": "m10_size"}
 ANN = np.sqrt(252)
-OUT = Path("outputs/experiments/walkforward_robustez.json")
+
+
+def _hmm_path(ticker: str) -> Path:
+    """HMM por activo: hmm_<ticker>.pkl si existe (réplica recalibrada, p.ej. NVDA); si no, el hmm.pkl de SPY."""
+    p = CACHE_MODELS_DIR / f"hmm_{ticker.lower()}.pkl"
+    return p if p.exists() else CACHE_MODELS_DIR / "hmm.pkl"
+
+
+def _out_path(ticker: str) -> Path:
+    """Salida por activo: el JSON canónico para SPY; sufijo _<ticker> para no pisarlo en réplicas."""
+    name = "walkforward_robustez.json" if ticker == "SPY" else f"walkforward_robustez_{ticker.lower()}.json"
+    return Path("outputs/experiments") / name
+
+
+OUT = _out_path(TICKER)
 
 
 def _hash_dir(path: Path, pattern: str = "*") -> str:
@@ -167,10 +181,12 @@ def load_features(ticker: str) -> tuple[pd.DataFrame, pd.Series]:
 def build_market_states_oos() -> tuple[pd.DataFrame, pd.Series, pd.Series]:
     """Régimen filtrado canónico K=3 + sigma GARCH causal + oos_ret, reusando caché FIJA pre-OOS.
 
-    Calibración 2000–2024-09 (hmm.pkl/garch_SPY.pkl): ANTERIOR a toda ventana OOS → sin look-ahead.
+    Calibración 2000–2024-09 (hmm_<ticker>.pkl o hmm.pkl + garch_<ticker>.pkl): ANTERIOR a toda
+    ventana OOS → sin look-ahead. En réplicas multi-activo (p.ej. NVDA) el HMM está recalibrado
+    sobre la propia historia del activo (hmm_nvda.pkl); SPY usa el hmm.pkl canónico.
     """
     feat_df, ret = load_features(TICKER)
-    hmm = pickle.load(open(CACHE_MODELS_DIR / "hmm.pkl", "rb"))
+    hmm = pickle.load(open(_hmm_path(TICKER), "rb"))
     garch = pickle.load(open(CACHE_MODELS_DIR / f"garch_{TICKER}.pkl", "rb"))
     gamma = hmm.predict_proba_filtered(feat_df.to_numpy())
     gamma_df = pd.DataFrame(gamma, index=feat_df.index, columns=["Calma", "Estrés", "Crisis"])
@@ -583,7 +599,7 @@ def main() -> None:
                  "seed": config.SEED, "b_window": B_WINDOW, "b_sliding_step": B_SLIDING_STEP,
                  "n_sliding_windows": len(sliding), "stratum_min_n": STRATUM_MIN_N, "n_trials_dsr": N_TRIALS_DSR,
                  "limite_18m": "rescate medible solo en sub-trozos del OOS (~18 meses); NO años distintos",
-                 "calibration_window": [CALIBRATION_START, CALIBRATION_END],
+                 "calibration_window": [CALIBRATION_START, CALIBRATION_END], "hmm_file": _hmm_path(TICKER).name,
                  "hash_cache_agent": _hash_dir(CACHE_AGENT_DIR / TICKER), "hash_cache_models": _hash_dir(CACHE_MODELS_DIR)},
         "part_a": part_a, "part_b_confirmatory": part_b_conf, "part_b_sliding": part_b_sliding,
         "part_b_sliding_legacy_120_5": part_b_sliding_legacy,
@@ -627,5 +643,12 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Walk-forward / robustez de STRATA por activo.")
+    ap.add_argument("--ticker", default="SPY", help="Activo a evaluar (default SPY). Réplicas: NVDA, ...")
+    args = ap.parse_args()
+    TICKER = args.ticker                 # override del global; las funciones lo leen en tiempo de ejecución
+    OUT = _out_path(TICKER)
     config.set_seeds(config.SEED)
     main()

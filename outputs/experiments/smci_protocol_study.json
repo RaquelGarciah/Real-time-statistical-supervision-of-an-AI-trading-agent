@@ -1,0 +1,218 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "embargo": 5,
+    "config": "M10-WF 300x4 all22 vanilla",
+    "n_total": 400,
+    "seed": 42,
+    "ventana": 63,
+    "paso_ventana": 10
+  },
+  "A_frecuencia_reentreno": [
+    {
+      "step_dias": 1,
+      "n_reentrenos": 250,
+      "n_test": 250,
+      "acc_m10": 0.516,
+      "acc_m5": 0.484,
+      "acc_m8": 0.496,
+      "acc_bh": 0.484
+    },
+    {
+      "step_dias": 5,
+      "n_reentrenos": 50,
+      "n_test": 250,
+      "acc_m10": 0.528,
+      "acc_m5": 0.484,
+      "acc_m8": 0.496,
+      "acc_bh": 0.484
+    },
+    {
+      "step_dias": 10,
+      "n_reentrenos": 25,
+      "n_test": 250,
+      "acc_m10": 0.528,
+      "acc_m5": 0.484,
+      "acc_m8": 0.496,
+      "acc_bh": 0.484
+    },
+    {
+      "step_dias": 21,
+      "n_reentrenos": 12,
+      "n_test": 250,
+      "acc_m10": 0.524,
+      "acc_m5": 0.484,
+      "acc_m8": 0.496,
+      "acc_bh": 0.484
+    }
+  ],
+  "B_burn_in": [
+    {
+      "burn_in": 120,
+      "n_test_comun": 150,
+      "acc_m10": 0.5267,
+      "acc_bh": 0.4467
+    },
+    {
+      "burn_in": 150,
+      "n_test_comun": 150,
+      "acc_m10": 0.5733,
+      "acc_bh": 0.4467
+    },
+    {
+      "burn_in": 200,
+      "n_test_comun": 150,
+      "acc_m10": 0.56,
+      "acc_bh": 0.4467
+    },
+    {
+      "burn_in": 250,
+      "n_test_comun": 150,
+      "acc_m10": 0.5133,
+      "acc_bh": 0.4467
+    }
+  ],
+  "C_ventanas": {
+    "per_window": [
+      {
+        "ini": 0,
+        "dacc_m10_bh": -0.0952,
+        "dacc_m10_m5": 0.0159,
+        "acc_m10": 0.4444,
+        "acc_bh": 0.5397
+      },
+      {
+        "ini": 10,
+        "dacc_m10_bh": -0.0635,
+        "dacc_m10_m5": 0.0476,
+        "acc_m10": 0.4762,
+        "acc_bh": 0.5397
+      },
+      {
+        "ini": 20,
+        "dacc_m10_bh": -0.0317,
+        "dacc_m10_m5": 0.0317,
+        "acc_m10": 0.4603,
+        "acc_bh": 0.4921
+      },
+      {
+        "ini": 30,
+        "dacc_m10_bh": 0.0,
+        "dacc_m10_m5": 0.0794,
+        "acc_m10": 0.5079,
+        "acc_bh": 0.5079
+      },
+      {
+        "ini": 40,
+        "dacc_m10_bh": -0.0476,
+        "dacc_m10_m5": 0.0952,
+        "acc_m10": 0.4762,
+        "acc_bh": 0.5238
+      },
+      {
+        "ini": 50,
+        "dacc_m10_bh": 0.0,
+        "dacc_m10_m5": 0.127,
+        "acc_m10": 0.5079,
+        "acc_bh": 0.5079
+      },
+      {
+        "ini": 60,
+        "dacc_m10_bh": -0.0476,
+        "dacc_m10_m5": 0.0635,
+        "acc_m10": 0.4603,
+        "acc_bh": 0.5079
+      },
+      {
+        "ini": 70,
+        "dacc_m10_bh": -0.0476,
+        "dacc_m10_m5": 0.0635,
+        "acc_m10": 0.4603,
+        "acc_bh": 0.5079
+      },
+      {
+        "ini": 80,
+        "dacc_m10_bh": -0.0159,
+        "dacc_m10_m5": 0.0794,
+        "acc_m10": 0.4921,
+        "acc_bh": 0.5079
+      },
+      {
+        "ini": 90,
+        "dacc_m10_bh": 0.0476,
+        "dacc_m10_m5": 0.0476,
+        "acc_m10": 0.5238,
+        "acc_bh": 0.4762
+      },
+      {
+        "ini": 100,
+        "dacc_m10_bh": 0.0794,
+        "dacc_m10_m5": -0.0476,
+        "acc_m10": 0.4921,
+        "acc_bh": 0.4127
+      },
+      {
+        "ini": 110,
+        "dacc_m10_bh": 0.1111,
+        "dacc_m10_m5": -0.0794,
+        "acc_m10": 0.5079,
+        "acc_bh": 0.3968
+      },
+      {
+        "ini": 120,
+        "dacc_m10_bh": 0.1111,
+        "dacc_m10_m5": -0.0952,
+        "acc_m10": 0.5079,
+        "acc_bh": 0.3968
+      },
+      {
+        "ini": 130,
+        "dacc_m10_bh": 0.127,
+        "dacc_m10_m5": -0.0476,
+        "acc_m10": 0.5397,
+        "acc_bh": 0.4127
+      },
+      {
+        "ini": 140,
+        "dacc_m10_bh": 0.1746,
+        "dacc_m10_m5": -0.0317,
+        "acc_m10": 0.5714,
+        "acc_bh": 0.3968
+      },
+      {
+        "ini": 150,
+        "dacc_m10_bh": 0.1746,
+        "dacc_m10_m5": -0.0317,
+        "acc_m10": 0.5714,
+        "acc_bh": 0.3968
+      },
+      {
+        "ini": 160,
+        "dacc_m10_bh": 0.1587,
+        "dacc_m10_m5": 0.0159,
+        "acc_m10": 0.5873,
+        "acc_bh": 0.4286
+      },
+      {
+        "ini": 170,
+        "dacc_m10_bh": 0.1111,
+        "dacc_m10_m5": 0.127,
+        "acc_m10": 0.619,
+        "acc_bh": 0.5079
+      },
+      {
+        "ini": 180,
+        "dacc_m10_bh": 0.1587,
+        "dacc_m10_m5": 0.1111,
+        "acc_m10": 0.6349,
+        "acc_bh": 0.4762
+      }
+    ],
+    "frac_ventanas_m10_gt_bh": 0.526,
+    "frac_ventanas_m10_gt_m5": 0.684,
+    "n_ventanas": 19,
+    "global_blockperm_p_vs_bh": 0.2518,
+    "global_blockperm_p_vs_m5": 0.3164,
+    "global_sign_vs_0.5_p": 0.4867
+  }
+}
