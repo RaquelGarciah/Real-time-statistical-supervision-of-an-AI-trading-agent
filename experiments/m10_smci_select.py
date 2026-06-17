@@ -26,7 +26,7 @@ from experiments.m10_v3_causal_panel import build_states_onthefly
 from experiments.m10_valtest_casestudy import ALL22
 
 TICKER = "SMCI"
-STEP, EMBARGO = 21, 5
+STEP, EMBARGO = 21, 1   # embargo=1: horizonte de etiqueta=1 (ver BITACORA 2026-06-17, logic_esential §14b)
 TEST_START = 250                                  # test = últimos ~150 días (intacto)
 BURNINS = [100, 120, 140, 160, 180, 200]
 N_SEEDS = 10

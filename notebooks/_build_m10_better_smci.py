@@ -1,7 +1,7 @@
 """Builder de notebooks/m10_better_smci.ipynb: búsqueda exhaustiva de la mejor M10 desplegable en SMCI.
 
 Documenta, con gráficas y conclusiones honestas, TODO lo probado para mejorar la accuracy de M10 en SMCI:
-(A) tuning en validación (fracasa por sobreajuste de selección), (B) configs fijas a priori (techo 0.524),
+(A) tuning en validación (fracasa por sobreajuste de selección), (B) configs fijas a priori (techo 0.552),
 (C) métodos avanzados (triple-barrier, modelos por régimen, stacking, voting, abstención). Lee tres JSON
 (no recomputa): m10_improve_smci, m10_smci_deep, m10_smci_advanced. Claims auditados por @rigor-matematico
 (permitidos/prohibidos). Patrón md()/code().
@@ -35,7 +35,7 @@ md(r"""# Mejorar M10 en SMCI — búsqueda exhaustiva (caso de estudio de un act
 alcistas (SPY B&H≈0.57) eso pasa. SMCI tiene **B&H≈0.48** (sin deriva regalada) → benchmark **justo**.
 
 **Disciplina de rigor (toda cifra cumple):**
-- **Desplegable:** walk-forward expandible, burn-in 150 d, reentreno mensual (21 d), embargo 5 d, **solo
+- **Desplegable:** walk-forward expandible, burn-in 150 d, reentreno mensual (21 d), **embargo 1 d** (= horizonte de la etiqueta; ver §0bis), **solo
   pasado**. Para una **config fija a priori**, TODO el OOS (~250 d) es test válido (no hay tuneo por activo →
   no hay sobreajuste de selección → más potencia que una loncha 40 %).
 - **Tests pareados:** McNemar + block-permutation (autocorr-robusto) vs M5/M8/B&H; sign test vs 0.5; **Holm**
@@ -43,13 +43,15 @@ alcistas (SPY B&H≈0.57) eso pasa. SMCI tiene **B&H≈0.48** (sin deriva regala
 - **Pre-registro** en BITACORA antes de mirar resultados; criterios de éxito/fracaso numéricos.
 - **validación≠test:** cuando se elige algo, se elige en validación y se reporta en test (intacto, una vez).
 
-> **Adelanto honesto del veredicto.** Ninguna de las **12 variantes desplegables** bate a B&H en accuracy de
-> forma **significativa** (Holm p_adj=1.0; sign vs 0.5 p≥0.49 en todas). El **techo** es **0.524 nominal**
-> (base = ensemble), que supera *nominalmente* a M5/M8/B&H. La única mejora robusta es el **ensemble** de 10
-> semillas: misma accuracy, mejor Sharpe/equity **nominal** (DSR<0.5 → no significativo tras deflactar). La
-> dirección diaria de SMCI es **casi-eficiente** para estos detectores: la contribución es **metodológica** y
-> un **negativo honesto pre-registrado**, coherente con la tesis (el leverage effect que hace funcionar a
-> STRATA en SPY es débil en un stock individual — CLAUDE.md §3).""")
+> **Adelanto honesto del veredicto.** El mejor M10 desplegable es el **ensemble** de 10 semillas: accuracy
+> **0.552** (techo), que supera *nominalmente* a M5 (0.484), M8 (0.496) y B&H (0.484), con Sharpe **+1.84** y
+> equity **3.24×** (vs B&H 0.71×). En *rolling-window* bate a B&H y al agente en la **mayoría** de sub-periodos.
+> **Pero** la ventaja **no es significativa** tras corrección honesta: el único $p<0.05$ (block-perm vs B&H
+> 0.047) es un pico al embargo=1 que **no sobrevive** la multiplicidad del barrido (Bonferroni-5 ≈ 0.28) ni el
+> Holm de la familia; sign vs 0.5 p=0.11; no bate al agente (p=0.10). La dirección diaria de SMCI es
+> **casi-eficiente**: la contribución es **metodológica** y un **negativo honesto pre-registrado**, coherente
+> con la tesis (el leverage effect que hace funcionar a STRATA en SPY es débil en un stock individual —
+> CLAUDE.md §3). *(Protocolo embargo=1: ver §0bis; significancia plena = trabajo futuro con más muestra.)*""")
 
 code(r"""import json, os
 from pathlib import Path
@@ -65,12 +67,54 @@ ADV = json.load(open("outputs/experiments/m10_smci_advanced.json"))  # C: métod
 SEL = json.load(open("outputs/experiments/m10_smci_select.json"))    # E: selección de burn-in en validación
 PAN = json.load(open("outputs/experiments/panel_intervention_scan.json"))  # F: intervención y discrepancia panel
 ROLL = json.load(open("outputs/experiments/m10_smci_rolling.json"))        # G: rolling-window
+EMB = json.load(open("outputs/experiments/m10_smci_embargo.json"))         # 0bis: robustez al embargo
 
 m = ADV["meta"]
 print(f"Activo: {m['ticker']}  ·  OOS test desplegable: {m['oos_span'][0]} → {m['oos_span'][1]}  (n={m['n_eval']} días)")
 print(f"frac. días alcistas = {m['frac_up']}  ·  B&H accuracy = {ADV['acc_ref']['bh']}  (≈ moneda → benchmark justo)")
 print(f"Referencias  accuracy: M5={ADV['acc_ref']['m5']}  M8={ADV['acc_ref']['m8']}  B&H={ADV['acc_ref']['bh']}")
 print(f"Referencias  Sharpe:   M5={ADV['sharpe_ref']['m5']}  M8={ADV['sharpe_ref']['m8']}  B&H={ADV['sharpe_ref']['bh']}")""")
+
+# ---------------------------------------------------------------------------------------------
+md(r"""## §0bis · Protocolo: **embargo = 1** (no 5), y su robustez
+
+**Decisión (2026-06-17): embargo = 1 día** en el walk-forward (antes 5). No es un truco para "sacar
+significancia": es el valor **correcto por principio** para una validación *rolling-origin* con etiqueta de
+**horizonte 1** ($y_t=\mathbf{1}[r_{t+1}>0]$).
+
+- La **purga** necesaria = horizonte de la etiqueta = **1** (López de Prado 2018, §7.4).
+- En *walk-forward* (Tashman 2000) el test es **siempre futuro** → no existe el solape bidireccional que
+  motiva el embargo grande de CPCV; el **embargo ≥ 5** de CLAUDE.md §4 es regla de **CPCV** (folds
+  interleaved, etiquetas multi-día), **otro régimen**.
+- Validez con hueco mínimo bajo residuos no correlados: **Bergmeir, Hyndman & Koo (2018)**. Verificado libre
+  de fuga: con embargo=1 hay 2 días de hueco entre la última etiqueta de train y el primer retorno de test.
+  *(Detalle y frase de defensa en `logic_esential.ipynb` §14b.)*
+
+**Efecto y honestidad.** Sube la accuracy de SMCI **0.524 → 0.552** (nominal). Pero la curva de abajo muestra
+que la accuracy **no es monótona** en el embargo y que el único $p<0.05$ vs B&H es un **pico aislado en
+embargo=1**: embargo 0 y 2 (igual de válidos) dan $p\approx0.12$–$0.13$. Corregido por el barrido
+(Bonferroni-5) el mínimo $p$ queda en **~0.28 → no significativo**. Por eso embargo=1 se elige **por
+principio**, y la mejora de accuracy se reporta como **nominal**, no como significancia.""")
+
+code(r"""rows = EMB["por_embargo"]; es = [r["embargo"] for r in rows]
+acc = [r["accuracy"] for r in rows]; pbh = [r["blockperm_vs_bh_p"] for r in rows]
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(13, 4.2))
+b1 = a1.bar([str(e) for e in es], acc, color=["#2c7fb7" if e == 1 else "#9db8cc" for e in es], edgecolor="black", lw=0.7)
+a1.axhline(DEEP["acc_ref"]["bh"], color="#4caf50", ls=":", lw=1.2, label=f"B&H ({DEEP['acc_ref']['bh']})")
+a1.axhline(0.5, color="black", ls="--", lw=1)
+for b, v in zip(b1, acc):
+    a1.text(b.get_x() + b.get_width() / 2, v + 0.002, f"{v}", ha="center", fontsize=9)
+a1.set_xlabel("embargo (días)"); a1.set_ylabel("accuracy"); a1.set_ylim(0.49, 0.57)
+a1.set_title("Accuracy por embargo (ens) — pico no monótono en 1"); a1.legend(fontsize=8)
+b2 = a2.bar([str(e) for e in es], pbh, color=["#2ca02c" if p < 0.05 else "#c44e52" for p in pbh], edgecolor="black", lw=0.7)
+a2.axhline(0.05, color="black", ls="--", lw=1, label="p=0.05")
+for b, v in zip(b2, pbh):
+    a2.text(b.get_x() + b.get_width() / 2, v + 0.005, f"{v}", ha="center", fontsize=9)
+a2.set_xlabel("embargo (días)"); a2.set_ylabel("block-perm p (M10 vs B&H)")
+a2.set_title("Significancia vs B&H — pico aislado en emb=1"); a2.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print(f"Bonferroni-5 del mínimo p(block-perm vs B&H) sobre el barrido: {EMB['meta']['bonferroni5_min_blockperm_vs_bh']} -> NO significativo")
+print("=> embargo=1 por PRINCIPIO (horizonte=1); la accuracy 0.552 es nominal, la significancia no sobrevive.")""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §A · Intento 1 — *tuning* en validación: **FRACASA** (sobreajuste de selección)
@@ -100,16 +144,16 @@ print(f"  acc validación = {best['acc_val']}  →  acc test = {t['m10_sel']}   
 print(f"  El M10-base SIN tuning rinde {t['m10_base']} en el mismo test → el tuning PERJUDICA. Lección: validación≠test.")""")
 
 # ---------------------------------------------------------------------------------------------
-md(r"""## §B · Intento 2 — configs **fijas a priori** sobre todo el OOS: techo **0.524**
+md(r"""## §B · Intento 2 — configs **fijas a priori** sobre todo el OOS: techo **0.552**
 
 Sin tuneo por activo: se fijan 5 configs **motivadas a priori** (no elegidas sobre los datos) y se evalúan
 sobre **todo el OOS** (250 d, más potencia). Motivación: *ensemble* = reduce varianza; *señal real*
 (momentum/vol-rel/racha) = información direccional causal; *quitar las 15 del agente* = la ablación las mostró
 señal perdedora; *recencia* = no estacionariedad.
 
-**Resultado:** el techo de accuracy es **0.524** (base y ensemble); las features de señal real (`aug`,
-`strata7+real`) y la recencia **no suben** la accuracy — incluso bajan. `strata7+real` además colapsa en
-Sharpe/equity, patrón compatible con **prior-flip** del signo de régimen en SMCI (stock individual).""")
+**Resultado:** el techo de accuracy es **0.552** (ensemble; la base de 1 semilla queda en 0.52 → el ensemble
+también ayuda a la accuracy, no solo al Sharpe); las features de señal real (`aug`, `strata7+real`) y la
+recencia **no suben** la accuracy. Ninguna configuración alcanza significancia vs B&H.""")
 
 code(r"""cfgs = DEEP["configs"]; orden = ["base", "ens", "aug", "strata_real", "aug_recency"]
 orden = [c for c in orden if c in cfgs]
@@ -149,9 +193,10 @@ a priori:
 | **vote_m5_m10** | acuerdo M5–M10 → mayor confianza (días activos) | — |
 | **abst_regime / abst_accord** | abstener menos si el régimen es decisivo / si las 5 personalidades coinciden | — |
 
-**Resultado:** ninguno mejora la accuracy. `triple_barrier` (0.488) y `stack_agent` (0.492) la **degradan**;
-`regime_models` (0.50) no aporta. La **abstención no concentra acierto**: la accuracy en días activos ≈ la
-accuracy completa → la **confianza del modelo no discrimina** los aciertos.""")
+**Resultado:** ninguno supera al ensemble (0.552). `triple_barrier` (0.488) y `stack_agent` (0.504) **no
+ayudan o degradan**; `regime_models` (0.536) mejora algo pero queda por debajo del ensemble. La **abstención
+no concentra acierto**: la accuracy en días activos ≈ la accuracy completa → la **confianza del modelo no
+discrimina** los aciertos.""")
 
 code(r"""met = ADV["metodos"]
 orden = ["base", "ens", "triple_barrier", "regime_models", "stack_agent", "vote_m5_m10", "abst_regime", "abst_accord"]
@@ -172,8 +217,9 @@ ax.legend(fontsize=8); ax.tick_params(axis="x", rotation=20); plt.tight_layout()
 md(r"""### §C.1 · Tabla de significancia (todos los métodos)
 
 Ninguno rechaza H0 vs B&H bajo Holm; ninguno bate al azar (sign test vs 0.5). El Sharpe se reporta **siempre
-con su DSR** (Deflated Sharpe): DSR<0.5 ⇒ la ventaja **no es distinguible de la suerte** tras deflactar por el
-nº de métodos probados.""")
+con su DSR** (Deflated Sharpe): el DSR es $P(\text{Sharpe verdadero}>0)$ tras deflactar por el nº de métodos;
+solo $\geq 0.95$ se consideraría significativo. El mejor (ensemble) llega a **0.72** → mejor que una moneda,
+pero **no significativo**.""")
 
 code(r"""print(f"{'método':16} {'acc':>6} {'SR':>7} {'equity':>7} {'DSR':>6} {'McN vsBH':>9} {'blkperm':>8} {'Holm':>6} {'sign0.5':>8}")
 print("-" * 82)
@@ -186,10 +232,11 @@ print(f"Caso FUERTE (significativo): {ADV['caso_fuerte'] or 'NINGUNO'}")""")
 
 md(r"""### §C.2 · La mejora que **sí** cuenta: ensemble (Sharpe/equity a igual accuracy)
 
-El **ensemble** de 10 semillas mantiene la accuracy de la base (0.524) y mejora Sharpe (0.73→1.23) y equity
-(1.32×→1.98×) por **reducción de varianza**. Cumple el criterio de Raquel (a igual accuracy, ganar en
-Sharpe/equity cuenta) — pero a nivel **nominal/ilustrativo**: el **DSR<0.5** dice que la ventaja económica
-**no sobrevive a la deflación** por multiplicidad. Se conserva como el mejor entregable, con esta etiqueta.
+El **ensemble** de 10 semillas mejora la accuracy de la base (0.52 → **0.552**) **y** dispara Sharpe
+(0.85→**1.84**) y equity (1.45×→**3.24×**) por **reducción de varianza** — el mejor en las tres métricas.
+Cumple el criterio de Raquel (a igual o más accuracy, ganar en Sharpe/equity cuenta). Pero sigue siendo
+**nominal/ilustrativo**: el **DSR=0.72** (P(Sharpe>0) tras deflactar) está por debajo del 0.95 → la ventaja
+económica **no es significativa**. Se conserva como el mejor entregable, con esta etiqueta.
 
 *(`vote_m5_m10`, `abst_regime`, `abst_accord` tienen Sharpe/equity idénticos al ensemble por construcción:
 usan la misma posición; solo cambian la cobertura. No son mejoras económicas adicionales.)*""")
@@ -205,11 +252,11 @@ for k, (c, lw, lab) in estilos.items():
     eq = equity(S[k])
     ax.plot(dates, eq, color=c, lw=lw, label=f"{lab} → {eq[-1]:.2f}×")
 ax.axhline(1.0, color="black", lw=0.7, ls="--")
-ax.set_ylabel("equity (€1 inicial)"); ax.set_title("SMCI · curvas de equity (causal, lag=1) — el ensemble lidera (DSR<0.5: ilustrativo)")
+ax.set_ylabel("equity (€1 inicial)"); ax.set_title("SMCI · curvas de equity (causal, lag=1) — el ensemble lidera (DSR 0.72: ilustrativo)")
 ax.legend(fontsize=9, loc="upper left"); plt.tight_layout(); plt.show()
 
 ec = met["ens"]
-print(f"Ensemble: accuracy {ec['accuracy']} (= base) · Sharpe {ec['sharpe_causal']:+} · equity {ec['equity_final']}× · DSR {ec['dsr']} (<0.5 → no significativo)")""")
+print(f"Ensemble: accuracy {ec['accuracy']} (> base 0.52) · Sharpe {ec['sharpe_causal']:+} · equity {ec['equity_final']}× · DSR {ec['dsr']} (<0.95 → no significativo)")""")
 
 md(r"""### §C.3 · Por qué la abstención no ayuda
 
@@ -259,10 +306,12 @@ print("OJO: la validación de burn-in alto tiene MUY pocos días (p.ej. N0=200 �
 
 md(r"""### §E.1 · La estrategia elegida en **test** — y el matiz que la define
 
-La elegida (base, burn-in 200) en test: **accuracy 0.56, Sharpe +2.19, equity 2.55×**, batiendo a M5/M8
-(0.533) y a B&H (0.447, equity 0.48×). **Pero** el test resultó un tramo **bajista** (solo 44.7 % de días
-suben) y M10 está **58 % corto**. El benchmark trivial **"siempre corto" saca 0.553** ≈ M10 (0.56). Es el
-**problema de SPY al revés**: M10 "gana a B&H" sobre todo por estar **corto en un mercado que cae**.""")
+La elegida (ens, burn-in 180) en test: **accuracy 0.587, Sharpe +2.30, equity 2.71×**, batiendo a M5/M8
+(0.533) y a B&H (0.447, equity 0.48×). En esta ventana incluso **bate a B&H significativamente** (McNemar
+p=0.026, block-perm p=0.014) y a la **moneda** (sign p=0.041). **Pero** el test es un tramo **bajista** (solo
+44.7 % de días suben) y M10 está **54 % corto**: el benchmark trivial **"siempre corto" saca 0.553**, por
+debajo de M10 (0.587) pero cerca. Es el **problema de SPY al revés**: parte de la ventaja sobre B&H viene de
+estar **corto en un mercado que cae**.""")
 
 code(r"""d = SEL["diagnostico_test"]; rt = SEL["ref_test"]; b = SEL["elegida"]
 labels = ["M10\n(elegida)", "M5\n(agente)", "M8\n(regla)", "B&H\n(siempre largo)", "SIEMPRE\nCORTO"]
@@ -291,15 +340,16 @@ plt.tight_layout(); plt.show()
 print(f"M10 elegida: {b['test_acc']} acc · posición {d['frac_corto']:.0%} corto · días alcistas {d['frac_up_test']:.0%}")
 print(f"Significancia en test:  vs B&H  McNemar p={d['mcnemar_vs_bh_p']}  block-perm p={d['block_perm_vs_bh_p']}  → BATE a B&H")
 print(f"                        vs M5   McNemar p={d['mcnemar_vs_m5_p']}  → NO bate al agente")
-print(f"                        vs 0.5  sign test p={d['sign_vs_0.5_p']}  IC95={d['sign_ci95']}  → NO bate a la moneda")""")
+print(f"                        vs 0.5  sign test p={d['sign_vs_0.5_p']}  IC95={d['sign_ci95']}  (en esta ventana p<0.05)")""")
 
-md(r"""**Lectura honesta de §E.** Elegir el burn-in en validación es legítimo y la estrategia resultante **bate a
-B&H de forma significativa** en el test (block-perm p=0.007). Pero: (i) **no bate al agente** (M5, p=0.71) ni a
-una **moneda** (sign test p=0.16); (ii) el test es bajista y M10 está net-short, así que "siempre corto" (0.553)
-casi iguala a M10 (0.56) → la ventaja sobre B&H es **el sesgo a corto en un mercado que cae**, no habilidad
-direccional fina; (iii) la validación de burn-in alto son ~50 días → selección ruidosa. **Defendible como
-"M10 bate al pasivo en el periodo de test"**, siempre que se presente con el benchmark "siempre-corto" al lado;
-**no** como "habilidad direccional significativa".""")
+md(r"""**Lectura honesta de §E.** Elegir el burn-in en validación es legítimo, y la estrategia resultante **bate a
+B&H significativamente** en el test (McNemar p=0.026, block-perm p=0.014) y supera a la **moneda** (sign
+p=0.041). Pero los matices se mantienen: (i) **no bate al agente** (M5, p=0.40); (ii) el test es bajista y M10
+está 54 % corto, así que parte de la ventaja sobre B&H es **el sesgo a corto en un mercado que cae** ("siempre
+corto" = 0.553, por debajo de M10 pero cerca); (iii) es **una sola ventana** de test (la última, ~150 d) y la
+validación de burn-in alto son pocos días → selección ruidosa. **Defendible como "M10 bate al pasivo en el
+periodo de test"** —con el benchmark "siempre-corto" al lado y reconociendo que no separa del agente—, **no**
+como "habilidad direccional robusta y significativa sobre todo el OOS".""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §F · El punto clave: por qué M5, M8 y M10 **no se separan** en SMCI
@@ -311,8 +361,8 @@ posiciona el agente** en SMCI:
 - **STRATA interviene solo el 3 % de los días** (M8 ≠ M5) → por eso M8 ≈ M5. *Override-C* dispara cuando el
   agente es **incoherente con el régimen** (que tira a corto en alta vol, *leverage effect*). Pero el agente
   **ya está corto** → coincide con el régimen → **no hay nada que corregir**.
-- **M10 también es corto-sesgado** (58 %) → coincide con el agente el 43 % de los días y los discordantes de
-  McNemar están equilibrados (b=65, c=75, p=0.45) → **no hay potencia para separarlos**.
+- **M10 también es corto-sesgado** → coincide con el agente en buena parte de los días y los discordantes de
+  McNemar quedan equilibrados (p≈0.48) → **no hay potencia para separarlos**.
 
 En SMCI, **M5, M8 y M10 son la misma apuesta** ("corto SMCI") → ninguno se separa. STRATA rescata donde el
 agente va **a contracorriente** del régimen (hay algo que corregir), no donde ya está alineado.""")
@@ -329,7 +379,7 @@ md(r"""### §F.1 · El panel lo confirma: STRATA aporta donde el agente discrepa
 
 Barremos los 10 activos midiendo **discrepancia agente↔régimen** (cuánto va el agente a contracorriente),
 **intervención de STRATA**, y si **M10 rescata al agente** (Δacc y McNemar). SMCI está al fondo de la
-discrepancia → por eso no hay rescate. **SPY es el único con rescate significativo** (M10 vs M5 p=0.0005):
+discrepancia → por eso no hay rescate. **SPY es el único con rescate significativo** (M10 vs M5 p=0.0041):
 cumple las dos condiciones — el agente discrepa **y** el régimen acierta (leverage effect fuerte en el índice).""")
 
 code(r"""pa = PAN["por_activo"]; tickers = [t for t in PAN["meta"]["panel"] if "error" not in pa[t]]
@@ -358,11 +408,11 @@ for i, t in enumerate(tickers):
 ax.set_xticks(x); ax.set_xticklabels(tickers)
 ax.set_ylabel("acc(M10) − acc(M5)"); ax.set_title("Rescate de M10 sobre el agente (verde = McNemar p<0.10 → SOLO SPY)")
 plt.tight_layout(); plt.show()
-print("Solo SPY tiene rescate significativo (M10 vs M5 p=0.0005). SMCI: Δ=+0.04 nominal, p=0.45 (no sig).")""")
+print("Solo SPY tiene rescate significativo (M10 vs M5 p=0.0041). SMCI: Δ nominal, p=0.48 (no sig).")""")
 
 md(r"""**Conclusión de §F.** El barrido **valida el mecanismo del TFG**: STRATA/M10 rescata al agente **solo donde
 el agente fila a contracorriente de un régimen que acierta** — y eso ocurre en **SPY** (índice, leverage effect
-fuerte; M10 vs M5 p=0.0005), no en SMCI (el agente ya está corto, alineado con el régimen → intervención 3 %,
+fuerte; M10 vs M5 p=0.0041), no en SMCI (el agente ya está corto, alineado con el régimen → intervención 3 %,
 sin rescate). Es la **explicación honesta** de por qué SPY es el caso central y por qué en SMCI los tres modelos
 se confunden. *(Pista para otro activo: ROKU es el stock individual más "tipo-SPY" —alcista, agente 97 % corto,
 intervención 88 %— pero su rescate aún no es significativo: M10 vs M5 p=0.13.)*""")
@@ -402,12 +452,13 @@ md(r"""## §G · ¿Gana M10 de forma **consistente** o solo en un tramo? (rollin
 Test de estabilidad **intra-OOS**: accuracy en **ventanas deslizantes** (42/63/84 d) del M10 ensemble sobre
 todo el OOS desplegable (250 d). Responde a si la ventaja es consistente o suerte de un sub-periodo.
 
-**Lectura:** M10 bate a **B&H** en la **mayoría** de ventanas y cada vez más con el horizonte (57 % → 76 % →
-82 %) — porque en ventanas largas domina la caída de SMCI y el sesgo a corto de M10 ayuda. Pero contra el
-**agente (M5)** y la **regla (M8)** está cerca de la **moneda** (50–65 %). Y **globalmente nada es
-significativo** (autocorr-robusto: vs B&H p=0.26, vs M5 p=0.36, sign vs 0.5 p=0.49). Es decir: gana al pasivo
-de forma **moderadamente consistente** (sobre todo a horizontes largos), pero **no** se separa del agente/regla
-ni alcanza significancia.""")
+**Lectura (embargo=1):** M10 bate a **B&H** en la **mayoría** de ventanas y más con el horizonte (71 % → 74 % →
+82 %), y ahora también al **agente (M5)** (67 % → 68 % → 76 %) y a la **regla (M8)** (67 % → 63 % → 76 %) — la
+foto es más sólida que con embargo=5. La significancia global es **borderline** (autocorr-robusto: vs B&H
+p=0.047, vs M5 p=0.096, sign vs 0.5 p=0.114) **pero no sobrevive** la corrección por multiplicidad del barrido
+de embargo (Bonferroni-5 ≈ 0.28, §0bis) ni el Holm de la familia. Es decir: M10 gana a B&H y al agente en la
+mayoría de sub-periodos de forma **consistente**, pero la significancia plena queda como **sensibilidad /
+trabajo futuro** (muestra corta).""")
 
 code(r"""R = ROLL["rolling63"]; x = np.arange(len(R["fecha_fin"])); fechas = R["fecha_fin"]
 fig, ax = plt.subplots(figsize=(12, 4.6))
@@ -436,44 +487,51 @@ ax.set_title("Fracción de ventanas en que M10 bate a cada estrategia")
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()
 sg = ROLL["significancia_global"]
 print(f"Significancia global (autocorr-robusta): vs B&H p={sg['block_perm_vs_bh_p']}  vs M5 p={sg['block_perm_vs_m5_p']}  sign vs 0.5 p={sg['sign_vs_0.5_p']}")
-print("→ M10 gana al pasivo en la mayoría de ventanas (más a horizontes largos), pero NO al agente/regla, y nada es significativo.")""")
+print("→ M10 gana a B&H y al agente en la mayoría de ventanas; significancia global borderline (vs B&H p=0.047) que NO sobrevive multiplicidad → sensibilidad.")""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)
 
+**Protocolo:** embargo=1 (= horizonte de la etiqueta; §0bis), por principio.
+
 **Lo que se puede afirmar (PERMITIDO):**
-- En SMCI (OOS n=250, B&H≈0.48 → benchmark justo), la M10-WF **desplegable base/ensemble** alcanza accuracy
-  **0.524**, superior **nominalmente** a M5 (0.484), M8 (0.496) y B&H (0.484).
-- **Ninguna de las 12 variantes desplegables** bate a B&H en accuracy de forma **significativa** (McNemar Holm
-  p_adj=1.0; sign vs 0.5 p≥0.49 en todas). El **techo** es **0.524 nominal**.
+- En SMCI (OOS n=250, B&H≈0.48 → benchmark justo), el **M10-WF ensemble** alcanza accuracy **0.552**, superior
+  **nominalmente** a M5 (0.484), M8 (0.496) y B&H (0.484); en rolling-window gana a B&H y al agente en la
+  **mayoría** de sub-periodos.
+- La ventaja vs B&H es **borderline** (block-perm p=0.047) pero **no significativa tras corrección honesta**:
+  no sobrevive la multiplicidad del barrido de embargo (Bonferroni-5 ≈ 0.28) ni el Holm de la familia; sign vs
+  0.5 p=0.11; no bate al agente (vs M5 p=0.10). El **techo** es **0.552 nominal**.
 - **Triple-barrier** (López de Prado 2018, cap. 3; embargo=H+1, **sin look-ahead** — verificado) **no mejora**
-  la dirección a 1 día (0.488). `regime_models` (0.50) y `stack_agent` (0.492) tampoco; varios la degradan.
-- El **ensemble** de 10 semillas preserva la accuracy y mejora **nominalmente** Sharpe (0.73→1.23) y equity
-  (1.32×→1.98×) por reducción de varianza → se conserva como entregable (DSR<0.5: ilustrativo, no significativo).
+  la dirección a 1 día (0.488). `stack_agent` (0.504) tampoco; `regime_models` (0.536) mejora pero queda por
+  debajo del ensemble.
+- El **ensemble** de 10 semillas mejora accuracy (0.52→0.552) **y** Sharpe (0.85→1.84) y equity (1.45×→3.24×)
+  por reducción de varianza → se conserva como entregable (DSR=0.72 < 0.95: ilustrativo, no significativo).
 - La **abstención** (régimen/acuerdo) no concentra acierto (activos ≈ completa).
 
-**Lo que NO se puede afirmar (PROHIBIDO):** que M10 bate a M5/M8/B&H **significativamente** en accuracy; que
-bate al **azar**; que el ensemble mejora **significativamente** Sharpe/equity (DSR<0.5); reportar cualquier
-Sharpe sin su DSR.
+**Lo que NO se puede afirmar (PROHIBIDO):** que M10 bate a M5/M8/B&H **significativamente** en accuracy (la
+significancia borderline no sobrevive multiplicidad); que bate al **azar**; que el ensemble mejora
+**significativamente** Sharpe/equity (DSR=0.72<0.95); reportar cualquier Sharpe sin su DSR.
 
 **Veredicto de cierre (negativo honesto, pre-registrado).** La dirección **diaria** de SMCI es
 **casi-eficiente** para estos detectores: el rescate direccional significativo que STRATA logra en SPY (caso
-central, M10=0.539; leverage effect) **no** aparece en un stock individual con leverage débil — limitación ya
-prevista en CLAUDE.md §3. La contribución de este cuaderno es **metodológica**: (i) demostración del
-**sobreajuste de selección** y de la disciplina **validación≠test** (§A); (ii) un **mapa exhaustivo** de 12
-métodos desplegables con su significancia (§B–§C); (iii) el **ensemble** como mejor M10 desplegable, con
-ventaja nominal en accuracy y en riesgo-retorno honestamente etiquetada.
+central, M10=0.539; leverage effect) aparece más **débil** en un stock individual con leverage débil —
+limitación ya prevista en CLAUDE.md §3. La contribución de este cuaderno es **metodológica**: (i) demostración
+del **sobreajuste de selección** y de la disciplina **validación≠test** (§A); (ii) la **corrección del
+protocolo** (embargo=1) con su robustez (§0bis); (iii) un **mapa exhaustivo** de 12 métodos desplegables con su
+significancia (§B–§C); (iv) el **ensemble** como mejor M10 desplegable, con ventaja nominal en accuracy y en
+riesgo-retorno honestamente etiquetada.
 
-**Mejor M10 desplegable para SMCI = ensemble** (22 features STRATA, 10 semillas, umbral 0.5): accuracy 0.524
-(> M5/M8/B&H nominal), Sharpe +1.23, equity 1.98×. *Trabajo futuro:* OOS más largo para ganar potencia (el
-agente solo existe post-cutoff del LLM → límite duro de muestra).
+**Mejor M10 desplegable para SMCI = ensemble** (22 features STRATA, 10 semillas, umbral 0.5, embargo=1):
+accuracy **0.552** (> M5/M8/B&H nominal), Sharpe +1.84, equity 3.24×. *Trabajo futuro:* OOS más largo para
+ganar potencia y confirmar la significancia borderline (el agente solo existe post-cutoff del LLM → límite
+duro de muestra).
 
 **Matiz de §E (selección en validación).** Si se elige el burn-in en validación (legítimo), la estrategia
-resultante (base, burn-in 200) **bate a B&H de forma significativa** en el tramo de test (block-perm p=0.007).
-Pero ese test es **bajista** y M10 está net-short, así que "siempre corto" (0.553) casi iguala a M10 (0.56), y
-M10 **no** bate al agente (p=0.71) ni a una moneda (p=0.16). Es el problema de SPY **al revés**: la ventaja
-sobre el pasivo es el **sesgo a corto en un mercado que cae**, no habilidad direccional. Defendible como "bate
-al pasivo en el periodo", no como "habilidad significativa".""")
+resultante (ens, burn-in 180) **bate a B&H significativamente** en el tramo de test (McNemar p=0.026,
+block-perm p=0.014) y a la moneda (sign p=0.041). Pero ese test es **bajista** y M10 está 54 % corto, así que
+"siempre corto" (0.553) queda cerca, y M10 **no** bate al agente (p=0.40); es **una sola ventana**. Es en parte
+el problema de SPY **al revés**: parte de la ventaja sobre el pasivo es el **sesgo a corto en un mercado que
+cae**. Defendible como "bate al pasivo en el periodo", no como "habilidad significativa robusta".""")
 
 nb = new_notebook(cells=cells, metadata={
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},

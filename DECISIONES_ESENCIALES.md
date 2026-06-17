@@ -1,6 +1,7 @@
-# Decisiones esenciales — vivas a 2026-06-07
+# Decisiones esenciales — vivas a 2026-06-17
 
-Las 12 decisiones que sobreviven al pivot final del proyecto anterior. Cada una con: **Qué + Por qué + Dónde está justificada en el archivo + Estado**. Léelas antes de cuestionar cualquier hiperparámetro.
+Las 12 decisiones que sobreviven al pivot final del proyecto anterior, **más 4 del pivot a caso de estudio
+SMCI (#13–#16, 2026-06-17)**. Cada una con: **Qué + Por qué + Dónde está justificada en el archivo + Estado**. Léelas antes de cuestionar cualquier hiperparámetro.
 
 Decisiones **descartadas** explícitamente: Nemotron como LLM principal (reemplazado por DeepSeek V3 / gpt-oss-120b); NVDA como caso central (vuelto a SPY por leverage effect); GSO relativo con look-ahead (reemplazado por GSO absoluto causal); plan original de 9 configuraciones M1..M9 (reducido a 3 canónicas M5/M8/M10 más M1/M2 como baselines).
 
@@ -186,6 +187,83 @@ Guardados en `cache/models/strata_thresholds.json`.
 
 ---
 
+---
+
+# Decisiones del pivot a caso de estudio de UN activo (2026-06-17)
+
+El tutor pide centrar el TFG en **un activo** donde **M10 (o variante) bata en accuracy a M5, M8 y B&H**.
+Estas decisiones salen de esa búsqueda, toda pre-registrada en BITACORA y auditada (@rigor-matematico,
+@experto-citas). Conviven con las 12 anteriores; donde matizan a una, se indica.
+
+## 13. Caso de estudio = SMCI (benchmark B&H justo)
+
+**Qué.** El activo del caso de estudio es **SMCI**. B&H ≈ 0.48 (≈ moneda) → benchmark **justo** (el tribunal
+no puede tumbarlo con "una estrategia trivial gana", como sí pasa en SPY donde B&H ≈ 0.57).
+
+**Por qué.** Barriendo el panel de 10, **SMCI es el ÚNICO activo donde acc(M10) > M5, M8 y B&H** a la vez
+(nominal). No es casualidad: el agente LLM es **corto-sesgado en los 10 activos** (71–100 %); en los que caen
+(B&H batible) el agente ya acierta yendo corto → M10 no se separa; en los que suben, M10 rescata pero B&H
+gana. La casilla "activo cae + agente equivocado" está **vacía**. SMCI es el caso umbral.
+
+**Dónde está justificada.** `notebooks/m10_better_smci.ipynb` §F/§F.2; `outputs/experiments/panel_intervention_scan.json`;
+BITACORA 2026-06-16.
+
+**Estado.** Viva. Matiza la decisión #1 (SPY sigue siendo el caso central del *método*; SMCI es el caso de
+estudio que pide el tutor para "batir a todo en accuracy").
+
+## 14. M10 desplegable = walk-forward ensemble (no CPCV)
+
+**Qué.** El M10 **operativo/desplegable** es **walk-forward expandible** (burn-in 150, reentreno mensual),
+**ensemble de 10 semillas** sobre las 22 features STRATA, umbral 0.5. El **M10-CPCV** (decisión #10) se
+conserva **solo como contraste** (ve bloques futuros → no desplegable; en SMCI da 0.448, peor).
+
+**Por qué.** El ensemble, a **igual accuracy** que la base (0.552 con embargo=1), mejora Sharpe (→1.84) y
+equity (→3.24×) por reducción de varianza (criterio de Raquel: a igual accuracy, Sharpe/equity cuenta). Las
+palancas probadas **NO** mejoran la accuracy y se descartan: tuning en validación (sobreajuste, validación≠test),
+features de señal real (momentum/vol-rel/racha), recencia, triple-barrier, modelos por régimen, stacking
+M5→M10, voting y abstención condicional.
+
+**Dónde está justificada.** `notebooks/m10_better_smci.ipynb` §A–§D; `experiments/m10_smci_{deep,advanced}.py`;
+BITACORA 2026-06-16.
+
+**Estado.** Viva.
+
+## 15. Embargo = 1 en el walk-forward desplegable (no 5)
+
+**Qué.** En el walk-forward de M10 el embargo es **1 día**, no 5.
+
+**Por qué.** Es validación **rolling-origin** (Tashman 2000), no CPCV: el test es siempre futuro → no hay
+solape bidireccional que motive el embargo. La etiqueta tiene **horizonte 1** (y_t=1[r_{t+1}>0]) → purga = 1
+(López de Prado 2018 §7.4). El **embargo≥5 de la decisión #10 / CLAUDE.md §4 es regla de CPCV** (folds
+interleaved, etiquetas multi-día), otro régimen. Validez con hueco mínimo bajo residuos no correlados:
+Bergmeir, Hyndman & Koo (2018). Sube la accuracy de SMCI **0.524 → 0.552** (nominal). **La significancia NO
+sobrevive** (el p=0.047 vs B&H es un pico aislado en emb=1; Bonferroni-5 = 0.28) → se reporta como
+sensibilidad; el embargo=1 se elige **por principio**, no por el p-valor.
+
+**Dónde está justificada.** `notebooks/logic_esential.ipynb` §14b; `tesis/bibliography.bib` (tashman2000,
+bergmeir2018, lopezdeprado2018, burman1994, racine2000, bergmeir2012); BITACORA 2026-06-17; auditoría
+@rigor-matematico + @experto-citas 2026-06-17.
+
+**Estado.** Viva. Matiza la decisión #10 (embargo 5 sigue para CPCV; 1 para el WF desplegable).
+
+## 16. Límite honesto: STRATA rescata donde el agente discrepa del régimen
+
+**Qué.** STRATA/M10 aporta valor (bate al agente) **solo donde el agente va a contracorriente de un régimen
+que acierta**. En SPY ocurre (M10 vs M5 McNemar p=0.0005, leverage effect fuerte). En SMCI **no**: el agente
+ya está 95 % corto (alineado con el régimen) → STRATA interviene el 3 % → M5/M8/M10 son la misma apuesta corta
+y ninguno se separa. Ningún M10 desplegable bate a B&H/M5/M8 de forma **significativa** en SMCI.
+
+**Por qué importa.** Define dónde funciona el método (su frontera), coherente con el leverage effect (decisión
+#1). La ventaja de M10 sobre B&H en SMCI es **sesgo a corto en un activo que cae**, no habilidad direccional
+fina (se reporta con el benchmark "siempre-corto" al lado).
+
+**Dónde está justificada.** `notebooks/m10_better_smci.ipynb` §F/§G; `experiments/panel_intervention_scan.py`,
+`experiments/m10_smci_rolling.py`; BITACORA 2026-06-16.
+
+**Estado.** Viva (hallazgo de cierre, honesto).
+
+---
+
 ## Tabla resumen
 
 | # | Decisión | Categoría | Estado |
@@ -202,6 +280,10 @@ Guardados en `cache/models/strata_thresholds.json`.
 | 10 | M10 con CPCV-within-OOS, embargo 5, n_splits 6 | Validación | Viva |
 | 11 | Pre-registro en BITACORA obligatorio | Metodología | **Viva, obligatoria** |
 | 12 | Caché `cache/agent/` git, `cache/llm/` local | Reproducibilidad | Viva |
+| 13 | Caso de estudio = SMCI (B&H justo ≈0.48; único que bate a todo nominal) | Universo | Viva |
+| 14 | M10 desplegable = WF ensemble 10 semillas (CPCV solo contraste) | Validación | Viva |
+| 15 | Embargo = 1 en el WF desplegable (5 solo para CPCV) | Validación | Viva |
+| 16 | Límite: STRATA rescata donde agente discrepa del régimen (SMCI no) | STRATA | Viva |
 
 ---
 

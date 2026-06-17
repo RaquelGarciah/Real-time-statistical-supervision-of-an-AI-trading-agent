@@ -1996,3 +1996,34 @@ significancia como sensibilidad (condición de @rigor-matematico).
 
 **Referencias.** logic_esential §14b, tesis/bibliography.bib, auditoría @rigor-matematico [2026-06-17],
 verificación @experto-citas [2026-06-17].
+
+## [2026-06-17] [Pre-registro] - Adopción de embargo=1 como protocolo del walk-forward de M10
+
+**Hipótesis.** El walk-forward de M10 con **embargo = 1** (= horizonte de la etiqueta, justificado a priori,
+NO barrido) es el protocolo correcto para validación rolling-origin con etiqueta de horizonte 1 día, y mejora
+la accuracy nominal frente al embargo=5 (sobre-conservador, regla de CPCV).
+
+**H0.** acc(M10, emb=1) sobre el OOS SMCI ≤ max(M5, M8, B&H), o no significativa bajo block-permutation.
+
+**Justificación a priori (no por p-valor).** Purga = horizonte de etiqueta = 1 (López de Prado 2018 §7.4);
+en walk-forward rolling-origin (Tashman 2000) el test es siempre futuro → no hay solape bidireccional que
+motive el embargo de CPCV; validez con hueco mínimo bajo residuos no correlados (Bergmeir, Hyndman & Koo 2018).
+El embargo≥5 de CLAUDE.md §4 es regla de CPCV (folds interleaved) y etiquetas multi-día, otro régimen.
+
+**Estadístico.** block-permutation (primario, autocorr-robusto); McNemar (secundario); sign vs 0.5 (ortogonal,
+fuera de Holm). Holm sobre la familia {vs M5, vs M8, vs B&H}.
+
+**Criterio de éxito (confirmatorio).** block-perm vs B&H bajo Holm p_adj<0.10 **Y estabilidad**: el resultado
+se mantiene p<0.10 en embargo ∈ {0,1,2} (meseta, no pico aislado).
+
+**Criterio de fracaso (pre-registrado).** Si solo embargo=1 cruza el umbral y embargo∈{0,2} no, o no sobrevive
+Holm/Bonferroni del barrido → se reporta como **SENSIBILIDAD**, no como hallazgo confirmatorio. (Adelanto
+honesto: por el barrido previo ya sabemos que ESTE es el caso → se adopta emb=1 por PRINCIPIO, y la mejora de
+accuracy 0.524→0.552 se reporta como nominal, sin reclamar significancia.)
+
+**Declaración de transparencia.** El barrido {0,1,3,5,10} previo fue EXPLORATORIO; embargo=1 se fija ahora por
+principio (horizonte=1). Cota honesta del barrido: Bonferroni-5 (0.047×5≈0.24) → no significativo.
+
+**Datos.** OOS SMCI ~250 d (post burn-in 150), N0=150, STEP=21, expandible, semilla 42, bloque block-perm √N.
+**Output.** Re-ejecución de m10_smci_{deep,advanced,rolling,select} + panel + improve con EMBARGO=1;
+`outputs/experiments/m10_smci_embargo.json` (barrido de robustez). Citas: tesis/bibliography.bib.

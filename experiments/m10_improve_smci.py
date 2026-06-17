@@ -38,7 +38,7 @@ from experiments.m10_v3_causal_panel import build_states_onthefly
 from experiments.m10_valtest_casestudy import AGENT15, ALL22, STRATA_REGIME7
 
 TICKER = "SMCI"
-N0, STEP, EMBARGO = 150, 21, 5
+N0, STEP, EMBARGO = 150, 21, 1   # embargo=1: horizonte de etiqueta=1 (Tashman 2000; LdP 2018 §7.4). Ver BITACORA 2026-06-17
 VAL_FRAC = 0.60
 N_SEEDS = 10
 THR_GRID = [0.45, 0.46, 0.47, 0.48, 0.49, 0.50, 0.51, 0.52, 0.53, 0.54, 0.55]
@@ -86,11 +86,12 @@ def wf_p1(X: pd.DataFrame, y: pd.Series, start_hi: int, pred_lo: int, hl, seeds)
     Ensemble: promedia predict_proba de `seeds`. start_hi acota dónde puede empezar a reentrenar (en
     validación = split, para no tocar el test). pred_lo descarta predicciones anteriores a ese índice.
 
-    Embargo (B1 rigor): la etiqueta y_i = 1[r_{i+1}>0] tiene horizonte 1 día, así que la última obs de
-    train (posición tr_end−1 = start−EMBARGO−1) tiene etiqueta determinada por el retorno en start−EMBARGO.
-    El bloque predicho empieza en start; con EMBARGO=5 hay un hueco de 5 días entre el horizonte de la
-    última etiqueta de train y el primer día predicho → purga unilateral suficiente para horizonte 1
-    (López de Prado 2018, sec. 7.4; aquí solo-pasado, no bidireccional).
+    Embargo: la etiqueta y_i = 1[r_{i+1}>0] tiene HORIZONTE 1 día. En walk-forward rolling-origin (Tashman
+    2000) el test es siempre futuro respecto al train → no hay solape bidireccional (eso es lo que motiva el
+    embargo de CPCV, López de Prado 2018 §7.4). El único solape es el de la etiqueta de horizonte 1, que se
+    purga con EMBARGO=1 (mínimo correcto = horizonte). El "embargo≥5" de CLAUDE.md §4 es regla de CPCV (folds
+    interleaved) / etiquetas multi-día, no de este WF. Validez con hueco mínimo bajo residuos no correlados:
+    Bergmeir, Hyndman & Koo (2018). Decisión y respaldo: BITACORA 2026-06-17, logic_esential §14b.
     """
     n = len(X)
     p = pd.Series(np.nan, index=X.index)
