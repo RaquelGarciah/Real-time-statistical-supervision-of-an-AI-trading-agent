@@ -577,7 +577,7 @@ Se organiza la comparación en una tabla $2\times 2$ que clasifica cada día seg
 \]
 una chi-cuadrado con un grado de libertad cuando $H_0$ es cierta. La corrección, restar $1$ al valor absoluto de la diferencia, ajusta el hecho de que se aproxima una distribución discreta por una continua y evita inflar la significación cuando las discordancias son pocas. Cuando $b + c$ es pequeño, la aproximación chi-cuadrado deja de ser fiable y se usa en su lugar el contraste binomial exacto: bajo $H_0$, condicionado al total de discordancias $b+c$, el número $b$ sigue una $\mathrm{Binomial}(b+c,\, 0{,}5)$.
 
-\emph{Uso en la memoria.} Es el contraste central de la hipótesis falsable: M8 frente a M5 sobre el acierto direccional pareado. El criterio de éxito pre-registrado es un $p$-valor por debajo de $0{,}10$.
+\emph{Uso en la memoria.} Es el contraste pareado central para comparar el acierto direccional de dos estrategias sobre los mismos días. Se usa para comparar el meta-learner M10 con el agente M5, con la regla a mano M8 y con las estrategias triviales.
 
 \subsection{Test de Diebold-Mariano}
 \label{sec:tests-dm}
