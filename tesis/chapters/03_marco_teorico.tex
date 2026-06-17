@@ -592,7 +592,7 @@ DM \;=\; \frac{\bar d}{\sqrt{\widehat{\Var}(\bar d)}} \;\sim\; N(0, 1),
 \]
 asintóticamente normal estándar bajo $H_0$. La clave está en el denominador: como los diferenciales diarios están autocorrelados, su varianza no puede estimarse como si fueran independientes, y se usa un estimador de la \emph{varianza de largo plazo} robusto a heterocedasticidad y autocorrelación (HAC) en el sentido de Newey y West \cite{newey1987}, que acumula las autocovarianzas relevantes del diferencial. Sin esa corrección, el contraste sobreestimaría la significación.
 
-\emph{Uso en la memoria.} Compara el meta-learner XGBoost (M10) frente a STRATA (M8) sobre el resultado económico. Dentro de la hipótesis de universalidad, lo que se busca es \emph{no} rechazar la igualdad: que el meta-learner no bata significativamente a la regla estadística.
+\emph{Uso en la memoria.} Compara la exactitud de dos estrategias por su resultado económico diario, teniendo en cuenta la autocorrelación de los diferenciales. Se usa para contrastar el rendimiento del meta-learner M10 frente a los baselines.
 
 \subsection{Contrastes de equivalencia (TOST)}
 \label{sec:tests-tost}
@@ -603,7 +603,7 @@ No rechazar una hipótesis nula no es lo mismo que demostrar que es cierta: la a
 
 \emph{Estadístico y distribución bajo la nula.} La nula compuesta se descompone en dos contrastes unilaterales que se resuelven por separado: uno contrasta $\Delta \le -\delta$ y el otro $\Delta \ge \delta$, cada uno con su estadístico tipo $t$ (o normal en muestras grandes). Se declara la equivalencia solo si \emph{ambos} se rechazan al nivel fijado, lo que sitúa la diferencia dentro de la banda con la confianza deseada. La inversión de los papeles habituales (la equivalencia pasa a ser la hipótesis alternativa) es lo que permite afirmar equivalencia en sentido estadístico, y no solo no poder distinguir.
 
-\emph{Uso en la memoria.} Permite declarar M10 $\approx$ M8 de forma afirmativa, reforzando el contraste de Diebold-Mariano: no solo el meta-learner no bate a la regla, sino que ambas son equivalentes dentro de una banda acordada.
+\emph{Uso en la memoria.} Permite afirmar de forma positiva que dos estrategias son equivalentes dentro de una banda, y no solo que no se distinguen. Se incluye por completitud del instrumental de contraste; su aplicación concreta se detalla en el capítulo de resultados.
 
 \subsection{Bootstrap estacionario}
 \label{sec:tests-bootstrap}
