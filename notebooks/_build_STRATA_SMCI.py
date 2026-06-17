@@ -262,10 +262,16 @@ plot_regimes(prices["Close"], oos_feat,
 md(r"""## §2. Selección de $K$ y correspondencia régimen → signo
 
 Elegimos $K=3$ por dos motivos: (a) la **verosimilitud fuera de muestra** dentro de la calibración mejora con
-claridad de $K=2$ a $K=3$; (b) los tres regímenes son **económicamente distintos** en volatilidad y en signo
-de la media. La verosimilitud es monótona en $K$, así que no "selecciona" 3; descarta 2 con holgura y el tope
-en 3 es por **interpretabilidad** (Calma / Estrés / Crisis son nombrables; $K\ge4$ subdivide la vol sin
-relato). El sentido permitido por RAM no se pone a mano: se **deriva** del signo de la media por régimen.""")
+claridad de $K=2$ a $K=3$; (b) los tres regímenes son **distintos en volatilidad** (Calma < Estrés < Crisis).
+La verosimilitud es monótona en $K$, así que no "selecciona" 3; descarta 2 con holgura y el tope en 3 es por
+**interpretabilidad** (Calma / Estrés / Crisis son nombrables; $K\ge4$ subdivide la vol sin relato).
+
+**Hallazgo honesto (importante).** En SMCI los regímenes separan por **volatilidad** pero **no por dirección**:
+la media por régimen solo es significativa en Estrés (positiva) y la **Crisis tiene media positiva**, no
+negativa. El *leverage effect* (alta vol ↔ caídas; Black 1976, Christie 1982), fuerte en índices, es **débil en
+un valor individual**. Por eso el régimen aquí no es un prior direccional fiable, M8 (que usa el signo del
+régimen) apenas aporta, y la dirección la aprende **M10 de las 22 features**, no del signo del régimen. Es la
+limitación que explica el resultado nominal (§9).""")
 
 code(r"""# --- Verosimilitud held-out vs K (dentro de calibración) + scatter régimen (vol × media) + tabla régimen→signo ---
 calib_X = calib_feat.to_numpy()
@@ -289,8 +295,10 @@ rows = []
 for k in (0, 1, 2):
     rr = calib_ret[st_cal == k].dropna().to_numpy()
     lo, hi, mean = stationary_bootstrap_ci(rr, np.mean, n=2000, seed=config.SEED)
+    sig0 = not (lo < 0 < hi)                                   # ¿la media difiere de 0 (IC95)?
+    signo = ("largo" if mean > 0 else "corto") if sig0 else "≈0 (no sig.)"
     rows.append({"régimen": _LBL[k], "media r": mean, "std": float(rr.std()),
-                 "IC95 media": f"[{lo:+.5f}, {hi:+.5f}]", "signo RAM": "largo" if mean > 0 else "corto"})
+                 "IC95 media": f"[{lo:+.5f}, {hi:+.5f}]", "signo (media)": signo})
 reg_tab = pd.DataFrame(rows).set_index("régimen")
 
 fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))
@@ -305,9 +313,12 @@ for k in (0, 1, 2):
     ax[1].annotate(_LBL[k], (sd[k], mu[k]), textcoords="offset points", xytext=(8, 4), fontsize=9)
 ax[1].axhline(0, color="k", lw=0.8)
 ax[1].set_xlabel("volatilidad diaria (std de r)"); ax[1].set_ylabel("media de retorno diario")
-ax[1].set_title("Los 3 regímenes difieren en vol Y en signo")
+ax[1].set_title("Separan por VOLATILIDAD, no por signo (leverage débil en SMCI)")
 plt.tight_layout(); plt.show()
 print(f"LL/obs:  " + "   ".join(f"K={k}: {ll[k]:+.3f}" for k in Ks) + f"   (Δ K3−K2 = {ll[3]-ll[2]:+.3f})")
+print("std creciente (Calma<Estrés<Crisis) ⇒ separan por VOLATILIDAD. Pero la Crisis tiene media positiva y")
+print("Calma ≈0: NO separan por dirección ⇒ leverage effect débil en SMCI. El régimen capta vol, no dirección;")
+print("M8 (usa signo de régimen) apenas aporta y M10 aprende la dirección de las features. Limitación §9.")
 reg_tab""")
 
 md(r"""## §3. Umbrales de los detectores
