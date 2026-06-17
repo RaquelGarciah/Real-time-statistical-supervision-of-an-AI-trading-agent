@@ -187,7 +187,7 @@ Por la definición de probabilidad condicional y la de $\alpha_t$,
 donde en el denominador se ha usado $\Prob(x_{1:t}) = \sum_j \Prob(x_{1:t}, z_t = j) = \sum_j \alpha_t(j)$.
 \end{proof}
 
-El adjetivo \emph{filtrado} es preciso y tiene una consecuencia que es el eje de toda la memoria. En su definición, $\gammaf(k)$ condiciona solo sobre $x_{1:t}$, es decir, sobre el pasado y el presente. No usa ninguna observación posterior a $t$. La recursión de la Proposición~\ref{prop:forward} lo confirma a nivel de cómputo: $\alpha_t(k)$ se construye a partir de $\alpha_{t-1}(\cdot)$ y de $x_t$ exclusivamente, sin que en ningún momento intervenga $x_{t+1}, x_{t+2}, \dots$ Por tanto, la estimación del régimen en $t$ es \emph{causal}: podría calcularse en tiempo real, el mismo día $t$, con la información que existe ese día.
+El adjetivo \emph{filtrado} es preciso y tiene una consecuencia que es el eje de toda la memoria. En su definición, $\gammaf(k)$ condiciona solo sobre $x_{1:t}$, es decir, sobre el pasado y el presente. La recursión de la Proposición~\ref{prop:forward} lo confirma a nivel de cómputo: $\alpha_t(k)$ se construye a partir de $\alpha_{t-1}(\cdot)$ y de $x_t$ exclusivamente, sin que en ningún momento intervenga $x_{t+1}, x_{t+2}, \dots$ Por tanto, la estimación del régimen en $t$ es \emph{causal}: podría calcularse en tiempo real, el mismo día $t$, con la información que existe ese día.
 
 Esto contrasta con el \emph{posterior suavizado}
 \[
@@ -200,7 +200,7 @@ que condiciona sobre la secuencia completa hasta el final $T$, incluyendo $x_{t+
 
 Hasta aquí se ha supuesto conocido el conjunto de parámetros $\lambda$. En la práctica $\lambda$ debe estimarse a partir de los datos, y como los estados $z_{1:T}$ no se observan no puede maximizarse la verosimilitud directamente. El algoritmo de Baum-Welch resuelve esto como una instancia del esquema de esperanza-maximización (EM): alterna una estimación de los estados ocultos con una reestimación de los parámetros, garantizando que la verosimilitud no decrece en cada iteración \cite{baum1970, rabiner1989}.
 
-En el \emph{paso E} (esperanza) se calculan, con los parámetros actuales, los posteriores de los estados y de las transiciones. Se necesitan el posterior suavizado puntual $\Prob(z_t = k \mid x_{1:T})$ y el posterior suavizado de pares $\Prob(z_t = i, z_{t+1} = j \mid x_{1:T})$, ambos obtenidos con el algoritmo forward-backward. Conviene subrayar que aquí sí se emplea el suavizado, y es legítimo: el ajuste del modelo se hace una sola vez, fuera de línea, sobre el periodo de calibración completo, no como parte de una decisión en tiempo real. La causalidad solo se exige en la fase de explotación, donde rige el filtrado.
+En el \emph{paso E} (esperanza) se calculan, con los parámetros actuales, los posteriores de los estados y de las transiciones. Se necesitan el posterior suavizado puntual $\Prob(z_t = k \mid x_{1:T})$ y el posterior suavizado de pares $\Prob(z_t = i, z_{t+1} = j \mid x_{1:T})$, ambos obtenidos con el algoritmo forward-backward. Aquí sí se emplea el suavizado, y es legítimo: el ajuste del modelo se hace una sola vez, fuera de línea, sobre el periodo de calibración completo, no como parte de una decisión en tiempo real. La causalidad solo se exige en la fase de explotación, donde rige el filtrado.
 
 En el \emph{paso M} (maximización) se reestiman los parámetros maximizando la esperanza calculada en el paso E, lo que da fórmulas cerradas. La distribución inicial y la matriz de transición se actualizan como frecuencias esperadas,
 \[
