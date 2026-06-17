@@ -94,3 +94,74 @@ la narrativa robusta; #3 (equity sombreada) es la mejor para defender el límite
 | Scorecard · estratificada régimen · equity sombreada · forest plot · posiciones | — | 🆕 propuestas |
 
 *Fuente de cifras: `RESULTADOS_OBJETIVO.md` §1bis (SMCI) · recorrido: `docs/chats/decision_activo/smci.md`.*
+
+---
+
+# 🎯 VEREDICTO: estructura del notebook final de SMCI
+
+Mi recomendación de qué incluir, **en este orden**, y por qué. La idea: contar la historia de arriba a abajo
+—**resultado → por qué SMCI → robustez → honestidad → cierre**— con ~10 figuras, **cortando lo redundante**.
+Cada figura cuenta algo nuevo; si una no aporta argumento, fuera.
+
+## El orden (de lo que abre a lo que cierra)
+
+**§0 · Apertura — el resultado en una tarjeta**
+- 🆕 **Scorecard** (accuracy/Sharpe/equity/DSR de M10 vs M5/M8/B&H, con ✓/✗).
+- *Por qué primero:* el tribunal ve la respuesta en 5 segundos; el resto del notebook la defiende.
+
+**§1 · Resultado principal (todo el OOS, n=250)**
+- 🆕 **Headline accuracy** M10 vs M5/M8/B&H (0.552, líneas azar y B&H).
+- ✅ **Curvas de equity** (§C.2).
+- *Por qué:* el qué (accuracy, lo que pide el tutor) + el enriquecimiento económico, juntos. Es el núcleo.
+
+**§2 · Por qué SMCI y por qué no es trivial**
+- ✅ **Margen por activo "solo SMCI bate a todo"** (§F.2) → justifica la elección del activo.
+- ✅ **Agente 95 % corto + intervención STRATA** (§F.1) → explica por qué M5/M8/M10 no se separan y por qué
+  el benchmark es justo.
+- *Por qué:* adelanta y desactiva la primera objeción ("¿por qué este activo?", "¿no es suerte?").
+
+**§3 · Robustez (la defensa fuerte)**
+- ✅ **Robustez a la partición** — 3 splits val/test (§E.2). ← la que pediste.
+- ✅ **Robustez al embargo** (§0bis).
+- ✅ **Rolling-window** — consistencia temporal (§G).
+- *Por qué:* el corazón de la defensa. Demuestra que el resultado **no depende** del corte, del embargo ni
+  del sub-periodo. Tres ángulos de robustez seguidos = muy difícil de tumbar.
+
+**§4 · Honestidad: qué se probó y NO mejoró**
+- ✅ **Tuning en validación fracasa** (§A) → demuestra disciplina validación≠test.
+- ✅ **Abstención: cobertura vs accuracy** (§C.3) → método de literatura probado y descartado.
+- ✅ *(condensar en UNA figura)* **"lo que se probó"**: accuracy de configs fijas + métodos avanzados
+  (triple-barrier/régimen/stacking) en una sola barra (fusionar §B y §C).
+- *Por qué:* enseña rigor y exhaustividad; convierte los negativos en argumento ("probamos todo, honestos").
+
+**§5 · Cierre — significancia honesta**
+- 🆕 **Forest plot de significancia**: M10 vs B&H / vs M5 / vs azar, en el OOS completo **y** en los 3 splits,
+  con p/IC en una figura.
+- *Por qué:* cierra mostrando a la vez la **robustez** (gana siempre) y la **honestidad** (significancia
+  borderline, no plena). Es la figura que te blinda: lo dices tú antes que el tribunal.
+
+**Apéndice · Mecánica de STRATA (replicado sobre SMCI)** — 🟡
+- 3 regímenes (vol y signo) · LL vs K (justifica K=3) · RAM como gate · SHAP de M10.
+- *Por qué apéndice:* explica *cómo* funciona por dentro; no es el resultado, pero sostiene la
+  interpretabilidad. Va al final para no romper el hilo argumental.
+
+## Qué CORTAR del notebook actual (para no saturar)
+
+- ❌ **§E (selección de burn-in, split 70d desequilibrado)** y **§E.1 (test 0.587 en ventana bajista)**:
+  el split era malo y lo reemplaza §E.2 (robustez a la partición). Si acaso, una línea de texto, sin figura.
+- ❌ **Figuras separadas de §B y §C**: fusionar en UNA ("lo que se probó y no mejoró").
+- ❌ Las didácticas del ensemble/embargo (ilustración de varianza, indexado): **se quedan en
+  `logic_esential.ipynb`**, no en el notebook de resultados.
+
+## Qué CONSTRUIR (no existe aún)
+
+1. 🆕 **Scorecard** (§0) — apertura.
+2. 🆕 **Headline accuracy limpia** (§1) — hoy mezclada en §C.
+3. 🆕 **Forest plot de significancia** (§5) — el cierre que blinda.
+
+## Resumen del veredicto
+
+**10 figuras, 6 secciones + apéndice.** Orden: *tarjeta → resultado → por qué SMCI → robustez (×3) →
+honestidad → forest plot de cierre → (apéndice mecánica)*. Construir 3 nuevas (scorecard, headline, forest
+plot), reutilizar 7 que ya existen, cortar las redundantes. Con eso el notebook **cuenta la historia robusta
+sin ruido** y resiste el escrutinio del tribunal.
