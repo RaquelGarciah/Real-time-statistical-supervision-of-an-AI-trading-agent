@@ -40,6 +40,23 @@ esto es, la raíz de la suma de cuadrados de los log-retornos de la ventana. $RV
 
 Las series de retornos financieros no se comportan como ruido blanco gaussiano. Tres regularidades empíricas, documentadas de forma sistemática en la literatura y conocidas como \emph{hechos estilizados}, motivan los modelos del resto del capítulo \cite{engle1982}. La primera es que la distribución de los retornos tiene \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituir la gaussiana por una distribución de colas anchas como la $t$ de Student en el modelo de volatilidad. La segunda es el \emph{agrupamiento de volatilidad}: los días de gran movimiento tienden a seguirse unos a otros, de modo que la magnitud de los retornos sí está correlada en el tiempo aunque su signo apenas lo esté; esto es lo que captura un modelo GARCH. La tercera es que los retornos en niveles presentan \emph{poca autocorrelación}, casi nula a partir del primer rezago, mientras que sus cuadrados o sus valores absolutos sí la presentan. La combinación de las tres sugiere que el comportamiento del activo alterna entre estados o regímenes con dinámicas distintas, idea que formaliza el modelo de cambio de régimen de la sección siguiente.
 
+\section{STRATA a nivel técnico}
+\label{sec:strata-tecnico}
+
+Antes de desarrollar la matemática conviene fijar qué es STRATA y qué papel juega cada pieza, sin entrar todavía en los modelos.
+
+Cada día, el agente de trading toma una decisión sobre el activo que resumimos en una terna: un \emph{signo} (comprar o vender), un \emph{tamaño} y una \emph{confianza}. Esa terna determina una \emph{posición} $w_t \in [-1, +1]$, donde el signo marca la dirección (larga si $w_t > 0$, corta si $w_t < 0$) y el módulo $|w_t|$ es la fracción de capital expuesta; la posición tomada en $t$ se evalúa contra el retorno del día siguiente, $w_t \cdot \rnext$, según la convención causal de la Sección~\ref{sec:preliminares}. STRATA no decide por el agente: \emph{supervisa} esa decisión. Formalmente es una aplicación
+\[
+\mathrm{STRATA}\colon (\text{terna del agente},\ \text{estado del mercado}) \longmapsto \text{señales de supervisión},
+\]
+que a partir de la decisión del agente y de una lectura estadística del mercado produce un conjunto de \emph{señales} sobre esa decisión. La distinción se mantiene en toda la memoria: STRATA no predice el retorno, sino que mide en qué grado la decisión del agente es coherente con el estado del mercado.
+
+Las señales provienen de tres detectores ortogonales, cada uno a cargo de un eje distinto del problema. El detector de régimen, \textbf{RAM}, pregunta si la dirección de la apuesta es coherente con el régimen de mercado vigente, y se apoya en el modelo oculto de Markov de la Sección~\ref{sec:hmm}. El detector de coherencia temporal, \textbf{PSA}, pregunta si el agente está cambiando de criterio de forma estructural, y se apoya en la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd}. El detector de volatilidad, \textbf{GSO}, pregunta si el tamaño de la apuesta es compatible con la volatilidad del momento, y se apoya en el modelo GARCH de la Sección~\ref{sec:garch}. Que los tres ejes sean ortogonales, un régimen discreto, la coherencia del propio agente y la volatilidad continua, es lo que justifica combinarlos: cada detector observa algo que los otros dos no ven.
+
+Con esas señales se interviene de tres formas, de menor a mayor agresividad. El modo \emph{warn} solo registra la señal y no toca la decisión. El modo \emph{reduce} atenúa el tamaño de la apuesta, encogiendo $|w_t|$ sin cambiar su signo. El modo \emph{override} sustituye la decisión, cambiando el propio $w_t$. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal a partir de su detector y bajo qué umbral dispara cada modo.
+
+Queda separar, desde el principio, dos maneras de actuar sobre estas señales. La primera es una regla determinista que interviene según umbrales fijos, que denotamos \textbf{M8} y empleamos como \emph{referencia} interpretable. La segunda, que es el objeto central del caso de estudio, es un meta-learner que \emph{aprende} a combinar las señales de STRATA para decidir la dirección; lo denotamos \textbf{M10} y se desarrolla en el capítulo de resultados. En lo que sigue, ``STRATA'' designa la capa que produce las señales mediante los tres detectores, mientras que M8 y M10 son dos formas distintas de consumirlas.
+
 \section{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
 
