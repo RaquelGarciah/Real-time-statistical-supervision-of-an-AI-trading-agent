@@ -391,40 +391,46 @@ md(r"""### §E.2 · Robustez a la partición validación/test (respaldo del resu
 
 El **resultado principal** es el de **todo el OOS (250 d): M10 = 0.552 > M5/M8/B&H** (nominal, §C/§D). Para
 **respaldar** que no depende de cómo se parta, repetimos el split validación/test con **3 ratios estándar
-pre-especificados** (60/40, 70/30, 80/20; burn-in 150 fijo, embargo=1). **En los tres, M10 bate a M5, M8 y
-B&H tanto en validación como en test.** No es *split-shopping*: los ratios se fijan a priori y la lectura es
-la **consistencia**, no quedarse con el de mayor accuracy.""")
+pre-especificados** (60/40, 70/30, 80/20; burn-in 150 fijo, embargo=1), comparando contra los 4 baselines:
+M5, M8, B&H y la **clase mayoritaria** (regla ZeroR / *no-information rate*, Witten et al. 2016; Kuhn 2008 —
+en SMCI ≈ "siempre corto"). **En los tres splits, M10 bate a M5, M8, B&H Y a la clase mayoritaria, tanto en
+validación como en test.** Que bata a la mayoría (= "siempre corto" en los tramos bajistas) **descarta que la
+ventaja sea un mero sesgo a corto**. No es *split-shopping*: ratios a priori, lectura = **consistencia**. El
+contraste honesto es el **binomial vs NIR** (no vs 0.5): en el OOS completo p=0.141 (no significativo); en los
+tests cortos borderline (0.066/0.060) → la significancia plena queda como trabajo futuro.""")
 
 code(r"""rs = ROB["robustez_splits"]; full = ROB["principal_todo_oos"]
 labels = [f"{int(s['frac_val']*100)}/{int((1-s['frac_val'])*100)}" for s in rs]
-x = np.arange(len(rs)); w = 0.38
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(14, 4.8), sharey=True)
+x = np.arange(len(rs)); w = 0.27
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(14, 4.9), sharey=True)
 for ax, win, ttl in ((a1, "validacion", "VALIDACIÓN"), (a2, "test", "TEST")):
-    m10 = [s[win]["m10"]["acc"] for s in rs]; bh = [s[win]["bh"]["acc"] for s in rs]
-    b1 = ax.bar(x - w / 2, m10, w, label="M10 (ens)", color="#2c7fb7", edgecolor="black", lw=0.8)
-    b2 = ax.bar(x + w / 2, bh, w, label="B&H", color="#4caf50", edgecolor="black", lw=0.8)
+    m10 = [s[win]["m10"]["acc"] for s in rs]; bh = [s[win]["bh"]["acc"] for s in rs]; maj = [s[win]["majority"]["acc"] for s in rs]
+    b1 = ax.bar(x - w, m10, w, label="M10 (ens)", color="#2c7fb7", edgecolor="black", lw=0.8)
+    b2 = ax.bar(x, bh, w, label="B&H (siempre largo)", color="#4caf50", edgecolor="black", lw=0.8)
+    b3 = ax.bar(x + w, maj, w, label="clase mayoritaria (ZeroR)", color="#c44e52", edgecolor="black", lw=0.8)
     ax.axhline(0.5, color="black", ls="--", lw=1, label="azar (0.5)")
-    ax.axhline(full["m10"]["acc"], color="#d62728", ls=":", lw=1.4, label=f"M10 todo OOS ({full['m10']['acc']})")
-    for bb in list(b1) + list(b2):
-        ax.text(bb.get_x() + bb.get_width() / 2, bb.get_height() + 0.004, f"{bb.get_height():.3f}", ha="center", fontsize=9, fontweight="bold")
+    ax.axhline(full["m10"]["acc"], color="#7f3b8f", ls=":", lw=1.4, label=f"M10 todo OOS ({full['m10']['acc']})")
+    for bb in list(b1) + list(b2) + list(b3):
+        ax.text(bb.get_x() + bb.get_width() / 2, bb.get_height() + 0.004, f"{bb.get_height():.3f}", ha="center", fontsize=8, fontweight="bold")
     ax.set_xticks(x); ax.set_xticklabels([f"{l}\n(test {s['test']['n']}d)" for l, s in zip(labels, rs)], fontsize=9)
-    ax.set_ylim(0.42, 0.66); ax.set_title(f"{ttl} — M10 bate a B&H en los 3 splits", fontsize=11)
-    ax.legend(fontsize=8, loc="upper left"); ax.grid(axis="y", alpha=0.25)
+    ax.set_ylim(0.42, 0.66); ax.set_title(f"{ttl} — M10 bate a B&H Y a la mayoría en los 3 splits", fontsize=11)
+    ax.legend(fontsize=7.5, loc="upper left"); ax.grid(axis="y", alpha=0.25)
 a1.set_ylabel("accuracy direccional", fontsize=11)
-fig.suptitle("SMCI · robustez a la partición: M10 > B&H en validación Y en test, en los 3 splits (embargo=1)", fontsize=12, fontweight="bold")
+fig.suptitle("SMCI · robustez a la partición: M10 > B&H y > clase mayoritaria, en validación Y test, 3 splits (embargo=1)", fontsize=12, fontweight="bold")
 plt.tight_layout(); plt.show()
 
-print(f"PRINCIPAL (todo el OOS, n={full['n']}): M10={full['m10']['acc']} > M5={full['m5']['acc']} M8={full['m8']['acc']} B&H={full['bh']['acc']}")
-print(f"\n{'split':>7} {'val: M10 / B&H (gana)':>26} {'test: M10 / B&H (gana)':>26} {'test n':>7} {'sign p':>7} {'%alc test':>9}")
+print(f"PRINCIPAL (todo el OOS, n={full['n']}): M10={full['m10']['acc']} > M5={full['m5']['acc']} M8={full['m8']['acc']} "
+      f"B&H={full['bh']['acc']} MAYORÍA={full['majority']['acc']}({full['majority']['dir']})  "
+      f"| binom M10 vs NIR p={full['binom_m10_vs_nir_p']} (vs 0.5 p={full['binom_m10_vs_0.5_p']})")
+print(f"\n{'split':>7} {'VAL M10/B&H/MAY':>20} {'gana':>5} {'TEST M10/B&H/MAY':>21} {'gana':>5} {'binom vs NIR':>13}")
 for s in rs:
     v, t = s["validacion"], s["test"]
     print(f"{int(s['frac_val']*100):>4}/{int((1-s['frac_val'])*100):<2} "
-          f"{v['m10']['acc']:>8} / {v['bh']['acc']:<6} {str(v['m10_gana_a_todo']):>5}   "
-          f"{t['m10']['acc']:>8} / {t['bh']['acc']:<6} {str(t['m10_gana_a_todo']):>5}   "
-          f"{t['n']:>5}  {t['tests']['sign_vs_0.5_p']:>6}  {t['frac_up']:>8}")
-print(f"\nM10 gana a TODO en el OOS completo Y en val+test de los 3 splits: {ROB['m10_gana_a_todo_en_todos']}")
-print("Aviso honesto: al achicar el test la accuracy sube (0.60→0.62) pero pierde potencia (sign p 0.057→0.119)")
-print("→ el número que se REPORTA es 0.552 (todo el OOS); los splits son respaldo de CONSISTENCIA.")""")
+          f"{v['m10']['acc']:>5}/{v['bh']['acc']}/{v['majority']['acc']:<6} {str(v['m10_gana_a_todo']):>5} "
+          f"{t['m10']['acc']:>6}/{t['bh']['acc']}/{t['majority']['acc']:<6} {str(t['m10_gana_a_todo']):>5} {t['binom_m10_vs_nir_p']:>13}")
+print(f"\nM10 gana a TODO (incl. clase mayoritaria) en el OOS Y en val+test de los 3 splits: {ROB['m10_gana_a_todo_en_todos']}")
+print("Honesto: binom vs NIR (clase mayoritaria) — OOS p=0.141 (no sig); tests cortos borderline (0.066/0.060).")
+print("→ se REPORTA 0.552 (todo el OOS); los splits + la mayoría son respaldo de CONSISTENCIA, no significancia plena.")""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §F · El punto clave: por qué M5, M8 y M10 **no se separan** en SMCI
@@ -573,12 +579,15 @@ md(r"""## §D · Conclusiones honestas (claims auditados por @rigor-matematico)
 - En SMCI (OOS n=250, B&H≈0.48 → benchmark justo), el **M10-WF ensemble** alcanza accuracy **0.552**, superior
   **nominalmente** a M5 (0.484), M8 (0.496) y B&H (0.484); en rolling-window gana a B&H y al agente en la
   **mayoría** de sub-periodos.
-- **Robusto a la partición (§E.2):** con 3 splits validación/test estándar (60/40, 70/30, 80/20), **M10 bate a
-  M5, M8 y B&H tanto en validación como en test en los tres** → la conclusión no depende del corte. (El número
-  que se reporta es el de todo el OOS, 0.552; los splits son respaldo de consistencia, no split-shopping.)
-- La ventaja vs B&H es **borderline** (block-perm p=0.047) pero **no significativa tras corrección honesta**:
-  no sobrevive la multiplicidad del barrido de embargo (Bonferroni-5 ≈ 0.28) ni el Holm de la familia; sign vs
-  0.5 p=0.11; no bate al agente (vs M5 p=0.10). El **techo** es **0.552 nominal**.
+- **M10 bate también a la clase mayoritaria** (regla ZeroR / NIR = "siempre la dirección dominante"; en SMCI
+  ≈ "siempre corto", NIR=0.516): 0.552 > 0.516. Batir a la mayoría **además** de a B&H **descarta que la
+  ventaja sea un mero sesgo a corto** (Witten et al. 2016; Kuhn 2008).
+- **Robusto a la partición (§E.2):** con 3 splits estándar (60/40, 70/30, 80/20), **M10 bate a M5, M8, B&H Y a
+  la clase mayoritaria, en validación y en test, en los tres** → la conclusión no depende del corte. (Se
+  reporta el de todo el OOS, 0.552; los splits son respaldo de consistencia, no split-shopping.)
+- La ventaja es **borderline, no significativa tras corrección honesta**: binomial M10 vs NIR p=0.141 (OOS);
+  block-perm vs B&H p=0.047 (no sobrevive Bonferroni-5 ≈ 0.28 ni Holm); sign vs 0.5 p=0.11; no bate al agente
+  (vs M5 p=0.10). El **techo** es **0.552 nominal**.
 - **Triple-barrier** (López de Prado 2018, cap. 3; embargo=H+1, **sin look-ahead** — verificado) **no mejora**
   la dirección a 1 día (0.488). `stack_agent` (0.504) tampoco; `regime_models` (0.536) mejora pero queda por
   debajo del ensemble.

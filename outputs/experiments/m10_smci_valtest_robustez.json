@@ -38,6 +38,12 @@
       "sharpe": 0.034,
       "equity": 0.7124
     },
+    "majority": {
+      "acc": 0.516,
+      "dir": "corto"
+    },
+    "binom_m10_vs_nir_p": 0.141,
+    "binom_m10_vs_0.5_p": 0.0568,
     "m10_gana_a_todo": true
   },
   "robustez_splits": [
@@ -75,6 +81,12 @@
           "sharpe": 0.14,
           "equity": 0.9166
         },
+        "majority": {
+          "acc": 0.5067,
+          "dir": "largo"
+        },
+        "binom_m10_vs_nir_p": 0.4034,
+        "binom_m10_vs_0.5_p": 0.3416,
         "m10_gana_a_todo": true
       },
       "test": {
@@ -100,6 +112,12 @@
           "sharpe": -0.076,
           "equity": 0.7772
         },
+        "majority": {
+          "acc": 0.55,
+          "dir": "corto"
+        },
+        "binom_m10_vs_nir_p": 0.1831,
+        "binom_m10_vs_0.5_p": 0.0284,
         "m10_gana_a_todo": true,
         "tests": {
           "mcnemar_vs_bh_p": 0.0637,
@@ -146,6 +164,12 @@
           "sharpe": -0.047,
           "equity": 0.8327
         },
+        "majority": {
+          "acc": 0.5143,
+          "dir": "corto"
+        },
+        "binom_m10_vs_nir_p": 0.4106,
+        "binom_m10_vs_0.5_p": 0.2727,
         "m10_gana_a_todo": true
       },
       "test": {
@@ -171,6 +195,12 @@
           "sharpe": 0.152,
           "equity": 0.8555
         },
+        "majority": {
+          "acc": 0.52,
+          "dir": "corto"
+        },
+        "binom_m10_vs_nir_p": 0.066,
+        "binom_m10_vs_0.5_p": 0.032,
         "m10_gana_a_todo": true,
         "tests": {
           "mcnemar_vs_bh_p": 0.2031,
@@ -217,6 +247,12 @@
           "sharpe": 0.082,
           "equity": 0.8643
         },
+        "majority": {
+          "acc": 0.52,
+          "dir": "corto"
+        },
+        "binom_m10_vs_nir_p": 0.3621,
+        "binom_m10_vs_0.5_p": 0.179,
         "m10_gana_a_todo": true
       },
       "test": {
@@ -242,6 +278,12 @@
           "sharpe": -0.072,
           "equity": 0.8242
         },
+        "majority": {
+          "acc": 0.5,
+          "dir": "largo"
+        },
+        "binom_m10_vs_nir_p": 0.0595,
+        "binom_m10_vs_0.5_p": 0.0595,
         "m10_gana_a_todo": true,
         "tests": {
           "mcnemar_vs_bh_p": 0.3613,

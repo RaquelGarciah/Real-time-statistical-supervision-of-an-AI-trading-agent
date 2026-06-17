@@ -21,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
+from scipy.stats import binomtest
 
 import config
 from core.stats import block_permutation_test, mcnemar_test, sign_test
@@ -56,10 +57,18 @@ def _tests(p, mv, lo, hi):
 def _window(p, mv, o, lo, hi):
     a, sr, eq, nn = S.metrics(p, mv, o, lo, hi)
     ref = S.ref_metrics(mv, o, lo, hi)
-    frac_up = round(float((np.sign(mv["r_next"].to_numpy()[lo:hi]) > 0).mean()), 3)
-    gana = bool(a > max(ref["m5"]["acc"], ref["m8"]["acc"], ref["bh"]["acc"]))
-    return {"n": int(nn), "frac_up": frac_up, "m10": {"acc": a, "sharpe": sr, "equity": eq},
-            "m5": ref["m5"], "m8": ref["m8"], "bh": ref["bh"], "m10_gana_a_todo": gana}
+    frac_up = float((np.sign(mv["r_next"].to_numpy()[lo:hi]) > 0).mean())
+    nir = max(frac_up, 1 - frac_up)                       # clase mayoritaria (ZeroR / no-information rate)
+    # test binomial unilateral (Kuhn 2008): ¿accuracy de M10 > NIR? y referencia vs 0.5.
+    k = int(round(a * nn))
+    p_nir = float(binomtest(k, nn, nir, alternative="greater").pvalue) if nn > 0 else float("nan")
+    p_05 = float(binomtest(k, nn, 0.5, alternative="greater").pvalue) if nn > 0 else float("nan")
+    gana = bool(a > max(ref["m5"]["acc"], ref["m8"]["acc"], ref["bh"]["acc"], round(nir, 4)))
+    return {"n": int(nn), "frac_up": round(frac_up, 3), "m10": {"acc": a, "sharpe": sr, "equity": eq},
+            "m5": ref["m5"], "m8": ref["m8"], "bh": ref["bh"],
+            "majority": {"acc": round(nir, 4), "dir": "corto" if frac_up < 0.5 else "largo"},
+            "binom_m10_vs_nir_p": round(p_nir, 4), "binom_m10_vs_0.5_p": round(p_05, 4),
+            "m10_gana_a_todo": gana}
 
 
 def main() -> None:
@@ -93,15 +102,16 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(result, indent=2, ensure_ascii=False))
 
-    print(f"PRINCIPAL · todo el OOS (n={full['n']}): M10={full['m10']['acc']}  "
-          f"M5={full['m5']['acc']} M8={full['m8']['acc']} B&H={full['bh']['acc']}  gana_a_todo={full['m10_gana_a_todo']}")
-    print(f"\n{'split':>7} {'val n':>6} {'VAL: M10/B&H':>14} {'gana':>5} | {'test n':>6} {'TEST: M10/B&H':>14} {'gana':>5} {'sign p':>7}")
+    print(f"PRINCIPAL · todo el OOS (n={full['n']}): M10={full['m10']['acc']}  M5={full['m5']['acc']} "
+          f"M8={full['m8']['acc']} B&H={full['bh']['acc']} MAYORÍA={full['majority']['acc']}({full['majority']['dir']})  "
+          f"gana_a_todo={full['m10_gana_a_todo']}  | binom M10 vs NIR p={full['binom_m10_vs_nir_p']} (vs 0.5 p={full['binom_m10_vs_0.5_p']})")
+    print(f"\n{'split':>7} {'VAL M10/B&H/MAY':>18} {'gana':>5} | {'TEST M10/B&H/MAY':>19} {'gana':>5} {'binom vs NIR':>13}")
     print("-" * 78)
     for sp in splits:
         v, t = sp["validacion"], sp["test"]
-        print(f"{int(sp['frac_val']*100):>4}/{int((1-sp['frac_val'])*100):<2} {v['n']:>6} "
-              f"{v['m10']['acc']:>6}/{v['bh']['acc']:<6} {str(v['m10_gana_a_todo']):>5} | {t['n']:>6} "
-              f"{t['m10']['acc']:>6}/{t['bh']['acc']:<6} {str(t['m10_gana_a_todo']):>5} {t['tests']['sign_vs_0.5_p']:>7}")
+        print(f"{int(sp['frac_val']*100):>4}/{int((1-sp['frac_val'])*100):<2} "
+              f"{v['m10']['acc']:>5}/{v['bh']['acc']}/{v['majority']['acc']:<6} {str(v['m10_gana_a_todo']):>5} | "
+              f"{t['m10']['acc']:>5}/{t['bh']['acc']}/{t['majority']['acc']:<6} {str(t['m10_gana_a_todo']):>5} {t['binom_m10_vs_nir_p']:>13}")
     print(f"\nM10 gana a TODO en el OOS completo Y en validación y test de los 3 splits: {result['m10_gana_a_todo_en_todos']}")
     print(f"OK · {OUT}")
 

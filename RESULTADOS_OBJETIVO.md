@@ -51,15 +51,20 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
 |---|---|---|---|---|
 | M5 (agente) | 0.484 | −0.24 | — | agente 95 % corto |
 | M8 (regla) | 0.496 | +0.33 | — | STRATA interviene solo 3 % → ≈ M5 |
-| B&H (trivial) | 0.484 | +0.03 | 0.71× | benchmark justo (≈ moneda) |
-| **M10-WF ensemble** (10 semillas, 22 features) | **0.552** | **+1.84** | **3.24×** | bate a todo **nominal** |
+| B&H (trivial, siempre largo) | 0.484 | +0.03 | 0.71× | benchmark económico (≈ moneda) |
+| Clase mayoritaria (ZeroR / NIR) | 0.516 | — | — | baseline de no-habilidad = "siempre corto" |
+| **M10-WF ensemble** (10 semillas, 22 features) | **0.552** | **+1.84** | **3.24×** | bate a **todo** (incl. mayoría) **nominal** |
 
-- **Significancia:** **nominal, no plena.** block-perm M10 vs B&H = 0.047 (NO sobrevive Bonferroni-5 ≈ 0.28
-  del barrido de embargo); sign vs 0.5 p=0.11; no bate al agente significativamente. **DSR=0.72 < 0.95.**
-- **Robustez a la partición (respaldo):** con 3 splits validación/test estándar (60/40, 70/30, 80/20; burn-in
-  150), M10 bate a M5/M8/B&H **en validación Y en test en los tres** (val 0.52–0.535, test 0.60–0.62) → la
+- **Baselines:** se compara contra B&H (económico, siempre largo) **y la clase mayoritaria** (ZeroR /
+  no-information rate = siempre la dirección dominante; en SMCI "siempre corto", 0.516 — Witten et al. 2016;
+  Kuhn 2008). M10 (0.552) bate a **ambos** → su ventaja **no es un mero sesgo a corto**.
+- **Significancia:** **nominal, no plena.** Test correcto = **binomial M10 vs NIR** (clase mayoritaria) = 0.141
+  (no sig); block-perm vs B&H 0.047 (no sobrevive Bonferroni-5 ≈ 0.28); sign vs 0.5 p=0.11; no bate al agente.
+  **DSR=0.72 < 0.95.**
+- **Robustez a la partición (respaldo):** con 3 splits estándar (60/40, 70/30, 80/20; burn-in 150), M10 bate a
+  M5/M8/B&H **y a la clase mayoritaria** en validación Y test en los tres (val 0.52–0.535, test 0.60–0.62) → la
   conclusión no depende del corte. Fuente: `experiments/m10_smci_valtest_robustez.py`. (Al achicar el test la
-  accuracy sube pero pierde potencia: sign p 0.057→0.119; por eso el número headline es el de todo el OOS.)
+  accuracy sube pero pierde potencia: binom vs NIR 0.183→0.060; por eso el headline es el de todo el OOS.)
 - **Por qué no es significativo:** en SMCI el agente ya está 95 % corto (alineado con el régimen) → M5/M8/M10
   son la misma apuesta corta; STRATA rescata solo donde el agente discrepa de un régimen que acierta (SPY,
   M10 vs M5 p=0.0041). SMCI es el único activo del panel donde M10 > M5, M8 y B&H (muro estructural 2×2).
