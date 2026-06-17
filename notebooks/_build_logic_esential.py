@@ -945,6 +945,75 @@ Con momentum, SPY/aug subía a accuracy $0.59$ y era significativo vs azar — p
 
 # ---------------------------------------------------------------------------
 md(r"""
+## 14d. El ensemble de M10: qué es, por qué ayuda y por qué es lícito
+
+El M10 desplegable no es **un** XGBoost, es el **promedio de 10**. Esto conviene tenerlo clavado para la
+defensa.
+
+### Qué es exactamente
+
+Un XGBoost tiene **azar dentro**: cada árbol ve solo el 80 % de las filas (`subsample=0.8`) y el 80 % de las
+features (`colsample_bytree=0.8`), elegidas según una **semilla**. Cambias la semilla → modelo distinto →
+`p1` distinto. Ese azar es **ruido**, no información. El ensemble es la receta más simple:
+
+1. Entreno **10 XGBoost idénticos**, cambiando solo la semilla (42, 43, …, 51).
+2. Promedio sus probabilidades: $p_1^{\text{ens}} = \frac{1}{10}\sum_k p_1^{(k)}$.
+3. Posición = $\text{signo}(p_1^{\text{ens}} - 0.5)$.
+
+Mismas 22 features, mismo walk-forward, mismo embargo. **Apuesta todos los días** (cobertura 100 %), igual
+que B&H.
+
+### Por qué ayuda (reducción de varianza)
+
+Al promediar, la **señal** (lo que dicen las features) es común a las 10 y se conserva; el **ruido** del
+muestreo aleatorio es distinto en cada una y se **cancela parcialmente**. Resultado: una $p_1$ más **estable**
+→ sube algo la accuracy (0.52 → 0.552) y, sobre todo, mejora el Sharpe (0.85 → 1.84) y la equity (1.45× →
+3.24×), porque las posiciones dan menos vaivenes. La celda de abajo lo ilustra con números.
+
+### Por qué es lícito (y no es trampa)
+
+- **Principio de *bagging*** (Breiman 1996): *"the vital element is the instability of the prediction method;
+  if perturbing the learning set can cause significant changes in the predictor, bagging can improve
+  accuracy."* Promediar versiones inestables reduce el componente de **varianza** sin añadir sesgo.
+- **Aleatorización del aprendiz** (Dietterich 2000): mi variabilidad es la **semilla** (mismo dato, distinto
+  submuestreo interno) → *seed averaging*. Matiz honesto: el *bagging* clásico remuestrea los **datos**
+  (bootstrap); cito Breiman por el **principio**, Dietterich por la aleatorización del aprendiz.
+- **Sin look-ahead:** cada uno de los 10 se entrena **solo con el pasado** (mismo WF). Promediar no mira el
+  futuro.
+- **Sin cherry-pick:** promedio **las 10** semillas; **no elijo la mejor** (eso sí sería p-hacking).
+
+### Honestidad (lo dices tú)
+
+El ensemble **reduce ruido, no crea señal**. Si la dirección diaria de SMCI es casi aleatoria, promediar no
+inventa información → la ganancia de accuracy es **modesta** y la significancia no sobrevive (DSR=0.72<0.95).
+Pero como decisión metodológica es impecable: es la **única** palanca que mejora sin tocar la cobertura ni
+mirar el futuro. *(Respaldo completo en `decisiones_respaldadas_literatura.md` §2.)*
+
+> **Frase:** *"El M10 promedia 10 XGBoost que solo difieren en la semilla; reduce la varianza de la predicción
+> siguiendo el principio del bagging [Breiman 1996], sin remuestrear datos —seed averaging, aleatorización del
+> aprendiz [Dietterich 2000]—, sin look-ahead y sin elegir la mejor semilla. Mejora accuracy y, sobre todo,
+> Sharpe/equity; pero reduce ruido, no crea señal."*
+""")
+
+code(r'''
+# Ilustración del ensemble: promediar estimaciones ruidosas reduce su dispersión (no necesita datos reales).
+import numpy as np
+rng = np.random.default_rng(0)
+p_true = 0.55                       # "señal" verdadera (prob. de subida de un día)
+n_dias, n_seeds = 2000, 10
+# Cada semilla estima p_true con ruido (el azar interno del XGBoost):
+ruido = rng.normal(0, 0.08, size=(n_dias, n_seeds))
+p_por_semilla = p_true + ruido      # estimación de 1 sola semilla, por día
+p_ensemble = p_por_semilla.mean(axis=1)   # promedio de las 10 semillas, por día
+
+print(f"Desviación típica de la estimación con 1 sola semilla : {p_por_semilla[:, 0].std():.4f}")
+print(f"Desviación típica de la estimación con ensemble de 10  : {p_ensemble.std():.4f}")
+print(f"Reducción de varianza ~ 1/sqrt(10) = {1/np.sqrt(n_seeds):.2f}  -> menos decisiones volcadas por ruido")
+print("La señal (0.55) se conserva; el ruido del muestreo se cancela. Eso es el ensemble.")
+''')
+
+# ---------------------------------------------------------------------------
+md(r"""
 ## 15. Checklist — lo que debes saber recitar
 
 1. **STRATA no predice $r_{t+1}$.** Es $f:(\text{decisión}_t,\text{mercado}_t)\to

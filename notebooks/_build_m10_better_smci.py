@@ -260,23 +260,57 @@ print(f"Ensemble: accuracy {ec['accuracy']} (> base 0.52) · Sharpe {ec['sharpe_
 
 md(r"""### §C.3 · Por qué la abstención no ayuda
 
-Si la **confianza** del modelo (|p1−0.5|) discriminara los aciertos, abstenerse en los días dudosos subiría la
-accuracy en los días en que **sí** se apuesta. No ocurre: la accuracy en días activos ≈ la completa.""")
+La literatura de **clasificación selectiva / aprendizaje con rechazo** (Chow 1970; Cortes, DeSalvo & Mohri
+2016) dice que abstenerse en los días de baja confianza sube la accuracy en los que sí apuestas — **pero solo
+si la confianza ordena bien la dificultad** (si está alineada con dónde yerra el modelo). En SMCI **no ocurre**:
+la accuracy en días activos **no supera** a la completa, y la abstención por régimen incluso la **baja** (0.489
+< 0.552). Además abstenerse reduce la **cobertura**, rompiendo la comparación con B&H (100 %). Detalle y citas:
+`decisiones_respaldadas_literatura.md` §11.""")
 
-code(r"""abst = [c for c in ("abst_regime", "abst_accord", "vote_m5_m10") if c in met]
-x = np.arange(len(abst)); w = 0.35
-acc_full = [met[c]["accuracy"] for c in abst]
-acc_act = [met[c].get("accuracy_activos") for c in abst]
-cov = [met[c].get("coverage") for c in abst]
-fig, ax = plt.subplots(figsize=(9, 4.2))
-ax.bar(x - w / 2, acc_full, w, label="accuracy completa", color="#9e9e9e", edgecolor="black", lw=0.6)
-ax.bar(x + w / 2, acc_act, w, label="accuracy días activos", color="#2c7fb7", edgecolor="black", lw=0.6)
-ax.axhline(0.5, color="black", ls="--", lw=1)
-for i, c in enumerate(abst):
-    ax.text(i, max(acc_full[i], acc_act[i]) + 0.004, f"cob={cov[i]:.2f}", ha="center", fontsize=9)
-ax.set_xticks(x); ax.set_xticklabels(abst); ax.set_ylim(0.46, 0.56)
-ax.set_ylabel("accuracy"); ax.set_title("Abstención: activos ≈ completa → la confianza no discrimina")
-ax.legend(fontsize=8); plt.tight_layout(); plt.show()""")
+code(r"""# Comparación detallada: ensemble (sin abstención) vs abstención por régimen vs por acuerdo.
+methods = ["ens", "abst_regime", "abst_accord"]
+labels = ["Ensemble\n(sin abstención)", "Abstención\npor régimen", "Abstención\npor acuerdo"]
+acc_full = [met[m]["accuracy"] for m in methods]
+acc_act = [met[m].get("accuracy_activos", met[m]["accuracy"]) for m in methods]   # ens actúa siempre
+cov = [met[m].get("coverage", 1.0) for m in methods]
+x = np.arange(len(methods)); w = 0.38
+
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# --- Panel izquierdo: accuracy a cobertura completa vs en días activos ---
+b1 = a1.bar(x - w / 2, acc_full, w, label="accuracy (cobertura completa, 100% días)", color="#2c7fb7", edgecolor="black", lw=0.8)
+b2 = a1.bar(x + w / 2, acc_act, w, label="accuracy (solo días que ACTÚA)", color="#f0a830", edgecolor="black", lw=0.8)
+a1.axhline(0.5, color="black", ls="--", lw=1.2, label="azar (0.5)")
+a1.axhline(acc_full[0], color="#2c7fb7", ls=":", lw=1.4, label=f"nivel ensemble ({acc_full[0]:.3f})")
+for bars in (b1, b2):
+    for b in bars:
+        a1.text(b.get_x() + b.get_width() / 2, b.get_height() + 0.0025, f"{b.get_height():.3f}",
+                ha="center", fontsize=10, fontweight="bold")
+a1.set_xticks(x); a1.set_xticklabels(labels, fontsize=10); a1.set_ylim(0.45, 0.575)
+a1.set_ylabel("accuracy direccional", fontsize=11)
+a1.set_title("Abstener NO sube la accuracy — por régimen incluso la BAJA", fontsize=11)
+a1.legend(fontsize=8.5, loc="lower center"); a1.grid(axis="y", alpha=0.25)
+
+# --- Panel derecho: % de días en que el modelo actúa (cobertura) ---
+colors = ["#4caf50", "#c44e52", "#c44e52"]
+b3 = a2.bar(x, [c * 100 for c in cov], color=colors, edgecolor="black", lw=0.8, width=0.55)
+a2.axhline(100, color="#4caf50", ls=":", lw=1.4, label="B&H y ensemble = 100%")
+for b, c in zip(b3, cov):
+    a2.text(b.get_x() + b.get_width() / 2, c * 100 + 1.5, f"{c * 100:.0f}%", ha="center", fontsize=12, fontweight="bold")
+a2.set_xticks(x); a2.set_xticklabels(labels, fontsize=10); a2.set_ylim(0, 112)
+a2.set_ylabel("% de días en que el modelo APUESTA (cobertura)", fontsize=11)
+a2.set_title("La abstención reduce la cobertura → no comparable con B&H", fontsize=11)
+a2.legend(fontsize=8.5, loc="lower center"); a2.grid(axis="y", alpha=0.25)
+
+fig.suptitle("SMCI · Abstención condicional: cobertura vs accuracy (embargo=1)", fontsize=13, fontweight="bold")
+plt.tight_layout(); plt.show()
+
+print(f"{'método':22} {'% días actúa':>13} {'acc completa':>13} {'acc días activos':>17}")
+print("-" * 68)
+for m, lab in zip(methods, ["ensemble", "abst. régimen", "abst. acuerdo"]):
+    print(f"{lab:22} {cov[methods.index(m)]*100:>11.0f}% {met[m]['accuracy']:>13} {acc_act[methods.index(m)]:>17}")
+print("\nLectura: el ensemble apuesta el 100% con accuracy 0.552. Abstenerse deja de jugar 23-25% de los días,")
+print("y en los que SÍ juega NO mejora (régimen 0.489 < 0.552) → la confianza/régimen no discrimina la dificultad.")""")
 
 # ---------------------------------------------------------------------------------------------
 md(r"""## §E · Elegir la mejor estrategia por **selección en validación** (no p-hacking)
