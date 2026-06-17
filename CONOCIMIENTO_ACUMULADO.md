@@ -1,5 +1,10 @@
 # Conocimiento acumulado — síntesis ejecutiva (10 min)
 
+> **[Coherencia 2026-06-17]** El caso de estudio canónico es **SMCI** (benchmark justo, M10-WF ensemble
+> 0,552). Las cifras de SPY que aparecen abajo con **0,539 son CPCV (look-ahead)**: valen solo como *contraste
+> del método*, no como resultado desplegable (lo desplegable es walk-forward, embargo=1). Para lo canónico y al
+> día: **`memoria/MANUAL.md`**, `RESULTADOS_OBJETIVO.md §1bis`, `DECISIONES_ESENCIALES.md #13–16`.
+
 Lectura obligatoria antes de cualquier experimento. Para profundidad, consulta `_archivo_proyecto_anterior/`.
 
 ---

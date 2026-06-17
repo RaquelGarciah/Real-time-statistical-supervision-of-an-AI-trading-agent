@@ -1,5 +1,9 @@
 # Resultados objetivo — cifras de referencia (no objetivo único)
 
+> **[Coherencia 2026-06-17]** Resultado canónico del **caso de estudio = §1bis (SMCI, walk-forward, embargo=1,
+> M10 0,552)**. El §1 (SPY) es el *método* y su **0,539 es CPCV** (contraste, no desplegable). Resumen
+> ejecutivo de una página: **`memoria/MANUAL.md`**.
+
 **ESTRUCTURA:** §1 = cifras canónicas del nuevo proyecto (fuente única de verdad para la memoria LaTeX). §2 = tabla del proyecto anterior (referencia histórica, no canónica).
 
 ---
