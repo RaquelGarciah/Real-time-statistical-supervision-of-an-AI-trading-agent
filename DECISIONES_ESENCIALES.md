@@ -205,8 +205,10 @@ no puede tumbarlo con "una estrategia trivial gana", como sí pasa en SPY donde 
 (B&H batible) el agente ya acierta yendo corto → M10 no se separa; en los que suben, M10 rescata pero B&H
 gana. La casilla "activo cae + agente equivocado" está **vacía**. SMCI es el caso umbral.
 
-**Dónde está justificada.** `notebooks/m10_better_smci.ipynb` §F/§F.2; `outputs/experiments/panel_intervention_scan.json`;
-BITACORA 2026-06-16.
+**Dónde está justificada.** **Recorrido completo: `docs/chats/decision_activo/smci.md`** (resumen + decisiones
+en orden + narrativa fase por fase, desde "no sé qué activo" hasta consolidado). Además:
+`notebooks/m10_better_smci.ipynb` §F/§F.2; `outputs/experiments/panel_intervention_scan.json`; BITACORA
+2026-06-16.
 
 **Estado.** Viva. Matiza la decisión #1 (SPY sigue siendo el caso central del *método*; SMCI es el caso de
 estudio que pide el tutor para "batir a todo en accuracy").
