@@ -524,7 +524,7 @@ La regla correcta, que en el código lleva el nombre \texttt{signal\_lag=1}, es 
 \[
 \text{resultado del día} \;=\; w_t \cdot \rnext.
 \]
-La posición se fija en $t$ y se evalúa con el primer retorno que aún no se conocía, el de $t+1$. Esta es la única convención que reportamos. Encaja con el filtrado causal de la Sección~\ref{sec:hmm-filtrado}: el régimen $\gammaf$ que alimenta la decisión en $t$ se calcula solo con $x_{1:t}$, y la decisión resultante se enfrenta a $\rnext$, de modo que en ninguna etapa, ni en la inferencia del estado del mercado ni en la contabilidad del resultado, interviene información posterior a $t$. La construcción es la recomendada en la literatura sobre evaluación de estrategias financieras, que insiste en alinear el etiquetado de cada decisión con el horizonte en el que se materializa su resultado \cite{lopezdeprado2018}.
+La posición se fija en $t$ y se evalúa con el primer retorno que aún no se conocía, el de $t+1$. Esta es la única convención que reportamos. Encaja con el filtrado causal de la Sección~\ref{sec:hmm-filtrado}: el régimen $\gammaf$ que alimenta la decisión en $t$ se calcula solo con $x_{1:t}$, y la decisión resultante se enfrenta a $\rnext$. La construcción es la recomendada en la literatura sobre evaluación de estrategias financieras, que insiste en alinear el etiquetado de cada decisión con el horizonte en el que se materializa su resultado \cite{lopezdeprado2018}.
 
 \subsection{Validación walk-forward (rolling-origin)}
 \label{sec:cpcv-walkforward}
