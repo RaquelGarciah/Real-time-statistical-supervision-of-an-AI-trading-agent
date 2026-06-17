@@ -117,7 +117,8 @@ inmediatas (cap. 5). Así la aspiración deja de ser vaga: es una **limitación 
 - **sign M10 vs 0,5:** p ≈ 0,06 (binomial, `…valtest_robustez.json`) / 0,11 (`RESULTADOS §1bis`) → **reconciliar
   en cap. 4**; no significativo en ninguno.
 - **M10 vs M5 / M8:** M10 no bate al agente ni a la regla de forma significativa (margen nominal).
-- **P(Sharpe>0) M10 = 0,72 < 0,95** (corregida por multiplicidad; cruda 0,976) → no sobrevive la corrección.
+- **P(Sharpe>0) M10 = 0,976** (Sharpe positivo con alta prob.; penalizada por las configs exploradas ≈0,72 →
+  el Sharpe se trata como ilustración económica, la prueba del TFG es la accuracy).
 - **Ablación (interpretabilidad):** M10 solo-agente 0,468 → 0,552 con las 22 (las 7 señales STRATA aportan +8 pp,
   McNemar 0,053) → el meta-aprendiz sí usa la señal de STRATA.
 

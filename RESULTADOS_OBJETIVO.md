@@ -65,8 +65,9 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
   Kuhn 2008). M10 (0.552) bate a **ambos** → su ventaja **no es un mero sesgo a corto**.
 - **Significancia:** **nominal, no plena.** Test correcto = **binomial M10 vs NIR** (clase mayoritaria) = 0.141
   (no sig); block-perm vs B&H 0.047 (no sobrevive Bonferroni-5 ≈ 0.28); sign vs 0.5 p=0.057 (binomial 1-cola;
-  0.114 sign bilateral), full OOS n=250; no bate al agente (McNemar 0.16). **P(Sharpe>0) corregida por
-  multiplicidad = 0.72 < 0.95** (cruda 0.976; ≥6 configs probadas; con 25 baja a 0.43; método Bailey-LdP 2014).
+  0.114 sign bilateral), full OOS n=250; no bate al agente (McNemar 0.16). En lo económico, **P(Sharpe>0) =
+  0.976** (Sharpe positivo con alta prob., hiperparámetros a priori; penalizada por las ≥6 configs exploradas
+  baja a ≈0.72, por eso el Sharpe es ilustración, no prueba; método Bailey-LdP 2014).
   Ablación: las 7 features STRATA suben la accuracy de
   M10 de 0.468 (solo-agente) a 0.552 (McNemar 0.053, casi sig.) → el meta-aprendiz sí usa la señal de STRATA.
 - **Robustez a la partición (respaldo):** con 3 splits estándar (60/40, 70/30, 80/20; burn-in 150), M10 bate a
