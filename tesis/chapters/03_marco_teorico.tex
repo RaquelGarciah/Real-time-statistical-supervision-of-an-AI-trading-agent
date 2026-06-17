@@ -435,6 +435,42 @@ independiente de $r$. Esta elección equivale a suponer que la longitud de los t
 
 La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación dentro de un tramo en una familia exponencial con su \emph{previa conjugada}: la posterior de los parámetros del tramo pertenece entonces a la misma familia que la previa, y la predictiva del dato nuevo tiene expresión analítica que se actualiza de forma incremental al llegar cada observación. Esta conjugación es lo que hace que la recursión de la Proposición~\ref{prop:bocpd} sea barata de evaluar día a día. La especificación concreta del modelo de observación de PSA se detalla en el capítulo de metodología. Como contexto, el trabajo de Fearnhead sobre inferencia exacta para modelos multipunto desarrolla los métodos de cálculo de estas distribuciones predictivas y de la partición en tramos sobre los que se apoya el enfoque online \cite{fearnhead2006}.
 
+\section{STRATA aplicado: construcción, calibración y umbrales}
+\label{sec:strata-aplicado}
+
+Con la teoría de los tres detectores ya disponible, esta sección construye las señales de STRATA. Cada señal traduce la salida de uno de los modelos de las Secciones~\ref{sec:hmm} a~\ref{sec:bocpd} en un número que mide un tipo de incoherencia de la decisión del agente, y cada una lleva asociado un umbral por encima del cual la señal se considera activa. El criterio que gobierna todo lo que sigue es el de la Sección~\ref{sec:hmm-filtrado}: solo se usa información disponible hasta el día $t$.
+
+\subsection{Datos y calibración}
+\label{sec:strata-calib}
+
+Los tres modelos se estiman una sola vez, sobre un periodo de calibración fijo y anterior al periodo de evaluación, y no se reentrenan después. Esta separación estricta entre calibración y explotación es la primera barrera contra la fuga temporal: ningún parámetro de STRATA ha visto los datos sobre los que luego se le juzga. Fijar un único periodo de calibración presupone que la estructura de la serie es razonablemente estable dentro de él, hipótesis que se puede contrastar con el test de cambios estructurales múltiples de Bai y Perron \cite{bai1998, bai2003}, que localiza el número y la posición de las rupturas en los parámetros de un modelo. La estabilidad suficiente en ese periodo es lo que justifica fijar los parámetros una vez en lugar de moverlos con el tiempo.
+
+\subsection{RAM: desajuste entre régimen y acción}
+\label{sec:strata-ram}
+
+El detector RAM mide si la dirección de la apuesta del agente es coherente con el régimen de mercado. Su materia prima es el posterior filtrado $\gammaf$ de la Sección~\ref{sec:hmm-filtrado}, que asigna a cada día una probabilidad sobre los tres regímenes. Falta conectar cada régimen con una dirección, y ahí entra la única pieza económica del detector.
+
+En los índices bursátiles agregados, el retorno y la volatilidad están correlados negativamente: los tramos de alta volatilidad coinciden con caídas y los de baja volatilidad con subidas. Black documentó este fenómeno y lo llamó \emph{leverage effect} \cite{black1976}; Christie lo estudió de forma sistemática \cite{christie1982}. En un índice, por tanto, el régimen de alta volatilidad que identifica el HMM adquiere una lectura direccional: alta volatilidad tiende a significar mercado a la baja. Esa correspondencia es una propiedad de los índices, no una ley universal; en una acción individual el leverage effect es débil y la asociación entre nivel de volatilidad y dirección se diluye. Por eso STRATA no fija la dirección de cada régimen a mano, sino que la aprende del dato: para cada régimen $k$ se toma el signo de la media de retorno $\muk$ estimada en la calibración, de modo que el régimen de media más negativa se asocia a la dirección bajista y el de media más positiva a la alcista. Este prior por activo es lo que permite aplicar RAM a cualquier serie sin suponer que se comporta como un índice.
+
+Con el prior fijado, el \emph{RAM score} es la masa de probabilidad filtrada sobre los regímenes en los que la acción del agente es incoherente con la dirección aprendida. Si el agente abre una posición larga, la incoherencia se acumula en los regímenes bajistas; si la abre corta, en los alcistas. El score vive en $[0,1]$ y tiene una interpretación probabilística directa: es la probabilidad, según el HMM, de estar en un régimen que contradice la apuesta. El detector se activa con tres umbrales fijados ex ante, $0{,}25$, $\tau = 0{,}50$ y $0{,}70$, que marcan severidad baja, media y alta. El umbral operativo es el central, $\tau = 0{,}50$, que equivale a la regla de mayoría: intervenir cuando el régimen contrario es el más probable. La elección de $\tau = 0{,}50$ no es un parámetro ajustado, sino consecuencia de que el score resulta casi binario, con casi toda su masa cerca de $0$ o de $1$, de modo que el acierto del detector es insensible al umbral en un rango amplio alrededor de $0{,}5$.
+
+\subsection{GSO: tamaño compatible con la volatilidad}
+\label{sec:strata-gso}
+
+El detector GSO mide si el tamaño de la apuesta del agente es compatible con la volatilidad vigente. Su referencia teórica es el \emph{volatility targeting}: dimensionar la posición de forma inversamente proporcional a la volatilidad estimada para mantener el riesgo aproximadamente constante. Moreira y Muir mostraron que escalar la exposición en sentido inverso a la volatilidad mejora el rendimiento ajustado por riesgo \cite{moreira2017}. GSO toma la volatilidad condicional $\sigmat$ del GARCH$(1,1)$-$t$ de la Sección~\ref{sec:garch}, calculada con información hasta $t-1$ para no incurrir en fuga, y compara el tamaño $|w_t|$ del agente con la banda que prescribiría el volatility targeting. Cuando el tamaño excede esa banda, GSO lo interpreta como sobreexposición y emite señal. Los umbrales se fijan en los percentiles $95$ y $99$ de la distribución de la discrepancia sobre el periodo de calibración.
+
+Conviene adelantar una limitación que se documenta con honestidad en los resultados: sobre los datos estudiados, GSO rara vez supera la severidad media, porque el tamaño que toma el agente casi nunca viola la banda de forma marcada. Es un hallazgo metodológico negativo, no un fallo de implementación, y se reporta como tal.
+
+\subsection{PSA: coherencia temporal del agente}
+\label{sec:strata-psa}
+
+El detector PSA vigila si el agente cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente. En lugar de la probabilidad absoluta de cambio, PSA usa su incremento de un día al siguiente, que detecta el momento de la ruptura y no el estado posterior a ella; la dinámica de puntos de cambio se gobierna con una función de hazard constante de escala $1/60$, calibrada por sensibilidad sobre el periodo de calibración. Como en RAM y GSO, sus umbrales son los percentiles $95$ y $99$ de la calibración.
+
+\subsection{La capa de intervención}
+\label{sec:strata-intervencion}
+
+Las tres señales alimentan una capa de intervención que actúa sobre la posición $w_t$ en uno de tres modos. El modo \emph{warn} solo registra. El modo \emph{reduce} atenúa el tamaño cuando se supera el umbral correspondiente, encogiendo $|w_t|$ sin tocar el signo. El modo \emph{override} sustituye la decisión: cuando el RAM score supera el gate $\tau = 0{,}50$, la posición se reemplaza por la más próxima dentro de la banda admisible que marca el régimen, signo incluido. Esta variante, que denotamos \emph{override C}, usa las probabilidades de régimen filtradas y la convención causal $w_t \cdot \rnext$, de modo que en ninguna etapa interviene información posterior a $t$. La regla de referencia M8 es exactamente esta configuración: override C sobre el régimen filtrado, con $\mathrm{signal\_lag} = 1$.
+
 \section{Conceptos económicos para un tribunal sin economía}
 \label{sec:economia}
 
