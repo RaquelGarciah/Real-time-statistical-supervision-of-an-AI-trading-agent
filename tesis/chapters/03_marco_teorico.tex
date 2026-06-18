@@ -59,7 +59,7 @@ La intervención puede ir desde solo registrar la señal hasta encoger la posici
 Hay que distinguir desde el principio entre la capa de señales y las reglas que las consumen. Cuando escribimos STRATA nos referimos siempre a la capa que produce las señales, mientras que cuando hablamos de M8 o M10 estamos haciendo referencia a las estrategias que la utilizan. \textbf{M8} es una regla determinista de umbrales fijos, la capa de intervención que se detalla en la Sección~\ref{sec:strata-intervencion}, y la usamos como referencia interpretable. \textbf{M10}, en cambio, no aplica umbrales fijos sino que es un modelo de segundo nivel (un \emph{meta-learner}) que toma como entradas las salidas del agente y de los
 detectores de STRATA, aprende a combinar esas mismas señales para decidir la dirección del
 día siguiente. Se entrena solo con el pasado y es el
-objeto central del caso de estudio, que se desarrollará en el capítulo de resultados.
+objeto central del caso de estudio, que se desarrollará en el capítulo 4.
 
 \section{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
@@ -69,7 +69,7 @@ objeto central del caso de estudio, que se desarrollará en el capítulo de resu
 
 Un único modelo con parámetros constantes describe mal una serie financiera larga. Un mercado en tendencia alcista tranquila y un mercado en plena caída no comparten ni media ni volatilidad de los retornos, y forzar un solo conjunto de parámetros para ambos promedia dos comportamientos que conviene separar. La alternativa clásica es admitir que la serie atraviesa distintos \emph{regímenes}, cada uno con su propia ley de probabilidad, y que el régimen vigente cambia en el tiempo de forma no observable directamente. Hamilton formalizó esta idea para series económicas mediante un proceso de Markov sobre los estados no observados \cite{hamilton1989}: el régimen sigue una cadena de Markov y, condicionado a él, la serie observada se distribuye según los parámetros de ese régimen.
 
-En el caso que ocupa a esta memoria interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura puede cambiar según el activo, como se discute en la Sección~\ref{sec:hmm-K}. El instrumento concreto es el modelo oculto de Markov gaussiano, que se define a continuación.
+En el caso que nos ocupa interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura puede cambiar según el activo, como se discute en la Sección~\ref{sec:hmm-K}. El instrumento concreto es el modelo oculto de Markov gaussiano, que se define a continuación.
 
 \subsection{Definición del HMM gaussiano}
 \label{sec:hmm-def}
