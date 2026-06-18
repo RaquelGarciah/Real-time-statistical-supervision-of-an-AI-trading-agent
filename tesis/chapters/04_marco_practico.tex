@@ -72,7 +72,7 @@ Los umbrales de los detectores los fijamos ex-ante, antes de ver el OOS: $\tau=0
 \subsection{Un día de intervención por dentro}
 \label{sec:smci-undia}
 
-La mecánica se ve mejor en un caso concreto (Figura~\ref{fig:cap4-dia}). Tomemos un día en que el agente apuesta corto y el posterior filtrado del HMM coloca la masa de probabilidad en un régimen cuya dirección dominante apunta al alza. GSO actúa primero y acota la magnitud a la banda de volatilidad del GARCH, aunque aquí no recorta nada porque la apuesta de $0{,}10$ ya cabe en la banda. A continuación el RAM score supera el gate $\tau=0{,}5$ y su operador reemplaza la posición por el signo del régimen dominante, conservando esa magnitud acotada. PSA no se activa. No hay salto de \emph{sizing} respecto a la víspera. La supervisión consiste, sobre este activo, en voltear el signo cuando el agente contradice a un régimen que el modelo considera fiable.
+La mecánica se ve mejor en un caso concreto (Figura~\ref{fig:cap4-dia}). Tomemos un día en que el agente apuesta corto y el posterior filtrado del HMM coloca la masa de probabilidad en un régimen cuya dirección dominante apunta al alza. GSO actúa primero y acota la magnitud a la banda de volatilidad del GARCH, aunque aquí no recorta nada porque la apuesta de $0{,}10$ ya cabe en la banda. A continuación el RAM score supera el gate $\tau=0{,}5$ y su operador reemplaza la posición por el signo del régimen dominante, conservando esa magnitud acotada. PSA no se activa: el tamaño de la posición apenas cambia respecto al día anterior, así que no hay un cambio brusco que frenar. La supervisión consiste, sobre este activo, en voltear el signo cuando el agente contradice a un régimen que el modelo considera fiable.
 
 \begin{figure}[htbp]
 \centering
