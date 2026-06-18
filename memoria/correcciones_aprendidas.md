@@ -45,15 +45,29 @@ _(vacío)_
   - Ejemplo: «No es un fallo de implementación sino un hallazgo en sí mismo, y se reporta en los resultados con esa lectura.» → «Es una limitación del detector sobre este activo, que recojo en los resultados.»
   - Afecta a: redactor-tesis · estilo-raquel
 
-- **Regla:** Elimina los meta-comentarios sobre la propia redacción ("Insistimos en esta distinción a lo largo de la memoria", "conviene subrayar/recordar/enunciar que", "como veremos"). Enuncia la idea una sola vez, directa; si se va a repetir, que se repita sin anunciarlo.
-  - Estilo · Prioridad alta (orden de exclusión: no metas estas frases) · Visto 3x · 2026-06-18
+- **Regla:** Elimina los meta-comentarios sobre la propia redacción ("Insistimos en esta distinción a lo largo de la memoria", "conviene subrayar/recordar/enunciar que", "cabe destacar/mencionar", "es importante señalar", "es esencial que", "como veremos"). El énfasis va DENTRO de la frase ("lo decisivo es", "esto subraya", "merece atención"), nunca anunciándolo. Enuncia la idea una sola vez, directa; si se va a repetir, que se repita sin anunciarlo.
+  - Estilo · Prioridad alta (orden de exclusión: no metas estas frases) · Visto 4x · 2026-06-18
   - Ejemplo: «Insistimos en esta distinción a lo largo de la memoria: STRATA no predice el retorno, sino que mide…» → «STRATA no predice el retorno: mide en qué grado…»
-  - Afecta a: redactor-tesis · estilo-raquel
+  - Afecta a: redactor-tesis · estilo-raquel · detector-ia
+  - Lista completa de prohibidos y sus reformulaciones: `tesis_assets/conectores_raquel.md` (sección «Prohibidos»).
 
 - **Regla:** No repitas la coletilla de causalidad ("en ningún paso entra información posterior a $t$", "no usa observaciones futuras", "para no incurrir en fuga") cada vez que aparece un detector o una variante. La causalidad se establece UNA vez en su sitio (la prueba del filtrado y la sección de validación sin fuga); después se da por sentada salvo que aporte algo nuevo.
   - Estilo · Prioridad media · Visto 4x · 2026-06-18
   - Ejemplo: «…trabaja solo con el posterior filtrado y con la convención causal $w_t\cdot r_{t+1}$; en ningún paso entra información posterior a $t$.» → «…trabaja solo con el posterior filtrado del régimen.»
   - Afecta a: redactor-tesis · estilo-raquel · rigor-matematico
+
+- **Regla:** Variedad de conectores. Ningún conector se repite dos veces seguidas en el mismo párrafo; rota sinónimos del banco `tesis_assets/conectores_raquel.md`. Si quieres "además" otra vez, la segunda usa "asimismo", "junto con" o "a esto se añade".
+  - Estilo · Prioridad alta · Visto 1x (directiva de Raquel) · 2026-06-18
+  - Afecta a: redactor-tesis · estilo-raquel · detector-ia
+
+- **Regla:** Conexión implícita siempre que se pueda. El orden lógico bien construido no necesita etiqueta; no antepongas "por tanto/además/en consecuencia" si la relación ya se entiende.
+  - Estilo · Prioridad alta · Visto 1x (directiva de Raquel) · 2026-06-18
+  - Ejemplo: «…implica correlación negativa entre retornos y volatilidad. Por tanto, STRATA explota esta asunción.» → «…implica correlación negativa entre retornos y volatilidad. STRATA explota esta asunción.»
+  - Afecta a: redactor-tesis · estilo-raquel
+
+- **Regla:** Densidad razonable de conectores. Ni etiqueta en cada frase (relleno) ni saltos sin puente lógico; conecta donde el lector lo necesita.
+  - Estilo · Prioridad media · Visto 1x (directiva de Raquel) · 2026-06-18
+  - Afecta a: redactor-tesis · estilo-raquel
 
 ---
 

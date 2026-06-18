@@ -13,8 +13,10 @@
 
 **Vocabulario AI-typical (no usar):**
 - Inglés: *delve, delving, moreover, furthermore, in essence, it's worth noting*.
-- Español: *cabe destacar, es importante mencionar/señalar, en esencia, podemos observar que, se puede afirmar
-  que, vale la pena señalar, abordaremos, exploraremos* (tono de manual), *en resumen* al cierre de cada sección.
+- Español: *cabe destacar, cabe mencionar, es importante mencionar/señalar, conviene subrayar/recordar, es
+  esencial que, en esencia, podemos observar que, se puede afirmar que, vale la pena señalar, abordaremos,
+  exploraremos* (tono de manual), *en resumen* al cierre de cada sección. Estos meta-comentarios anuncian la
+  redacción; el énfasis va dentro de la frase (*lo decisivo es, esto subraya, merece atención*).
 
 **Estructura:**
 - **Conectores-etiqueta** al inicio de cada frase (*además, por otro lado* sin contraste real, *en conclusión*).
@@ -32,7 +34,9 @@ De las muestras en `tesis_assets/estilo_raquel/` (Estructuras, Geometría Lineal
 - **Voz activa** predominante ("denotamos", "tomamos"), pasiva solo cuando es técnica.
 - **Rigor**: cada símbolo definido antes de usarse; demostraciones completas, no "por el Teorema X".
 - **Conectores naturales**: "así", "de ahí que", "acabamos de ver que", "por tanto" usados con sentido, no como
-  etiqueta en cada frase.
+  etiqueta en cada frase. **Banco completo por función en `tesis_assets/conectores_raquel.md`**, con tres reglas:
+  variedad obligatoria (ningún conector dos veces seguidas en un párrafo), conexión implícita siempre que se
+  pueda, densidad razonable.
 - **Explica con propósito**: transmite comprensión ("α+β mide la persistencia de la volatilidad: cuán despacio
   se reabsorbe un golpe"), no enuncia mecánicamente.
 
