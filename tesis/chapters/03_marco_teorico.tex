@@ -406,7 +406,7 @@ El estimador resultante hereda las buenas propiedades de la máxima verosimilitu
 
 Los dos modelos anteriores miran el mercado. El detector que ahora se introduce mira al \emph{agente}: vigila si la serie de decisiones (en concreto, el tamaño de las posiciones que va tomando) sufre una ruptura estructural, un cambio de comportamiento que no se explica como fluctuación dentro del mismo patrón. El instrumento es la detección bayesiana de puntos de cambio online de Adams y MacKay \cite{adams2007}.
 
-Sea $x_{1:t}$ la secuencia observada hasta el día $t$, donde aquí $x_t$ es la magnitud que se vigila (el tamaño de la posición del agente). Un \emph{punto de cambio} es un instante en el que los parámetros que generan la serie cambian; entre dos puntos de cambio consecutivos la serie se considera generada por un mismo modelo con parámetros fijos. La variable central es la \emph{run-length} $r_t$, el número de pasos transcurridos desde el último punto de cambio:
+Sea $x_{1:t}$ la secuencia observada hasta el día $t$, donde aquí $x_t$ es la magnitud que se vigila (el tamaño de la posición del agente). Un \emph{punto de cambio} es un instante en el que los parámetros que generan la serie cambian; entre dos puntos de cambio consecutivos la serie se considera generada por un mismo modelo con parámetros fijos. Adoptamos el \emph{modelo de particiones por producto} \cite{adams2007}: los segmentos que delimitan los puntos de cambio son independientes entre sí y, dentro de cada uno, las observaciones son i.i.d. según el modelo del segmento. Esta hipótesis, análoga a la independencia condicional $(\ast)$ del HMM, es la que sostiene la recursión que sigue. La variable central es la \emph{run-length} $r_t$, el número de pasos transcurridos desde el último punto de cambio:
 \[
 r_t \in \{0, 1, 2, \dots\}, \qquad
 r_t = 0 \;\Leftrightarrow\; \text{hay un punto de cambio en } t,
@@ -426,7 +426,7 @@ que gobierna la frecuencia a priori de los puntos de cambio. El segundo es la \e
 \[
 \pi^{(r)}_{\mathrm{pred}} \;=\; \Prob\big(x_t \mid r_{t-1} = r,\, x_{1:t-1}\big),
 \]
-que se calcula con las observaciones acumuladas desde el último reinicio. Con estos dos elementos derivamos la recursión.
+que se calcula con las observaciones acumuladas desde el último reinicio. Con estos dos elementos derivamos la recursión \cite{adams2007}.
 
 \begin{proposicion}[Recursión de Adams--MacKay]
 \label{prop:bocpd}
