@@ -74,7 +74,7 @@ En el caso que ocupa a esta memoria interpretamos los regímenes como estados de
 \subsection{Definición del HMM gaussiano}
 \label{sec:hmm-def}
 
-Un \emph{modelo oculto de Markov} (HMM) consta de una secuencia de estados ocultos y una secuencia de observaciones generadas por esos estados \cite{rabiner1989}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$, con $K$ el número de regímenes. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden: dado el estado en $t$, el estado en $t+1$ no depende del pasado anterior,
+Un \emph{modelo oculto de Markov} (HMM) consta de una secuencia de estados ocultos y una secuencia de observaciones generadas por esos estados \cite{rabiner1989, cappe2005}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$, con $K$ el número de regímenes. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden: dado el estado en $t$, el estado en $t+1$ no depende del pasado anterior,
 \[
 \Prob(z_{t+1} = j \mid z_t = i, z_{t-1}, \dots, z_1) = \Prob(z_{t+1} = j \mid z_t = i).
 \]
