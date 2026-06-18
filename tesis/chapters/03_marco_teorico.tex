@@ -511,7 +511,7 @@ A diferencia del Sharpe, que mide el riesgo por la volatilidad, el Calmar lo mid
 \section{Validación sin fuga temporal}
 \label{sec:cpcv}
 
-Una estrategia que parece excelente sobre datos pasados puede ser un espejismo si su evaluación ha usado, aunque sea de forma sutil, información que no estaba disponible en el momento de decidir. Esta sección desarrolla las salvaguardas que impiden esa contaminación, conocida como \emph{fuga temporal} o \emph{look-ahead}, y que son condición necesaria para que las cifras del capítulo de resultados sean creíbles. El hilo conductor es el mismo que recorre la Parte A: solo se permite usar información del pasado y del presente, nunca del futuro.
+Un backtest brillante sobre datos pasados no vale nada si su evaluación usó, aunque sea de forma sutil, información que no estaba disponible al decidir. Esa contaminación es la \emph{fuga temporal} o \emph{look-ahead}; las salvaguardas que la impiden son condición necesaria para que las cifras del capítulo de resultados sean creíbles. La regla es la misma que en la Parte A: solo se usa información del pasado y del presente, nunca del futuro.
 
 \subsection{Causalidad: la regla signal\_lag=1}
 \label{sec:cpcv-causalidad}
