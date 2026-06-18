@@ -5,7 +5,7 @@
 % Tabla principal: valores canónicos del §1bis. Figuras en tesis/figuras/cap4_*.pdf.
 % Estilo: memoria/ESTILO_Y_ANTIIA.md + memoria/correcciones_aprendidas.md. Estructura: memoria/estructura_cap4.md.
 
-La pregunta operativa de este capítulo es concreta. Sobre un activo donde acertar la dirección es genuinamente difícil, ¿un modelo desplegable que consume las señales de STRATA recupera la dirección de un agente que pierde y supera a las estrategias triviales? El caso de estudio es SMCI. A $n \approx 250$ ninguna pieza prueba habilidad por sí sola. Lo que sostiene la conclusión es la convergencia de varias evidencias que apuntan en la misma dirección, y esa idea vertebra todo lo que sigue.
+La pregunta operativa de este capítulo es concreta. Sobre un activo donde acertar la dirección es realmente difícil, ¿un modelo desplegable que consume las señales de STRATA recupera la dirección de un agente que pierde y supera a las estrategias triviales? El caso de estudio es SMCI. A $n \approx 250$ ninguna pieza prueba habilidad por sí sola; lo que sostiene la conclusión es la convergencia de varias evidencias independientes que apuntan en la misma dirección.
 
 \section{El problema y un banco de pruebas justo}
 \label{sec:smci-banco}
@@ -145,7 +145,7 @@ En el plano económico, ilustrativo y no probatorio, M10 multiplica el capital p
 \subsection{Contraste estadístico}
 \label{sec:smci-contraste}
 
-El $0{,}552$ hay que acompañarlo de su contraste. El test primario y los secundarios miden cosas distintas, y los declaramos como tales (Figura~\ref{fig:cap4-forest}). El primario, fijado antes de ejecutar, es el binomial de M10 frente a la clase mayoritaria, que es el baseline de no-habilidad correcto: da $p=0{,}141$, sin significancia al tamaño disponible. Entre los secundarios, la permutación por bloques frente a comprar-y-mantener da $p=0{,}047$, que no sobrevive a la corrección de Bonferroni por las cinco comparaciones ($\alpha$ ajustado $\approx 0{,}28$); el McNemar pareado frente al agente da $p=0{,}16$; y el sign test frente a $0{,}5$ da $p=0{,}057$ en su versión binomial de una cola y $p=0{,}114$ bilateral. La ventaja de M10 es nominal. Con un horizonte de unos $250$ días, acotado porque el agente solo existe tras el corte del modelo de lenguaje, la no-significancia es un límite de potencia, no de signo: todos los tests apuntan en la misma dirección y ninguno cambia de sentido.
+El $0{,}552$ hay que acompañarlo de su contraste. El test primario y los secundarios miden cosas distintas (Figura~\ref{fig:cap4-forest}). El primario, fijado antes de ejecutar, es el binomial de M10 frente a la clase mayoritaria, que es el baseline de no-habilidad correcto: da $p=0{,}141$, sin significancia al tamaño disponible. Entre los secundarios, la permutación por bloques frente a comprar-y-mantener da $p=0{,}047$, que no sobrevive a la corrección de Bonferroni por las cinco comparaciones ($\alpha$ ajustado $\approx 0{,}28$); el McNemar pareado frente al agente da $p=0{,}16$; y el sign test frente a $0{,}5$ da $p=0{,}057$ en su versión binomial de una cola y $p=0{,}114$ bilateral. La ventaja de M10 es nominal. Con un horizonte de unos $250$ días, acotado porque el agente solo existe tras el corte del modelo de lenguaje, la no-significancia es un límite de potencia, no de signo: todos los tests apuntan en la misma dirección y ninguno cambia de sentido.
 
 \begin{figure}[htbp]
 \centering
