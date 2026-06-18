@@ -66,12 +66,12 @@ Hay que distinguir desde el principio entre la capa de señales y las reglas que
 
 Un único modelo con parámetros constantes describe mal una serie financiera larga. Un mercado en tendencia alcista tranquila y un mercado en plena caída no comparten ni media ni volatilidad de los retornos, y forzar un solo conjunto de parámetros para ambos promedia dos comportamientos que conviene separar. La alternativa clásica es admitir que la serie atraviesa distintos \emph{regímenes}, cada uno con su propia ley de probabilidad, y que el régimen vigente cambia en el tiempo de forma no observable directamente. Hamilton formalizó esta idea para series económicas mediante un proceso de Markov sobre los estados no observados \cite{hamilton1989}: el régimen sigue una cadena de Markov y, condicionado a él, la serie observada se distribuye según los parámetros de ese régimen.
 
-En el caso que ocupa a esta memoria interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura no se impone a mano sino que emerge de la estimación, como se discute en la Sección~\ref{sec:hmm-K}. El instrumento concreto es el modelo oculto de Markov gaussiano, que se define a continuación.
+En el caso que ocupa a esta memoria interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Aunque esta lectura podría ser muy distinta dependiendo del activo a analizar, como se discute en la Sección~\ref{sec:hmm-K}. El instrumento concreto es el modelo oculto de Markov gaussiano, que se define a continuación.
 
 \subsection{Definición del HMM gaussiano}
 \label{sec:hmm-def}
 
-Un \emph{modelo oculto de Markov} (HMM, por sus siglas en inglés) consta de una secuencia de estados ocultos y una secuencia de observaciones generadas por esos estados \cite{rabiner1989}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$, con $K$ el número de regímenes. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden: dado el estado en $t$, el estado en $t+1$ no depende del pasado anterior,
+Un \emph{modelo oculto de Markov} (HMM) consta de una secuencia de estados ocultos y una secuencia de observaciones generadas por esos estados \cite{rabiner1989}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$, con $K$ el número de regímenes. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden: dado el estado en $t$, el estado en $t+1$ no depende del pasado anterior,
 \[
 \Prob(z_{t+1} = j \mid z_t = i, z_{t-1}, \dots, z_1) = \Prob(z_{t+1} = j \mid z_t = i).
 \]
@@ -81,7 +81,8 @@ A_{ij} = \Prob(z_{t+1} = j \mid z_t = i), \qquad A_{ij} \ge 0, \quad \sum_{j=1}^
 \]
 y la ley del estado inicial en la \emph{distribución inicial} $\pi = (\pi_1, \dots, \pi_K)$ con $\pi_k = \Prob(z_1 = k)$ y $\sum_k \pi_k = 1$.
 
-El estado no se observa; lo que se observa es $x_t$, el vector de características del día $t$ (en nuestro caso, esencialmente el log-retorno y una medida de volatilidad). Suponemos \emph{emisiones gaussianas}: condicionada al régimen $k$, la observación es normal multivariante,
+El estado no se observa; lo que se observa es $x_t$, el vector de características del día $t$ (en nuestro caso, el log-retorno y una medida de volatilidad). Suponemos \emph{emisiones gaussianas}: condicionada al régimen $k$, la observación es normal multivariante,
+%>>> RAQUEL especifica la medidda de volatilidad
 \[
 x_t \mid z_t = k \;\sim\; \mathcal{N}(\muk, \Sigma_k),
 \]
@@ -94,7 +95,7 @@ El modelo asume dos hipótesis de independencia condicional, palanca de toda der
 \Prob(x_t \mid z_t, z_{t-1}, \dots, z_1, x_{t-1}, \dots, x_1) = \Prob(x_t \mid z_t) = b_{z_t}(x_t),
 \tag{$\ast$}
 \]
-y la dinámica de los estados es markoviana de primer orden, como ya se ha dicho.
+y la dinámica de los estados es markoviana de primer orden.
 
 El conjunto de parámetros es $\lambda = (A, \pi, \{\muk, \Sigma_k\}_{k=1}^{K})$. Para una secuencia observada $x_{1:T} = (x_1, \dots, x_T)$ y una trayectoria oculta $z_{1:T}$, la probabilidad conjunta se factoriza según el grafo del modelo:
 \[
@@ -105,7 +106,7 @@ La verosimilitud de los datos observados se obtiene marginalizando sobre todas l
 \[
 \Prob(x_{1:T} \mid \lambda) = \sum_{z_{1:T}} \Prob(x_{1:T}, z_{1:T} \mid \lambda).
 \]
-Esta suma recorre $K^T$ trayectorias, así que evaluarla término a término es inviable salvo para $T$ minúsculos. El algoritmo \emph{forward} la calcula en tiempo lineal en $T$, y es el objeto de la subsección siguiente.
+Esta suma recorre $K^T$ trayectorias, así que evaluarla término a término es inviable salvo para $T$ minúsculos. El algoritmo \emph{forward} la calcula en tiempo lineal en $T$.
 
 \subsection{Algoritmo forward}
 \label{sec:hmm-forward}
