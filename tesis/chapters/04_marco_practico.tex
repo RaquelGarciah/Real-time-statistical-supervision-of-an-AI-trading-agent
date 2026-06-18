@@ -89,6 +89,11 @@ Partición (val / test) & Accuracy M10 (val) & Accuracy M10 (test) & $n_{\text{t
 \end{tabular}
 \end{table}
 
+% >>> CONSEJERO [cap4-04 · estilo · tentativa]
+%   CAMBIARÍA: el cierre «…no se trata de la suerte de un tramo concreto» repite la idea del párrafo anterior («…artefacto de un corte afortunado»).
+%   POR QUÉ:   misma conclusión dos párrafos seguidos en §Robustez (redundancia local, correcciones_aprendidas.md → Estructura). Es defendible porque son ejes distintos (partición vs tiempo); si lo dejas, diferencia el cierre para no repetir el mismo remate.
+%   REESCRITURA: «…la ventaja se sostiene a lo largo del periodo de evaluación, no en un único tramo.» (y deja «corte afortunado» solo en el párrafo de particiones).
+% <<< CONSEJERO
 La robustez se confirma en el tiempo. Sobre ventanas rodantes a lo largo del periodo de evaluación, M10 supera a comprar-y-mantener en el $71$--$82\,\%$ de las ventanas y al agente en el $67$--$76\,\%$, según el tamaño de ventana. Que la ventaja se sostenga en la mayoría de sub-periodos, y no en uno solo, es la evidencia de que no se trata de la suerte de un tramo concreto. La elección del protocolo también es estable: la accuracy apenas se mueve al variar la frecuencia de reentreno, y el embargo se fija en uno por el horizonte de la etiqueta (Sección~\ref{sec:cpcv-purga}), no para maximizar una cifra.
 
 % [Figura por generar — graficas_clave §3/§5: rolling-window (% de ventanas ganadas) y robustez al embargo. Fuente: notebooks/STRATA_SMCI.ipynb §G, §0bis.]
