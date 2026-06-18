@@ -22,11 +22,6 @@ El agente de trading por sí solo, que denotamos M5, es un perdedor direccional 
 \section{La regla a mano (M8) como referencia}
 \label{sec:m8}
 
-% >>> CONSEJERO [cap4-03 · estilo]
-%   CAMBIARÍA: «La razón es mecánica y se reporta con transparencia:».
-%   POR QUÉ:   meta-comentario sobre la propia redacción (correcciones_aprendidas.md → Estilo, prioridad alta: fuera «se reporta con transparencia» y similares). Enuncia el motivo directo, sin anunciar que lo cuentas con honradez.
-%   REESCRITURA: «La razón es mecánica:».
-% <<< CONSEJERO
 La regla determinista M8 aplica la intervención de STRATA descrita en la Sección~\ref{sec:strata-intervencion}: cuando el RAM score supera el gate $\tau = 0{,}50$, sustituye la dirección del agente por la que marca el régimen. Sobre SMCI, M8 acierta el $49{,}6\%$, apenas por encima de M5. La razón es mecánica: el agente ya va casi siempre corto, y el régimen de SMCI también sesga a corto, de modo que la dirección del agente y la del régimen coinciden la mayor parte del tiempo y STRATA solo encuentra incoherencia que corregir en torno al $3\%$ de los días. M8 cumple aquí el papel de \emph{referencia interpretable}: una regla transparente sobre la que medir cuánto añade un modelo que aprende.
 
 \section{El meta-learner M10}
@@ -60,11 +55,6 @@ Trivial: comprar y mantener (siempre largo) & 0,484 & +0,03 & 0,71$\times$ \\
 
 % [Figura por generar — graficas_clave §1: barras de accuracy M10 vs M5/M8/B&H con líneas de azar (0,5) y mayoritaria (0,516); + curvas de equity. Fuente: notebooks/STRATA_SMCI.ipynb.]
 
-% >>> CONSEJERO [cap4-01 · coherencia]
-%   CAMBIARÍA: «y el Deflated Sharpe Ratio queda en 0,72, por debajo del umbral de habilidad», metido en la batería de contrastes de ACCURACY.
-%   POR QUÉ:   el notebook (§9, celda P(Sharpe>0)) reporta como titular P(Sharpe>0)=0,976 y la versión PENALIZADA por las configs ≈0,72, y trata el Sharpe como ILUSTRACIÓN económica, no como prueba (línea roja MANUAL §8: «la prueba del TFG es la accuracy»). Aquí se cae el 0,976, el 0,72 se renombra «DSR» y se mezcla la economía con la significancia direccional. 0,72 es P(Sharpe>0) penalizada por multiplicidad, no un test de dirección.
-%   REESCRITURA: saca el Sharpe de esta lista (es economía) y déjalo en el párrafo económico/§9. Quita «; y el Deflated Sharpe Ratio queda en 0,72, por debajo del umbral de habilidad» de esta frase, y añade donde toque: «En lo económico, P(Sharpe>0)=0,976; penalizada por las configuraciones exploradas a lo largo del estudio baja a ≈0,72 (<0,95), por lo que el Sharpe se reporta como ilustración económica y la prueba del trabajo descansa en la accuracy.»
-% <<< CONSEJERO
 La honestidad estadística exige acompañar el $0{,}552$ de su contraste. La ventaja de M10 es \textbf{nominal, no significativa} al tamaño de muestra disponible: el binomial frente a la clase mayoritaria, que es el baseline de no-habilidad correcto, da $p = 0{,}14$; la permutación por bloques frente a comprar-y-mantener da $p = 0{,}047$, que no sobrevive a la corrección por multiplicidad; el McNemar pareado frente al agente da $p = 0{,}16$. Con un horizonte de unos $250$ días, acotado porque el agente solo existe tras el corte del modelo de lenguaje, ningún sistema de decisión diaria alcanza significancia plena frente a un benchmark justo: es una consecuencia del tamaño de muestra y de la eficiencia de los mercados a horizonte diario. El criterio del trabajo es el que la literatura admite en este régimen de muestra: superar a lo trivial de forma nominal y \emph{consistente}, dejando la significancia plena como trabajo futuro con un periodo más largo.
 
 \section{Robustez}
