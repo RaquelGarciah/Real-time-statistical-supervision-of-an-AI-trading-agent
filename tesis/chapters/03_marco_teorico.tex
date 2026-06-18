@@ -44,9 +44,13 @@ Las series de retornos financieros no se comportan como ruido blanco gaussiano. 
 \section{STRATA a nivel técnico}
 \label{sec:strata-tecnico}
 
-Cada día, el agente de trading toma una decisión sobre el activo. Lo resumimos en una terna: un \emph{signo} (comprar o vender), un \emph{tamaño} y una \emph{confianza}. Esa terna determina una \emph{posición} $w_t \in [-1, +1]$, donde el signo marca la dirección (larga si $w_t > 0$, corta si $w_t < 0$) y el módulo $|w_t|$ es la fracción de capital expuesta; la posición tomada en $t$ se evalúa contra el retorno del día siguiente, $w_t \cdot \rnext$. STRATA no decide por el agente: \emph{supervisa} esa decisión. Formalmente es una aplicación
-[mathrm{STRATA}\colon (\text{terna del agente},\ \text{estado del mercado}) \longmapsto \begin{pmatrix} \mathrm{RAM}_t \ \mathrm{PSA}_t \ \mathrm{GSO}_t \end{pmatrix}, ]
-que a partir de la decisión del agente y de una lectura estadística del mercado produce un conjunto de \emph{señales} sobre esa decisión. STRATA no predice el retorno: mide en qué grado la decisión del agente es coherente con el estado del mercado.
+Cada día, el agente de trading toma una decisión sobre el activo. Lo resumimos en una terna: un \emph{signo} (comprar o vender), un \emph{tamaño} y una \emph{confianza}. Esa terna determina una \emph{posición} $w_t \in [-1, +1]$, donde el signo marca la dirección (larga si $w_t > 0$, corta si $w_t < 0$) y el módulo $|w_t|$ es la fracción de capital expuesta; la posición tomada en $t$ se evalúa contra el retorno del día siguiente, $w_t \cdot \rnext$. STRATA no decide por el agente: \emph{supervisa} esa decisión. Formalmente, si llamamos $\mathcal{A}$ al espacio de decisiones del agente y $\mathcal{M}_t$ a la información de mercado disponible hasta el día $t$ (resumida en $x_{1:t}$), STRATA es la aplicación
+\[
+\mathrm{STRATA}\colon \mathcal{A} \times \mathcal{M}_t \longrightarrow [0,1]^3,
+\qquad
+(w_t,\, x_{1:t}) \longmapsto \big(\mathrm{RAM}_t,\, \mathrm{PSA}_t,\, \mathrm{GSO}_t\big),
+\]
+que a partir de la decisión del agente y de una lectura estadística del mercado produce tres \emph{señales} sobre esa decisión, cada una en $[0,1]$. STRATA no predice el retorno: mide en qué grado la decisión del agente es coherente con el estado del mercado.
 
 Las señales provienen de tres detectores, como ya mencionamos cada uno a cargo de un eje distinto. \textbf{RAM} se centra en el régimen: comprueba si la dirección de la apuesta encaja con el estado de mercado que el modelo oculto de Markov que veremos en la Sección~\ref{sec:hmm} considera vigente. \textbf{PSA} atiende al propio agente; con la detección bayesiana de puntos de cambio vigila si éste cambia de criterio de forma estructural, no por una simple fluctuación. Por último \textbf{GSO} se ocupa del tamaño de la apuesta: contrasta el módulo de la posición con la volatilidad que estima el GARCH de la Sección~\ref{sec:garch}, y salta cuando la apuesta es grande para lo agitado que está el mercado. Esta ortognalidad de los ejes permite que cada detector vea algo que los otros dos no pueden ver.
 
