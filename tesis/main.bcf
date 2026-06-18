@@ -2425,4 +2425,38 @@
     <bcf:citekey order="40" intorder="1">bailey2014</bcf:citekey>
     <bcf:citekey order="41" intorder="1">conover1999</bcf:citekey>
     <bcf:citekey order="42" intorder="1">mcnemar1947</bcf:citekey>
-    <bcf:citekey order="43" intorder="1">edwards1948</bcf:ci
+    <bcf:citekey order="43" intorder="1">edwards1948</bcf:citekey>
+    <bcf:citekey order="44" intorder="1">diebold1995</bcf:citekey>
+    <bcf:citekey order="45" intorder="1">newey1987</bcf:citekey>
+    <bcf:citekey order="46" intorder="1">schuirmann1987</bcf:citekey>
+    <bcf:citekey order="47" intorder="1">politis1994</bcf:citekey>
+    <bcf:citekey order="48" intorder="1">bailey2014</bcf:citekey>
+    <bcf:citekey order="49" intorder="1">harvey2016</bcf:citekey>
+    <bcf:citekey order="50" intorder="1">witten2016datamining</bcf:citekey>
+    <bcf:citekey order="50" intorder="2">kuhn2008caret</bcf:citekey>
+    <bcf:citekey order="51" intorder="1">chen2016</bcf:citekey>
+    <bcf:citekey order="52" intorder="1">breiman1996</bcf:citekey>
+    <bcf:citekey order="52" intorder="2">dietterich2000</bcf:citekey>
+    <bcf:citekey order="53" intorder="1">lundberg2017</bcf:citekey>
+  </bcf:section>
+  <!-- SORTING TEMPLATES -->
+  <bcf:sortingtemplate name="none">
+    <bcf:sort order="1">
+      <bcf:sortitem order="1">citeorder</bcf:sortitem>
+    </bcf:sort>
+    <bcf:sort order="2">
+      <bcf:sortitem order="1">intciteorder</bcf:sortitem>
+    </bcf:sort>
+  </bcf:sortingtemplate>
+  <!-- DATALISTS -->
+  <bcf:datalist section="0"
+                name="none/global//global/global/global"
+                type="entry"
+                sortingtemplatename="none"
+                sortingnamekeytemplatename="global"
+                labelprefix=""
+                uniquenametemplatename="global"
+                labelalphanametemplatename="global"
+                namehashtemplatename="global">
+  </bcf:datalist>
+</bcf:controlfile>
