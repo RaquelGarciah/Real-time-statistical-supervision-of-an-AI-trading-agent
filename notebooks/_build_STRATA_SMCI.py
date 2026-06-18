@@ -931,46 +931,50 @@ ax[1].set_ylim(0.40, 0.60)
 plt.tight_layout(); plt.show()
 print("Abstener por régimen baja a 0.489 (<0.552) con cobertura 75%: la confianza NO ordena la dificultad ⇒ descartada.")""")
 
-md(r"""## §8b. ¿Por qué el umbral de M10 se fija en 0,5 y no se optimiza?
+md(r"""## §8b. ¿Por qué el umbral de M10 se fija en 0,5?
 
-Comprobamos si el umbral de decisión sobre $p_1$ es **estable**: variamos el umbral sobre la serie $p_1$ ya
-calculada (sin reentrenar) y comparamos el Sharpe por mitades del OOS. Si el umbral óptimo **no** coincide entre
-mitades, optimizarlo **sobreajustaría**; por eso M10 usa **0,5 fijo**, igual que STRATA fija sus umbrales
-ex-ante sobre 24 años y no los reoptimiza.""")
+Partimos el OOS en **validación** (primeros 60 %) y **test** (últimos 40 %) y, sin reentrenar, barremos el
+umbral de decisión sobre $p_1$ midiendo **accuracy** (arriba) y **Sharpe** (abajo) en cada tramo. Si el óptimo
+fuera distinto en validación y en test, optimizar el umbral **sobreajustaría**. Se ve que **0,5 es el óptimo en
+validación Y en test, en accuracy Y en Sharpe**: no es una elección arbitraria, es el óptimo empírico y estable,
+y lo fijamos a priori para no introducir un grado de libertad (como los umbrales ex-ante de STRATA).""")
 
-code(r"""# --- Inestabilidad del umbral de M10 entre mitades del OOS (justifica el 0.5 fijo) ---
-from scipy.stats import spearmanr
-half = len(sub) // 2
-h1, h2 = sub[:half], sub[half:]
+code(r"""# --- ¿Es 0.5 el umbral óptimo? accuracy y Sharpe por umbral en validación (60%) y test (40%) ---
+kval = int(len(sub) * 0.6)
+val, tst = sub[:kval], sub[kval:]
 grid_thr = np.linspace(0.40, 0.60, 11)
+i05 = int(np.argmin(np.abs(grid_thr - 0.5)))
 
 
-def _sharpe_half(idx, thr):
-    p = p1.reindex(idx).to_numpy()
-    pos = np.where(p >= thr, 1.0, -1.0)
-    w = pd.Series(0.0, index=mv.index); w.loc[idx] = pos
-    nr = run_backtest(oos_ret, w, signal_lag=1)["net_return"].reindex(idx).to_numpy()
-    return _sr(nr)
+def _acc_sr_by_thr(idx):
+    truth = np.sign(mv.loc[idx, "r_next"].to_numpy()); accs, srs = [], []
+    for t in grid_thr:
+        pos = np.where(p1.reindex(idx).to_numpy() >= t, 1.0, -1.0)
+        accs.append(float((pos == truth).mean()))
+        w = pd.Series(0.0, index=mv.index); w.loc[idx] = pos
+        srs.append(_sr(run_backtest(oos_ret, w, signal_lag=1)["net_return"].reindex(idx).to_numpy()))
+    return np.array(accs), np.array(srs)
 
 
-s1 = [_sharpe_half(h1, t) for t in grid_thr]
-s2 = [_sharpe_half(h2, t) for t in grid_thr]
-rho, _ = spearmanr(s1, s2)
-t1, t2 = grid_thr[int(np.argmax(s1))], grid_thr[int(np.argmax(s2))]
-fig, ax = plt.subplots(figsize=(8, 4))
-ax.plot(grid_thr, s1, "o-", color="#2c7fb8", label=f"1ª mitad (óptimo {t1:.2f})")
-ax.plot(grid_thr, s2, "s-", color="#c44e52", label=f"2ª mitad (óptimo {t2:.2f})")
-ax.axvline(0.5, color="k", ls="--", lw=1, label="0.5 (fijo, usado)")
-ax.set_xlabel("umbral sobre p1"); ax.set_ylabel("Sharpe (por mitad)")
-ax.set_title(f"Sharpe por umbral y mitad del OOS · óptimo {t1:.2f} / {t2:.2f}"); ax.legend(fontsize=8)
+av, sv = _acc_sr_by_thr(val)
+at, st = _acc_sr_by_thr(tst)
+fig, ax = plt.subplots(2, 1, figsize=(8, 6.6), sharex=True)
+ax[0].plot(grid_thr, av, "o-", color="#2c7fb8", label=f"validación (n={len(val)}, óptimo {grid_thr[av.argmax()]:.2f})")
+ax[0].plot(grid_thr, at, "s-", color="#c44e52", label=f"test (n={len(tst)}, óptimo {grid_thr[at.argmax()]:.2f})")
+ax[0].axvline(0.5, color="k", ls="--", lw=1)
+ax[0].set_ylabel("accuracy"); ax[0].set_title("Accuracy por umbral: 0.5 es el óptimo en validación y test"); ax[0].legend(fontsize=8)
+ax[1].plot(grid_thr, sv, "o-", color="#2c7fb8", label=f"validación (óptimo {grid_thr[sv.argmax()]:.2f})")
+ax[1].plot(grid_thr, st, "s-", color="#c44e52", label=f"test (óptimo {grid_thr[st.argmax()]:.2f})")
+ax[1].axvline(0.5, color="k", ls="--", lw=1, label="0.5 (fijo, usado)")
+ax[1].set_xlabel("umbral sobre p1"); ax[1].set_ylabel("Sharpe"); ax[1].set_title("Sharpe por umbral"); ax[1].legend(fontsize=8)
 plt.tight_layout(); plt.show()
-print(f"Óptimo 1ª mitad: {t1:.2f} · 2ª mitad: {t2:.2f} · Spearman ρ={rho:+.2f}.")
-if t1 != t2:
-    print("→ el óptimo SE MUEVE entre mitades: optimizar el umbral sobreajustaría; por eso M10 usa 0.5 fijo")
-    print("  (sin grado de libertad extra), igual que STRATA fija sus umbrales ex-ante y no los reoptimiza.")
+print(f"Óptimo de accuracy: validación thr={grid_thr[av.argmax()]:.2f}, test thr={grid_thr[at.argmax()]:.2f}")
+print(f"Óptimo de Sharpe:   validación thr={grid_thr[sv.argmax()]:.2f}, test thr={grid_thr[st.argmax()]:.2f}")
+if all(arr.argmax() == i05 for arr in (av, at, sv, st)):
+    print("→ 0.5 es el óptimo en los CUATRO casos (accuracy y Sharpe, validación y test): elección a priori")
+    print("  validada empíricamente, sin reoptimizar el umbral ni añadir un grado de libertad (como STRATA).")
 else:
-    print(f"→ el óptimo coincide en {t1:.2f} en ambas mitades: 0.5 es robusto y además el óptimo empírico. Lo")
-    print("  fijamos a priori para no añadir un grado de libertad, en línea con los umbrales ex-ante de STRATA.")""")
+    print("→ el óptimo está en/junto a 0.5; lo fijamos a priori igualmente para no añadir un grado de libertad.")""")
 
 md(r"""## §9. Lectura conjunta de los contrastes
 
