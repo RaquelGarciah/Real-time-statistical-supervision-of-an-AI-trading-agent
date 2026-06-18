@@ -1,14 +1,14 @@
 [0] Config.pm:328> INFO - This is Biber 2.21
 [0] Config.pm:331> INFO - Logfile is 'main.blg'
-[118] biber-darwin:342> INFO - === Thu Jun 18, 2026, 18:45:10
-[154] Biber.pm:421> INFO - Reading 'main.bcf'
-[252] Biber.pm:1002> INFO - Found 49 citekeys in bib section 0
-[269] Biber.pm:4487> INFO - Processing section 0
-[279] Biber.pm:4678> INFO - Looking for bibtex file 'bibliography.bib' for section 0
-[282] bibtex.pm:1713> INFO - LaTeX decoding ...
-[342] bibtex.pm:1519> INFO - Found BibTeX data source 'bibliography.bib'
-[694] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
-[694] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[694] Biber.pm:4307> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'es-ES'
-[733] bbl.pm:676> INFO - Writing 'main.bbl' with encoding 'UTF-8'
-[756] bbl.pm:779> INFO - Output to main.bbl
+[65] biber-darwin:342> INFO - === Thu Jun 18, 2026, 18:45:20
+[93] Biber.pm:421> INFO - Reading 'main.bcf'
+[185] Biber.pm:1002> INFO - Found 53 citekeys in bib section 0
+[217] Biber.pm:4487> INFO - Processing section 0
+[229] Biber.pm:4678> INFO - Looking for bibtex file 'bibliography.bib' for section 0
+[242] bibtex.pm:1713> INFO - LaTeX decoding ...
+[300] bibtex.pm:1519> INFO - Found BibTeX data source 'bibliography.bib'
+[667] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[668] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
+[668] Biber.pm:4307> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'es-ES'
+[699] bbl.pm:676> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[719] bbl.pm:779> INFO - Output to main.bbl
