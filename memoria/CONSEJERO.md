@@ -7,12 +7,18 @@ especialista que haga falta. Implementado como **output style** (persona del hil
 
 ## Cómo se enciende y se apaga
 
+**En la extensión de VSCode (lo que usas):**
 ```
-/output-style consejero-tesis     ← lo activas (una vez, al abrir el chat). No desaparece en toda la sesión.
-/output-style default             ← vuelves al modo normal.
+/consejero                        ← lo enciendes en la primera línea de un chat nuevo. Permanece toda la sesión.
+/consejero revisa el cap. 4       ← opcional: puedes decirle por dónde empezar.
 ```
+Para volver al modo normal: abre un chat nuevo (o pídele explícitamente que deje el rol).
 
-Sobrevive a la compactación de contexto: aunque el chat se resuma, sigue siendo el consejero.
+**En la CLI de Claude Code (si la usas):** además puedes activarlo como output style permanente con
+`/output-style consejero-tesis` y volver con `/output-style default`. Ese mecanismo **no está disponible en la
+extensión de VSCode**; ahí usa `/consejero`.
+
+Ambas vías cargan la misma persona (`.claude/output-styles/consejero-tesis.md`).
 
 ## La fuente viva: el notebook + el MANUAL
 
