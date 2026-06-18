@@ -527,7 +527,19 @@ En los tres regímenes de la calibración (Calma alcista, $d=+1$; Crisis bajista
 \subsection{GSO: tamaño compatible con la volatilidad}
 \label{sec:strata-gso}
 
-GSO se ocupa del tamaño de la apuesta: comprueba si es compatible con la volatilidad vigente. Su referencia teórica es el \emph{volatility targeting}, que dimensiona la posición de forma inversamente proporcional a la volatilidad estimada para mantener el riesgo aproximadamente constante. Moreira y Muir mostraron que escalar la exposición en sentido inverso a la volatilidad mejora el rendimiento ajustado por riesgo \cite{moreira2017}. GSO toma la volatilidad condicional $\sigmat$ del GARCH$(1,1)$-$t$ de la Sección~\ref{sec:garch}, calculada con información hasta $t-1$, y compara el tamaño $|w_t|$ del agente con la banda que prescribiría el volatility targeting. Cuando el tamaño excede esa banda, GSO lo interpreta como sobreexposición y emite señal. Los umbrales se fijan en los percentiles $95$ y $99$ de la distribución de la discrepancia sobre el periodo de calibración.
+GSO se ocupa del tamaño de la apuesta: comprueba si es compatible con la volatilidad vigente. Su referencia teórica es el \emph{volatility targeting}, que dimensiona la posición de forma inversamente proporcional a la volatilidad estimada ($\propto 1/\sigma$) para mantener el riesgo aproximadamente constante; Moreira y Muir documentan que una variante de este principio, el escalado por la inversa de la \emph{varianza} ($1/\sigma^2$), mejora el rendimiento ajustado por riesgo \cite{moreira2017}. GSO toma la volatilidad condicional $\sigmat$ del GARCH$(1,1)$-$t$ de la Sección~\ref{sec:garch}, calculada con información hasta $t-1$, y la traduce en una banda de tamaño admisible.
+
+\begin{definicion}[Banda de volatilidad y GSO score]
+\label{def:gso}
+Dada una volatilidad objetivo anualizada $v^{\ast}$ ($v^{\ast}=0{,}10$ en la memoria), la \emph{banda} admisible y el \emph{GSO score} son
+\[
+b_t \;=\; \min\!\Big(1,\ \frac{v^{\ast}}{\sigmat}\Big),
+\qquad
+\mathrm{GSO}_t \;=\; \frac{\max(0,\ |w_t| - b_t)}{b_t}.
+\]
+\end{definicion}
+
+El score mide la sobreexposición relativa: es nulo mientras el tamaño cabe en la banda y crece cuando la supera. GSO emite señal cuando $\mathrm{GSO}_t$ rebasa los percentiles $95$ y $99$ de su distribución sobre el periodo de calibración, y en la intervención recorta el tamaño a $\operatorname{sign}(w_t)\,\min(|w_t|, b_t)$.
 
 Sobre los datos estudiados, GSO rara vez supera la severidad media: el tamaño que toma el agente casi nunca viola la banda de forma marcada. Es una limitación del detector sobre este activo, que recojo en los resultados.
 
