@@ -579,7 +579,7 @@ Los umbrales operativos siguen el mismo criterio que GSO: los percentiles $95$ y
 
 Las tres señales alimentan la capa de intervención, que transforma la posición $w_t$ en una posición supervisada $w_t^{\star}$ por composición de tres operadores. Sea $\rho_t = +1$ si $\gammaf(\text{Calma}) \ge \gammaf(\text{Crisis})$ y $\rho_t = -1$ en otro caso, la dirección del régimen dominante.
 
-\begin{definicion}[Capa de intervención M8, \emph{override-C}]
+\begin{definicion}[Capa de intervención M8]
 \label{def:m8}
 La posición supervisada es $w_t^{\star} = \big(C_{\mathrm{PSA}} \circ R_{\mathrm{RAM}} \circ G_{\mathrm{GSO}}\big)(w_t)$, donde cada operador actúa solo si su detector dispara y es la identidad en caso contrario:
 \[
