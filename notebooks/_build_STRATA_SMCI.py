@@ -395,6 +395,107 @@ ax[1].set_title("Accuracy plana ⇒ τ no es un parámetro fino"); ax[1].legend(
 plt.tight_layout(); plt.show()
 print(f"Banda plana en τ∈[0.3,0.9]; el gate separa la masa bimodal, no calibra contra 0.5 absoluto.")""")
 
+md(r"""## §3b. ¿Conviene tunear los umbrales de PSA y GSO? (decisión: no, y por qué)
+
+Los umbrales de PSA y GSO se fijan **ex-ante** en percentiles altos de la calibración (P95/P99): son detectores
+de **alarma** para patologías raras. Antes de cerrar esa decisión comprobamos si **bajarlos** (para forzarlos a
+disparar) mejoraría algo. Lo hacemos sobre la regla **M8** —la estrategia que de verdad usa estos umbrales—
+comparando **validación y test**, para que la decisión no sea *p-hacking*. Tres hechos:
+
+- **Estructural.** En el *override-C*, **GSO solo recorta el tamaño** ($\min(|size|,\text{bound})$) y **PSA solo
+  lo divide a la mitad**; únicamente **RAM** voltea el signo. Por tanto tunear PSA/GSO **no puede cambiar la
+  accuracy** (que mide el signo): a lo sumo cambia el tamaño y, con él, el Sharpe.
+- **Empírico.** En SMCI el agente es **pasivo** (97 % corto, tamaño ≈0,10 constante): no hay **sobreexposición**
+  (GSO) ni **cambios estructurales** del sizing (PSA), así que sus *scores* **no llegan al gate** (figura).
+- **GSO y `target_vol`.** La banda es $\text{bound}=\text{target\_vol}/\sigma_t$; **subir `target_vol` la
+  ensancha → GSO dispara MENOS** (para forzarlo habría que bajarlo a ≈0,02, y aun así solo recortaría tamaño).
+
+El barrido confirma que **ningún umbral mejora a la vez validación y test**: la accuracy es **invariante** y el
+Sharpe solo fluctúa como **ruido** en validación con el test plano. **Decisión: mantener los umbrales calibrados
+ex-ante.** (M10, el modelo principal, **no usa estos umbrales** —apuesta ±1 por dirección—; esto concierne a la
+regla M8 y a la mecánica de STRATA.)""")
+
+code(r"""# --- §3b. Barrido de umbrales PSA/GSO sobre M8 (decisión: mantener los ex-ante) ---
+from strata.strata import StrataSupervisor
+_ag = wf.load_agent(TICKER)
+_thr = json.load(open(CACHE_MODELS_DIR / "strata_thresholds.json"))
+
+
+def _m8(psa_thr=None, gso_thr=None):
+    sup = StrataSupervisor(mode="override", override_variant="C", gso_mode="absolute", psa_signal="cp_prob",
+                           psa_hazard=config.BOCPD_HAZARD, ram_thresholds=wf.RAM_THRESHOLDS,
+                           psa_thresholds=psa_thr, gso_thresholds=gso_thr)
+    rows, hist = [], []
+    for t in sorted(_ag):
+        if t not in gamma.index or t not in sigma.index:
+            continue
+        a = _ag[t]; hist.append(a.size); gg = gamma.loc[t]
+        msr = {"regime": {"calm_prob": float(gg["Calma"]), "stress_prob": float(gg["Estrés"]),
+                          "crisis_prob": float(gg["Crisis"]), "viterbi_state": int(np.argmax(gg.values))},
+               "garch_vol_annualized": float(sigma.loc[t])}
+        d = sup.supervise(a, msr, hist)
+        rows.append({"date": t, "final": d.final_size, "psa_s": d.detectors["psa"].score,
+                     "gso_s": d.detectors["gso"].score, "psa": d.detectors["psa"].severity in ("medium", "high"),
+                     "gso": d.detectors["gso"].severity in ("medium", "high")})
+    mm = pd.DataFrame(rows).set_index("date"); mm["rn"] = oos_ret.shift(-1).reindex(mm.index)
+    return mm[mm["rn"].notna() & (np.sign(mm["rn"]) != 0)]
+
+
+def _vt(mm):  # accuracy y Sharpe de M8 en validación (60%) y test (40%)
+    k = int(len(mm) * 0.6)
+    w = pd.Series(0.0, index=oos_ret.index); w.loc[mm.index] = mm["final"].values
+    nr = run_backtest(oos_ret, w, signal_lag=1)["net_return"].reindex(mm.index).to_numpy()
+
+    def _sh(a):
+        a = a[~np.isnan(a)]; s = a.std(ddof=1); return float(a.mean() / s * np.sqrt(252)) if s > 0 else 0.0
+    acc = lambda sl: float((np.sign(mm["final"].to_numpy()[sl]) == np.sign(mm["rn"].to_numpy()[sl])).mean())
+    return acc(slice(0, k)), acc(slice(k, None)), _sh(nr[:k]), _sh(nr[k:])
+
+
+base = _m8()
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.5))
+for a, col, lbl in [(ax[0], "psa_s", "psa"), (ax[1], "gso_s", "gso")]:
+    a.hist(base[col].dropna(), bins=40, color="#9ecae1", edgecolor="black", lw=0.4); a.set_yscale("log")
+    p99 = _thr[lbl]["score_distribution"]["p99"]
+    a.axvline(p99, color="red", lw=1.8, label=f"gate (P99) = {p99:.2f}")
+    a.set_xlabel(f"score {lbl.upper()} (OOS)"); a.set_ylabel("frecuencia (log)")
+    a.set_title(f"{lbl.upper()}: los scores no llegan al gate"); a.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print(f"Agente SMCI: tamaño |size| ≈ {np.mean([abs(_ag[t].size) for t in _ag]):.3f} (casi constante), "
+      f"{np.mean([np.sign(_ag[t].size) < 0 for t in _ag]):.0%} corto → ni sobreexposición ni cambios estructurales.")""")
+
+code(r"""# --- §3b. Rendimiento de M8 según el umbral + GSO vs target_vol ---
+_pd, _gd = _thr["psa"]["score_distribution"], _thr["gso"]["score_distribution"]
+CFG = {"baseline\n(P99)": (None, None),
+       "PSA bajo\n(p75)": ((_pd["p50"], _pd["p75"], _pd["p90"]), None),
+       "GSO bajo\n(p75)": (None, (_gd["p50"], _gd["p75"], _gd["p90"])),
+       "ambos\nbajos": ((_pd["p50"], _pd["p75"], _pd["p90"]), (_gd["p50"], _gd["p75"], _gd["p90"]))}
+res = {}
+for nm, (pt, gt) in CFG.items():
+    res[nm] = _vt(_m8(pt, gt))   # (acc_val, acc_test, sr_val, sr_test)
+
+fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+xb = np.arange(len(CFG)); w = 0.38; names = list(CFG)
+ax[0].bar(xb - w / 2, [res[n][2] for n in names], w, label="validación", color="#2c7fb8", edgecolor="black")
+ax[0].bar(xb + w / 2, [res[n][3] for n in names], w, label="test", color="#f0a830", edgecolor="black")
+ax[0].set_xticks(xb); ax[0].set_xticklabels(names, fontsize=8); ax[0].set_ylabel("Sharpe de M8")
+ax[0].set_title("Rendimiento de M8 según el umbral: sin mejora robusta (val/test)"); ax[0].legend(fontsize=8)
+for i, n in enumerate(names):  # anota que la accuracy es invariante
+    ax[0].annotate(f"acc {res[n][0]:.2f}/{res[n][1]:.2f}", (i, 0), fontsize=6, ha="center", va="bottom", color="gray")
+# GSO: firing rate vs target_vol (subir target_vol → dispara menos)
+sg = sigma.reindex([t for t in sorted(_ag) if t in sigma.index]).to_numpy()
+szs = np.array([abs(_ag[t].size) for t in sorted(_ag) if t in sigma.index])
+tvs = np.array([0.02, 0.05, 0.10, 0.15, 0.30, 0.60, 1.0])
+fire = [float((np.maximum(0.0, szs - np.minimum(1.0, tv / np.maximum(sg, 1e-9))) /
+               np.maximum(np.minimum(1.0, tv / np.maximum(sg, 1e-9)), 1e-3) >= _gd["p99"]).mean()) for tv in tvs]
+ax[1].plot(tvs, fire, "o-", color="#c0392b", lw=2)
+ax[1].axvline(0.10, color="k", ls="--", lw=1, label="target_vol actual = 0.10")
+ax[1].set_xlabel("target_vol"); ax[1].set_ylabel("% días que GSO dispara (gate P99)")
+ax[1].set_title("Subir target_vol ensancha la banda → GSO dispara MENOS"); ax[1].legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print("M8 accuracy: invariante al umbral (PSA/GSO no cambian el signo). Sharpe: solo ruido en validación, test")
+print("plano → ningún umbral mejora val Y test (sería p-hacking). DECISIÓN: se mantienen los umbrales ex-ante.")""")
+
 # ════════════════════════════════════════════════════════════════════════════════════════════════
 # PARTE III — Resultado del caso de estudio (headline en vivo)
 # ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -1108,77 +1209,6 @@ if all(arr.argmax() == i05 for arr in (av, at, sv, st)):
     print("  validada empíricamente, sin reoptimizar el umbral ni añadir un grado de libertad (como STRATA).")
 else:
     print("→ el óptimo está en/junto a 0.5; lo fijamos a priori igualmente para no añadir un grado de libertad.")""")
-
-md(r"""## §8e. ¿Por qué PSA y GSO no se activan? (pregunta del tutor)
-
-De los tres detectores, en SMCI **solo RAM interviene** (≈3 % de los días); **PSA y GSO casi nunca disparan**.
-Dos razones, una empírica y una estructural:
-
-- **El agente es demasiado pasivo.** En SMCI el agente está **97 % corto con tamaño casi constante ≈0,10**
-  (máximo 0,10). **GSO** mide *sobreexposición* (|size| por encima de la banda de volatilidad
-  $\text{target\_vol}/\sigma_t$): con un tamaño tan pequeño **nunca excede la banda**. **PSA** mide *cambios
-  estructurales* en el sizing (BOCPD): con un sizing **plano** no hay puntos de cambio. Además, sus umbrales son
-  **P99** por diseño (detectores de alarma para patologías raras), que el agente nunca alcanza.
-- **Por construcción no pueden cambiar la dirección.** En el *override-C*, **GSO solo recorta el tamaño**
-  ($\min(|size|,\text{bound})$) y **PSA solo lo divide a la mitad**; únicamente **RAM** voltea el signo. Como la
-  accuracy mide el **signo**, activar PSA/GSO **no puede** mejorarla: solo afecta al tamaño (Sharpe/riesgo).
-
-Lo comprobamos **bajando sus umbrales** para forzarlos a disparar y midiendo M8 en **validación y test**: la
-accuracy **no cambia** en ningún tramo (descarta p-hacking); solo cambia el tamaño. PSA/GSO son cortafuegos de
-**riesgo/coherencia**, no detectores direccionales.""")
-
-code(r"""# --- Por qué PSA/GSO no se activan + barrido de umbrales (M8 acc invariante en val/test) ---
-from strata.strata import StrataSupervisor
-_ag = wf.load_agent(TICKER)
-_thr = json.load(open(CACHE_MODELS_DIR / "strata_thresholds.json"))
-
-
-def _m8_master(psa_thr, gso_thr):
-    sup = StrataSupervisor(mode="override", override_variant="C", gso_mode="absolute", psa_signal="cp_prob",
-                           psa_hazard=config.BOCPD_HAZARD, ram_thresholds=wf.RAM_THRESHOLDS,
-                           psa_thresholds=psa_thr, gso_thresholds=gso_thr)
-    rows, hist = [], []
-    for t in sorted(_ag):
-        if t not in gamma.index or t not in sigma.index:
-            continue
-        a = _ag[t]; hist.append(a.size); gg = gamma.loc[t]
-        msr = {"regime": {"calm_prob": float(gg["Calma"]), "stress_prob": float(gg["Estrés"]),
-                          "crisis_prob": float(gg["Crisis"]), "viterbi_state": int(np.argmax(gg.values))},
-               "garch_vol_annualized": float(sigma.loc[t])}
-        d = sup.supervise(a, msr, hist)
-        rows.append({"date": t, "final": d.final_size,
-                     "psa": d.detectors["psa"].severity in ("medium", "high"),
-                     "gso": d.detectors["gso"].severity in ("medium", "high")})
-    mm = pd.DataFrame(rows).set_index("date"); mm["rn"] = oos_ret.shift(-1).reindex(mm.index)
-    return mm[mm["rn"].notna() & (np.sign(mm["rn"]) != 0)]
-
-
-configs = {"baseline (P99)": (None, None),
-           "PSA umbral bajo": ((0.0049, 0.0056, 0.0087), None),
-           "GSO umbral bajo": (None, (0.42, 1.0, 1.72)),
-           "ambos bajos": ((0.0049, 0.0056, 0.0087), (0.42, 1.0, 1.72))}
-rows = []
-for name, (pt, gt) in configs.items():
-    mm = _m8_master(pt, gt); k = int(len(mm) * 0.6)
-    accv = float((np.sign(mm["final"].iloc[:k]) == np.sign(mm["rn"].iloc[:k])).mean())
-    acct = float((np.sign(mm["final"].iloc[k:]) == np.sign(mm["rn"].iloc[k:])).mean())
-    rows.append({"config": name, "PSA dispara": f"{mm['psa'].mean():.0%}", "GSO dispara": f"{mm['gso'].mean():.0%}",
-                 "M8 acc val": round(accv, 3), "M8 acc test": round(acct, 3)})
-psa_gso_tab = pd.DataFrame(rows).set_index("config")
-
-fig, ax = plt.subplots(1, 2, figsize=(11, 3.6))
-for a, col, lbl in [(ax[0], "psa_score", "psa"), (ax[1], "gso_score", "gso")]:
-    s = m[col].dropna()
-    a.hist(s, bins=40, color="#9ecae1", edgecolor="black", lw=0.4); a.set_yscale("log")
-    p99 = _thr[lbl]["score_distribution"]["p99"]
-    a.axvline(p99, color="red", lw=1.8, label=f"gate (P99) = {p99:.2f}")
-    a.set_xlabel(f"score {lbl.upper()} (OOS)"); a.set_ylabel("frecuencia (log)")
-    a.set_title(f"{lbl.upper()}: los scores no llegan al gate"); a.legend(fontsize=8)
-plt.tight_layout(); plt.show()
-print("Agente SMCI: tamaño |size| casi constante ≈0.10, 97% corto → ni sobreexposición (GSO) ni cambios (PSA).")
-print("Bajar los umbrales los hace disparar algo, pero la accuracy de M8 NO cambia en val ni en test (solo el")
-print("tamaño): PSA/GSO son cortafuegos de riesgo/coherencia, no detectores direccionales. Solo RAM cambia el signo.")
-psa_gso_tab""")
 
 md(r"""## §9. Lectura conjunta de los contrastes
 
