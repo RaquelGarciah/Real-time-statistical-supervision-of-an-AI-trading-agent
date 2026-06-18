@@ -1109,6 +1109,77 @@ if all(arr.argmax() == i05 for arr in (av, at, sv, st)):
 else:
     print("→ el óptimo está en/junto a 0.5; lo fijamos a priori igualmente para no añadir un grado de libertad.")""")
 
+md(r"""## §8e. ¿Por qué PSA y GSO no se activan? (pregunta del tutor)
+
+De los tres detectores, en SMCI **solo RAM interviene** (≈3 % de los días); **PSA y GSO casi nunca disparan**.
+Dos razones, una empírica y una estructural:
+
+- **El agente es demasiado pasivo.** En SMCI el agente está **97 % corto con tamaño casi constante ≈0,10**
+  (máximo 0,10). **GSO** mide *sobreexposición* (|size| por encima de la banda de volatilidad
+  $\text{target\_vol}/\sigma_t$): con un tamaño tan pequeño **nunca excede la banda**. **PSA** mide *cambios
+  estructurales* en el sizing (BOCPD): con un sizing **plano** no hay puntos de cambio. Además, sus umbrales son
+  **P99** por diseño (detectores de alarma para patologías raras), que el agente nunca alcanza.
+- **Por construcción no pueden cambiar la dirección.** En el *override-C*, **GSO solo recorta el tamaño**
+  ($\min(|size|,\text{bound})$) y **PSA solo lo divide a la mitad**; únicamente **RAM** voltea el signo. Como la
+  accuracy mide el **signo**, activar PSA/GSO **no puede** mejorarla: solo afecta al tamaño (Sharpe/riesgo).
+
+Lo comprobamos **bajando sus umbrales** para forzarlos a disparar y midiendo M8 en **validación y test**: la
+accuracy **no cambia** en ningún tramo (descarta p-hacking); solo cambia el tamaño. PSA/GSO son cortafuegos de
+**riesgo/coherencia**, no detectores direccionales.""")
+
+code(r"""# --- Por qué PSA/GSO no se activan + barrido de umbrales (M8 acc invariante en val/test) ---
+from strata.strata import StrataSupervisor
+_ag = wf.load_agent(TICKER)
+_thr = json.load(open(CACHE_MODELS_DIR / "strata_thresholds.json"))
+
+
+def _m8_master(psa_thr, gso_thr):
+    sup = StrataSupervisor(mode="override", override_variant="C", gso_mode="absolute", psa_signal="cp_prob",
+                           psa_hazard=config.BOCPD_HAZARD, ram_thresholds=wf.RAM_THRESHOLDS,
+                           psa_thresholds=psa_thr, gso_thresholds=gso_thr)
+    rows, hist = [], []
+    for t in sorted(_ag):
+        if t not in gamma.index or t not in sigma.index:
+            continue
+        a = _ag[t]; hist.append(a.size); gg = gamma.loc[t]
+        msr = {"regime": {"calm_prob": float(gg["Calma"]), "stress_prob": float(gg["Estrés"]),
+                          "crisis_prob": float(gg["Crisis"]), "viterbi_state": int(np.argmax(gg.values))},
+               "garch_vol_annualized": float(sigma.loc[t])}
+        d = sup.supervise(a, msr, hist)
+        rows.append({"date": t, "final": d.final_size,
+                     "psa": d.detectors["psa"].severity in ("medium", "high"),
+                     "gso": d.detectors["gso"].severity in ("medium", "high")})
+    mm = pd.DataFrame(rows).set_index("date"); mm["rn"] = oos_ret.shift(-1).reindex(mm.index)
+    return mm[mm["rn"].notna() & (np.sign(mm["rn"]) != 0)]
+
+
+configs = {"baseline (P99)": (None, None),
+           "PSA umbral bajo": ((0.0049, 0.0056, 0.0087), None),
+           "GSO umbral bajo": (None, (0.42, 1.0, 1.72)),
+           "ambos bajos": ((0.0049, 0.0056, 0.0087), (0.42, 1.0, 1.72))}
+rows = []
+for name, (pt, gt) in configs.items():
+    mm = _m8_master(pt, gt); k = int(len(mm) * 0.6)
+    accv = float((np.sign(mm["final"].iloc[:k]) == np.sign(mm["rn"].iloc[:k])).mean())
+    acct = float((np.sign(mm["final"].iloc[k:]) == np.sign(mm["rn"].iloc[k:])).mean())
+    rows.append({"config": name, "PSA dispara": f"{mm['psa'].mean():.0%}", "GSO dispara": f"{mm['gso'].mean():.0%}",
+                 "M8 acc val": round(accv, 3), "M8 acc test": round(acct, 3)})
+psa_gso_tab = pd.DataFrame(rows).set_index("config")
+
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.6))
+for a, col, lbl in [(ax[0], "psa_score", "psa"), (ax[1], "gso_score", "gso")]:
+    s = m[col].dropna()
+    a.hist(s, bins=40, color="#9ecae1", edgecolor="black", lw=0.4); a.set_yscale("log")
+    p99 = _thr[lbl]["score_distribution"]["p99"]
+    a.axvline(p99, color="red", lw=1.8, label=f"gate (P99) = {p99:.2f}")
+    a.set_xlabel(f"score {lbl.upper()} (OOS)"); a.set_ylabel("frecuencia (log)")
+    a.set_title(f"{lbl.upper()}: los scores no llegan al gate"); a.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print("Agente SMCI: tamaño |size| casi constante ≈0.10, 97% corto → ni sobreexposición (GSO) ni cambios (PSA).")
+print("Bajar los umbrales los hace disparar algo, pero la accuracy de M8 NO cambia en val ni en test (solo el")
+print("tamaño): PSA/GSO son cortafuegos de riesgo/coherencia, no detectores direccionales. Solo RAM cambia el signo.")
+psa_gso_tab""")
+
 md(r"""## §9. Lectura conjunta de los contrastes
 
 Los contrastes de accuracy miden cosas distintas y por eso difieren: M10 es **más fuerte contra el baseline
