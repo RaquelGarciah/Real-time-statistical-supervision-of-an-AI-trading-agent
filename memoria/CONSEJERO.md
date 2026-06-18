@@ -52,6 +52,20 @@ cambió**, te lo marca como anotación de coherencia con el valor correcto. Ante
 
 Los comentarios `% >>> CONSEJERO` no afectan a la compilación; puedes dejarlos mientras decides.
 
+## Registro de las sesiones (para comentar y pedir ayuda)
+
+Todo lo que hablas con el consejero **se guarda solo**, una sesión por fichero, en
+`memoria/consejero/sesiones/consejero_HHMM_DDMM.md`:
+- **Automático (hook):** cada intercambio (tu mensaje + su respuesta) se añade al cerrar cada turno. No guarda
+  el razonamiento interno ni las herramientas, solo la conversación.
+- **Hitos (consejero):** además anota decisiones, anotaciones aplicadas y agentes llamados en la sección
+  `### Hitos`.
+
+Para que **los demás agentes te ayuden**: abre el fichero de la sesión y añade marcas donde quieras —
+`> COMENTARIO:`, `> AYUDA:`, `> AYUDA[@rigor-matematico]:`, `> DUDA:` —; luego di **"revisa mis comentarios"**
+o usa `/consejero-sesion`, que enruta cada marca al especialista que toca y te trae el dictamen. Detalle en
+`memoria/consejero/README.md`.
+
 ## Qué NO hace
 
 - No reescribe capítulos enteros solo: revisa y propone, tú eliges.
