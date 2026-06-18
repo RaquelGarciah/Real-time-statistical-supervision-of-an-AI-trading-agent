@@ -25,7 +25,7 @@ puede llamarla $v_t$. Coherente con el código (`core/`, `strata/`) y con `pream
 - **RAM** (*Regime-Action Mismatch*) — detector de coherencia acción↔régimen (HMM).
 - **PSA** (*Position Sizing Anomaly*) — detector de cambio anómalo de sizing del agente (BOCPD).
 - **GSO** (*GARCH-bounded Sizing Override*) — detector de sobreexposición vs volatilidad (GARCH).
-- **override-C** — variante de intervención que voltea la posición hacia la dirección del régimen.
+- **intervención (STRATA)** — la capa que, ante incoherencia alta, voltea el signo de la posición hacia el régimen (RAM), acota su magnitud a la banda GARCH (GSO) y la frena ante un cambio brusco (PSA). Es la única variante que el trabajo instancia y analiza.
 - **gate $\tau$** — umbral por encima del cual RAM interviene.
 - **leverage effect** — correlación negativa entre retorno y volatilidad en índices.
 - **volatility targeting** — dimensionar la posición para una volatilidad objetivo.
@@ -34,7 +34,7 @@ puede llamarla $v_t$. Coherente con el código (`core/`, `strata/`) y con `pream
 
 - **M5** — el agente LLM sin supervisar (la víctima).
 - **M7** — *reduce* (encoge la apuesta, no cambia el signo).
-- **M8** — STRATA en override-C (el rescate, la regla a mano).
+- **M8** — STRATA con su capa de intervención (el rescate, la regla a mano).
 - **M10** — meta-learner XGBoost con CPCV (la referencia de ML).
 - **B&H** — *Buy & Hold* (mercado pasivo).
 

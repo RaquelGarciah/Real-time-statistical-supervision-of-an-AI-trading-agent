@@ -12,7 +12,7 @@ Un **agente LLM** de trading (AI Hedge Fund, 5 personalidades) decide cada día 
 
 > **Glosario de alcance (importante).** En esta memoria, **STRATA** designa la **capa de supervisión estadística
 > que produce señales** sobre cada decisión del agente mediante los detectores **RAM/PSA/GSO**. La implementación
-> de la capa de intervención por reglas (override C) se denota **M8** y se reporta **como referencia, no como
+> de la capa de intervención por reglas se denota **M8** y se reporta **como referencia, no como
 > hipótesis principal**. La **hipótesis principal recae en M10**, el meta-learner que consume las señales de
 > STRATA. El pivot respecto al `CLAUDE.md` original (donde STRATA = detectores + intervención) se documenta en
 > `DECISIONES_ESENCIALES.md #13`.
