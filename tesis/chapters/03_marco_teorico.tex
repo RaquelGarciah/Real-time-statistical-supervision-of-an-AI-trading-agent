@@ -518,7 +518,7 @@ Cada detector produce una señal numérica que mide un tipo de incoherencia entr
 \subsection{Datos y calibración}
 \label{sec:strata-calib}
 
-Los tres modelos se estiman una sola vez, sobre un periodo de calibración fijo y anterior al periodo de evaluación, y no se reentrenan después. Esta separación entre calibración y explotación impide que cualquier parámetro de STRATA haya visto los datos sobre los que luego se le juzga. Fijar un único periodo de calibración presupone que la estructura de la serie es razonablemente estable dentro de él, hipótesis que se puede contrastar con el test de cambios estructurales múltiples de Bai y Perron \cite{bai1998, bai2003}, que localiza el número y la posición de las rupturas en los parámetros de un modelo. La estabilidad suficiente en ese periodo es lo que justifica fijar los parámetros una vez en lugar de moverlos con el tiempo.
+Los tres modelos se estiman una sola vez, sobre un periodo de calibración fijo y anterior al periodo de evaluación, y no se reentrenan después. Esta separación entre la fase de calibración y producción impide que cualquier parámetro de STRATA haya visto los datos futuros. Fijar un único periodo de calibración presupone que la estructura de la serie es razonablemente estable dentro de él, hipótesis que se puede contrastar con el test de cambios estructurales múltiples de Bai y Perron \cite{bai1998, bai2003}, que localiza el número y la posición de las rupturas en los parámetros de un modelo. 
 
 \subsection{RAM: desajuste entre régimen y acción}
 \label{sec:strata-ram}
@@ -537,7 +537,7 @@ El \emph{RAM score} es la masa filtrada sobre los regímenes cuya dirección apr
 \]
 \end{definicion}
 
-En los tres regímenes de la calibración (Calma alcista, $d=+1$; Crisis bajista, $d=-1$; Estrés neutro, $d=0$) esto es $\mathrm{RAM}_t = \gammaf(\text{Crisis})$ si el agente va largo y $\mathrm{RAM}_t = \gammaf(\text{Calma})$ si va corto; el Estrés, sin dirección, nunca penaliza. El score vive en $[0,1]$: cuanto más alto, más probabilidad pone el HMM en que el agente apuesta contra el régimen. El detector se activa con tres umbrales fijados ex ante, $0{,}25$, $\tau = 0{,}50$ y $0{,}70$, que marcan severidad baja, media y alta. El umbral operativo es el central, $\tau = 0{,}50$: equivale a intervenir cuando la dirección contraria a la apuesta acumula más de la mitad de la probabilidad de régimen, esto es, a la regla de mayoría. No es un parámetro ajustado contra los datos, sino una elección normativa; además, en la práctica el score tiende a concentrar su masa cerca de $0$ o de $1$, de modo que el acierto del detector apenas cambia para umbrales en un entorno de $0{,}5$.
+En los tres regímenes de la calibración (Calma alcista, $d=+1$; Crisis bajista, $d=-1$; Estrés neutro, $d=0$) esto es $\mathrm{RAM}_t = \gammaf(\text{Crisis})$ si el agente va largo y $\mathrm{RAM}_t = \gammaf(\text{Calma})$ si va corto; el Estrés, sin dirección, nunca penaliza. El score vive en $[0,1]$: cuanto más alto, más probabilidad pone el HMM en que el agente apuesta contra el régimen. El detector se activa con tres umbrales fijados ex ante, $0{,}25$, $\tau = 0{,}50$ y $0{,}70$, que marcan severidad baja, media y alta. El umbral operativo es el central, $\tau = 0{,}50$: equivale a intervenir cuando la dirección contraria a la apuesta acumula más de la mitad de la probabilidad de régimen, esto es, a la regla de mayoría. Además, veremos que en nuestro caso de estudio el score tiende a concentrar su masa cerca de $0$ o de $1$, de modo que el acierto del detector apenas cambia para umbrales en un entorno de $0{,}5$.
 
 \subsection{GSO: tamaño compatible con la volatilidad}
 \label{sec:strata-gso}
@@ -569,10 +569,10 @@ El \emph{PSA score} es la masa posterior de la run-length sobre las rachas corta
 \[
 \mathrm{PSA}_t \;=\; \sum_{r=0}^{w} \Prob(r_t = r \mid x_{1:t}),
 \]
-con $w$ la ventana de racha corta. Crece cuando el \emph{sizing} del agente acaba de romper con su patrón previo.
+con $w=5$ la ventana de racha corta (en días de mercado). Crece cuando el \emph{sizing} del agente acaba de romper con su patrón previo.
 \end{definicion}
 
-Los umbrales operativos siguen el mismo criterio que GSO: los percentiles $95$ y $99$ sobre el periodo de calibración. En la intervención, una severidad alta de PSA frena la posición resultante.
+Los umbrales operativos siguen el mismo criterio que GSO: los percentiles $95$ y $99$ sobre el periodo de calibración. En la intervención, necesitamos un índice muy alto de PSA para frenar la posición resultante.
 
 \subsection{La capa de intervención}
 \label{sec:strata-intervencion}
