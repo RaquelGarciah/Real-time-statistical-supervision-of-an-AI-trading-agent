@@ -561,7 +561,7 @@ Sobre los datos estudiados, GSO rara vez supera la severidad media: el tamaño q
 \subsection{PSA: coherencia temporal del agente}
 \label{sec:strata-psa}
 
-PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente, con una función de hazard constante $H = 1/\lambda$, $\lambda = 60$, que fija a priori la escala temporal entre rupturas en unos sesenta días de mercado (la media de la geométrica de la Sección~\ref{sec:bocpd-hazard}); no es un valor optimizado contra el periodo de evaluación, sino una escala interpretable que se comprobó robusta por un análisis de sensibilidad en la calibración.
+PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente, con una función de hazard constante $H = 1/\lambda$, $\lambda = 250$, que fija a priori la escala temporal entre rupturas en un año bursátil, unos $250$ días de mercado (la media de la geométrica de la Sección~\ref{sec:bocpd-hazard}); no es un valor optimizado contra el periodo de evaluación, sino una escala interpretable, fijada como un cambio esperado al año.
 
 \begin{definicion}[PSA score]
 \label{def:psa}
