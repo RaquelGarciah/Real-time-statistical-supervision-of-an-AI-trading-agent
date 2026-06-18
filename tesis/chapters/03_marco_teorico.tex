@@ -597,41 +597,14 @@ El GSO acota la magnitud a la banda de volatilidad; el RAM, cuando $\mathrm{RAM}
 \section{Métricas de evaluación}
 \label{sec:metricas}
 
-Para juzgar si una estrategia lo hace bien no basta con mirar cuánto gana: hay que poner el rendimiento en relación con el riesgo asumido. Las métricas que siguen sirven a ese fin, todas a partir de la serie de retornos de la estrategia o de la trayectoria de su capital. Ninguna prueba nada por sí sola: son enriquecimiento ilustrativo, y la prueba estadística del trabajo descansa en los contrastes de la Sección~\ref{sec:tests}.
+Para juzgar si una estrategia lo hace bien no basta con mirar cuánto gana: hay que poner el rendimiento en relación con el riesgo asumido. A continuación describiremos unas métricas que enriqueceran nuestros resultados aunque es importante entender que inguna prueba nada por sí sola y la prueba estadística del trabajo descansa en los contrastes de la Sección~\ref{sec:tests}.
 
 \subsection{El ratio de Sharpe}
 \label{sec:economia-sharpe}
 
-El \emph{ratio de Sharpe} resume rendimiento y riesgo en un solo número, dividiendo el retorno medio en exceso por la volatilidad de ese retorno \cite{sharpe1994}. Sea $r$ el retorno de la estrategia en un periodo y $r_f$ el \emph{retorno libre de riesgo}, lo que se obtendría sin asumir riesgo alguno (por ejemplo, en deuda pública a corto plazo). El ratio de Sharpe se define como
-\[
-S \;=\; \frac{\E[r] - r_f}{\sqrt{\Var(r)}},
-\]
-esto es, el retorno medio por encima del activo sin riesgo dividido por la desviación típica del retorno. El numerador mide cuánto se gana de más por asumir riesgo; el denominador mide el riesgo asumido. Un Sharpe alto indica que cada unidad de riesgo se remunera bien. Como se calcula sobre retornos diarios pero se reporta en escala anual, se \emph{anualiza} multiplicando por $\sqrt{252}$, bajo el supuesto de retornos diarios aproximadamente independientes, donde $252$ es el número aproximado de días de mercado en un año. La definición anterior es poblacional; lo que se reporta es el estimador muestral $\hat S$, que sustituye $\E[r]$ y $\Var(r)$ por sus contrapartes en la muestra. Su sesgo y su variabilidad bajo muestra corta y no-normalidad son justamente lo que corrige el Deflated Sharpe Ratio de la Sección~\ref{sec:tests}.
-
-El ratio de Sharpe es la medida estándar de rendimiento ajustado por riesgo, pero esta memoria no lo reporta nunca aislado, porque es \emph{frágil} por dos motivos. No es robusto: penaliza por igual la variabilidad al alza y a la baja, aunque al inversor solo le preocupe la segunda, y un puñado de retornos extremos puede distorsionar la varianza del denominador. Y su lectura como cantidad estable supone que los retornos son aproximadamente normales e independientes, hipótesis que las regularidades empíricas de la Sección~\ref{sec:preliminares} desmienten. Un Sharpe muestral elevado puede ser, así, fruto del azar o de haber probado muchas estrategias, problema que aborda el Deflated Sharpe Ratio de la Sección~\ref{sec:tests}.
 
 \subsection{Sortino, drawdown máximo y Calmar}
 \label{sec:economia-otros}
-
-El ratio de Sharpe admite refinamientos que corrigen alguna de sus limitaciones y que se usan en la memoria como medidas complementarias. El ratio de Sortino se debe a Sortino y Price \cite{sortino1994}, que recogen la idea de riesgo a la baja de Sortino y van der Meer \cite{sortino1991}; el ratio de Calmar fue propuesto por Young \cite{young1991} en una publicación profesional, no académica, por lo que se cita con esa cautela. El drawdown máximo es una definición operativa estándar derivada de la trayectoria de la cartera.
-
-El \emph{ratio de Sortino} responde a la objeción de que penalizar la variabilidad al alza no tiene sentido. En lugar de la desviación típica completa del denominador del Sharpe, usa solo la \emph{desviación a la baja}, calculada sobre los retornos que quedan por debajo de un umbral de referencia (típicamente cero o el retorno libre de riesgo). Si $r^- = \min(r - r_f,\, 0)$ recoge solo las desviaciones negativas, el ratio de Sortino es
-\[
-\mathrm{Sortino} \;=\; \frac{\E[r] - r_f}{\sqrt{\E[(r^-)^2]}},
-\]
-con el mismo numerador que el Sharpe pero un denominador que mide únicamente el riesgo de pérdida; la esperanza $\E[(r^-)^2]$ se promedia sobre todas las observaciones, no solo sobre las negativas, según la convención de Sortino y Price. Una estrategia con muchas subidas bruscas y pocas bajadas tendrá un Sortino más alto que su Sharpe.
-
-El \emph{drawdown máximo} mide el riesgo de forma distinta, no por la dispersión sino por la peor racha. Dada la trayectoria acumulada del valor de la cartera, el drawdown en un instante es la caída relativa desde el máximo alcanzado hasta entonces, y el drawdown máximo es la mayor de esas caídas pico-valle a lo largo de todo el periodo. Si $V_t$ es el valor de la cartera en $t$,
-\[
-\mathrm{MDD} \;=\; \max_{t}\left(1 - \frac{V_t}{\max_{s \le t} V_s}\right),
-\]
-de modo que un drawdown máximo del $40\%$ significa que, en el peor momento, la cartera llegó a perder un cuarenta por ciento desde su techo previo. Es la medida que mejor refleja lo que un inversor sufre en la práctica.
-
-Por último, el \emph{ratio de Calmar} combina rendimiento y peor racha en un solo número, dividiendo el retorno anualizado compuesto (CAGR) por el drawdown máximo (en valor absoluto),
-\[
-\mathrm{Calmar} \;=\; \frac{\text{retorno anualizado}}{\mathrm{MDD}}.
-\]
-A diferencia del Sharpe, que mide el riesgo por la volatilidad, el Calmar lo mide por la mayor pérdida sufrida, y premia las estrategias que evitan caídas profundas. Estas tres cantidades acompañan al Sharpe para dar una imagen más completa del comportamiento de cada estrategia.
 
 \section{Validación}
 \label{sec:cpcv}
