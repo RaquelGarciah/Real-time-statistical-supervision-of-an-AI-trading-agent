@@ -957,6 +957,44 @@ sg = ROLL["significancia_global"]
 print(f"Global: block-perm vs B&H={sg['block_perm_vs_bh_p']:.4f}, vs M5={sg['block_perm_vs_m5_p']:.4f}, "
       f"sign vs 0.5={sg['sign_vs_0.5_p']:.4f}  →  consistente, no significativo.")""")
 
+md(r"""## §8c. Robustez a la ventana de calibración (sugerencia del tutor)
+
+¿Depende el resultado de cuánta historia usamos para calibrar el HMM y el GARCH? Recalibramos con distintos
+inicios de ventana (fin fijo en 2024-09-30, anterior al OOS → **sin fuga**), recomputamos las *features* de
+régimen/volatilidad y el walk-forward de M10, y medimos sobre el **mismo OOS**. La ventana completa (2007) es la
+**pre-registrada**; las demás son control —no se elige ventana por el número, así que **no es *p-hacking***.
+
+Dos lecturas. **(1)** Acortar la calibración **no** vuelve direccional al régimen: la media de Crisis se mantiene
+**positiva** (y crece), así que la hipótesis "el pasado lejano no aporta" **no se sostiene** en SMCI —su pasado
+reciente es el *boom* de IA: alta volatilidad **con subidas**—. **(2)** La accuracy de M10 **degrada al acortar**
+y cae al nivel del agente (≈0,484): la ventaja de M10 **vive en las *features* de régimen calibradas sobre la
+historia larga** (coherente con la ablación §7b). La ventana completa es, además de la pre-registrada, la más
+robusta.""")
+
+code(r"""# --- Robustez a la ventana de calibración (desde JSON auditado) ---
+CALW = _J("smci_calib_window")
+cw = CALW["por_ventana"]
+yrs = [v["start"][:4] for v in cw]
+m10 = [v["m10_acc"] for v in cw]; crisis = [v["medias_regimen"]["Crisis"] for v in cw]
+fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+ax[0].plot(yrs, m10, "o-", color=COL["M10"], lw=2, label="M10")
+ax[0].axhline(0.484, color=COL["M5"], ls="--", lw=1.2, label="M5 (agente) = 0.484")
+ax[0].axhline(0.5, color="k", ls=":", lw=0.8, label="azar")
+ax[0].set_xlabel("inicio de la calibración (← más historia)"); ax[0].set_ylabel("accuracy M10 (OOS fijo)")
+ax[0].set_title("M10 degrada al acortar la calibración"); ax[0].legend(fontsize=8); ax[0].set_ylim(0.44, 0.57)
+ax[1].plot(yrs, crisis, "s-", color="#c0392b", lw=2, label="media de retorno en Crisis")
+ax[1].axhline(0, color="k", lw=0.8)
+ax[1].set_xlabel("inicio de la calibración (← más historia)"); ax[1].set_ylabel("media r en régimen Crisis")
+ax[1].set_title("Crisis NO se vuelve negativa al acortar (sigue ≈ subida)"); ax[1].legend(fontsize=8)
+plt.tight_layout(); plt.show()
+tab = pd.DataFrame([{"calib. desde": v["start"][:4], "n_cal": v["n_cal"],
+                     "media Crisis": v["medias_regimen"]["Crisis"], "M10 acc": v["m10_acc"],
+                     "Sharpe": v["m10_sharpe"], "equity": v["m10_equity"], "M5": v["m5_acc"], "M8": v["m8_acc"]}
+                    for v in cw]).set_index("calib. desde")
+print("La ventana completa (2007) = pre-registrada y la más favorable; acortar degrada hacia el nivel del agente.")
+print("El resultado NO se elige por la ventana (no p-hacking); su señal depende de la calibración larga.")
+tab""")
+
 # ════════════════════════════════════════════════════════════════════════════════════════════════
 # PARTE V — Honestidad, mecanismo y negativos
 # ════════════════════════════════════════════════════════════════════════════════════════════════

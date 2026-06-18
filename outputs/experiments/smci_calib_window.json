@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "calibration_end": "2024-09-30",
+    "oos_start": "2024-10-01",
+    "n_seeds": 10,
+    "embargo": 1,
+    "burn_in": 150,
+    "nota": "robustez a la ventana de calibración (sugerencia del tutor); OOS fijo, sin fuga; ventana completa = pre-registrada, NO se elige por el número (no p-hacking)",
+    "hipotesis_tutor": "acortar la calibración mejora / vuelve direccional al régimen",
+    "pre_registro": "BITACORA 2026-06-18"
+  },
+  "por_ventana": [
+    {
+      "start": "2007-01-01",
+      "n_cal": 4386,
+      "medias_regimen": {
+        "Calma": -5e-06,
+        "Estrés": 0.001628,
+        "Crisis": 0.0016
+      },
+      "m10_acc": 0.552,
+      "m10_sharpe": 1.836,
+      "m10_equity": 3.2375,
+      "m5_acc": 0.484,
+      "m8_acc": 0.496,
+      "n": 250
+    },
+    {
+      "start": "2010-01-01",
+      "n_cal": 3710,
+      "medias_regimen": {
+        "Calma": -9.1e-05,
+        "Estrés": 0.001146,
+        "Crisis": 0.003964
+      },
+      "m10_acc": 0.484,
+      "m10_sharpe": 0.152,
+      "m10_equity": 0.8215,
+      "m5_acc": 0.484,
+      "m8_acc": 0.496,
+      "n": 250
+    },
+    {
+      "start": "2012-01-01",
+      "n_cal": 3206,
+      "medias_regimen": {
+        "Calma": -0.000341,
+        "Estrés": 0.00108,
+        "Crisis": 0.006258
+      },
+      "m10_acc": 0.504,
+      "m10_sharpe": 0.976,
+      "m10_equity": 1.6146,
+      "m5_acc": 0.484,
+      "m8_acc": 0.496,
+      "n": 250
+    },
+    {
+      "start": "2015-01-01",
+      "n_cal": 2452,
+      "medias_regimen": {
+        "Calma": -0.000473,
+        "Estrés": 0.001433,
+        "Crisis": 0.004395
+      },
+      "m10_acc": 0.484,
+      "m10_sharpe": 0.677,
+      "m10_equity": 1.2667,
+      "m5_acc": 0.484,
+      "m8_acc": 0.496,
+      "n": 250
+    },
+    {
+      "start": "2018-01-01",
+      "n_cal": 1697,
+      "medias_regimen": {
+        "Calma": -0.000255,
+        "Estrés": 0.002206,
+        "Crisis": 0.005227
+      },
+      "m10_acc": 0.472,
+      "m10_sharpe": 0.501,
+      "m10_equity": 1.0964,
+      "m5_acc": 0.484,
+      "m8_acc": 0.504,
+      "n": 250
+    },
+    {
+      "start": "2020-01-01",
+      "n_cal": 1194,
+      "medias_regimen": {
+        "Calma": 0.000383,
+        "Estrés": 0.001848,
+        "Crisis": 0.006904
+      },
+      "m10_acc": 0.46,
+      "m10_sharpe": 0.029,
+      "m10_equity": 0.7433,
+      "m5_acc": 0.484,
+      "m8_acc": 0.504,
+      "n": 250
+    },
+    {
+      "start": "2022-01-01",
+      "n_cal": 689,
+      "medias_regimen": {
+        "Calma": 0.006432,
+        "Estrés": -0.00079,
+        "Crisis": 0.007369
+      },
+      "m10_acc": 0.452,
+      "m10_sharpe": -0.519,
+      "m10_equity": 0.4737,
+      "m5_acc": 0.484,
+      "m8_acc": 0.484,
+      "n": 250
+    }
+  ]
+}
