@@ -118,7 +118,7 @@ Definimos la \emph{variable forward}
 \[
 \alpha_t(k) \;=\; \Prob(x_{1:t},\, z_t = k \mid \lambda),
 \]
-la masa de probabilidad conjunta que el modelo asigna a la trayectoria de observaciones hasta $t$ y al hecho de estar en el régimen $k$ precisamente en ese instante. La verosimilitud completa se recupera de ella sin más que marginalizar el último estado: $\Prob(x_{1:T} \mid \lambda) = \sum_{k} \alpha_T(k)$. El resultado central es que $\alpha_t$ admite una recursión.
+la masa de probabilidad conjunta que el modelo asigna a la trayectoria de observaciones hasta $t$ y al hecho de estar en el régimen $k$ precisamente en ese instante. La verosimilitud completa se recupera de ella sin más que marginalizar el último estado: $\Prob(x_{1:T} \mid \lambda) = \sum_{k} \alpha_T(k)$. El resultado central, clásico en el tratamiento del HMM \cite{rabiner1989, bishop2006}, es que $\alpha_t$ admite una recursión.
 
 \begin{proposicion}[Recursión forward]
 \label{prop:forward}
