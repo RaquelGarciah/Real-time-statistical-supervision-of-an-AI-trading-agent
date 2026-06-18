@@ -14,6 +14,13 @@ especialista que haga falta. Implementado como **output style** (persona del hil
 
 Sobrevive a la compactación de contexto: aunque el chat se resuma, sigue siendo el consejero.
 
+## La fuente viva: el notebook + el MANUAL
+
+Al arrancar lee primero `notebooks/_build_STRATA_SMCI.py` (el builder del notebook entregable
+`STRATA_SMCI.ipynb`) y `memoria/MANUAL.md`, y los toma como **la verdad de lo que estás haciendo ahora**. Si el
+texto de un capítulo —sobre todo el cap. 4— arrastra una decisión, un parámetro o una **fecha que el notebook ya
+cambió**, te lo marca como anotación de coherencia con el valor correcto. Ante conflicto, gana el notebook.
+
 ## Qué hace
 
 - **Revisa** sección a sección. Te marca cada cambio dentro del `.tex`, en el sitio, como un comentario de Word:
