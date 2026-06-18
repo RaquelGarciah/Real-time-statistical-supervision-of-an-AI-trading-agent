@@ -22,3 +22,4 @@ fechada, añadiendo su línea a este índice.
 *Nota:* el historial completo de git guarda además cada autosave de `tesis/main.pdf` (recuperable con
 `git show <commit>:tesis/main.pdf > salida.pdf`). Esta carpeta es la **vista humana ordenada** de los hitos, no
 de cada autosave.
+| 2026-06-18 | 18:24 | [`tesis_2026-06-18_1824_cap3-rigor-citas.pdf`](tesis_2026-06-18_1824_cap3-rigor-citas.pdf) | Cap. 3 cerrado: rigor matemático (teorema GARCH no circular, lema EM, d-separación, BOCPD) + 4 definiciones formales (RAM/GSO/PSA/M8) + citas en cada demostración. **Versión actual.** |
