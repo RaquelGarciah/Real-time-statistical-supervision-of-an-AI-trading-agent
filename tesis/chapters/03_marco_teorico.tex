@@ -570,7 +570,7 @@ El contraste es exacto: el $p$-valor se calcula directamente con la distribució
 \subsection{Test de McNemar pareado}
 \label{sec:tests-mcnemar}
 
-La comparación realmente informativa no es la tasa de acierto absoluta de una estrategia, sino si una estrategia acierta más que otra sobre \emph{las mismas} decisiones. Como la regla de referencia M8 y el agente sin supervisar (M5) se enfrentan exactamente a los mismos días y a los mismos retornos, sus aciertos están pareados, y un contraste que ignore ese emparejamiento desperdicia información. El test de McNemar está diseñado para datos pareados de respuesta binaria \cite{mcnemar1947}.
+Lo informativo es comparar dos estrategias sobre \emph{las mismas} decisiones: importa quién acierta cuando difieren, más que la tasa de acierto absoluta de cada una. Como la regla de referencia M8 y el agente sin supervisar (M5) se enfrentan exactamente a los mismos días y a los mismos retornos, sus aciertos están pareados, y un contraste que ignore ese emparejamiento desperdicia información. El test de McNemar está diseñado para datos pareados de respuesta binaria \cite{mcnemar1947}.
 
 Se organiza la comparación en una tabla $2\times 2$ que clasifica cada día según acierte o falle cada estrategia. Las casillas que importan son las \emph{discordancias}: sea $b$ el número de días en que M8 acierta y M5 falla, y $c$ el número de días en que M5 acierta y M8 falla. Los días en que ambas aciertan o ambas fallan no aportan información sobre cuál es mejor y no entran en el estadístico.
 
@@ -602,7 +602,7 @@ asintóticamente normal estándar bajo $H_0$. La clave está en el denominador: 
 \subsection{Contrastes de equivalencia (TOST)}
 \label{sec:tests-tost}
 
-No rechazar una hipótesis nula no es lo mismo que demostrar que es cierta: la ausencia de evidencia de diferencia no es evidencia de ausencia de diferencia. Para \emph{afirmar} que dos estrategias son equivalentes hace falta un contraste diseñado a tal fin, no la mera ausencia de significación en un contraste de diferencia. El procedimiento de los dos contrastes unilaterales (TOST, \emph{Two One-Sided Tests}) cumple ese papel \cite{schuirmann1987}. Se fija de antemano una \emph{banda de equivalencia} $[-\delta, \delta]$, el margen dentro del cual dos estrategias se consideran indistinguibles a efectos prácticos.
+Que un contraste de diferencia no resulte significativo no permite concluir que las dos estrategias sean iguales: para afirmar equivalencia hace falta un contraste diseñado para ello. Para \emph{afirmar} que dos estrategias son equivalentes hace falta un contraste diseñado a tal fin, no la mera ausencia de significación en un contraste de diferencia. El procedimiento de los dos contrastes unilaterales (TOST, \emph{Two One-Sided Tests}) cumple ese papel \cite{schuirmann1987}. Se fija de antemano una \emph{banda de equivalencia} $[-\delta, \delta]$, el margen dentro del cual dos estrategias se consideran indistinguibles a efectos prácticos.
 
 \emph{Hipótesis nula.} La de \emph{no equivalencia}: la diferencia verdadera entre las dos estrategias cae \emph{fuera} de la banda, es decir, $\Delta \le -\delta$ o bien $\Delta \ge \delta$.
 
