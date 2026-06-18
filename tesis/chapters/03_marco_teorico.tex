@@ -192,7 +192,18 @@ Por la definición de probabilidad condicional y la de $\alpha_t$,
 donde en el denominador se ha usado $\Prob(x_{1:t}) = \sum_j \Prob(x_{1:t}, z_t = j) = \sum_j \alpha_t(j)$.
 \end{proof}
 
-El adjetivo \emph{filtrado} es preciso y tiene una consecuencia que es el eje de toda la memoria. En su definición, $\gammaf(k)$ condiciona solo sobre $x_{1:t}$, es decir, sobre el pasado y el presente. La recursión de la Proposición~\ref{prop:forward} lo confirma a nivel de cómputo: $\alpha_t(k)$ se construye a partir de $\alpha_{t-1}(\cdot)$ y de $x_t$ exclusivamente, sin que en ningún momento intervenga $x_{t+1}, x_{t+2}, \dots$ Por tanto, la estimación del régimen en $t$ es \emph{causal}: podría calcularse en tiempo real, el mismo día $t$, con la información que existe ese día.
+El adjetivo \emph{filtrado} es preciso, y su consecuencia es el eje de toda la memoria.
+
+\begin{corolario}[Causalidad del filtrado]
+\label{cor:causal}
+Para cada $t$, el posterior filtrado $\gammaf$ es función únicamente de las observaciones $x_{1:t}$. En particular, puede calcularse en tiempo real el día $t$ sin recurrir a ninguna observación posterior.
+\end{corolario}
+
+\begin{proof}
+Por la Proposición~\ref{prop:filtrado}, $\gammaf$ se expresa a través de $\{\alpha_t(j)\}_{j=1}^{K}$. La inicialización $\alpha_1(k) = \pi_k\, b_k(x_1)$ depende solo de $x_1$ y, por la recursión de la Proposición~\ref{prop:forward}, cada $\alpha_{t}(j)$ se obtiene de $\alpha_{t-1}(\cdot)$ y de $x_t$. Por inducción sobre $t$, $\alpha_t(j)$ es función de $x_{1:t}$, luego también lo es $\gammaf$.
+\end{proof}
+
+Así, la estimación del régimen en $t$ condiciona solo sobre el pasado y el presente, nunca sobre el futuro: es \emph{causal} y podría calcularse el mismo día $t$ con la información que existe ese día.
 
 Esto contrasta con el \emph{posterior suavizado}
 \[
