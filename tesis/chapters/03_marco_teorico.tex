@@ -56,7 +56,10 @@ Las señales provienen de tres detectores, cada uno a cargo de un eje distinto. 
 
 La intervención puede ir desde solo registrar la señal hasta encoger la posición o sustituirla por completo. En este trabajo trataremos y analizaremos únicamente la variante más fuerte, que reorienta el signo de $w_t$ hacia el régimen cuando la incoherencia es alta; los modos intermedios quedan sujetos a un posible trabajo futuro. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal a partir de su detector y cuándo actúa esta intervención.
 
-Hay que distinguir desde el principio entre la capa de señales y las reglas que las consumen. Cuando escribimos STRATA nos referimos siempre a la capa que produce las señales, mientras que cuando hablamos de M8 o M10 estamos haciendo referencia a las estrategias que la utilizan. \textbf{M8} es una regla determinista de umbrales fijos, la capa de intervención que se detalla en la Sección~\ref{sec:strata-intervencion}, y la usamos como referencia interpretable. \textbf{M10}, en cambio, es un \emph{meta-aprendiz} que aprende a combinar esas mismas señales para decidir la dirección, y es el objeto central del caso de estudio; se desarrolla en el capítulo de resultados.
+Hay que distinguir desde el principio entre la capa de señales y las reglas que las consumen. Cuando escribimos STRATA nos referimos siempre a la capa que produce las señales, mientras que cuando hablamos de M8 o M10 estamos haciendo referencia a las estrategias que la utilizan. \textbf{M8} es una regla determinista de umbrales fijos, la capa de intervención que se detalla en la Sección~\ref{sec:strata-intervencion}, y la usamos como referencia interpretable. \textbf{M10}, en cambio, no aplica umbrales fijos sino que es un modelo de segundo nivel (un \emph{meta-learner}) que toma como entradas las salidas del agente y de los
+detectores de STRATA, aprende a combinar esas mismas señales para decidir la dirección del
+día siguiente. Se entrena solo con el pasado y es el
+objeto central del caso de estudio, que se desarrollará en el capítulo de resultados.
 
 \section{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
