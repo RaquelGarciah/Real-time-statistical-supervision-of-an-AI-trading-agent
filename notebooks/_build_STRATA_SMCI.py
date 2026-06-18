@@ -321,6 +321,28 @@ print("Calma ≈0: NO separan por dirección ⇒ leverage effect débil en SMCI.
 print("M8 (usa signo de régimen) apenas aporta y M10 aprende la dirección de las features. Limitación §9.")
 reg_tab""")
 
+md(r"""### Persistencia de los regímenes: matriz de transición
+
+La matriz $A=(a_{ij})$ del HMM da la probabilidad de pasar del régimen $i$ al $j$ en un día. La **diagonal
+dominante** confirma que los regímenes son **persistentes** (no ruido día a día): la duración media esperada de
+cada uno es $1/(1-a_{ii})$ días. Es la propiedad que hace del régimen una variable de estado útil.""")
+
+code(r"""# --- Matriz de transición A del HMM (persistencia de régimen) ---
+A = np.asarray(hmm.transition_matrix)
+labs = ["Calma", "Estrés", "Crisis"]
+fig, ax = plt.subplots(figsize=(5.0, 4.2))
+im = ax.imshow(A, cmap="Blues", vmin=0, vmax=1)
+for i in range(3):
+    for j in range(3):
+        ax.text(j, i, f"{A[i, j]:.2f}", ha="center", va="center",
+                color="white" if A[i, j] > 0.5 else "black", fontsize=11)
+ax.set_xticks(range(3)); ax.set_xticklabels(labs); ax.set_yticks(range(3)); ax.set_yticklabels(labs)
+ax.set_xlabel("régimen en t+1"); ax.set_ylabel("régimen en t")
+ax.set_title("Matriz de transición del HMM (calibración)"); ax.grid(False)
+fig.colorbar(im, fraction=0.046, pad=0.04); plt.tight_layout(); plt.show()
+for i, lb in enumerate(labs):
+    print(f"{lb:7} persistencia a_ii={A[i, i]:.3f}  →  duración media ≈ {1/(1-A[i, i]):.0f} días")""")
+
 md(r"""## §3. Umbrales de los detectores
 
 **PSA y GSO** son alarmas para patologías raras, así que su severidad se mapea a percentiles **altos** de la
@@ -699,6 +721,36 @@ ax.set_ylabel("accuracy"); ax.set_title("Mecánica del gate RAM en SMCI")
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()
 print(f"Intervención STRATA en SMCI: {float(mv['intervenido'].mean()):.1%} de los días (el agente ya va con el régimen).")""")
 
+md(r"""### Un día por dentro: los tres detectores en acción
+
+Para ver **RAM, PSA y GSO** a la vez sobre un día real, tomamos un día del OOS en que STRATA **intervino** (RAM
+disparó) y, como control, uno en que **no**. Cada columna recorre la tupla del agente, el régimen filtrado, los
+tres scores, la posición final y el retorno del día siguiente. Es la mecánica del sistema en un caso concreto.""")
+
+code(r"""# --- Mecánica de un día: intervención vs control (RAM/PSA/GSO en acción) ---
+def _day_col(t):
+    r = m.loc[t]
+    dom = ["Calma", "Estrés", "Crisis"][int(np.argmax([r["calm_prob"], r["stress_prob"], r["crisis_prob"]]))]
+    _dir = lambda s: "largo" if s > 0 else ("corto" if s < 0 else "neutral")
+    return {
+        "fecha": str(t.date()),
+        "agente (dir·size)": f"{_dir(r['agent_size'])} · {abs(r['agent_size']):.2f}",
+        "régimen dominante": f"{dom} (C={r['calm_prob']:.2f} E={r['stress_prob']:.2f} Cr={r['crisis_prob']:.2f})",
+        "RAM score": f"{r['ram_score']:.2f}", "PSA score": f"{r['psa_score']:.2f}", "GSO score": f"{r['gso_score']:.2f}",
+        "σ_t (GARCH)": f"{r['garch_sigma']:.2f}", "¿intervino?": "SÍ" if r["intervenido"] else "no",
+        "posición final": f"{_dir(r['final_size'])} · {abs(r['final_size']):.2f}", "r_{t+1}": f"{r['r_next']:+.4f}",
+    }
+
+interv = m.index[m["intervenido"] & m["r_next"].notna()]
+ctrl = m.index[~m["intervenido"] & m["r_next"].notna()]
+cols = {}
+if len(interv):
+    cols["intervención (RAM dispara)"] = _day_col(interv[len(interv) // 2])
+cols["control (sin intervención)"] = _day_col(ctrl[len(ctrl) // 2])
+print(f"Días con intervención en el OOS: {int(m['intervenido'].sum())} de {int(m['r_next'].notna().sum())} "
+      f"({m['intervenido'].mean():.1%}). Aquí PSA y GSO se ven junto a RAM (en el resto del cuaderno son features).")
+pd.DataFrame(cols)""")
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PARTE III-bis — Estrategias por régimen alcista / bajista
 # ─────────────────────────────────────────────────────────────────────────────
@@ -878,6 +930,47 @@ ax[1].set_ylabel("accuracy en días activos"); ax[1].set_title("Accuracy activa"
 ax[1].set_ylim(0.40, 0.60)
 plt.tight_layout(); plt.show()
 print("Abstener por régimen baja a 0.489 (<0.552) con cobertura 75%: la confianza NO ordena la dificultad ⇒ descartada.")""")
+
+md(r"""## §8b. ¿Por qué el umbral de M10 se fija en 0,5 y no se optimiza?
+
+Comprobamos si el umbral de decisión sobre $p_1$ es **estable**: variamos el umbral sobre la serie $p_1$ ya
+calculada (sin reentrenar) y comparamos el Sharpe por mitades del OOS. Si el umbral óptimo **no** coincide entre
+mitades, optimizarlo **sobreajustaría**; por eso M10 usa **0,5 fijo**, igual que STRATA fija sus umbrales
+ex-ante sobre 24 años y no los reoptimiza.""")
+
+code(r"""# --- Inestabilidad del umbral de M10 entre mitades del OOS (justifica el 0.5 fijo) ---
+from scipy.stats import spearmanr
+half = len(sub) // 2
+h1, h2 = sub[:half], sub[half:]
+grid_thr = np.linspace(0.40, 0.60, 11)
+
+
+def _sharpe_half(idx, thr):
+    p = p1.reindex(idx).to_numpy()
+    pos = np.where(p >= thr, 1.0, -1.0)
+    w = pd.Series(0.0, index=mv.index); w.loc[idx] = pos
+    nr = run_backtest(oos_ret, w, signal_lag=1)["net_return"].reindex(idx).to_numpy()
+    return _sr(nr)
+
+
+s1 = [_sharpe_half(h1, t) for t in grid_thr]
+s2 = [_sharpe_half(h2, t) for t in grid_thr]
+rho, _ = spearmanr(s1, s2)
+t1, t2 = grid_thr[int(np.argmax(s1))], grid_thr[int(np.argmax(s2))]
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(grid_thr, s1, "o-", color="#2c7fb8", label=f"1ª mitad (óptimo {t1:.2f})")
+ax.plot(grid_thr, s2, "s-", color="#c44e52", label=f"2ª mitad (óptimo {t2:.2f})")
+ax.axvline(0.5, color="k", ls="--", lw=1, label="0.5 (fijo, usado)")
+ax.set_xlabel("umbral sobre p1"); ax.set_ylabel("Sharpe (por mitad)")
+ax.set_title(f"Sharpe por umbral y mitad del OOS · óptimo {t1:.2f} / {t2:.2f}"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print(f"Óptimo 1ª mitad: {t1:.2f} · 2ª mitad: {t2:.2f} · Spearman ρ={rho:+.2f}.")
+if t1 != t2:
+    print("→ el óptimo SE MUEVE entre mitades: optimizar el umbral sobreajustaría; por eso M10 usa 0.5 fijo")
+    print("  (sin grado de libertad extra), igual que STRATA fija sus umbrales ex-ante y no los reoptimiza.")
+else:
+    print(f"→ el óptimo coincide en {t1:.2f} en ambas mitades: 0.5 es robusto y además el óptimo empírico. Lo")
+    print("  fijamos a priori para no añadir un grado de libertad, en línea con los umbrales ex-ante de STRATA.")""")
 
 md(r"""## §9. Lectura conjunta de los contrastes
 
