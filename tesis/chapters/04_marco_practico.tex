@@ -17,7 +17,7 @@ Los tres detectores de STRATA se calibran una sola vez sobre 2000--2024-09 y se 
 \section{El agente sin supervisar (M5)}
 \label{sec:m5}
 
-El agente de trading por sí solo, que denotamos M5, es un perdedor direccional sobre SMCI: acierta el $48{,}4\%$ de las direcciones, por debajo del azar. Su comportamiento está además muy sesgado, con posición corta el $95\%$ de los días. Este es el punto de partida del problema: un decisor que, sin supervisar, pierde dinero y no alcanza el medio acierto. La hipótesis del trabajo es que las señales de STRATA, bien explotadas, recuperan parte de esa dirección perdida.
+El agente de trading por sí solo, que denotamos M5, es un perdedor direccional sobre SMCI: acierta el $48{,}4\%$ de las direcciones, por debajo del azar. Su comportamiento está además muy sesgado, con posición corta el $95\%$ de los días. De aquí parte el problema: sin supervisar, el agente pierde dinero y no llega al medio acierto. La hipótesis del trabajo es que las señales de STRATA, bien explotadas, recuperan parte de esa dirección perdida.
 
 \section{La regla a mano (M8) como referencia}
 \label{sec:m8}
@@ -27,7 +27,7 @@ La regla determinista M8 aplica la intervención de STRATA descrita en la Secci�
 \section{El meta-learner M10}
 \label{sec:m10}
 
-M10 es el modelo central del caso de estudio. Es un clasificador binario XGBoost \cite{chen2016} que, para cada día, estima la probabilidad de que el retorno del día siguiente sea positivo a partir de \textbf{veintidós variables}: las quince de la decisión del agente (cinco personalidades, cada una con signo, tamaño y confianza) y las siete señales de STRATA y de régimen (los tres scores RAM, PSA y GSO, las tres probabilidades de régimen y la volatilidad condicional del GARCH). La posición del día es el signo de la probabilidad estimada menos $0{,}5$.
+M10, el modelo central del caso de estudio, es un clasificador binario XGBoost \cite{chen2016}: cada día estima la probabilidad de que el retorno del día siguiente sea positivo. Lo hace a partir de \textbf{veintidós variables}: las quince de la decisión del agente (cinco personalidades, cada una con signo, tamaño y confianza) y las siete señales de STRATA y de régimen (los tres scores RAM, PSA y GSO, las tres probabilidades de régimen y la volatilidad condicional del GARCH). La posición del día es el signo de la probabilidad estimada menos $0{,}5$.
 
 El modelo sigue el protocolo walk-forward de la Sección~\ref{sec:cpcv-walkforward}: arranque de $150$ días, reentreno cada $21$ con toda la historia, y embargo de un día. Para reducir la varianza del azar interno se promedia un \emph{ensemble} de diez modelos que solo difieren en la semilla. Es \emph{bagging} \cite{breiman1996, dietterich2000}: el promedio cancela ruido sin crear señal, y no introduce optimismo. M10 no usa la validación cruzada combinatoria, que mira el futuro y queda como contraste (Sección~\ref{sec:cpcv-cpcv}). Tampoco lleva variables de momento ni abstención, descartadas porque no mejoran la accuracy fuera de muestra.
 
