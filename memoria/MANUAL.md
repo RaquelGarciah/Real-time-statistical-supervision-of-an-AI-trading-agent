@@ -139,6 +139,7 @@ inmediatas (cap. 5). Así la aspiración deja de ser vaga: es una **limitación 
 | Estructura del cap. 3 | `memoria/estructura_cap3.md` |
 | Reglas de estilo + anti-IA | `memoria/ESTILO_Y_ANTIIA.md` |
 | Figuras clave del caso | `graficas_clave.md` |
+| Revisar/redactar con el consejero persistente | `memoria/CONSEJERO.md` (`/output-style consejero-tesis`) |
 
 ## 8. Líneas rojas (no negociables)
 
