@@ -546,7 +546,18 @@ Sobre los datos estudiados, GSO rara vez supera la severidad media: el tamaño q
 \subsection{PSA: coherencia temporal del agente}
 \label{sec:strata-psa}
 
-PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente. En lugar de la probabilidad absoluta de cambio usa su incremento de un día al siguiente, que detecta el momento de la ruptura y no el estado posterior a ella. La dinámica de puntos de cambio se gobierna con una función de hazard constante $H = 1/\lambda$ con $\lambda = 60$, que fija a priori la escala temporal entre rupturas en unos sesenta días de mercado, la media de la geométrica de la Sección~\ref{sec:bocpd-hazard}; no es un valor optimizado contra el periodo de evaluación, sino una escala interpretable que se comprobó robusta por un análisis de sensibilidad en la calibración. Los umbrales operativos siguen el mismo criterio que RAM y GSO: los percentiles $95$ y $99$ sobre el periodo de calibración.
+PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente, con una función de hazard constante $H = 1/\lambda$, $\lambda = 60$, que fija a priori la escala temporal entre rupturas en unos sesenta días de mercado (la media de la geométrica de la Sección~\ref{sec:bocpd-hazard}); no es un valor optimizado contra el periodo de evaluación, sino una escala interpretable que se comprobó robusta por un análisis de sensibilidad en la calibración.
+
+\begin{definicion}[PSA score]
+\label{def:psa}
+El \emph{PSA score} es la masa posterior de la run-length sobre las rachas cortas, esto es, la probabilidad de que se haya producido un cambio reciente,
+\[
+\mathrm{PSA}_t \;=\; \sum_{r=0}^{w} \Prob(r_t = r \mid x_{1:t}),
+\]
+con $w$ la ventana de racha corta. Crece cuando el \emph{sizing} del agente acaba de romper con su patrón previo.
+\end{definicion}
+
+Los umbrales operativos siguen el mismo criterio que GSO: los percentiles $95$ y $99$ sobre el periodo de calibración. En la intervención, una severidad alta de PSA frena la posición resultante.
 
 \subsection{La capa de intervención}
 \label{sec:strata-intervencion}
