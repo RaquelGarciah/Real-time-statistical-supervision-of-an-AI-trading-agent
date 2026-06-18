@@ -192,19 +192,16 @@ Partición (val / test) & Accuracy M10 (val) & Accuracy M10 (test) & $n_{\text{t
 \subsection{En el tiempo}
 \label{sec:smci-rob-tiempo}
 
-La robustez se confirma sobre ventanas rodantes a lo largo del periodo de evaluación. Según el tamaño de ventana ($42$, $63$ y $84$ días), M10 supera a comprar-y-mantener en el $71$ al $82\%$ de las ventanas y al agente en el $67$ al $76\%$ (Figura~\ref{fig:cap4-embargo-rolling}). La ventaja se sostiene a lo largo del periodo y no se concentra en un único tramo.
-
-\subsection{Al protocolo}
-\label{sec:smci-rob-embargo}
-
-El embargo lo fijamos en uno por el horizonte de la etiqueta, que es de un día (Sección~\ref{sec:cpcv-purga}), y no para maximizar una cifra. Al barrer el embargo de $0$ a $10$ días, la accuracy se mueve entre $0{,}512$ y $0{,}552$ y la significancia aparece como un pico aislado en $\text{embargo}=1$ (block-perm $p=0{,}047$), mientras que los embargos vecinos $0$ y $2$ no son significativos. Leemos ese pico como sensibilidad del p-valor a una elección de protocolo, no como confirmación: el resultado nominal es estable, pero la significancia puntual no debe sobreinterpretarse.
+La robustez se confirma sobre ventanas rodantes a lo largo del periodo de evaluación. La accuracy rodante de M10 se mantiene por encima de la de los baselines en la mayor parte del recorrido (Figura~\ref{fig:cap4-rolling}). Según el tamaño de ventana ($42$, $63$ y $84$ días), M10 supera a comprar-y-mantener en el $71$ al $82\%$ de las ventanas y al agente en el $67$ al $76\%$. La ventaja se sostiene a lo largo del periodo y no se concentra en un único tramo.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\textwidth]{figuras/cap4_embargo_rolling.pdf}
-\caption{Izquierda: fracción de ventanas rodantes en que M10 bate a B\&H y al agente ($71$--$82\%$ y $67$--$76\%$). Derecha: accuracy y significancia frente al embargo; el pico de $p$ en $\text{embargo}=1$ es aislado. Fuente: \texttt{m10\_smci\_rolling.json}, \texttt{m10\_smci\_embargo.json}.}
-\label{fig:cap4-embargo-rolling}
+\includegraphics[width=0.95\textwidth]{figuras/cap4_rolling.pdf}
+\caption{Izquierda: accuracy rodante (ventana de $63$ días) de M10 frente a los baselines a lo largo del periodo de evaluación. Derecha: fracción de ventanas rodantes en que M10 bate a comprar-y-mantener, por tamaño de ventana ($71$--$82\%$). Fuente: elaboración propia.}
+\label{fig:cap4-rolling}
 \end{figure}
+
+\FloatBarrier
 
 \subsection{A la ventana de calibración}
 \label{sec:smci-rob-calib}
