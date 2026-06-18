@@ -562,7 +562,22 @@ Los umbrales operativos siguen el mismo criterio que GSO: los percentiles $95$ y
 \subsection{La capa de intervención}
 \label{sec:strata-intervencion}
 
-Las tres señales alimentan la capa de intervención sobre la posición $w_t$, que actúa en tres pasos. Primero, el GSO acota la magnitud $|w_t|$ al límite que permite la volatilidad estimada, la banda GARCH. Después, cuando el RAM score supera el gate $\tau = 0{,}50$, la intervención reorienta el signo: reemplaza la posición por la más próxima dentro de la banda admisible que marca el régimen —es el único paso que cambia la dirección—. Por último, ante un cambio brusco de \emph{sizing} señalado por el PSA, la posición resultante se frena a la mitad. La intervención trabaja solo con el posterior filtrado del régimen. La regla de referencia M8 es exactamente esta configuración, con $\mathrm{signal\_lag} = 1$.
+Las tres señales alimentan la capa de intervención, que transforma la posición $w_t$ en una posición supervisada $w_t^{\star}$ por composición de tres operadores. Sea $\rho_t = +1$ si $\gammaf(\text{Calma}) \ge \gammaf(\text{Crisis})$ y $\rho_t = -1$ en otro caso, la dirección del régimen dominante.
+
+\begin{definicion}[Capa de intervención M8, \emph{override-C}]
+\label{def:m8}
+La posición supervisada es $w_t^{\star} = \big(C_{\mathrm{PSA}} \circ R_{\mathrm{RAM}} \circ G_{\mathrm{GSO}}\big)(w_t)$, donde cada operador actúa solo si su detector dispara y es la identidad en caso contrario:
+\[
+G_{\mathrm{GSO}}(w) = \operatorname{sign}(w)\,\min(|w|, b_t),
+\qquad
+R_{\mathrm{RAM}}(w) = \rho_t\, b_t,
+\qquad
+C_{\mathrm{PSA}}(w) = \tfrac{1}{2}\, w.
+\]
+El disparo se produce con severidad \emph{medium} o superior para GSO y RAM (es decir, $\mathrm{RAM}_t \ge \tau$) y \emph{high} para PSA.
+\end{definicion}
+
+El GSO acota la magnitud a la banda de volatilidad; el RAM, cuando $\mathrm{RAM}_t \ge \tau$ con $\tau = 0{,}50$, reorienta la posición al signo del régimen con esa banda (el único paso que cambia la dirección); el PSA frena a la mitad ante un cambio brusco de \emph{sizing}. La intervención trabaja solo con el posterior filtrado del régimen. La regla de referencia M8 es exactamente esta configuración, con $\mathrm{signal\_lag} = 1$.
 
 \section{Métricas de evaluación}
 \label{sec:metricas}
