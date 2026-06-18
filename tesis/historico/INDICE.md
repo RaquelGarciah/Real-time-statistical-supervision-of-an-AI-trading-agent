@@ -20,3 +20,4 @@ fechada, añadiendo su línea a este índice.
 *Nota:* el historial completo de git guarda además cada autosave de `tesis/main.pdf` (recuperable con
 `git show <commit>:tesis/main.pdf > salida.pdf`). Esta carpeta es la **vista humana ordenada** de los hitos, no
 de cada autosave.
+| 2026-06-18 | 12:39 | [`tesis_2026-06-18_1239_conectores-ritmo.pdf`](tesis_2026-06-18_1239_conectores-ritmo.pdf) | Pasada de conectores y ritmo (voz de Raquel) en cap. 3 y 4. |
