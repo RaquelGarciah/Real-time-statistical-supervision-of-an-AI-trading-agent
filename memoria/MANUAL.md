@@ -49,8 +49,8 @@ temporal**, con vocación de generalizar a cualquier agente y cualquier activo.
    (walk-forward, embargo=1, `signal_lag=1`), y demostrar que **bate en accuracy a M5, a M8 y a lo trivial** en
    el caso de estudio, robusto a la partición (60/40, 70/30, 80/20) y al rolling (cap. 4).
 4. **Demostrar la interpretabilidad por features:** que **las señales de STRATA son las informativas** para M10
-   —ablación: M10 con solo las 15 features del agente cae a 0,476 ≈ M5; SHAP: las 7 señales STRATA/régimen por
-   delante de las 15 del agente—. Esto hace a **M10 inseparable de STRATA** y justifica el nombre del proyecto.
+   (ablación: M10 con solo las 15 features del agente cae a 0,468 ≈ M5; SHAP: las 7 señales STRATA/régimen por
+   delante de las 15 del agente). Esto hace a M10 dependiente de STRATA y justifica el nombre del proyecto.
 5. **Evaluar con rigor** (tests pareados, bootstrap por bloques, P(Sharpe>0) corregida) y **delimitar honestamente los límites**
    (no-significancia a muestra corta; generalización multi-agente/multi-activo y despliegue en vivo = trabajo
    futuro).
@@ -68,8 +68,9 @@ temporal**, con vocación de generalizar a cualquier agente y cualquier activo.
   1,84; equity 3,24×. **M10 es el único que supera a todos los baselines y a lo trivial.**
 - **Interpretabilidad:** ablación en el notebook definitivo (walk-forward ensemble, embargo=1): **M10 solo-agente
   = 0,468 → 0,552 con las 22** (las 7 señales STRATA aportan ≈ +8 pp; McNemar 0,053, casi sig.) → el meta-aprendiz
-  sí usa la señal de STRATA. SHAP (in-sample, modelo full-fit): las 7 features STRATA/régimen pesan **41,4 %** del
-  total. Fuente única: `notebooks/STRATA_SMCI.ipynb` §7–§7b.
+  sí usa la señal de STRATA. SHAP real (TreeExplainer, modelo full-fit): las 7 features STRATA/régimen pesan
+  **64,7 %** de la importancia (los 5 primeros features son de STRATA). El 41,4 % anterior era *gain* de XGBoost
+  (fallback sin `shap`); el valor citable es el TreeSHAP. Fuente: `m10_smci_cap4_prep.json` / `STRATA_SMCI.ipynb`.
 - **Honestidad:** la ventaja es **nominal, no significativa** (ver tests en §6). **Robusta** a la partición, al
   rolling y a la **ventana de calibración** (recortar la calibración degrada M10 hacia el nivel del agente → la
   ventana completa pre-registrada es la más robusta; `experiments/smci_calib_window.py`). **Significancia plena =
@@ -117,9 +118,11 @@ inmediatas (cap. 5). Así la aspiración deja de ser vaga: es una **limitación 
 
 **Tests (qué sobrevive y qué no) — coherente con la línea roja "cada cifra con su test":**
 - **block-perm M10 vs B&H:** p = 0,047 → **NO sobrevive** la multiplicidad (Bonferroni-5 ≈ 0,28).
-- **sign M10 vs 0,5:** p ≈ 0,06 (binomial, `…valtest_robustez.json`) / 0,11 (`RESULTADOS §1bis`) → **reconciliar
-  en cap. 4**; no significativo en ninguno.
-- **M10 vs M5 / M8:** M10 no bate al agente ni a la regla de forma significativa (margen nominal).
+- **M10 vs 0,5:** binomial 1-cola p = 0,057; sign test bilateral p = 0,114 (mismo OOS n=250; son la misma
+  hipótesis con distinta cola). No significativo.
+- **M10 vs M5 / M8 (dirección):** McNemar vs M5 = 0,16, vs M8 = 0,24 (OOS completo) → no bate significativamente
+  al agente ni a la regla (margen nominal). En P&L, DM M10 vs M8 = 0,067 (marginal, por el tamaño: M10 va ±1 y
+  M8 hereda el tamaño ≈0,10 del agente). Fuente: `m10_smci_cap4_prep.json`.
 - **P(Sharpe>0) M10 = 0,976** (Sharpe positivo con alta prob.; penalizada por las configs exploradas ≈0,72 →
   el Sharpe se trata como ilustración económica, la prueba del TFG es la accuracy).
 - **Ablación (interpretabilidad):** M10 solo-agente 0,468 → 0,552 con las 22 (las 7 señales STRATA aportan +8 pp,
