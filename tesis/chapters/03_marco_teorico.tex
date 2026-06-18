@@ -612,7 +612,7 @@ El \emph{drawdown máximo} mide el riesgo de forma distinta, no por la dispersi�
 \]
 de modo que un drawdown máximo del $40\%$ significa que, en el peor momento, la cartera llegó a perder un cuarenta por ciento desde su techo previo. Es la medida que mejor refleja lo que un inversor sufre en la práctica.
 
-Por último, el \emph{ratio de Calmar} combina rendimiento y peor racha en un solo número, dividiendo el retorno anualizado por el drawdown máximo (en valor absoluto),
+Por último, el \emph{ratio de Calmar} combina rendimiento y peor racha en un solo número, dividiendo el retorno anualizado compuesto (CAGR) por el drawdown máximo (en valor absoluto),
 \[
 \mathrm{Calmar} \;=\; \frac{\text{retorno anualizado}}{\mathrm{MDD}}.
 \]
@@ -705,7 +705,7 @@ El acierto direccional es binario y deja fuera la magnitud del resultado. Para c
 \[
 DM \;=\; \frac{\bar d}{\sqrt{\widehat{\Var}(\bar d)}} \;\sim\; N(0, 1),
 \]
-asintóticamente normal estándar bajo $H_0$. La clave está en el denominador: como los diferenciales diarios están autocorrelados, su varianza no puede estimarse como si fueran independientes, y se usa un estimador de la \emph{varianza de largo plazo} robusto a heterocedasticidad y autocorrelación (HAC) en el sentido de Newey y West \cite{newey1987}, que acumula las autocovarianzas relevantes del diferencial. Sin esa corrección, el contraste sobreestimaría la significación.
+asintóticamente normal estándar bajo $H_0$. La clave está en el denominador: como los diferenciales diarios están autocorrelados, su varianza no puede estimarse como si fueran independientes, y se usa un estimador de la \emph{varianza de largo plazo} robusto a heterocedasticidad y autocorrelación (HAC) en el sentido de Newey y West \cite{newey1987}, que acumula las autocovarianzas relevantes del diferencial. Sin esa corrección, el contraste sobreestimaría la significación. La distribución $N(0,1)$ es asintótica y supone $\{d_t\}$ estacionario de segundo orden con varianza de largo plazo finita y positiva; en muestras pequeñas la aproximación puede sobre-rechazar, lo que se mitiga sustituyendo la normal por una distribución $t$.
 
 \emph{Uso en la memoria.} Compara la exactitud de dos estrategias por su resultado económico diario, teniendo en cuenta la autocorrelación de los diferenciales. Se usa para contrastar el rendimiento del meta-learner M10 frente a los baselines.
 
