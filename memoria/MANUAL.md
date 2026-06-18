@@ -70,9 +70,12 @@ temporal**, con vocación de generalizar a cualquier agente y cualquier activo.
   = 0,468 → 0,552 con las 22** (las 7 señales STRATA aportan ≈ +8 pp; McNemar 0,053, casi sig.) → el meta-aprendiz
   sí usa la señal de STRATA. SHAP (in-sample, modelo full-fit): las 7 features STRATA/régimen pesan **41,4 %** del
   total. Fuente única: `notebooks/STRATA_SMCI.ipynb` §7–§7b.
-- **Honestidad:** la ventaja es **nominal, no significativa** (ver tests en §6). **Robusta** a la partición y al
-  rolling. **Significancia plena = trabajo futuro** (muestra ≈250 días; el agente solo existe en el OOS
-  posterior al cutoff del LLM).
+- **Honestidad:** la ventaja es **nominal, no significativa** (ver tests en §6). **Robusta** a la partición, al
+  rolling y a la **ventana de calibración** (recortar la calibración degrada M10 hacia el nivel del agente → la
+  ventana completa pre-registrada es la más robusta; `experiments/smci_calib_window.py`). **Significancia plena =
+  trabajo futuro** (muestra ≈250 días; el agente solo existe en el OOS posterior al cutoff del LLM).
+- **Entregable:** `notebooks/STRATA_SMCI.ipynb` (sustituye a `strata_canonical`); el Sharpe se reporta como
+  **P(Sharpe>0)** (0,976 sin corregir / 0,72 corregida por multiplicidad), no como "DSR".
 - **Por qué la ventaja es pequeña (y honesto):** en SMCI el agente ya va casi siempre corto y el régimen también
   sesga a corto, así que M5/M8/M10 apuestan en la misma dirección la mayor parte del tiempo; M10 extrae algo más
   de señal que M8 y que el agente, pero el margen es modesto a este tamaño de muestra.

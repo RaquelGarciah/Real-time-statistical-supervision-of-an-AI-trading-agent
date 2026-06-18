@@ -10,6 +10,24 @@
 
 ---
 
+## ESTADO (2026-06-18): notebook construido → `notebooks/STRATA_SMCI.ipynb`
+
+El notebook definitivo **ya está construido y ejecutado** (builder `_build_STRATA_SMCI.py`; 56 celdas, **23
+figuras**, 0 errores; sustituye a `strata_canonical`). Este documento queda como **mapa/justificación** de las
+gráficas; el inventario real ejecutado es:
+
+**Parte II (mecánica/calibración):** régimen sobre precio (calibración + OOS), LL held-out vs K + scatter
+régimen, **matriz de transición del HMM** 🆕, percentiles PSA/GSO, RAM-gate (bimodal + accuracy-por-τ).
+**Parte III (resultado):** barra headline 6 estrategias, curvas de equity, **análisis del drawdown verano 2025**
+🆕, **rezago del régimen (precio→RV²¹→régimen + posición M10)** 🆕, SHAP, ablación agente-15/STRATA-7/22,
+matrices de confusión M5/M10, descriptivo 3×3, gate RAM, **día de intervención por dentro (RAM/PSA/GSO)** 🆕,
+alcista/bajista. **Parte IV (robustez):** particiones 60/40·70/30·80/20, embargo, rolling, **umbral 0.5 en
+val/test** 🆕, **robustez a la ventana de calibración** 🆕. **Parte V (honestidad):** panel intervención +
+margen por activo, métodos avanzados, abstención. **Nota:** el Sharpe se reporta como **P(Sharpe>0)** (0.976
+sin corregir / 0.72 corregida), no como "DSR".
+
+---
+
 ## Estrategias / baselines a comparar (en TODA gráfica y tabla)
 
 Toda comparación de accuracy enfrenta **6 estrategias**: 3 modelos + 3 baselines triviales.

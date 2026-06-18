@@ -74,6 +74,17 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
   M5/M8/B&H **y a la clase mayoritaria** en validación Y test en los tres (val 0.52–0.535, test 0.60–0.62) → la
   conclusión no depende del corte. Fuente: `experiments/m10_smci_valtest_robustez.py`. (Al achicar el test la
   accuracy sube pero pierde potencia: binom vs NIR 0.183→0.060; por eso el headline es el de todo el OOS.)
+- **Robustez a la ventana de calibración (sugerencia del tutor):** recalibrando HMM+GARCH con ventanas más
+  cortas (2007..2022, fin fijo, sin fuga), M10 **degrada** (0.552 con la completa → ~0.48, nivel del agente) y la
+  media de Crisis **sigue positiva** (no se vuelve direccional). La ventana completa (pre-registrada, dec. #3) es
+  la más robusta; la ventaja de M10 depende de las features de régimen calibradas sobre la historia larga.
+  Fuente: `experiments/smci_calib_window.py`.
+- **Umbral 0.5 validado:** barriendo el umbral por validación/test (60/40), 0.5 es el óptimo en accuracy Y Sharpe
+  en ambos tramos → fijado a priori, sin grado de libertad extra.
+- **El régimen no es direccional en SMCI:** separa por **volatilidad** (std 0.019<0.034<0.066) pero la media por
+  régimen solo es significativa en Estrés (positiva); **Crisis tiene media positiva** (leverage débil). En el
+  drawdown de verano 2025 (−34 %) el régimen **capta** la crisis (Crisis dominante el 81 %, rezago RV²¹ ~6 d)
+  pero M10 sigue largo porque aprendió "Crisis≈subida": la causa es la **no-direccionalidad**, no el rezago.
 - **Por qué no es significativo:** en SMCI el agente ya está 95 % corto (alineado con el régimen) → M5/M8/M10
   son la misma apuesta corta; STRATA rescata solo donde el agente discrepa de un régimen que acierta (SPY,
   M10 vs M5 p=0.0041). SMCI es el único activo del panel donde M10 > M5, M8 y B&H (muro estructural 2×2).

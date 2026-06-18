@@ -196,6 +196,36 @@ OOS (0.552)**, y los splits son respaldo, **no** se elige el de mayor accuracy (
   abstención) con citas verificadas en `tesis/bibliography.bib`.
 - Didáctico: **`logic_esential.ipynb`** §14b (embargo) y §14d (ensemble).
 
+### Fase 10 — Notebook definitivo `STRATA_SMCI.ipynb` y refinamientos (2026-06-18)
+
+Se construye el **notebook único y entregable `notebooks/STRATA_SMCI.ipynb`** (builder
+`_build_STRATA_SMCI.py`), que **sustituye a `strata_canonical.ipynb`** (obsoleto) y absorbe lo defendible de
+`m10_better_smci.ipynb`. 56 celdas, 23 figuras, ejecutado sin errores; headline recalculado **en vivo**
+(acc 0.552) + robustez desde JSON auditado; barrera anti-fuga ejecutable y auto-test con asserts. Auditado por
+panel multiagente (rigor-matemático, experto-inferencia, experto-ml-financiero, narrativa-coherencia,
+harvard-professor) → **APROBADO**.
+
+Refinamientos cerrados en esta sesión:
+- **P(Sharpe>0) en vez de "DSR".** Se retira la sigla; se reporta **P(Sharpe>0)=0,976** (sin corregir, cifra
+  económica principal) y, en una línea, la **corregida por multiplicidad = 0,72 < 0,95** (Bailey-LdP). El Sharpe
+  es ilustración; la prueba del TFG es la accuracy.
+- **Régimen NO direccional en SMCI (honesto).** La tabla régimen→signo marca el signo por significancia: solo
+  Estrés tiene media significativa (positiva); Calma y Crisis salen **≈0 (IC contiene 0)**. Los regímenes
+  separan por **volatilidad** (std 0,019<0,034<0,066) pero **no por dirección**; Crisis tiene media positiva →
+  leverage effect débil en un valor individual.
+- **Drawdown de verano 2025 analizado.** M10 cae por debajo de todo (may–sep 2025, drawdown **−34 %**). Causa
+  **dominante: la no-direccionalidad** del régimen — el régimen **capta** la crisis (Crisis dominante el 81 % de
+  la caída; rezago de la RV²¹ solo ~6 d), pero en SMCI Crisis≈subida, así que M10 **sigue largo** (64 % en días
+  de Crisis, acc 0,37) justo cuando cae. La ventaja de M10 es **episódica** (llega en las caídas de fin de
+  2025–2026). El rezago de la RV²¹ (ventana 21 d + persistencia) es factor menor.
+- **Umbral 0,5 validado.** Barriendo el umbral por **validación/test (60/40)**, 0,5 es el óptimo en accuracy Y
+  Sharpe en ambos tramos → se fija a priori sin grado de libertad extra.
+- **Robustez a la ventana de calibración (sugerencia del tutor).** `experiments/smci_calib_window.py`: 7
+  ventanas (2007..2022, fin fijo 2024-09-30, sin fuga). Acortar **no** vuelve direccional al régimen (Crisis
+  sigue positiva y **crece**) y **M10 degrada al nivel del agente** (0,552→~0,48): la ventaja de M10 depende de
+  las *features* de régimen calibradas sobre la **historia larga**. La ventana completa, ya pre-registrada, es la
+  más robusta (no p-hacking).
+
 ---
 
 ## ESTADO FINAL CONSOLIDADO
@@ -203,10 +233,13 @@ OOS (0.552)**, y los splits son respaldo, **no** se elige el de mayor accuracy (
 - **Activo del caso de estudio: SMCI** (B&H ≈ 0.484, benchmark justo; único que M10 bate a todo nominal).
 - **Modelo final: M10 desplegable = walk-forward ensemble** (XGBoost 300×4, 10 semillas, 22 features STRATA,
   burn-in 150, reentreno 21 d, **embargo 1**, cobertura 100 %).
-- **Cifras (todo el OOS, 250 d):** M10 **0.552** > M8 0.496 > M5 0.484 = B&H 0.484; Sharpe M10 **1.84** (B&H
-  0.03); equity **3.24×** (B&H 0.71×); DSR 0.72 (<0.95).
+- **Cifras (todo el OOS, 250 d):** M10 **0.552** > "mayoritaria" 0.516 > M8 0.496 > M5 0.484 = B&H 0.484; Sharpe
+  M10 **1.84** (B&H 0.03); equity **3.24×** (B&H 0.71×).
 - **Significancia:** **nominal**, no plena. block-perm vs B&H 0.047 (no sobrevive multiplicidad); no bate al
-  agente ni a la moneda de forma significativa. Reportado honestamente.
+  agente ni a la moneda de forma significativa; P(Sharpe>0)=0.976 sin corregir / 0.72 corregida por
+  multiplicidad (<0.95). Reportado honestamente.
+- **Entregable:** `notebooks/STRATA_SMCI.ipynb` (sustituye a `strata_canonical`). Robusto a partición, embargo,
+  rolling **y ventana de calibración** (la completa es la más robusta).
 - **Marco honesto:** en SMCI los tres modelos son la misma apuesta corta; STRATA rescata significativamente
   solo donde el agente va a contracorriente de un régimen que acierta (SPY). SMCI cumple el criterio del tutor
   (batir a todo nominal con B&H≈50 %); la significancia plena es **trabajo futuro** (límite de muestra: el
@@ -225,7 +258,9 @@ OOS (0.552)**, y los splits son respaldo, **no** se elige el de mayor accuracy (
 | `experiments/m10_smci_rolling.py` | Rolling-window (consistencia) |
 | `experiments/m10_smci_select.py` | Selección de burn-in en validación |
 | `experiments/panel_intervention_scan.py` | Discrepancia agente↔régimen e intervención (panel) |
-| `notebooks/m10_better_smci.ipynb` | **Entregable**: todas las pruebas + gráficas + conclusiones |
+| `experiments/smci_calib_window.py` | **Robustez a la ventana de calibración** (Fase 10) → JSON |
+| `notebooks/STRATA_SMCI.ipynb` | **ENTREGABLE definitivo** (sustituye a strata_canonical); builder `_build_STRATA_SMCI.py` |
+| `notebooks/m10_better_smci.ipynb` | Exploración previa (todas las pruebas); insumo de STRATA_SMCI |
 | `notebooks/decision_activo.ipynb` | Registro de la elección de SMCI (Fase 2) |
 | `decisiones_respaldadas_literatura.md` | Decisiones con respaldo bibliográfico verificado |
 

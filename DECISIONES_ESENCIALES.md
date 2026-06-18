@@ -289,6 +289,32 @@ fina (se reporta con el benchmark "siempre-corto" al lado).
 
 ---
 
+## 17. Robustez a la ventana de calibración: la completa (pre-registrada) es la más robusta
+
+**Qué.** A petición del tutor, se prueba recalibrar HMM+GARCH con ventanas más cortas (inicio 2007→2022, fin
+fijo 2024-09-30, sin fuga) y recomputar el walk-forward de M10 sobre el **mismo OOS** (`experiments/smci_calib_window.py`).
+Resultado: **(a)** acortar **no** vuelve direccional al régimen — la media de Crisis se mantiene **positiva** y
+crece (en SMCI el pasado reciente es el *boom* de IA: alta volatilidad con subidas), refutando la hipótesis de
+que "el pasado lejano no aporta"; **(b)** la accuracy de M10 **degrada al acortar** (0.552 con la completa →
+~0.48, el nivel del agente). La ventaja de M10 **vive en las features de régimen calibradas sobre la historia
+larga** (coherente con la ablación: agente-15 0.468 → +STRATA 0.552).
+
+**Por qué importa.** (1) Responde al tutor con evidencia y **no es p-hacking**: la ventana completa era la
+pre-registrada (decisión #3), no se elige por el número, y de hecho cualquier ventana más corta es peor.
+(2) Es a la vez una **dependencia honesta** que se reporta: el resultado necesita la historia larga.
+(3) Conecta con el límite de SMCI: el régimen **separa por volatilidad pero no por dirección** (Crisis con media
+positiva), por lo que en el drawdown de verano 2025 M10 sigue largo aunque el régimen ya marque Crisis (la causa
+del −34 % es la no-direccionalidad, no el rezago de la RV²¹).
+
+**Dónde está justificada.** `notebooks/STRATA_SMCI.ipynb` §8c (robustez calibración), §2 (régimen→signo
+honesto), §5 (drawdown); `experiments/smci_calib_window.py` → `outputs/experiments/smci_calib_window.json`.
+
+**Estado.** Viva (robustez + hallazgo honesto). Nota: el entregable definitivo es `notebooks/STRATA_SMCI.ipynb`,
+que **sustituye a `strata_canonical.ipynb`**; el Sharpe se reporta como **P(Sharpe>0)** (0.976 sin corregir /
+0.72 corregida por multiplicidad), no como "DSR".
+
+---
+
 ## Tabla resumen
 
 | # | Decisión | Categoría | Estado |
@@ -309,6 +335,7 @@ fina (se reporta con el benchmark "siempre-corto" al lado).
 | 14 | M10 desplegable = WF ensemble 10 semillas (CPCV solo contraste) | Validación | Viva |
 | 15 | Embargo = 1 en el WF desplegable (5 solo para CPCV) | Validación | Viva |
 | 16 | Límite: STRATA rescata donde agente discrepa del régimen (SMCI no) | STRATA | Viva |
+| 17 | Robustez a la ventana de calibración: la completa (pre-registrada) es la más robusta; M10 depende de la historia larga | Validación | Viva |
 
 ---
 
