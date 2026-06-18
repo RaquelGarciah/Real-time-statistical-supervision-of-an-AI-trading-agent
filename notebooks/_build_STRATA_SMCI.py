@@ -126,7 +126,7 @@ def _hash_dir(path, pattern="*"):
 
 
 print(f"seed                = {config.SEED}")
-print(f"calibración         = {CALIBRATION_START} → {CALIBRATION_END}  (HMM/GARCH/umbrales se fijan aquí)")
+print(f"calibración (fin)   = hasta {CALIBRATION_END}  (HMM/GARCH/umbrales se fijan aquí; inicio = IPO real del activo, ver abajo)")
 print(f"OOS                 = {STRATA_OOS_START} → cierre  (posterior al cutoff del LLM)")
 print(f"hash cache/agent/{TICKER} = {_hash_dir(CACHE_AGENT_DIR / TICKER)}")
 print(f"hash cache/models       = {_hash_dir(CACHE_MODELS_DIR)}")""")
@@ -374,7 +374,8 @@ for a, name, ttl in [(ax[0], "psa", "PSA"), (ax[1], "gso", "GSO")]:
     a.set_xlabel("percentil de calibración"); a.set_ylabel(f"score {ttl} (log)")
     a.set_title(f"Perfil del score {ttl}"); a.legend(fontsize=8)
 plt.tight_layout(); plt.show()
-print(f"Ventana de calibración de umbrales: {th['calibration_window']}")""")
+_cw = th["calibration_window"]
+print(f"Ventana de calibración de umbrales: solicitada {_cw[0]}→{_cw[1]}; efectiva {calib_feat.index[0].date()}→{calib_feat.index[-1].date()} (recortada a la historia real de {TICKER})")""")
 
 code(r"""# --- RAM-gate: P(Calma) es bimodal y la accuracy de 'largo' es plana en τ∈[0.3,0.9] ---
 pcalma = gamma.loc[gamma.index <= pd.Timestamp(CALIBRATION_END), "Calma"].to_numpy()
