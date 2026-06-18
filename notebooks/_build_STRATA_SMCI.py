@@ -182,7 +182,7 @@ direccional bajo el *leverage effect* (correlación negativa retorno–volatilid
 fuerte en índices y **débil en un valor individual como SMCI**. Esta limitación anticipa por qué la ventaja en
 SMCI será nominal y no significativa.""")
 
-code(r"""# --- Estados de mercado en vivo: HMM K=3 + GARCH ajustados SOLO en calibración 2000→2024-09 ---
+code(r"""# --- Estados de mercado en vivo: HMM K=3 + GARCH ajustados SOLO en calibración (IPO 2007 → 2024-09) ---
 # Replica build_states_onthefly: ningún parámetro ve el OOS (sin look-ahead).
 feat_df, ret = wf.load_features(TICKER)
 _parq = sorted(glob.glob(str(DATA_DIR / f"{TICKER}_{CALIBRATION_START}_*.parquet")))
@@ -220,8 +220,9 @@ print(f"   hash cache/models = {_hash_dir(CACHE_MODELS_DIR)}  ·  cutoff calibra
 
 md(r"""# Parte II · Calibración y umbrales (ex-ante, nunca sobre el OOS)
 
-**Principio rector.** Todo lo que STRATA *aprende* se fija sobre el histórico 2000→2024-09, **antes** de ver
-el OOS. Es la disciplina que blinda contra el p-hacking: ningún corte se elige porque "mejora la curva".""")
+**Principio rector.** Todo lo que STRATA *aprende* se fija sobre toda la historia disponible de SMCI —desde su
+salida a bolsa en marzo de 2007 hasta 2024-09—, **antes** de ver el OOS. Es la disciplina que blinda contra el
+p-hacking: ningún corte se elige porque "mejora la curva".""")
 
 code(r"""# --- Régimen HMM sobre el precio (figura dual-panel): Viterbi descriptivo ex-post ---
 from matplotlib.patches import Patch
