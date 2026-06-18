@@ -352,15 +352,26 @@ Como $\omega > 0$ y $m = \E[\sigmat^2] = \Var(\epsilon_t) > 0$ es finita, el fac
 \]
 Esto prueba la necesidad de la condición y la fórmula de la varianza.
 
-Recíprocamente, supongamos $\alpha + \beta < 1$. Iterando la recursión \eqref{eq:garch11} hacia atrás $n$ pasos, y usando de nuevo $\E[\epsilon_{t-i}^2 \mid \mathcal{F}_{t-i-1}] = \sigma_{t-i}^2$, se obtiene
+Recíprocamente, supongamos $\alpha + \beta < 1$ y construyamos una solución estacionaria. Reescribiendo $\alpha \epsilon_{s-1}^2 + \beta \sigma_{s-1}^2 = (\alpha z_{s-1}^2 + \beta)\,\sigma_{s-1}^2$ e iterando la recursión \eqref{eq:garch11} hacia atrás $n$ pasos,
 \[
-\sigmat^2 = \omega \sum_{i=0}^{n-1} \prod_{l=1}^{i}\big(\alpha z_{t-l}^2 + \beta\big) \;+\; \Big(\prod_{l=1}^{n}\big(\alpha z_{t-l}^2 + \beta\big)\Big)\,\sigma_{t-n}^2,
+\sigmat^2 = \omega \sum_{i=0}^{n-1} \prod_{l=1}^{i}\big(\alpha z_{t-l}^2 + \beta\big) \;+\; \Big(\prod_{l=1}^{n}\big(\alpha z_{t-l}^2 + \beta\big)\Big)\,\sigma_{t-n}^2.
 \]
-donde se ha reescrito $\alpha \epsilon_{t-1}^2 + \beta \sigma_{t-1}^2 = (\alpha z_{t-1}^2 + \beta)\sigma_{t-1}^2$. Tomando esperanzas, y como los $z_{t-l}$ son i.i.d. con $\E[\alpha z_{t-l}^2 + \beta] = \alpha + \beta$, cada producto esperado vale $(\alpha+\beta)^i$. La serie geométrica $\sum_{i\ge 0}(\alpha+\beta)^i$ converge por ser $\alpha+\beta<1$, el término residual $(\alpha+\beta)^n \E[\sigma_{t-n}^2] \to 0$, y el límite
+En lugar de suponer la solución dada, la \emph{construimos} como la serie
 \[
-\E[\sigmat^2] = \omega \sum_{i=0}^{\infty} (\alpha+\beta)^i = \frac{\omega}{1-\alpha-\beta}
+\sigmat^2 \;:=\; \omega \sum_{i=0}^{\infty} \prod_{l=1}^{i}\big(\alpha z_{t-l}^2 + \beta\big),
 \]
-es finito y constante en $t$. Con varianza incondicional finita y constante, y dado que las autocovarianzas de $\epsilon_t$ son nulas (los $\epsilon_t$ son una sucesión de diferencias de martingala no correladas), el proceso es estacionario en covarianza, lo que cierra la equivalencia.
+y comprobamos que está bien definida. Los $z_{t-l}$ son i.i.d. con $\E[\alpha z_{t-l}^2 + \beta] = \alpha + \beta$ y los factores de cada producto son independientes, de modo que el término $i$-ésimo tiene esperanza $\omega\,(\alpha+\beta)^i$. Como todos los sumandos son no negativos, el teorema de convergencia monótona permite intercambiar esperanza y suma:
+\[
+\E[\sigmat^2] \;=\; \omega \sum_{i=0}^{\infty} (\alpha+\beta)^i \;=\; \frac{\omega}{1-\alpha-\beta} \;<\; \infty,
+\]
+y la serie geométrica converge por ser $\alpha+\beta<1$. La serie que define $\sigmat^2$ converge así en $L^1$ (y casi seguramente), tiene esperanza finita y constante, y por construirse con las mismas variables i.i.d. desplazadas en el tiempo su ley no depende de $t$; además satisface la recursión \eqref{eq:garch11}. El término residual de la iteración finita, $\big(\prod_{l=1}^{n}(\alpha z_{t-l}^2+\beta)\big)\,\sigma_{t-n}^2$, tiene esperanza $(\alpha+\beta)^n\,\E[\sigma_{t-n}^2] \to 0$, lo que confirma que la serie es el límite de las iteraciones.
+
+Queda ver que $\epsilon_t = \sigmat z_t$ es estacionario en covarianza, esto es, que su media, su varianza y sus autocovarianzas no dependen de $t$. La media es $\E[\epsilon_t] = \E[\sigmat]\,\E[z_t] = 0$, y la varianza, $\E[\epsilon_t^2] = \E[\sigmat^2] = \omega/(1-\alpha-\beta)$, es finita y constante. Para las autocovarianzas, fijado $h \ge 1$, como $z_t$ es independiente de $\mathcal{F}_{t-1}$ con $\E[z_t]=0$ y $\epsilon_{t-h}$ es $\mathcal{F}_{t-1}$-medible,
+\[
+\E[\epsilon_t\, \epsilon_{t-h}] = \E\!\big[\epsilon_{t-h}\,\E[\epsilon_t \mid \mathcal{F}_{t-1}]\big] = 0,
+\qquad \text{ya que } \E[\epsilon_t \mid \mathcal{F}_{t-1}] = \sigmat\,\E[z_t] = 0.
+\]
+Media nula, varianza finita constante y autocovarianzas nulas: el proceso es estacionario en covarianza, lo que cierra la equivalencia \cite{nelson1990, francqzakoian2019}.
 \end{proof}
 
 La suma $\alpha + \beta$ mide la \emph{persistencia} de la volatilidad: cuán despacio se reabsorbe un golpe. Cuando $\alpha + \beta$ está cerca de $1$, la varianza incondicional $\omega/(1-\alpha-\beta)$ explota y los choques tardan muchísimo en disiparse; en series financieras diarias es habitual estimar valores muy próximos a la unidad, signo de volatilidad muy persistente. El caso límite $\alpha + \beta = 1$ define el modelo \emph{IGARCH} (GARCH integrado), en el que la varianza incondicional ya no es finita y un choque tiene efecto permanente sobre la volatilidad esperada, de forma análoga a una raíz unitaria en la media. En esa frontera el Teorema~\ref{teo:garch-estac} deja de garantizar estacionariedad en covarianza, y la interpretación de $\sigmat$ como fluctuación alrededor de un nivel de largo plazo se pierde.
