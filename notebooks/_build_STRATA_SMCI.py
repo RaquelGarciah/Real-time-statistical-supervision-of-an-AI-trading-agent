@@ -585,6 +585,41 @@ ax.set_ylabel("equity (€1 inicial)"); ax.set_title("Curvas de equity OOS · en
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()
 print("Sharpe con su P(Sharpe>0) (Parte V): P(Sharpe>0)=0.976 (positivo con alta prob.; ilustración económica).")""")
 
+md(r"""### ¿Por qué M10 cae por debajo de todo en el verano de 2025?
+
+En la curva anterior la equity de M10 queda **por debajo de M5, M8 y B&H entre mayo y septiembre de 2025**, con
+un *drawdown* máximo del **−34 %** (pico 31-jul → valle 8-sep). No es ruido: es el episodio que mejor ilustra el
+límite del método. Concurren dos cosas. **(1)** En el **rally de primavera-verano de 2025** (B&H llega a ≈1,7×),
+M10 —sesgado a corto como el agente— **no captura la subida** y entra al verano rezagado. **(2)** Justo en el
+**techo de julio, M10 se pone largo** la mayoría de los días y SMCI **se desploma**, así que acierta muy poca
+dirección en ese tramo: el régimen HMM es **reactivo**, no anticipa el cambio estructural, y sin *leverage
+effect* fiable su signo no avisa. La ventaja de M10 **no es suave**: llega después, en las caídas de finales de
+2025 y principios de 2026, donde se pone corto y la equity pasa de ≈0,9× a 3,2×. Por eso el Sharpe es
+**episódico** (lo tratamos como ilustración) y la significancia direccional no se sostiene a esta muestra.""")
+
+code(r"""# --- Episodio del drawdown de verano 2025: por qué M10 cae por debajo de todo ---
+e10 = equity_curve(pd.Series(NR["M10"], index=sub).dropna())
+dd = e10 / e10.cummax() - 1
+valle = dd.idxmin(); pico = e10[:valle].idxmax()
+seg = sub[(sub >= pico) & (sub <= valle)]
+pos10 = pd.Series(POS["M10"], index=sub)
+acc_seg = float((pos10[seg].values == np.sign(mv.loc[seg, "r_next"].values)).mean())
+print(f"Drawdown máximo de M10: {dd.min():.1%}  (pico {pico.date()} → valle {valle.date()}, {len(seg)} días)")
+print(f"En ese tramo: M10 largo {(pos10[seg] > 0).mean():.0%} de los días, accuracy {acc_seg:.3f}, "
+      f"SMCI {(np.exp(mv.loc[seg, 'r_curr'].sum()) - 1) * 100:+.0f}%.")
+print("M10 (corto como el agente) NO captura el rally y se pone largo en el techo; el régimen HMM es reactivo y")
+print("no anticipa el giro. El rescate llega después, en las caídas de fin de 2025–2026 (equity ≈0.9×→3.2×):")
+print("el Sharpe es episódico ⇒ ilustración, no prueba; coherente con el leverage effect débil en un valor.")
+
+fig, ax = plt.subplots(figsize=(10, 3.6))
+for k in ["M10", "B&H"]:
+    eq = equity_curve(pd.Series(NR[k], index=sub).dropna())
+    ax.plot(eq.index, eq.values, label=k, color=COL[k], lw=2 if k == "M10" else 1.3)
+ax.axvspan(pico, valle, color="#c44e52", alpha=0.15, label=f"drawdown M10 {dd.min():.0%}")
+ax.axhline(1.0, color="k", lw=0.6); ax.set_ylabel("equity")
+ax.set_title("Verano 2025: M10 largo en el techo → drawdown; el rescate llega en las caídas posteriores")
+ax.legend(fontsize=8); plt.tight_layout(); plt.show()""")
+
 code(r"""# --- Fig. SHAP de las 22 features (qué usa el meta-aprendiz) ---
 clf_full = xgb.XGBClassifier(**PARAMS, random_state=config.SEED).fit(mv[ALL22], y)
 try:
