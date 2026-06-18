@@ -96,6 +96,11 @@ La robustez se confirma en el tiempo. Sobre ventanas rodantes a lo largo del per
 \section{Interpretabilidad: M10 es inseparable de STRATA}
 \label{sec:interpretabilidad}
 
+% >>> CONSEJERO [cap4-02 · rigor]
+%   CAMBIARÍA: «cae al 46,8\%, el nivel del agente».
+%   POR QUÉ:   0,468 está por DEBAJO de M5 (0,484), no a su nivel; el notebook (§7b) y MANUAL §3 dan 0,468 sin igualarlo a M5. «El nivel del agente» sugiere una igualdad que no se da (0,468 < 0,484).
+%   REESCRITURA: «cae al $46{,}8\,\%$, en torno al del agente (que acierta el $48{,}4\,\%$)».
+% <<< CONSEJERO
 Queda justificar que la ventaja de M10 proviene de las señales de STRATA y no de cualquier conjunto de variables. Dos análisis lo establecen. El primero es una ablación: un M10 entrenado solo con las quince variables del agente, sin las siete señales de STRATA, cae al $46{,}8\,\%$, el nivel del agente; añadir las siete señales lo lleva al $55{,}2\,\%$, una mejora pareada con $p = 0{,}05$ en el test de McNemar. El segundo es el análisis de importancia por valores de Shapley (SHAP) \cite{lundberg2017} sobre el ensemble: las siete señales de STRATA y de régimen concentran el $41{,}4\,\%$ de la importancia total, por delante de las variables del agente. Sin las señales de STRATA, M10 no añade nada sobre el agente; con ellas, recupera la dirección. El meta-learner es, por construcción, inseparable de STRATA, lo que da contenido al nombre del sistema.
 
 % [Figura por generar — graficas_clave apéndice: ablación (agente-solo vs +STRATA) y barras SHAP (7 señales STRATA arriba). Fuente: notebooks/STRATA_SMCI.ipynb §7, §7b.]
