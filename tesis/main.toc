@@ -1,77 +1,77 @@
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{\numberline {1}Introducción}{4}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Estado del arte}{5}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Agentes LLM para decisiones financieras}{5}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Supervisión en tiempo de ejecución de sistemas ML y agentes}{6}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Régimen de mercado y gestión de riesgo como capa de control}{6}{section.2.3}%
-\contentsline {section}{El hueco que llena STRATA}{7}{section*.2}%
-\contentsline {chapter}{\numberline {3}Marco teórico}{8}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Preliminares y notación}{8}{section.3.1}%
-\contentsline {section}{\numberline {3.2}STRATA a nivel técnico}{9}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Modelos de cambio de régimen: HMM gaussiano}{10}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Cambio de régimen en series financieras}{10}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Definición del HMM gaussiano}{11}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Algoritmo forward}{12}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Posterior filtrado frente a posterior suavizado}{13}{subsection.3.3.4}%
-\contentsline {subsection}{\numberline {3.3.5}Estimación: el algoritmo de Baum-Welch (EM)}{14}{subsection.3.3.5}%
-\contentsline {subsection}{\numberline {3.3.6}El algoritmo de Viterbi}{15}{subsection.3.3.6}%
-\contentsline {subsection}{\numberline {3.3.7}Selección del número de estados}{16}{subsection.3.3.7}%
-\contentsline {section}{\numberline {3.4}Volatilidad condicional: ARCH y GARCH(1,1)-t}{16}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Series temporales y heterocedasticidad condicional}{16}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}De ARCH a GARCH}{17}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Estacionariedad y varianza incondicional}{18}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {3.4.4}Innovaciones Student-t}{20}{subsection.3.4.4}%
-\contentsline {subsection}{\numberline {3.4.5}Estimación por máxima verosimilitud}{21}{subsection.3.4.5}%
-\contentsline {section}{\numberline {3.5}Detección bayesiana de puntos de cambio (BOCPD)}{21}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Run-length y detección online}{21}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Recursión de la distribución de run-length}{22}{subsection.3.5.2}%
-\contentsline {subsection}{\numberline {3.5.3}Función de hazard y predictiva conjugada}{24}{subsection.3.5.3}%
-\contentsline {section}{\numberline {3.6}STRATA aplicado: construcción, calibración y umbrales}{24}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Datos y calibración}{25}{subsection.3.6.1}%
-\contentsline {subsection}{\numberline {3.6.2}RAM: desajuste entre régimen y acción}{25}{subsection.3.6.2}%
-\contentsline {subsection}{\numberline {3.6.3}GSO: tamaño compatible con la volatilidad}{26}{subsection.3.6.3}%
-\contentsline {subsection}{\numberline {3.6.4}PSA: coherencia temporal del agente}{26}{subsection.3.6.4}%
-\contentsline {subsection}{\numberline {3.6.5}La capa de intervención}{27}{subsection.3.6.5}%
-\contentsline {section}{\numberline {3.7}Métricas de evaluación}{27}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}El ratio de Sharpe}{27}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Sortino, drawdown máximo y Calmar}{28}{subsection.3.7.2}%
-\contentsline {section}{\numberline {3.8}Validación sin fuga temporal}{29}{section.3.8}%
-\contentsline {subsection}{\numberline {3.8.1}Causalidad: la regla signal\_lag=1}{29}{subsection.3.8.1}%
-\contentsline {subsection}{\numberline {3.8.2}Validación walk-forward (rolling-origin)}{29}{subsection.3.8.2}%
-\contentsline {subsection}{\numberline {3.8.3}Purga y embargo}{30}{subsection.3.8.3}%
-\contentsline {subsection}{\numberline {3.8.4}Por qué no validación cruzada convencional, y el papel de CPCV}{30}{subsection.3.8.4}%
-\contentsline {section}{\numberline {3.9}Contraste de hipótesis}{31}{section.3.9}%
-\contentsline {subsection}{\numberline {3.9.1}Test del signo binomial}{31}{subsection.3.9.1}%
-\contentsline {subsection}{\numberline {3.9.2}Test de McNemar pareado}{31}{subsection.3.9.2}%
-\contentsline {subsection}{\numberline {3.9.3}Test de Diebold-Mariano}{32}{subsection.3.9.3}%
-\contentsline {subsection}{\numberline {3.9.4}Contrastes de equivalencia (TOST)}{33}{subsection.3.9.4}%
-\contentsline {subsection}{\numberline {3.9.5}Bootstrap estacionario}{33}{subsection.3.9.5}%
-\contentsline {subsection}{\numberline {3.9.6}Deflated Sharpe Ratio}{34}{subsection.3.9.6}%
-\contentsline {chapter}{\numberline {4}Marco práctico: el caso de estudio SMCI}{35}{chapter.4}%
-\contentsline {section}{\numberline {4.1}El problema y un banco de pruebas justo}{35}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}SMCI y por qué es un benchmark exigente}{35}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Protocolo de evaluación}{36}{subsection.4.1.2}%
-\contentsline {subsection}{\numberline {4.1.3}El agente sin supervisar (M5)}{36}{subsection.4.1.3}%
-\contentsline {section}{\numberline {4.2}STRATA sobre SMCI: régimen, detectores y umbrales}{36}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}El régimen y su persistencia}{36}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}De los tres detectores, solo RAM actúa}{36}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Un día de intervención por dentro}{38}{subsection.4.2.3}%
-\contentsline {section}{\numberline {4.3}Dos formas de explotar STRATA}{38}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}M8: la regla a mano}{38}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}M10: el meta-learner}{39}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}Resultado principal}{39}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}La comparación}{39}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}La economía como ilustración}{40}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Contraste estadístico}{41}{subsection.4.4.3}%
-\contentsline {subsection}{\numberline {4.4.4}¿Aporta el ML sobre la regla?}{41}{subsection.4.4.4}%
-\contentsline {section}{\numberline {4.5}Robustez}{42}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}A la partición}{42}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}En el tiempo}{42}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Al protocolo}{42}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}A la ventana de calibración}{43}{subsection.4.5.4}%
-\contentsline {section}{\numberline {4.6}Interpretabilidad y honestidad}{43}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}M10 es inseparable de STRATA}{43}{subsection.4.6.1}%
-\contentsline {subsection}{\numberline {4.6.2}Por qué la ventaja es pequeña en SMCI}{44}{subsection.4.6.2}%
-\contentsline {section}{\numberline {4.7}Límites y trabajo futuro}{44}{section.4.7}%
-\contentsline {chapter}{\numberline {5}Conclusiones}{46}{chapter.5}%
-\contentsline {chapter}{Bibliografía}{47}{chapter*.4}%
+\contentsline {chapter}{\numberline {1}Introducción}{2}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Estado del arte}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Agentes LLM para decisiones financieras}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Supervisión en tiempo de ejecución de sistemas ML y agentes}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Régimen de mercado y gestión de riesgo como capa de control}{4}{section.2.3}%
+\contentsline {section}{El hueco que llena STRATA}{5}{section*.2}%
+\contentsline {chapter}{\numberline {3}Marco teórico}{6}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Preliminares y notación}{6}{section.3.1}%
+\contentsline {section}{\numberline {3.2}STRATA a nivel técnico}{7}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Modelos de cambio de régimen: HMM gaussiano}{8}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Cambio de régimen en series financieras}{8}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Definición del HMM gaussiano}{9}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Algoritmo forward}{10}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Posterior filtrado frente a posterior suavizado}{11}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}Estimación: el algoritmo de Baum-Welch (EM)}{12}{subsection.3.3.5}%
+\contentsline {subsection}{\numberline {3.3.6}El algoritmo de Viterbi}{13}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}Selección del número de estados}{14}{subsection.3.3.7}%
+\contentsline {section}{\numberline {3.4}Volatilidad condicional: ARCH y GARCH(1,1)-t}{14}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Series temporales y heterocedasticidad condicional}{14}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}De ARCH a GARCH}{15}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Estacionariedad y varianza incondicional}{16}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Innovaciones Student-t}{18}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Estimación por máxima verosimilitud}{19}{subsection.3.4.5}%
+\contentsline {section}{\numberline {3.5}Detección bayesiana de puntos de cambio (BOCPD)}{19}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Run-length y detección online}{19}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Recursión de la distribución de run-length}{20}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Función de hazard y predictiva conjugada}{22}{subsection.3.5.3}%
+\contentsline {section}{\numberline {3.6}STRATA aplicado: construcción, calibración y umbrales}{22}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Datos y calibración}{23}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}RAM: desajuste entre régimen y acción}{23}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}GSO: tamaño compatible con la volatilidad}{24}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}PSA: coherencia temporal del agente}{24}{subsection.3.6.4}%
+\contentsline {subsection}{\numberline {3.6.5}La capa de intervención}{25}{subsection.3.6.5}%
+\contentsline {section}{\numberline {3.7}Métricas de evaluación}{25}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}El ratio de Sharpe}{25}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Sortino, drawdown máximo y Calmar}{26}{subsection.3.7.2}%
+\contentsline {section}{\numberline {3.8}Validación sin fuga temporal}{27}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}Causalidad: la regla signal\_lag=1}{27}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}Validación walk-forward (rolling-origin)}{27}{subsection.3.8.2}%
+\contentsline {subsection}{\numberline {3.8.3}Purga y embargo}{28}{subsection.3.8.3}%
+\contentsline {subsection}{\numberline {3.8.4}Por qué no validación cruzada convencional, y el papel de CPCV}{28}{subsection.3.8.4}%
+\contentsline {section}{\numberline {3.9}Contraste de hipótesis}{29}{section.3.9}%
+\contentsline {subsection}{\numberline {3.9.1}Test del signo binomial}{29}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.2}Test de McNemar pareado}{29}{subsection.3.9.2}%
+\contentsline {subsection}{\numberline {3.9.3}Test de Diebold-Mariano}{30}{subsection.3.9.3}%
+\contentsline {subsection}{\numberline {3.9.4}Contrastes de equivalencia (TOST)}{31}{subsection.3.9.4}%
+\contentsline {subsection}{\numberline {3.9.5}Bootstrap estacionario}{31}{subsection.3.9.5}%
+\contentsline {subsection}{\numberline {3.9.6}Deflated Sharpe Ratio}{32}{subsection.3.9.6}%
+\contentsline {chapter}{\numberline {4}Marco práctico: el caso de estudio SMCI}{33}{chapter.4}%
+\contentsline {section}{\numberline {4.1}El problema y un banco de pruebas justo}{33}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}SMCI y por qué es un benchmark exigente}{33}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Protocolo de evaluación}{33}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}El agente sin supervisar (M5)}{34}{subsection.4.1.3}%
+\contentsline {section}{\numberline {4.2}STRATA sobre SMCI: régimen, detectores y umbrales}{34}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}El régimen y su persistencia}{34}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}De los tres detectores, solo RAM actúa}{35}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Un día de intervención por dentro}{36}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}Dos formas de explotar STRATA}{36}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}M8: la regla a mano}{36}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}M10: el meta-learner}{36}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Resultado principal}{37}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}La comparación}{37}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}La economía como ilustración}{38}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Contraste estadístico}{38}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}¿Aporta el ML sobre la regla?}{38}{subsection.4.4.4}%
+\contentsline {section}{\numberline {4.5}Robustez}{39}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}A la partición}{39}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}En el tiempo}{40}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Al protocolo}{40}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}A la ventana de calibración}{41}{subsection.4.5.4}%
+\contentsline {section}{\numberline {4.6}Interpretabilidad y honestidad}{41}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}M10 es inseparable de STRATA}{41}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Por qué la ventaja es pequeña en SMCI}{41}{subsection.4.6.2}%
+\contentsline {section}{\numberline {4.7}Límites y trabajo futuro}{42}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Conclusiones}{43}{chapter.5}%
+\contentsline {chapter}{Bibliografía}{44}{chapter*.4}%
