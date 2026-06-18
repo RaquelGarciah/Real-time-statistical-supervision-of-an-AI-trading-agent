@@ -276,7 +276,11 @@ y la trayectoria óptima se recupera memorizando en cada paso el estado $k$ que 
 \subsection{Selección del número de estados}
 \label{sec:hmm-K}
 
-Queda fijar $K$, el número de regímenes. Un valor demasiado pequeño no distingue estados de mercado realmente diferentes; uno demasiado grande sobreajusta y fragmenta la serie en regímenes sin contenido interpretable, además de multiplicar los parámetros a estimar. El criterio que seguimos combina dos exigencias. La primera es estadística: para cada candidato de $K$ se ajusta el HMM sobre el tramo de entrenamiento y se evalúa la \emph{log-verosimilitud held-out} sobre un tramo de validación posterior en el tiempo, nunca solapado con el de entrenamiento, de modo que la comparación respeta el orden temporal de la serie y no premia el sobreajuste \cite{rabiner1989}. La segunda es de interpretabilidad: los regímenes resultantes deben admitir una lectura económica clara y estable. Esta decisión se verá con más detallo en el capítulo siguiente pero podenos anticipar que la combinación de ambos criterios fija $K = 3$ como la calibración de referencia del método siendo estos tres estados: calma, estrés y crisis. 
+Queda fijar $K$, el número de regímenes. Un valor demasiado pequeño no distingue estados de mercado realmente diferentes; uno demasiado grande sobreajusta y fragmenta la serie en regímenes sin contenido interpretable, además de multiplicar los parámetros a estimar. El criterio que seguimos combina dos exigencias. La primera es estadística: para cada candidato de $K$ se ajusta el HMM sobre el tramo de entrenamiento y se evalúa la \emph{log-verosimilitud held-out}
+\[
+\ell_{\mathrm{val}}(K) = \sum_{t \in \mathrm{val}} \log \Prob\big(x_t \mid x_{1:t-1},\, \hat{\lambda}_K\big),
+\]
+con $\hat{\lambda}_K$ el modelo de $K$ estados ajustado en el entrenamiento, sobre un tramo de validación posterior en el tiempo, nunca solapado con el de entrenamiento, de modo que la comparación respeta el orden temporal de la serie y no premia el sobreajuste \cite{rabiner1989}. La segunda es de interpretabilidad: los regímenes resultantes deben admitir una lectura económica clara y estable. Esta decisión se desarrolla en el capítulo siguiente; podemos anticipar que la combinación de ambos criterios fija $K = 3$ como la calibración de referencia del método, con los tres estados ya descritos: calma, estrés y crisis.
 
 \section{Volatilidad condicional: ARCH y GARCH(1,1)-t}
 \label{sec:garch}
