@@ -588,14 +588,22 @@ print("Sharpe con su P(Sharpe>0) (Parte V): P(Sharpe>0)=0.976 (positivo con alta
 md(r"""### ¿Por qué M10 cae por debajo de todo en el verano de 2025?
 
 En la curva anterior la equity de M10 queda **por debajo de M5, M8 y B&H entre mayo y septiembre de 2025**, con
-un *drawdown* máximo del **−34 %** (pico 31-jul → valle 8-sep). No es ruido: es el episodio que mejor ilustra el
-límite del método. Concurren dos cosas. **(1)** En el **rally de primavera-verano de 2025** (B&H llega a ≈1,7×),
-M10 —sesgado a corto como el agente— **no captura la subida** y entra al verano rezagado. **(2)** Justo en el
-**techo de julio, M10 se pone largo** la mayoría de los días y SMCI **se desploma**, así que acierta muy poca
-dirección en ese tramo: el régimen HMM es **reactivo**, no anticipa el cambio estructural, y sin *leverage
-effect* fiable su signo no avisa. La ventaja de M10 **no es suave**: llega después, en las caídas de finales de
-2025 y principios de 2026, donde se pone corto y la equity pasa de ≈0,9× a 3,2×. Por eso el Sharpe es
-**episódico** (lo tratamos como ilustración) y la significancia direccional no se sostiene a esta muestra.""")
+un *drawdown* máximo del **−34 %** (pico 31-jul → valle 8-sep). No es ruido, y conviene desmontar el porqué con
+cuidado porque la causa no es la obvia.
+
+**(1) M10 no captura el rally previo.** En la subida de primavera-verano (B&H llega a ≈1,7×), M10 —sesgado a
+corto como el agente— se queda fuera y **entra al verano rezagado**.
+
+**(2) Causa dominante: el régimen no es direccional en SMCI.** En la caída, M10 se mantiene **largo el 70 % de
+los días** (accuracy 0,37). Y **no es por un rezago** del detector: el régimen **sí capta la crisis** (marca
+Crisis el ~81 % de los días de la caída). El problema es que en SMCI **Crisis tiene media histórica positiva**
+(+0,0016, §2), así que el meta-aprendiz aprendió *"Crisis ≈ subida"* y **sigue largo aun cuando el régimen ya
+señala Crisis**, justo cuando esta crisis cae. Capturar el régimen **no protege** porque en este valor el
+régimen no apunta a la baja.
+
+La ventaja de M10 **no es suave**: llega después, en las caídas de finales de 2025 y principios de 2026, donde se
+pone corto y la equity pasa de ≈0,9× a 3,2×. Por eso el Sharpe es **episódico** (ilustración) y la significancia
+direccional no se sostiene a esta muestra.""")
 
 code(r"""# --- Episodio del drawdown de verano 2025: por qué M10 cae por debajo de todo ---
 e10 = equity_curve(pd.Series(NR["M10"], index=sub).dropna())
@@ -607,9 +615,9 @@ acc_seg = float((pos10[seg].values == np.sign(mv.loc[seg, "r_next"].values)).mea
 print(f"Drawdown máximo de M10: {dd.min():.1%}  (pico {pico.date()} → valle {valle.date()}, {len(seg)} días)")
 print(f"En ese tramo: M10 largo {(pos10[seg] > 0).mean():.0%} de los días, accuracy {acc_seg:.3f}, "
       f"SMCI {(np.exp(mv.loc[seg, 'r_curr'].sum()) - 1) * 100:+.0f}%.")
-print("M10 (corto como el agente) NO captura el rally y se pone largo en el techo; el régimen HMM es reactivo y")
-print("no anticipa el giro. El rescate llega después, en las caídas de fin de 2025–2026 (equity ≈0.9×→3.2×):")
-print("el Sharpe es episódico ⇒ ilustración, no prueba; coherente con el leverage effect débil en un valor.")
+print("No es (sólo) un rezago: el régimen capta la crisis, pero en SMCI Crisis≈subida (§2), así que M10 sigue")
+print("largo aun con el régimen en Crisis y pierde. El rescate llega después, en las caídas de fin de 2025–2026")
+print("(equity ≈0.9×→3.2×): el Sharpe es episódico ⇒ ilustración, no prueba; coherente con el leverage débil.")
 
 fig, ax = plt.subplots(figsize=(10, 3.6))
 for k in ["M10", "B&H"]:
@@ -620,56 +628,57 @@ ax.axhline(1.0, color="k", lw=0.6); ax.set_ylabel("equity")
 ax.set_title("Verano 2025: M10 largo en el techo → drawdown; el rescate llega en las caídas posteriores")
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()""")
 
-md(r"""### Por qué el régimen llega tarde: el rezago mecánico de la RV²¹
+md(r"""### El régimen capta la crisis, pero en SMCI no sirve para la dirección
 
-El detector de régimen es **reactivo, no anticipatorio**, y la razón es mecánica:
+Conviene separar los dos fallos posibles del detector de régimen y ver cuál actúa aquí:
 
-- **La volatilidad se mide con una ventana de 21 días** ($\mathrm{RV}^{21}_t$). Cuando el precio se desploma, esa
-  media móvil **necesita acumular varios días de caída** para subir lo suficiente y mover la probabilidad de
-  régimen. La señal de "alta volatilidad" aparece **después** de que el desplome ha empezado: es un rezago
-  estructural del propio estimador, no un fallo de calibración.
-- **Los regímenes son muy persistentes** (matriz de transición $a_{ii}\approx0{,}96$–$0{,}98$, duración media
-  23–45 días). Eso hace al HMM **"pegajoso"**: su apuesta por defecto cada día es *"el mismo régimen que ayer"*,
-  y solo conmuta cuando se acumula bastante evidencia en contra. Cuanto más persistente, más tarda en cambiar.
+- **Rezago (mecánico, factor menor en este episodio).** La volatilidad se mide con una **ventana de 21 días**
+  ($\mathrm{RV}^{21}_t$): cuando el precio se desploma, esa media móvil tarda varios días en subir; y los
+  regímenes son **persistentes** (matriz de transición $a_{ii}\approx0{,}96$–$0{,}98$, duración 23–45 días), lo
+  que hace al HMM "pegajoso". Aun así, aquí el rezago es **pequeño**: el régimen confirma Crisis ~6 días después
+  del techo y marca Crisis el **~81 %** de los días de la caída.
+- **No-direccionalidad (la causa dominante).** El régimen capta la crisis, pero en SMCI **Crisis ≈ subida**
+  (media histórica +0,0016, §2). El meta-aprendiz aprendió esa asociación, así que **se mantiene largo aun cuando
+  el régimen ya está en Crisis** — y esta crisis caía. Capturar bien el régimen no ayuda si el régimen **no
+  apunta a la baja** en este activo.
 
-La figura siguiente lo enseña sobre el episodio: el **precio cae primero**, la **RV²¹ sube con retraso** y la
-**probabilidad de Crisis se dispara aún más tarde**. Cuando el régimen "ve" la crisis, **ya estás dentro de la
-caída**: vas un paso por detrás del giro, y en SMCI ese aviso tardío encima no apunta a la baja (Crisis tiene
-media positiva, §2).""")
+La figura lo enseña sobre el episodio: el **precio se desploma**, el **régimen pasa a Crisis** (franjas rojas)
+casi enseguida, pero **la posición de M10 sigue siendo larga**. El panel de la RV²¹ (abajo) ilustra el rezago,
+que es el factor menor.""")
 
-code(r"""# --- Fig. el rezago del régimen: precio → RV21 → probabilidad de régimen (episodio 2025) ---
+code(r"""# --- Fig. régimen vs posición de M10 en el episodio: Crisis captado, pero M10 sigue largo ---
 w0, w1 = pd.Timestamp("2025-05-01"), pd.Timestamp("2025-11-30")
 idxw = feat_df.index[(feat_df.index >= w0) & (feat_df.index <= w1)]
 px = prices["Close"].reindex(idxw).ffill()
 rv = feat_df["rv"].reindex(idxw)
 gw = gamma.reindex(idxw)
-dom_crisis = pd.Series(gw[["Calma", "Estrés", "Crisis"]].to_numpy().argmax(1) == 2, index=idxw)
-post = dom_crisis[dom_crisis.index > pico]
-flip = post.index[int(post.to_numpy().argmax())] if bool(post.any()) else None
+crisis = pd.Series(gw[["Calma", "Estrés", "Crisis"]].to_numpy().argmax(1) == 2, index=idxw)
+posw = pos10.reindex(sub.intersection(idxw)).sort_index()
 
-fig, ax = plt.subplots(3, 1, figsize=(10, 7.6), sharex=True, gridspec_kw={"hspace": 0.12})
-ax[0].plot(px.index, px.values, color="black", lw=1.1); ax[0].set_ylabel(f"{TICKER} Close")
-ax[0].set_title("El régimen llega tarde: el precio cae primero; la RV²¹ y el régimen reaccionan después")
-ax[1].plot(rv.index, rv.values, color="#e8a33d", lw=1.5); ax[1].set_ylabel("RV²¹ (vol 21d)")
-ax[1].annotate("la media de 21 d tarda\nen recoger la caída", xy=(0.02, 0.8), xycoords="axes fraction", fontsize=8)
-ax[2].stackplot(gw.index, gw["Calma"], gw["Estrés"], gw["Crisis"],
-                colors=["#2e9e4f", "#e8a33d", "#c0392b"], alpha=0.85, labels=["Calma", "Estrés", "Crisis"])
-ax[2].set_ylabel("P(régimen)"); ax[2].set_ylim(0, 1); ax[2].set_xlabel("fecha")
-ax[2].legend(fontsize=7, loc="upper left", ncol=3)
+fig, ax = plt.subplots(3, 1, figsize=(10, 7.8), sharex=True, gridspec_kw={"hspace": 0.12})
+ax[0].plot(px.index, px.values, color="black", lw=1.1)
+ax[0].fill_between(idxw, float(px.min()), float(px.max()), where=crisis.to_numpy(),
+                   color="#c0392b", alpha=0.13, step="post", label="régimen = Crisis")
+ax[0].set_ylim(float(px.min()) * 0.98, float(px.max()) * 1.02); ax[0].set_ylabel(f"{TICKER} Close")
+ax[0].legend(fontsize=8, loc="upper right")
+ax[0].set_title("Verano 2025: el régimen marca Crisis (rojo) y el precio cae… pero M10 sigue largo")
+ax[1].step(posw.index, posw.values, where="post", color="#2c7fb8", lw=1.4)
+ax[1].fill_between(posw.index, 0, posw.values, step="post", color="#2c7fb8", alpha=0.2)
+ax[1].axhline(0, color="k", lw=0.6); ax[1].set_ylim(-1.4, 1.4)
+ax[1].set_yticks([-1, 1]); ax[1].set_yticklabels(["corto", "largo"]); ax[1].set_ylabel("posición M10")
+ax[2].plot(rv.index, rv.values, color="#e8a33d", lw=1.5); ax[2].set_ylabel("RV²¹ (vol 21d)"); ax[2].set_xlabel("fecha")
+ax[2].annotate("la media de 21 d tarda en\nrecoger la caída (rezago menor)", xy=(0.02, 0.72), xycoords="axes fraction", fontsize=8)
 for a in ax:
-    a.axvline(pico, color="blue", lw=1.3, ls="--")
-    if flip is not None:
-        a.axvline(flip, color="red", lw=1.3, ls=":")
-ax[0].text(pico, ax[0].get_ylim()[1], " techo", color="blue", fontsize=8, va="top")
-if flip is not None:
-    ax[0].text(flip, ax[0].get_ylim()[1], " régimen→Crisis", color="red", fontsize=8, va="top")
+    a.axvline(pico, color="blue", lw=1.2, ls="--")
 plt.show()
-if flip is not None:
-    print(f"Techo / inicio de la caída: {pico.date()}.  El régimen pasa a Crisis dominante el {flip.date()}.")
-    print(f"→ Rezago de {(flip - pico).days} días: la RV²¹ (ventana de 21 d) y la persistencia del HMM hacen que")
-    print("  el régimen confirme la crisis cuando ya estás dentro del desplome. Por eso es REACTIVO, no anticipa.")
-else:
-    print("El régimen no llega a marcar Crisis dominante en la ventana: la RV²¹ de 21 d no sube a tiempo (rezago).")""")
+seg = sub[(sub >= pico) & (sub <= valle)]
+cr = gamma.reindex(seg)[["Calma", "Estrés", "Crisis"]].to_numpy().argmax(1) == 2
+ps = pos10.reindex(seg).to_numpy()
+print(f"En la caída ({pico.date()}→{valle.date()}): régimen Crisis {cr.mean():.0%} de los días · "
+      f"M10 largo {(ps > 0).mean():.0%} (y {(ps[cr] > 0).mean():.0%} en los días de Crisis) · accuracy {acc_seg:.2f}.")
+print("→ El régimen capta la crisis pero M10 sigue largo: en SMCI Crisis tiene media histórica POSITIVA (+0.0016,")
+print("  §2), así que el meta-aprendiz asocia Crisis≈subida. El drawdown se debe a la NO-direccionalidad del")
+print("  régimen en este valor, no (sólo) al rezago de la RV²¹. Coherente con el leverage effect débil.")""")
 
 code(r"""# --- Fig. SHAP de las 22 features (qué usa el meta-aprendiz) ---
 clf_full = xgb.XGBClassifier(**PARAMS, random_state=config.SEED).fit(mv[ALL22], y)
