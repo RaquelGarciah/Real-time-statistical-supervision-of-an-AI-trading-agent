@@ -216,20 +216,34 @@ for col, part in zip(ax, ["validacion", "test"]):
 fig.suptitle("Robustez a la partición (M10 gana en validación y test)", fontsize=11)
 _save(fig, "cap4_robustez_particion")
 
-# ── Fig 9: embargo + rolling (desde JSON) ────────────────────────────────────────
-EMB = _J("m10_smci_embargo"); ROLL = _J("m10_smci_rolling")
-emb = EMB["por_embargo"]; xs = [str(e["embargo"]) for e in emb]
-fig, ax = plt.subplots(1, 2, figsize=(12, 3.6))
-ax[0].plot(xs, [e["blockperm_vs_bh_p"] for e in emb], "o-", color="#c44", label="block-perm vs B&H")
-ax[0].axhline(0.05, color="k", ls="--", lw=0.8, label="α=0,05")
-ax[0].axhline(EMB["meta"]["bonferroni5_min_blockperm_vs_bh"], color="purple", ls=":", lw=1.5, label=f"Bonferroni-5≈{EMB['meta']['bonferroni5_min_blockperm_vs_bh']:.2f}")
-ax[0].set_xlabel("embargo (días)"); ax[0].set_ylabel("p-valor"); ax[0].set_title("Sensibilidad al embargo (pico aislado en 1)"); ax[0].legend(fontsize=8)
+# ── Fig 9: accuracy rodante + % ventanas (desde JSON; sin embargo, ver §4.5) ──────
+ROLL = _J("m10_smci_rolling")
+r63 = ROLL["rolling63"]; fechas = pd.to_datetime(r63["fecha_fin"])
 frac = ROLL["frac_ventanas_m10_gana"]; wins = list(frac)
+fig, ax = plt.subplots(1, 2, figsize=(12, 3.8))
+for k, c in [("m10", COL["M10"]), ("bh", COL["B&H"]), ("m5", COL["M5"]), ("m8", COL["M8"])]:
+    ax[0].plot(fechas, r63[k], label=k.upper(), color=c, lw=1.8 if k == "m10" else 1.1)
+ax[0].axhline(0.5, color="k", ls="--", lw=0.8); ax[0].set_ylabel("accuracy (ventana 63 d)")
+ax[0].set_title("Accuracy rodante"); ax[0].legend(fontsize=8)
 ax[1].bar(wins, [frac[w]["m10_gt_bh"] for w in wins], color=COL["M10"], edgecolor="black"); ax[1].axhline(0.5, color="k", ls="--", lw=0.8)
 for i, w in enumerate(wins):
     ax[1].text(i, frac[w]["m10_gt_bh"] + 0.02, f"{frac[w]['m10_gt_bh']:.0%}", ha="center", fontsize=9)
-ax[1].set_xlabel("ventana (días)"); ax[1].set_ylabel("% ventanas M10 > B&H"); ax[1].set_title("Consistencia rodante"); ax[1].set_ylim(0, 1)
-_save(fig, "cap4_embargo_rolling")
+ax[1].set_xlabel("tamaño de ventana (días)"); ax[1].set_ylabel("% ventanas M10 > B&H"); ax[1].set_title("Consistencia rodante"); ax[1].set_ylim(0, 1)
+_save(fig, "cap4_rolling")
+
+# ── Fig 9b: un día de intervención por dentro (régimen + flip de posición) ────────
+_interv = mv.index[mv["intervenido"] & mv["r_next"].notna()]
+_t = _interv[len(_interv) // 2]; _r = mv.loc[_t]
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.6))
+ax[0].bar(["Calma", "Estrés", "Crisis"], [_r["calm_prob"], _r["stress_prob"], _r["crisis_prob"]],
+          color=[REG[k] for k in ["Calma", "Estrés", "Crisis"]], edgecolor="black")
+ax[0].axhline(0.5, color="blue", ls="--", lw=1.2, label="τ = 0,5 (gate RAM)")
+ax[0].set_ylim(0, 1); ax[0].set_ylabel("posterior filtrado del HMM"); ax[0].set_title(f"Régimen el {_t.date()}"); ax[0].legend(fontsize=8)
+_ad = "corto" if _r["agent_size"] < 0 else "largo"; _fd = "corto" if _r["final_size"] < 0 else "largo"
+ax[1].bar(["agente (M5)", "STRATA (M8)"], [_r["agent_size"], _r["final_size"]], color=["#9e9e9e", "#f0a830"], edgecolor="black")
+ax[1].axhline(0, color="k", lw=0.8); ax[1].set_ylabel("posición $w_t$")
+ax[1].set_title(f"RAM voltea {_ad}→{_fd} (r$_{{t+1}}$={_r['r_next']:+.3f})")
+_save(fig, "cap4_dia_intervencion")
 
 # ── Fig 10: robustez a la ventana de calibración (desde JSON) ────────────────────
 CAL = _J("smci_calib_window")["por_ventana"]
