@@ -5,14 +5,15 @@
 % La tabla principal debe autogenerarse; aquí van los valores canónicos del §1bis.
 % Figuras: se generan desde notebooks/STRATA_SMCI.ipynb (ver graficas_clave.md). Placeholders marcados.
 
-Este capítulo responde a la pregunta operativa del trabajo sobre un activo concreto: en un benchmark justo, ¿un meta-learner desplegable que consume las señales de STRATA mejora la dirección del agente y supera a las estrategias triviales? Sobre SMCI la respuesta es sí, aunque solo de forma nominal. M10 gana a todos los baselines y la ventaja resiste a varias particiones; la significancia plena queda como trabajo futuro.
+Este capítulo responde a la pregunta operativa del trabajo sobre un activo concreto: en un benchmark justo, ¿un meta-learner desplegable que consume las señales de STRATA mejora la dirección del agente y supera a las estrategias triviales? Sobre SMCI la respuesta es sí. M10 gana a todos los baselines y la ventaja resiste a varias particiones aunque con la limitación de una ventana de OOS tan corta la significancia plena queda como trabajo futuro.
 
 \section{Datos y caso de estudio}
 \label{sec:datos}
 
-El activo del caso de estudio es \textbf{SMCI}, elegido por un criterio metodológico: sus dos clases direccionales están casi equilibradas. El \emph{buy-and-hold} (comprar y mantener, siempre largo) acierta el $48{,}4\%$ de los días, así que la comparación con lo trivial es exigente. La regla de no-habilidad, predecir siempre la clase mayoritaria (\emph{ZeroR} \cite{witten2016datamining, kuhn2008caret}), no se lleva por delante a un modelo solo por el desbalance; en SMCI acierta el $51{,}6\%$, materializada como ``siempre corto''.
+El activo del caso de estudio es \textbf{SMCI} cuyas dos clases direccionales están casi equilibradas. El \emph{buy-and-hold} (comprar y mantener, siempre largo) acierta el $48{,}4\%$ de los días, así que la comparación con lo trivial es exigente. La regla de no-habilidad, predecir siempre la clase mayoritaria (\emph{ZeroR} \cite{witten2016datamining, kuhn2008caret}), no se lleva por delante a un modelo solo por el desbalance; en SMCI acierta el $51{,}6\%$, y se corresponde a la estrategia de ir siempre corto.
+%>>>RAQUEL haz una pequeña intro del activo del caso de estudio SMCI 
 
-Los tres detectores de STRATA se calibran una sola vez sobre 2000--2024-09 y se congelan (Sección~\ref{sec:strata-calib}). La evaluación es fuera de muestra: $n = 250$ días posteriores al arranque del walk-forward. Todos caen tras el corte de conocimiento del modelo de lenguaje que mueve al agente, así que esas decisiones no pudieron memorizarse en su entrenamiento. El protocolo causal y desplegable es el de las Secciones~\ref{sec:cpcv-causalidad} y~\ref{sec:cpcv-walkforward}.
+Los tres detectores de STRATA se calibran una sola vez sobre el periodo de calibración 2000 definido desde 2000 2024-09 y se congelan (Sección~\ref{sec:strata-calib}). La evaluación es fuera de muestra: $n = 250$ días posteriores al arranque del walk-forward. Todos caen tras el corte de conocimiento del modelo de lenguaje que mueve al agente, así que esas decisiones no pudieron memorizarse en su entrenamiento. El protocolo causal y desplegable es el de las Secciones~\ref{sec:cpcv-causalidad} y~\ref{sec:cpcv-walkforward}.
 
 \section{El agente sin supervisar (M5)}
 \label{sec:m5}
