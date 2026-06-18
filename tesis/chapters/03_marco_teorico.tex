@@ -152,7 +152,7 @@ El segundo factor se descompone a su vez aislando la transición $z_t = k \to z_
 \Prob(x_{1:t}, z_t = k, z_{t+1} = j)
 = \Prob(z_{t+1} = j \mid x_{1:t}, z_t = k)\, \Prob(x_{1:t}, z_t = k).
 \]
-Por la propiedad de Markov de la cadena, la transición no depende de las observaciones pasadas ni de los estados anteriores a $z_t$, luego $\Prob(z_{t+1} = j \mid x_{1:t}, z_t = k) = A_{kj}$. El factor restante es, por definición, $\alpha_t(k)$. Reuniendo los tres trozos,
+La Markovianidad de la cadena, junto con la independencia condicional de las emisiones $(\ast)$, hace que, fijado $z_t$, el estado $z_{t+1}$ sea independiente de $x_{1:t}$ y de los estados anteriores (es la d-separación en el grafo del modelo); por tanto $\Prob(z_{t+1} = j \mid x_{1:t}, z_t = k) = A_{kj}$. El factor restante es, por definición, $\alpha_t(k)$. Reuniendo los tres trozos,
 \[
 \Prob(x_{1:t+1}, z_t = k, z_{t+1} = j) = b_j(x_{t+1})\, A_{kj}\, \alpha_t(k),
 \]
