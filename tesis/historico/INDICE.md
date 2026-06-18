@@ -16,7 +16,8 @@ fechada, añadiendo su línea a este índice.
 | 2026-06-18 | 11:20 | [`tesis_2026-06-18_1120_override-intervencion-dsr.pdf`](tesis_2026-06-18_1120_override-intervencion-dsr.pdf) | Renombrado override→intervención + reencuadre del DSR (cap. 3 y 4). |
 | 2026-06-18 | 12:39 | [`tesis_2026-06-18_1239_conectores-ritmo.pdf`](tesis_2026-06-18_1239_conectores-ritmo.pdf) | Pasada de conectores y ritmo (voz de Raquel) en cap. 3 y 4. |
 | 2026-06-18 | 12:43 | [`tesis_2026-06-18_1243_conectores-redaccion.pdf`](tesis_2026-06-18_1243_conectores-redaccion.pdf) | Snapshot manual tras la pasada de conectores/redacción (mismo contenido que las 12:39, recompilado). |
-| 2026-06-18 | 18:24 | [`tesis_2026-06-18_1824_cap3-rigor-citas.pdf`](tesis_2026-06-18_1824_cap3-rigor-citas.pdf) | Cap. 3 cerrado: rigor matemático (teorema GARCH no circular, lema EM, d-separación, BOCPD) + 4 definiciones formales (RAM/GSO/PSA/M8) + citas en cada demostración. **Versión actual.** |
+| 2026-06-18 | 18:24 | [`tesis_2026-06-18_1824_cap3-rigor-citas.pdf`](tesis_2026-06-18_1824_cap3-rigor-citas.pdf) | Cap. 3 cerrado: rigor matemático (teorema GARCH no circular, lema EM, d-separación, BOCPD) + 4 definiciones formales (RAM/GSO/PSA/M8) + citas en cada demostración. |
+| 2026-06-18 | 18:49 | [`tesis_2026-06-18_1849_cap3-intro-series-temporales.pdf`](tesis_2026-06-18_1849_cap3-intro-series-temporales.pdf) | Cap. 3: intro a series temporales y ARCH en §3.4 (revisada por agentes) + 4 refs. **Versión actual.** |
 
 ---
 
