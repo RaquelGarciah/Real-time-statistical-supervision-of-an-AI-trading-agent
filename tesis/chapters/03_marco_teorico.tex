@@ -266,7 +266,12 @@ El filtrado y el suavizado responden a una pregunta puntual: cuál es la probabi
 \[
 z_{1:T}^{\ast} = \arg\max_{z_{1:T}} \Prob(z_{1:T} \mid x_{1:T}, \lambda).
 \]
-Esto es el estimador MAP de la trayectoria completa, y lo resuelve el algoritmo de Viterbi mediante programación dinámica, con una recursión análoga a la del forward pero sustituyendo la suma sobre estados por un máximo \cite{viterbi1967}. La distinción es importante y no anecdótica: encadenar los modos del filtrado instante a instante, $\arg\max_k \gammaf(k)$ para cada $t$, no produce en general la misma secuencia que Viterbi, porque la concatenación de óptimos puntuales puede dar una trayectoria que la matriz de transición considera improbable o incluso imposible. Viterbi optimiza la trayectoria como un todo y respeta las transiciones. En esta memoria el detector de régimen se apoya en el filtrado puntual por la exigencia de causalidad de la Sección~\ref{sec:hmm-filtrado}; Viterbi se usa de forma auxiliar para la lectura interpretativa de la secuencia de regímenes sobre el periodo de calibración, donde la trayectoria global es lo que se quiere visualizar.
+Esto es el estimador MAP de la trayectoria completa, y lo resuelve el algoritmo de Viterbi mediante programación dinámica, con una recursión análoga a la del forward que sustituye la suma sobre estados por un máximo \cite{viterbi1967}. Si $\delta_t(j) = \max_{z_{1:t-1}} \Prob(z_{1:t-1},\, z_t = j,\, x_{1:t} \mid \lambda)$ es la probabilidad de la mejor trayectoria que termina en el estado $j$ en el instante $t$, la recursión es
+\[
+\delta_{t+1}(j) = b_j(x_{t+1}) \max_{1 \le k \le K} \delta_t(k)\, A_{kj},
+\qquad \delta_1(k) = \pi_k\, b_k(x_1),
+\]
+y la trayectoria óptima se recupera memorizando en cada paso el estado $k$ que alcanza el máximo y recorriéndolos hacia atrás desde $T$. La distinción es importante y no anecdótica: encadenar los modos del filtrado instante a instante, $\arg\max_k \gammaf(k)$ para cada $t$, no produce en general la misma secuencia que Viterbi, porque la concatenación de óptimos puntuales puede dar una trayectoria que la matriz de transición considera improbable o incluso imposible. Viterbi optimiza la trayectoria como un todo y respeta las transiciones. En esta memoria el detector de régimen se apoya en el filtrado puntual por la exigencia de causalidad de la Sección~\ref{sec:hmm-filtrado}; Viterbi se usa de forma auxiliar para la lectura interpretativa de la secuencia de regímenes sobre el periodo de calibración, donde la trayectoria global es lo que se quiere visualizar.
 
 \subsection{Selección del número de estados}
 \label{sec:hmm-K}
