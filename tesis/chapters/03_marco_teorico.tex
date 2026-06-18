@@ -228,9 +228,36 @@ y las medias y covarianzas de cada régimen, como promedios ponderados por el po
 \[
 \hat{\mu}_k = \frac{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})\, x_t}{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})},
 \qquad
-\hat{\Sigma}_k = \frac{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})\, (x_t - \hat{\mu}_k)(x_t - \hat{\mu}_k)^{\!\top}}{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})}.
+\hat{\Sigma}_k = \frac{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})\, (x_t - \hat{\mu}_k)(x_t - \hat{\mu}_k)^{\!\top}}{\sum_{t=1}^{T} \Prob(z_t = k \mid x_{1:T})},
 \]
-El algoritmo itera paso E y paso M hasta que la verosimilitud se estabiliza. Que la sucesión de verosimilitudes sea monótona no decreciente y que el procedimiento converja a un punto estacionario es un resultado conocido de la teoría de EM, que aquí se enuncia sin demostrar y se remite a la referencia \cite{baum1970, rabiner1989}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla y de partir de una inicialización razonable, como se documenta en el capítulo de metodología.
+donde la media $\hat{\mu}_k$ que interviene en $\hat{\Sigma}_k$ es la ya reestimada en esa misma iteración. Lo que justifica el procedimiento es que ningún paso empeora el ajuste.
+
+\begin{lema}[Monotonía de EM]
+\label{lem:em}
+Sea $\lambda'$ el conjunto de parámetros que produce un paso de EM a partir de $\lambda$. Entonces la verosimilitud observada no decrece:
+\[
+\Prob(x_{1:T} \mid \lambda') \;\ge\; \Prob(x_{1:T} \mid \lambda).
+\]
+\end{lema}
+
+\begin{proof}
+Para cualquier parámetro $\theta$ descomponemos la log-verosimilitud observada tomando esperanza sobre $z_{1:T}$ con la ley del paso E, $\Prob(\cdot \mid x_{1:T}, \lambda)$, en la identidad $\log\Prob(x_{1:T}\mid\theta) = \log\Prob(x_{1:T}, z_{1:T}\mid\theta) - \log\Prob(z_{1:T}\mid x_{1:T}, \theta)$, cuyo miembro izquierdo no depende de $z_{1:T}$:
+\[
+\log\Prob(x_{1:T} \mid \theta) \;=\; Q(\theta \mid \lambda) - H(\theta \mid \lambda),
+\]
+con $Q(\theta\mid\lambda) = \E_{z\mid x,\lambda}\!\big[\log\Prob(x_{1:T}, z_{1:T}\mid\theta)\big]$ y $H(\theta\mid\lambda) = \E_{z\mid x,\lambda}\!\big[\log\Prob(z_{1:T}\mid x_{1:T},\theta)\big]$. El paso M elige $\lambda' = \arg\max_{\theta} Q(\theta\mid\lambda)$, luego $Q(\lambda'\mid\lambda) \ge Q(\lambda\mid\lambda)$. Por la desigualdad de Gibbs (un caso de la de Jensen),
+\[
+H(\lambda\mid\lambda) - H(\lambda'\mid\lambda) \;=\; \mathrm{KL}\big(\Prob(\cdot\mid x_{1:T},\lambda)\,\big\|\,\Prob(\cdot\mid x_{1:T},\lambda')\big) \;\ge\; 0.
+\]
+Restando ambas descomposiciones,
+\[
+\log\Prob(x_{1:T}\mid\lambda') - \log\Prob(x_{1:T}\mid\lambda)
+= \underbrace{Q(\lambda'\mid\lambda) - Q(\lambda\mid\lambda)}_{\ge\, 0}
++ \underbrace{H(\lambda\mid\lambda) - H(\lambda'\mid\lambda)}_{\ge\, 0} \;\ge\; 0. \qedhere
+\]
+\end{proof}
+
+El algoritmo itera los pasos E y M hasta que la verosimilitud se estabiliza. Su convergencia a un punto estacionario de la verosimilitud, bajo condiciones de regularidad, es un resultado clásico de la teoría de EM \cite{dempster1977}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla y de partir de una inicialización razonable, como se documenta en el capítulo de metodología.
 
 \subsection{El algoritmo de Viterbi}
 \label{sec:hmm-viterbi}
