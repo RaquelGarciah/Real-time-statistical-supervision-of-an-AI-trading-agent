@@ -5,7 +5,7 @@
 % Tabla principal: valores canónicos del §1bis. Figuras en tesis/figuras/cap4_*.pdf.
 % Estilo: memoria/ESTILO_Y_ANTIIA.md + memoria/correcciones_aprendidas.md. Estructura: memoria/estructura_cap4.md.
 
-La pregunta operativa de este capítulo es concreta. Sobre un activo donde acertar la dirección es genuinamente difícil, ¿un modelo desplegable que consume las señales de STRATA recupera la dirección de un agente que pierde y supera a las estrategias triviales? El caso de estudio es SMCI. Recorremos el problema y el banco de pruebas (Sección~\ref{sec:smci-banco}), la mecánica de los tres detectores sobre este activo (Sección~\ref{sec:smci-strata}), las dos maneras de explotar STRATA (Sección~\ref{sec:smci-explotar}), el resultado principal con su contraste estadístico (Sección~\ref{sec:smci-resultado}), la robustez por cuatro ejes (Sección~\ref{sec:smci-robustez}) y la interpretabilidad del modelo (Sección~\ref{sec:smci-interpretabilidad}), antes de los límites. A $n \approx 250$ ninguna pieza prueba habilidad por sí sola. Lo que sostiene la conclusión es la convergencia de varias evidencias que apuntan en la misma dirección.
+La pregunta operativa de este capítulo es concreta. Sobre un activo donde acertar la dirección es genuinamente difícil, ¿un modelo desplegable que consume las señales de STRATA recupera la dirección de un agente que pierde y supera a las estrategias triviales? El caso de estudio es SMCI. A $n \approx 250$ ninguna pieza prueba habilidad por sí sola. Lo que sostiene la conclusión es la convergencia de varias evidencias que apuntan en la misma dirección, y esa idea vertebra todo lo que sigue.
 
 \section{El problema y un banco de pruebas justo}
 \label{sec:smci-banco}
@@ -20,7 +20,7 @@ El listón correcto no es el $50\%$. La regla de no-habilidad consiste en predec
 \subsection{Protocolo de evaluación}
 \label{sec:smci-protocolo}
 
-Los tres detectores de STRATA se calibran una sola vez sobre el periodo 2000-01-01 a 2024-09-30 y se congelan (Sección~\ref{sec:strata-calib}). La evaluación es fuera de muestra sobre $n = 250$ días, lo que queda tras descartar los $150$ días de arranque (\emph{burn-in}) del walk-forward sobre un total de $400$. Todo ese tramo cae después del corte de conocimiento del modelo de lenguaje que mueve al agente, así que sus decisiones no pudieron memorizarse durante el entrenamiento. La evaluación es causal y desplegable, con $\mathrm{signal\_lag}=1$ y embargo de un día, según el protocolo walk-forward de la Sección~\ref{sec:cpcv-walkforward}.
+Los tres detectores de STRATA los calibramos una sola vez sobre el periodo 2000-01-01 a 2024-09-30 y los congelamos (Sección~\ref{sec:strata-calib}). La evaluación cubre $n = 250$ días fuera de muestra, lo que queda tras descartar los $150$ días de arranque (\emph{burn-in}) del walk-forward sobre un total de $400$. El protocolo causal y desplegable es el de la Sección~\ref{sec:cpcv-walkforward}.
 
 \subsection{El agente sin supervisar (M5)}
 \label{sec:smci-m5}
@@ -42,7 +42,7 @@ El HMM gaussiano de tres estados, calibrado sobre la historia larga, separa a SM
 \label{fig:cap4-regimen}
 \end{figure}
 
-La matriz de transición estimada tiene la diagonal dominante, señal de que los regímenes son persistentes (Figura~\ref{fig:cap4-transicion}). Calma se autotransita con probabilidad $a_{ii}\approx 0{,}98$, una duración esperada de unos $45$ días; Estrés y Crisis lo hacen con $a_{ii}\approx 0{,}96$, en torno a $25$ y $23$ días. El régimen no parpadea de un día para otro: cuando el HMM sitúa al mercado en un estado, tiende a quedarse, lo que da estabilidad a la señal que alimenta a los detectores.
+La matriz de transición estimada tiene la diagonal dominante, señal de que los regímenes son persistentes (Figura~\ref{fig:cap4-transicion}). Calma se autotransita con probabilidad $a_{ii}\approx 0{,}978$, una duración esperada de unos $45$ días; Estrés y Crisis lo hacen con $a_{ii}\approx 0{,}96$, en torno a $25$ y $23$ días. El régimen no parpadea de un día para otro: cuando el HMM sitúa al mercado en un estado, tiende a quedarse, lo que da estabilidad a la señal que alimenta a los detectores.
 
 \begin{figure}[htbp]
 \centering
@@ -54,7 +54,7 @@ La matriz de transición estimada tiene la diagonal dominante, señal de que los
 \subsection{De los tres detectores, solo RAM actúa}
 \label{sec:smci-detectores}
 
-Sobre SMCI, el único detector que llega a intervenir es RAM, y lo hace en torno al $3\%$ de los días (Figura~\ref{fig:cap4-ram}). PSA y GSO no disparan, y la razón es el propio agente. GSO acota la magnitud de la posición a la banda de volatilidad del GARCH, pero un agente que mantiene un tamaño medio de $0{,}10$ nunca se sobreexpone, de modo que el operador GSO queda en la identidad. PSA frena los cambios bruscos de \emph{sizing}, y un agente que va corto el $95\%$ de los días con apuesta pequeña no produce cambios estructurales que detectar. El comportamiento pasivo del agente desactiva dos de los tres ejes de supervisión.
+Sobre SMCI, el único detector que llega a intervenir es RAM, y lo hace en torno al $3\%$ de los días (Figura~\ref{fig:cap4-ram}). PSA y GSO no disparan, y la razón es el propio agente. GSO acota la magnitud de la posición a la banda de volatilidad del GARCH, pero un agente que mantiene un tamaño medio de $0{,}10$ nunca se sobreexpone, así que el operador GSO queda en la identidad. PSA frena los cambios bruscos de \emph{sizing}, y un agente que va corto el $95\%$ de los días con apuesta pequeña no produce cambios estructurales que detectar. El comportamiento pasivo del agente desactiva dos de los tres ejes de supervisión.
 
 \begin{figure}[htbp]
 \centering
@@ -63,12 +63,12 @@ Sobre SMCI, el único detector que llega a intervenir es RAM, y lo hace en torno
 \label{fig:cap4-ram}
 \end{figure}
 
-Los umbrales de los detectores se fijaron ex-ante, antes de ver el OOS: $\tau=0{,}5$ para el gate de RAM y los percentiles P95 y P99 para las severidades de PSA y GSO. La decisión de no ajustarlos a la métrica se valida en validación y test, donde la accuracy de la regla a mano permanece invariante al barrido del umbral. Los detectores no tienen un grado de libertad oculto que explique el resultado.
+Los umbrales de los detectores los fijamos ex-ante, antes de ver el OOS: $\tau=0{,}5$ para el gate de RAM y los percentiles P95 y P99 para las severidades de PSA y GSO. La decisión de no ajustarlos a la métrica la comprobamos en validación y test, donde la accuracy de la regla a mano permanece invariante al barrido del umbral. Los detectores no tienen un grado de libertad oculto que explique el resultado.
 
 \subsection{Un día de intervención por dentro}
 \label{sec:smci-undia}
 
-La mecánica se ve mejor en un caso concreto. En un día en que el agente apuesta corto y el posterior filtrado del HMM coloca la masa de probabilidad en un régimen cuya dirección dominante apunta al alza, el RAM score supera el gate $\tau=0{,}5$ y el operador de intervención reorienta la posición al signo del régimen, con la magnitud acotada a la banda GARCH. Ese mismo día, GSO no recorta nada (la apuesta de $0{,}10$ ya cabe en la banda de volatilidad) y PSA no se activa (no hay salto de \emph{sizing} respecto a la víspera). La supervisión consiste, sobre este activo, en voltear el signo cuando el agente contradice a un régimen que el modelo considera fiable.
+La mecánica se ve mejor en un caso concreto. Tomemos un día en que el agente apuesta corto y el posterior filtrado del HMM coloca la masa de probabilidad en un régimen cuya dirección dominante apunta al alza. GSO actúa primero y acota la magnitud a la banda de volatilidad del GARCH, aunque aquí no recorta nada porque la apuesta de $0{,}10$ ya cabe en la banda. A continuación el RAM score supera el gate $\tau=0{,}5$ y su operador reemplaza la posición por el signo del régimen dominante, conservando esa magnitud acotada. PSA no se activa. No hay salto de \emph{sizing} respecto a la víspera. La supervisión consiste, sobre este activo, en voltear el signo cuando el agente contradice a un régimen que el modelo considera fiable.
 
 \section{Dos formas de explotar STRATA}
 \label{sec:smci-explotar}
@@ -83,7 +83,7 @@ La regla determinista M8 aplica la capa de intervención \emph{override-C} descr
 
 M10, el modelo central del caso de estudio, es un clasificador binario XGBoost \cite{chen2016}. Cada día estima $p_1$, la probabilidad de que el retorno del día siguiente sea positivo, y la posición es $w_t = \operatorname{sign}(p_1 - 0{,}5)$. Lo hace a partir de veintidós variables: las quince de la decisión del agente (cinco personalidades, cada una con signo, tamaño y confianza) y las siete de STRATA y de régimen (los scores $\mathrm{RAM}_t$, $\mathrm{PSA}_t$ y $\mathrm{GSO}_t$, las tres probabilidades de régimen $P(\text{Calma})$, $P(\text{Estrés})$, $P(\text{Crisis})$ y la volatilidad condicional $\sigma_t$ del GARCH). Es un meta-learner en el sentido del \emph{stacking} \cite{wolpert1992}: un modelo de segundo nivel sobre las salidas del agente y de los detectores.
 
-La elección de XGBoost responde a la estructura del problema. La señal útil reside en interacciones entre el régimen y la decisión del agente (un mismo veredicto del agente debe leerse distinto según el estado del mercado), y un modelo de árboles potenciados captura no-linealidades e interacciones sin imponer una forma funcional. El protocolo es el walk-forward de la Sección~\ref{sec:cpcv-walkforward}: arranque de $150$ días, reentreno cada $21$ con toda la historia disponible y embargo de un día, justificado por el horizonte de la etiqueta, que es de un solo día \cite{tashman2000, lopezdeprado2018}. Para amortiguar la varianza del azar interno se promedia un \emph{ensemble} de diez modelos que solo difieren en la semilla, lo que constituye \emph{bagging} \cite{breiman1996, dietterich2000}: el promedio cancela ruido sin crear señal. M10 no usa la validación cruzada combinatoria, que mira el futuro y queda como contraste metodológico (Sección~\ref{sec:cpcv-cpcv}). Tampoco lleva variables de momento ni mecanismo de abstención, descartados porque no mejoran la accuracy fuera de muestra.
+La elección de XGBoost responde a la estructura del problema. La señal útil reside en interacciones entre el régimen y la decisión del agente (un mismo veredicto del agente debe leerse distinto según el estado del mercado), y un modelo de árboles potenciados captura no-linealidades e interacciones sin imponer una forma funcional. El protocolo es el walk-forward de la Sección~\ref{sec:cpcv-walkforward}: arranque de $150$ días, reentreno cada $21$ con toda la historia disponible y embargo de un día, que lo elegimos por el horizonte de la etiqueta, de un solo día \cite{tashman2000, lopezdeprado2018}. Para amortiguar la varianza del azar interno promediamos un \emph{ensemble} de diez modelos que solo difieren en la semilla, lo que constituye \emph{bagging} \cite{breiman1996, dietterich2000}: el promedio cancela ruido sin crear señal. M10 no usa la validación cruzada combinatoria, que mira el futuro y queda como contraste metodológico (Sección~\ref{sec:cpcv-cpcv}). Tampoco lleva variables de momento ni mecanismo de abstención, descartados porque no mejoran la accuracy fuera de muestra.
 
 \section{Resultado principal}
 \label{sec:smci-resultado}
@@ -120,7 +120,7 @@ Trivial: comprar y mantener (siempre largo) & 0,484 & +0,03 & 0,71$\times$ \\
 \subsection{La economía como ilustración}
 \label{sec:smci-economia}
 
-En el plano económico, ilustrativo y no probatorio, M10 multiplica el capital por $3{,}24$ frente al $0{,}71$ de comprar-y-mantener, con un ratio de Sharpe de $+1{,}84$ (Figura~\ref{fig:cap4-equity}). Ese Sharpe es positivo con probabilidad $0{,}976$ sin corregir; penalizado por las configuraciones exploradas a lo largo del estudio, el ratio de Sharpe deflactado de Bailey y López de Prado \cite{bailey2014} baja esa probabilidad a $0{,}72$, por debajo del umbral de habilidad. Con $n \approx 250$ el $3{,}24\times$ es compatible con la suerte. El rendimiento se reporta como enriquecimiento y la prueba del trabajo descansa en la accuracy direccional.
+En el plano económico, ilustrativo y no probatorio, M10 multiplica el capital por $3{,}24$ frente al $0{,}71$ de comprar-y-mantener, con un ratio de Sharpe de $+1{,}84$ (Figura~\ref{fig:cap4-equity}). Ese Sharpe es positivo con probabilidad $0{,}976$ sin corregir; penalizado por las configuraciones exploradas a lo largo del estudio, el ratio de Sharpe deflactado de Bailey y López de Prado \cite{bailey2014} baja esa probabilidad a $0{,}72$, por debajo del umbral de habilidad. Con $n \approx 250$ el $3{,}24\times$ es compatible con la suerte. Reportamos el rendimiento como enriquecimiento, y la prueba del trabajo descansa en la accuracy direccional.
 
 \begin{figure}[htbp]
 \centering
@@ -132,7 +132,7 @@ En el plano económico, ilustrativo y no probatorio, M10 multiplica el capital p
 \subsection{Contraste estadístico}
 \label{sec:smci-contraste}
 
-El $0{,}552$ hay que acompañarlo de su contraste, y conviene distinguir el test primario de los secundarios (Figura~\ref{fig:cap4-forest}). El primario, declarado antes de ejecutar, es el binomial de M10 frente a la clase mayoritaria, que es el baseline de no-habilidad correcto: da $p=0{,}141$, sin significancia al tamaño disponible. Entre los secundarios, la permutación por bloques frente a comprar-y-mantener da $p=0{,}047$, que no sobrevive a la corrección de Bonferroni por las cinco comparaciones ($\alpha$ ajustado $\approx 0{,}28$); el McNemar pareado frente al agente da $p=0{,}16$; y el sign test frente a $0{,}5$ da $p=0{,}057$ en su versión binomial de una cola y $p=0{,}114$ bilateral. La ventaja de M10 es nominal. Con un horizonte de unos $250$ días, acotado porque el agente solo existe tras el corte del modelo de lenguaje, la no-significancia es un límite de potencia, no de signo: todos los tests apuntan en la misma dirección y ninguno cambia de sentido.
+El $0{,}552$ hay que acompañarlo de su contraste. El test primario y los secundarios miden cosas distintas, y los declaramos como tales (Figura~\ref{fig:cap4-forest}). El primario, fijado antes de ejecutar, es el binomial de M10 frente a la clase mayoritaria, que es el baseline de no-habilidad correcto: da $p=0{,}141$, sin significancia al tamaño disponible. Entre los secundarios, la permutación por bloques frente a comprar-y-mantener da $p=0{,}047$, que no sobrevive a la corrección de Bonferroni por las cinco comparaciones ($\alpha$ ajustado $\approx 0{,}28$); el McNemar pareado frente al agente da $p=0{,}16$; y el sign test frente a $0{,}5$ da $p=0{,}057$ en su versión binomial de una cola y $p=0{,}114$ bilateral. La ventaja de M10 es nominal. Con un horizonte de unos $250$ días, acotado porque el agente solo existe tras el corte del modelo de lenguaje, la no-significancia es un límite de potencia, no de signo: todos los tests apuntan en la misma dirección y ninguno cambia de sentido.
 
 \begin{figure}[htbp]
 \centering
@@ -184,7 +184,7 @@ La robustez se confirma sobre ventanas rodantes a lo largo del periodo de evalua
 \subsection{Al protocolo}
 \label{sec:smci-rob-embargo}
 
-El embargo se fija en uno por el horizonte de la etiqueta, que es de un día (Sección~\ref{sec:cpcv-purga}), y no para maximizar una cifra. Al barrer el embargo de $0$ a $10$ días, la accuracy se mueve entre $0{,}512$ y $0{,}552$ y la significancia aparece como un pico aislado en $\text{embargo}=1$ (block-perm $p=0{,}047$), mientras que los embargos vecinos $0$ y $2$ no son significativos. Leemos ese pico como sensibilidad del p-valor a una elección de protocolo, no como confirmación: el resultado nominal es estable, pero la significancia puntual no debe sobreinterpretarse.
+El embargo lo fijamos en uno por el horizonte de la etiqueta, que es de un día (Sección~\ref{sec:cpcv-purga}), y no para maximizar una cifra. Al barrer el embargo de $0$ a $10$ días, la accuracy se mueve entre $0{,}512$ y $0{,}552$ y la significancia aparece como un pico aislado en $\text{embargo}=1$ (block-perm $p=0{,}047$), mientras que los embargos vecinos $0$ y $2$ no son significativos. Leemos ese pico como sensibilidad del p-valor a una elección de protocolo, no como confirmación: el resultado nominal es estable, pero la significancia puntual no debe sobreinterpretarse.
 
 \begin{figure}[htbp]
 \centering
@@ -196,7 +196,7 @@ El embargo se fija en uno por el horizonte de la etiqueta, que es de un día (Se
 \subsection{A la ventana de calibración}
 \label{sec:smci-rob-calib}
 
-El tutor sugirió comprobar si acortar la calibración del HMM y el GARCH mejora el resultado o vuelve direccional al régimen. Recalibrando con ventanas más cortas, de fin fijo y sin fuga (desde 2007, 2010, \dots, 2022), M10 \emph{degrada} hacia el nivel del agente: de $0{,}552$ con la ventana completa cae hacia $\approx 0{,}48$ con las más cortas, y la media de Crisis sigue siendo positiva en todas (Figura~\ref{fig:cap4-calibracion}). La historia larga es la que da contenido a las features de régimen, y Crisis no se vuelve direccional al acortar. La ventana completa, pre-registrada como decisión de método, es la más robusta, y se eligió por principio, no por el número que produce.
+El tutor sugirió comprobar si acortar la calibración del HMM y el GARCH mejora el resultado o vuelve direccional al régimen. Recalibrando con ventanas más cortas, de fin fijo y sin fuga (desde 2007, 2010, \dots, 2022), M10 \emph{degrada} hacia el nivel del agente: de $0{,}552$ con la ventana completa cae hacia $\approx 0{,}48$ con las más cortas, y la media de Crisis sigue siendo positiva en todas (Figura~\ref{fig:cap4-calibracion}). La historia larga es la que da contenido a las features de régimen, y Crisis no se vuelve direccional al acortar. La ventana completa, pre-registrada como decisión de método, es la más robusta, y la elegimos por principio, no por el número que produce.
 
 \begin{figure}[htbp]
 \centering
@@ -211,19 +211,19 @@ El tutor sugirió comprobar si acortar la calibración del HMM y el GARCH mejora
 \subsection{M10 es inseparable de STRATA}
 \label{sec:smci-ablacion}
 
-La ventaja de M10 proviene de las señales de STRATA, y dos análisis lo confirman (Figura~\ref{fig:cap4-ablacion-shap}). El primero es una ablación. Un M10 entrenado solo con las quince variables del agente, sin las siete señales de STRATA, cae al $46{,}8\%$, en torno al nivel del propio agente; un M10 entrenado solo con las siete señales de STRATA alcanza el $51{,}6\%$; y el modelo con las veintidós variables llega al $55{,}2\%$. La mejora del conjunto completo sobre el de solo agente es pareada con $p=0{,}053$ en el test de McNemar, al borde de la significancia. El segundo análisis es la importancia por valores de Shapley calculada con TreeSHAP \cite{lundberg2017} sobre el ensemble: las siete señales de STRATA y de régimen concentran el $64{,}7\%$ de la importancia total, y los cinco features más importantes ($\sigma_t$ del GARCH, $\mathrm{RAM}_t$, $P(\text{Estrés})$, $\mathrm{PSA}_t$ y $P(\text{Crisis})$) son todos de STRATA. Sin esas señales el modelo retrocede al agente; con ellas recupera la dirección. El meta-learner es inseparable de la capa que da nombre al sistema.
+La ventaja de M10 proviene de las señales de STRATA, y dos análisis lo confirman (Figura~\ref{fig:cap4-ablacion-shap}). El primero es una ablación. Un M10 entrenado solo con las quince variables del agente, sin las siete señales de STRATA, cae al $46{,}8\%$, en torno al nivel del propio agente; un M10 entrenado solo con las siete señales de STRATA alcanza el $51{,}6\%$; y el modelo con las veintidós variables llega al $55{,}2\%$. La mejora del conjunto completo sobre el de solo agente es pareada con $p=0{,}053$ en el test de McNemar, al borde de la significancia. El segundo análisis es la importancia por valores de Shapley calculada con TreeSHAP \cite{lundberg2017} sobre el ensemble: las siete señales de STRATA y de régimen concentran el $64{,}7\%$ de la importancia total, y los cinco features más importantes ($\sigma_t$ del GARCH, $\mathrm{RAM}_t$, $P(\text{Estrés})$, $\mathrm{PSA}_t$ y $P(\text{Crisis})$) son todas de STRATA y de régimen. Sin esas señales el modelo retrocede al agente; con ellas recupera la dirección. El meta-learner es inseparable de la capa que da nombre al sistema.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figuras/cap4_ablacion_shap.pdf}
-\caption{Izquierda: ablación (agente-15 $\to 0{,}468$, STRATA-7 $\to 0{,}516$, las 22 $\to 0{,}552$; McNemar 22 vs agente-15 $p=0{,}053$). Derecha: importancia TreeSHAP, con las siete señales STRATA al $64{,}7\%$ y los cinco primeros features todos de STRATA. Fuente: \texttt{m10\_smci\_cap4\_prep.json}.}
+\caption{Izquierda: ablación (agente-15 $\to 0{,}468$, STRATA-7 $\to 0{,}516$, las 22 $\to 0{,}552$; McNemar 22 vs agente-15 $p=0{,}053$). Derecha: importancia TreeSHAP, con las siete señales STRATA al $64{,}7\%$ y los cinco primeros features todas de STRATA y de régimen. Fuente: \texttt{m10\_smci\_cap4\_prep.json}.}
 \label{fig:cap4-ablacion-shap}
 \end{figure}
 
 \subsection{Por qué la ventaja es pequeña en SMCI}
 \label{sec:smci-porque-pequena}
 
-En SMCI los tres modelos, M5, M8 y M10, apuestan en la misma dirección la mayor parte del tiempo, porque el agente ya está alineado con un régimen que también sesga a corto. STRATA rescata al agente solo donde este discrepa de un régimen que acierta, una condición que SMCI cumple poco. El drawdown del verano de 2025 ilustra el límite: el régimen capta bien la crisis (Crisis es dominante el $81\%$ de esos días) pero M10 se mantiene largo, porque ha aprendido que en SMCI Crisis va asociada a subidas. La causa es la no-direccionalidad del régimen en este activo, propia del \emph{leverage effect} débil de un valor individual. Aun con todo, M10 no se limita a apostar a la baja: va corto en torno al $47\%$ de los días y gana a la estrategia constante de ir siempre corto.
+En SMCI los tres modelos, M5, M8 y M10, apuestan en la misma dirección la mayor parte del tiempo, porque el agente ya está alineado con un régimen que también sesga a corto. STRATA rescata al agente solo donde este discrepa de un régimen que acierta. SMCI cumple poco esa condición. El drawdown del verano de 2025 ilustra el límite: el régimen capta bien la crisis (Crisis es dominante el $81\%$ de esos días) pero M10 se mantiene largo, porque ha aprendido que en SMCI Crisis va asociada a subidas. La causa es la no-direccionalidad del régimen en este activo, propia del \emph{leverage effect} débil de un valor individual. Aun con todo, M10 no se limita a apostar a la baja: va corto en torno al $47\%$ de los días y gana a la estrategia constante de ir siempre corto.
 
 \section{Límites y trabajo futuro}
 \label{sec:smci-limites}
