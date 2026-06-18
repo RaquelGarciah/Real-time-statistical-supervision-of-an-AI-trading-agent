@@ -21,11 +21,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # latexmk + biblatex devuelve un código de salida distinto de cero (p. ej. 12)
+      # por su control interno de "reruns" aunque el PDF se genere entero y correcto.
+      # Por eso no usamos el código de salida como criterio: dejamos compilar y el
+      # éxito lo decide el paso siguiente (¿existe el PDF?).
       - name: Compilar la memoria (LaTeX + biber)
+        id: latex
+        continue-on-error: true
         uses: xu-cheng/latex-action@v3
         with:
           working_directory: tesis
           root_file: main.tex
+
+      - name: Verificar que el PDF se generó
+        run: |
+          if [ ! -f tesis/main.pdf ]; then
+            echo "::error::No se generó tesis/main.pdf — la compilación falló de verdad."
+            exit 1
+          fi
+          echo "PDF generado correctamente:"
+          ls -la tesis/main.pdf
 
       - name: Subir el PDF como artefacto
         uses: actions/upload-artifact@v4
