@@ -467,7 +467,7 @@ H(r_{t-1}+1), & r_t = 0,\\[2pt]
 0, & \text{en otro caso.}
 \end{cases}
 \]
-El segundo factor es la predictiva del dato nuevo dentro del tramo: condicionada a $r_{t-1}$, la observación $x_t$ depende solo de las observaciones del tramo en curso, lo que da $\pi^{(r_{t-1})}_{\mathrm{pred}}$. El tercer factor es la conjunta del paso anterior, ya disponible.
+El segundo factor es la predictiva del dato nuevo dentro del tramo: condicionada a $r_{t-1}$, y por la independencia entre segmentos, la observación $x_t$ depende solo de las $r_{t-1}$ observaciones del tramo en curso, lo que da $\pi^{(r_{t-1})}_{\mathrm{pred}}$. El tercer factor es la conjunta del paso anterior, ya disponible. En ambos mensajes interviene esta misma predictiva $\pi^{(r_{t-1})}_{\mathrm{pred}}$ porque $x_t$ se evalúa contra el segmento en curso, de longitud $r_{t-1}$: el reinicio se materializa en la run-length siguiente, $r_t = 0$, no en la pertenencia de $x_t$, que todavía corresponde a ese segmento.
 
 Como la transición de la run-length concentra toda su masa en dos destinos, la marginalización sobre $r_{t-1}$ se reparte en dos casos. Si $r_t = r_{t-1} + 1 > 0$, solo contribuye el valor concreto $r_{t-1} = r_t - 1$ (no hay otra forma de llegar a esa run-length sin reinicio), de donde
 \[
