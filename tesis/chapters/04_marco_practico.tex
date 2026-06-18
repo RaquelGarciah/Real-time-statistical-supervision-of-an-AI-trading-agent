@@ -5,22 +5,22 @@
 % Tabla principal: valores canónicos del §1bis. Figuras en tesis/figuras/cap4_*.pdf.
 % Estilo: memoria/ESTILO_Y_ANTIIA.md + memoria/correcciones_aprendidas.md. Estructura: memoria/estructura_cap4.md.
 
-La pregunta operativa de este capítulo es concreta. Sobre un activo donde acertar la dirección es realmente difícil, ¿un modelo desplegable que consume las señales de STRATA recupera la dirección de un agente que pierde y supera a las estrategias triviales? El caso de estudio es SMCI. A $n \approx 250$ ninguna pieza prueba habilidad por sí sola; lo que sostiene la conclusión es la convergencia de varias evidencias independientes que apuntan en la misma dirección.
+El objetivo de este capítulo es claro: responder a la siguiente pregunte. Sobre un activo donde acertar la dirección es realmente difícil, ¿un modelo desplegable que consume las señales de STRATA recupera la dirección de un agente que pierde y supera a las estrategias triviales? Nuestro caso de estudio será SMCI. 
 
-\section{El problema y un banco de pruebas justo}
+\section{El problema}
 \label{sec:smci-banco}
 
 \subsection{SMCI y por qué es un benchmark exigente}
 \label{sec:smci-activo}
 
-SMCI (Super Micro Computer) es un fabricante estadounidense de servidores de alto rendimiento, muy expuesto a la demanda de infraestructura para inteligencia artificial. Su cotización ha sido extraordinariamente volátil en el periodo de estudio, con subidas y desplomes superiores al treinta por ciento en pocas semanas. Esa volatilidad, lejos de un inconveniente, lo convierte en un banco de pruebas honesto: sus dos clases direccionales quedan casi equilibradas. El \emph{buy-and-hold} (comprar y mantener, siempre largo, que abreviamos B\&H) acierta el $48{,}4\%$ de los días, de modo que el día medio se parece a una moneda y la accuracy direccional es una métrica informativa.
+SMCI (Super Micro Computer) es un fabricante estadounidense de servidores de alto rendimiento, muy expuesto a la demanda de infraestructura para inteligencia artificial. Su cotización ha sido extraordinariamente volátil en el periodo de estudio, con subidas y desplomes superiores al treinta por ciento en pocas semanas. Esa volatilidad lo convierte en caso de uso honesto: sus dos clases direccionales quedan casi equilibradas. El \emph{buy-and-hold} (comprar y mantener, siempre largo, que abreviamos B\&H) acierta el $48{,}4\%$ de los días, de modo que el día medio se parece a una moneda y la accuracy direccional es una métrica informativa.
 
-El listón correcto no es el $50\%$. La regla de no-habilidad consiste en predecir siempre la clase mayoritaria (\emph{ZeroR}), que no se deja batir por un modelo solo a causa del desbalance de clases \cite{witten2016datamining, kuhn2008caret}. En SMCI esa clase mayoritaria acierta el $51{,}6\%$ y corresponde a ir siempre corto. Superarla, y no solo superar al azar, es el criterio que un modelo debe cumplir para que su ventaja signifique algo. Elegimos SMCI por este perfil, fijado antes de mirar los resultados: clases balanceadas y un benchmark trivial que muerde.
+El listón correcto no es el $50\%$. La regla de no-habilidad consiste en predecir siempre la clase mayoritaria (\emph{ZeroR}), que no se deja batir por un modelo solo a causa del desbalance de clases \cite{witten2016datamining, kuhn2008caret}. En SMCI esa clase mayoritaria acierta el $51{,}6\%$ y corresponde a ir siempre corto. Superarla, y no solo superar al azar, es el criterio que un modelo debe cumplir para que su ventaja signifique algo. Son esas dos propiedades, clases equilibradas y un baseline trivial exigente, las que hacen de SMCI un banco de pruebas honesto: una ventaja en accuracy solo cuenta si se gana contra un listón que muerde, y no por el desbalance de las clases.
 
 \subsection{Protocolo de evaluación}
 \label{sec:smci-protocolo}
 
-Los tres detectores de STRATA los calibramos una sola vez sobre toda la historia disponible de SMCI, desde su salida a bolsa el 29 de marzo de 2007 hasta el 30 de septiembre de 2024, y los congelamos (Sección~\ref{sec:strata-calib}). La evaluación cubre $n = 250$ días fuera de muestra, lo que queda tras descartar los $150$ días de arranque (\emph{burn-in}) del walk-forward sobre un total de $400$. El protocolo causal y desplegable es el de la Sección~\ref{sec:cpcv-walkforward}.
+Los tres detectores de STRATA los calibramos una sola vez sobre toda la historia disponible de SMCI, desde su salida a bolsa el 29 de marzo de 2007 hasta el 30 de septiembre de 2024, y los congelamos (Sección~\ref{sec:strata-calib}). La evaluación cubre $n = 250$ días fuera de muestra, lo que queda tras descartar los $150$ días de arranque (\emph{burn-in}) del walk-forward sobre un total de $400$. El protocolo causal y desplegable que seguiremos es el de la Sección~\ref{sec:cpcv-walkforward}.
 
 \subsection{El agente sin supervisar (M5)}
 \label{sec:smci-m5}
