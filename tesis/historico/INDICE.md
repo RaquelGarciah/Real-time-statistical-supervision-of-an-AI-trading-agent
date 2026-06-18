@@ -18,7 +18,8 @@ fechada, añadiendo su línea a este índice.
 | 2026-06-18 | 12:43 | [`tesis_2026-06-18_1243_conectores-redaccion.pdf`](tesis_2026-06-18_1243_conectores-redaccion.pdf) | Snapshot manual tras la pasada de conectores/redacción (mismo contenido que las 12:39, recompilado). |
 | 2026-06-18 | 18:24 | [`tesis_2026-06-18_1824_cap3-rigor-citas.pdf`](tesis_2026-06-18_1824_cap3-rigor-citas.pdf) | Cap. 3 cerrado: rigor matemático (teorema GARCH no circular, lema EM, d-separación, BOCPD) + 4 definiciones formales (RAM/GSO/PSA/M8) + citas en cada demostración. |
 | 2026-06-18 | 18:49 | [`tesis_2026-06-18_1849_cap3-intro-series-temporales.pdf`](tesis_2026-06-18_1849_cap3-intro-series-temporales.pdf) | Cap. 3: intro a series temporales y ARCH en §3.4 (revisada por agentes) + 4 refs. |
-| 2026-06-18 | 19:47 | [`tesis_2026-06-18_1947_cap4-estilo.pdf`](tesis_2026-06-18_1947_cap4-estilo.pdf) | Cap. 4: pasada de estilo (gates estilo-raquel + detector-ia) sobre la versión reescrita por Raquel; registro plural/impersonal, fuera meta-comentarios y aperturas calcadas. **Versión actual.** |
+| 2026-06-18 | 19:47 | [`tesis_2026-06-18_1947_cap4-estilo.pdf`](tesis_2026-06-18_1947_cap4-estilo.pdf) | Cap. 4: pasada de estilo (gates estilo-raquel + detector-ia) sobre la versión reescrita por Raquel; registro plural/impersonal, fuera meta-comentarios y aperturas calcadas. |
+| 2026-06-18 | 20:52 | [`tesis_2026-06-18_2052_primer-borrador.pdf`](tesis_2026-06-18_2052_primer-borrador.pdf) | Primer borrador completo (44 págs.): cap. 3 con correcciones de redacción aplicadas. **Versión actual.** |
 
 ---
 
