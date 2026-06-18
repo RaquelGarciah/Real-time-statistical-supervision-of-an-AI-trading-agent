@@ -620,6 +620,57 @@ ax.axhline(1.0, color="k", lw=0.6); ax.set_ylabel("equity")
 ax.set_title("Verano 2025: M10 largo en el techo → drawdown; el rescate llega en las caídas posteriores")
 ax.legend(fontsize=8); plt.tight_layout(); plt.show()""")
 
+md(r"""### Por qué el régimen llega tarde: el rezago mecánico de la RV²¹
+
+El detector de régimen es **reactivo, no anticipatorio**, y la razón es mecánica:
+
+- **La volatilidad se mide con una ventana de 21 días** ($\mathrm{RV}^{21}_t$). Cuando el precio se desploma, esa
+  media móvil **necesita acumular varios días de caída** para subir lo suficiente y mover la probabilidad de
+  régimen. La señal de "alta volatilidad" aparece **después** de que el desplome ha empezado: es un rezago
+  estructural del propio estimador, no un fallo de calibración.
+- **Los regímenes son muy persistentes** (matriz de transición $a_{ii}\approx0{,}96$–$0{,}98$, duración media
+  23–45 días). Eso hace al HMM **"pegajoso"**: su apuesta por defecto cada día es *"el mismo régimen que ayer"*,
+  y solo conmuta cuando se acumula bastante evidencia en contra. Cuanto más persistente, más tarda en cambiar.
+
+La figura siguiente lo enseña sobre el episodio: el **precio cae primero**, la **RV²¹ sube con retraso** y la
+**probabilidad de Crisis se dispara aún más tarde**. Cuando el régimen "ve" la crisis, **ya estás dentro de la
+caída**: vas un paso por detrás del giro, y en SMCI ese aviso tardío encima no apunta a la baja (Crisis tiene
+media positiva, §2).""")
+
+code(r"""# --- Fig. el rezago del régimen: precio → RV21 → probabilidad de régimen (episodio 2025) ---
+w0, w1 = pd.Timestamp("2025-05-01"), pd.Timestamp("2025-11-30")
+idxw = feat_df.index[(feat_df.index >= w0) & (feat_df.index <= w1)]
+px = prices["Close"].reindex(idxw).ffill()
+rv = feat_df["rv"].reindex(idxw)
+gw = gamma.reindex(idxw)
+dom_crisis = pd.Series(gw[["Calma", "Estrés", "Crisis"]].to_numpy().argmax(1) == 2, index=idxw)
+post = dom_crisis[dom_crisis.index > pico]
+flip = post.index[int(post.to_numpy().argmax())] if bool(post.any()) else None
+
+fig, ax = plt.subplots(3, 1, figsize=(10, 7.6), sharex=True, gridspec_kw={"hspace": 0.12})
+ax[0].plot(px.index, px.values, color="black", lw=1.1); ax[0].set_ylabel(f"{TICKER} Close")
+ax[0].set_title("El régimen llega tarde: el precio cae primero; la RV²¹ y el régimen reaccionan después")
+ax[1].plot(rv.index, rv.values, color="#e8a33d", lw=1.5); ax[1].set_ylabel("RV²¹ (vol 21d)")
+ax[1].annotate("la media de 21 d tarda\nen recoger la caída", xy=(0.02, 0.8), xycoords="axes fraction", fontsize=8)
+ax[2].stackplot(gw.index, gw["Calma"], gw["Estrés"], gw["Crisis"],
+                colors=["#2e9e4f", "#e8a33d", "#c0392b"], alpha=0.85, labels=["Calma", "Estrés", "Crisis"])
+ax[2].set_ylabel("P(régimen)"); ax[2].set_ylim(0, 1); ax[2].set_xlabel("fecha")
+ax[2].legend(fontsize=7, loc="upper left", ncol=3)
+for a in ax:
+    a.axvline(pico, color="blue", lw=1.3, ls="--")
+    if flip is not None:
+        a.axvline(flip, color="red", lw=1.3, ls=":")
+ax[0].text(pico, ax[0].get_ylim()[1], " techo", color="blue", fontsize=8, va="top")
+if flip is not None:
+    ax[0].text(flip, ax[0].get_ylim()[1], " régimen→Crisis", color="red", fontsize=8, va="top")
+plt.show()
+if flip is not None:
+    print(f"Techo / inicio de la caída: {pico.date()}.  El régimen pasa a Crisis dominante el {flip.date()}.")
+    print(f"→ Rezago de {(flip - pico).days} días: la RV²¹ (ventana de 21 d) y la persistencia del HMM hacen que")
+    print("  el régimen confirme la crisis cuando ya estás dentro del desplome. Por eso es REACTIVO, no anticipa.")
+else:
+    print("El régimen no llega a marcar Crisis dominante en la ventana: la RV²¹ de 21 d no sube a tiempo (rezago).")""")
+
 code(r"""# --- Fig. SHAP de las 22 features (qué usa el meta-aprendiz) ---
 clf_full = xgb.XGBClassifier(**PARAMS, random_state=config.SEED).fit(mv[ALL22], y)
 try:
