@@ -2052,3 +2052,30 @@ validación de 70 d, alcista). Documentado en `notebooks/m10_better_smci.ipynb` 
 splits), RESULTADOS_OBJETIVO §1bis, smci.md Fase 7bis.
 
 **Referencias.** `experiments/m10_smci_valtest_robustez.py`, `outputs/experiments/m10_smci_valtest_robustez.json`.
+
+---
+
+## [2026-06-17] [Pre-registro redacción] - Capítulo 3 (Marco teórico) reescrito de cero
+
+**Contexto.** Raquel no quería la estructura lineal anterior (modelo tras modelo). Se rehace el cap. 3 con su
+estructura aprobada (4 bloques, "por disciplina") en `memoria/estructura_cap3.md`.
+
+**Estructura (4 bloques).** §0 Preliminares y notación · §1 STRATA a nivel técnico (overview) · §2 Teoría
+matemática de los detectores (HMM, GARCH(1,1)-t, BOCPD, con demostraciones) · §3 STRATA aplicado (construcción,
+calibración y umbrales: RAM/PSA/GSO + intervención) · §4 Validación (métricas, validación sin fuga, contrastes).
+
+**Qué se conserva.** Las demostraciones ya escritas (recursión forward, teorema de estacionariedad GARCH,
+recursión de Adams–MacKay, teoría de los 6 contrastes, economía) se **reutilizan verbatim** y se re-secuencian.
+**Nuevo:** §1 (overview) y §3 (rigor de calibración/umbrales, hoy en esqueleto). La economía se reparte:
+leverage effect y volatility targeting → §3 (justifican RAM/GSO); Sharpe/Sortino/MaxDD/Calmar → §4.
+
+**Gates (sin atajos).** arquitecto-estructura → redactor-tesis → rigor-matematico/harvard-professor →
+experto-citas → estilo-raquel → detector-ia/detector-plagio → narrativa-coherencia → latex-experto.
+
+**Bibliografía nueva verificada:** sortino1994, sortino1991, young1991 (@misc, Calmar no peer-review),
+bai1998/bai2003, newey1987, chen2016 (XGBoost), lundberg2017 (SHAP).
+
+**Criterio de cierre.** 0 claims sin cita; rigor sin errores; estilo Raquel (sin guiones-muletilla ni AI-tells);
+detector-IA bajo umbral; LaTeX compila; estructura conforme a los 4 bloques.
+
+**Salida.** `tesis/chapters/03_marco_teorico.tex`. Rama `docs/cap-3-marco-teorico`.
