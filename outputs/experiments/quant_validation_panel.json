@@ -1,0 +1,1233 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ],
+    "oos_start": "2024-10-01",
+    "calibration_end": "2024-09-30",
+    "signal_lag": 1,
+    "embargo": 1,
+    "n0": 150,
+    "step": 21,
+    "n_seeds": 10,
+    "features": "ALL22",
+    "seed": 42,
+    "n_trials_dsr": 6,
+    "n_trials_haircut": 10,
+    "nota_n_trials": "n_trials_dsr=6 = configuraciones metodológicas exploradas por activo (eje intra-activo); n_trials_haircut=nº de activos del panel (eje de selección best-of-N, cross-activo). Ejes ortogonales.",
+    "borrow_bps": [
+      0,
+      100,
+      300,
+      500
+    ],
+    "ff_n_obs": 396,
+    "nota": "due-diligence de producción; M10 canónico walk-forward emb=1; cifras auditables",
+    "limite_duro": "M10 solo existe en OOS post-2024-10 → 2008/COVID no estresables en M10"
+  },
+  "por_activo": {
+    "SPY": {
+      "headline": {
+        "accuracy_m10": 0.494,
+        "accuracy_m5": 0.3665,
+        "accuracy_m8": 0.4422,
+        "accuracy_bh": 0.5657,
+        "sharpe_m10": -0.6041,
+        "sharpe_bh": 2.1953,
+        "equity_final": 0.9202,
+        "max_drawdown": -0.1609,
+        "n_eval": 251
+      },
+      "skill_vs_luck": {
+        "hac_tstat": -0.6246,
+        "hac_p": 0.5323,
+        "sharpe_lo": {
+          "sharpe": -0.6176,
+          "se": 1.0247,
+          "ci_low": -2.626,
+          "ci_high": 1.3908,
+          "eta": 1.0223,
+          "sharpe_period": -0.0381,
+          "se_period": 0.0631
+        },
+        "psr_dsr": {
+          "sr_daily": -0.0381,
+          "psr": 1.0,
+          "dsr": 0.0284,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.0284,
+            "12": 0.0116,
+            "24": 0.0049
+          }
+        },
+        "sign_test": {
+          "k": 124,
+          "n": 251,
+          "p_2colas": 0.8996,
+          "p_skill_1cola": 0.5996,
+          "ci95": [
+            0.4306,
+            0.5576
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.0074,
+        "mcnemar_vs_m8_p": 0.2907,
+        "mcnemar_vs_bh_p": 0.1329,
+        "dm_pnl_vs_m8": {
+          "stat": 1.2328,
+          "p": 0.2177
+        },
+        "block_perm_vs_bh_p": 0.0136
+      },
+      "risk": {
+        "var95_hist": 0.01275,
+        "cvar95_hist": 0.01869,
+        "var95_cf": 0.01322,
+        "cvar95_cf": 0.01918,
+        "sortino": -0.8234,
+        "calmar": -0.498,
+        "information_ratio_vs_bh": {
+          "ir": -1.8463,
+          "tracking_error": 0.1886,
+          "active_mean_ann": -0.3482
+        }
+      },
+      "econ": {
+        "turnover": 0.84,
+        "adv_usd": 40764785718.0,
+        "capacidad_1pct_adv_usd": 407647857.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": -0.6041,
+            "equity": 0.9202
+          },
+          "100": {
+            "sharpe": -0.6446,
+            "equity": 0.9155
+          },
+          "300": {
+            "sharpe": -0.7255,
+            "equity": 0.9062
+          },
+          "500": {
+            "sharpe": -0.8062,
+            "equity": 0.8971
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": -0.11595,
+        "t_alpha": -0.87449,
+        "betas": {
+          "Mkt-RF": -0.1696,
+          "SMB": 0.0914,
+          "HML": 0.0015,
+          "RMW": 0.0205,
+          "CMA": 0.0318,
+          "MOM": 0.055
+        },
+        "t_betas": {
+          "Mkt-RF": -1.0286,
+          "SMB": 0.7779,
+          "HML": 0.0133,
+          "RMW": 0.1955,
+          "CMA": 0.2401,
+          "MOM": 0.799
+        },
+        "r2": 0.02859,
+        "n_obs": 244.0
+      }
+    },
+    "NVDA": {
+      "headline": {
+        "accuracy_m10": 0.4788,
+        "accuracy_m5": 0.4672,
+        "accuracy_m8": 0.5212,
+        "accuracy_bh": 0.5521,
+        "sharpe_m10": 0.0424,
+        "sharpe_bh": 1.7995,
+        "equity_final": 0.9552,
+        "max_drawdown": -0.2324,
+        "n_eval": 259
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 0.0481,
+        "hac_p": 0.9617,
+        "sharpe_lo": {
+          "sharpe": 0.0599,
+          "se": 1.3926,
+          "ci_low": -2.6696,
+          "ci_high": 2.7894,
+          "eta": 1.4118,
+          "sharpe_period": 0.0027,
+          "se_period": 0.0621
+        },
+        "psr_dsr": {
+          "sr_daily": 0.0027,
+          "psr": 1.0,
+          "dsr": 0.1043,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.1043,
+            "12": 0.0524,
+            "24": 0.0264
+          }
+        },
+        "sign_test": {
+          "k": 124,
+          "n": 259,
+          "p_2colas": 0.5344,
+          "p_skill_1cola": 0.772,
+          "ci95": [
+            0.4165,
+            0.5415
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.8699,
+        "mcnemar_vs_m8_p": 0.3291,
+        "mcnemar_vs_bh_p": 0.062,
+        "dm_pnl_vs_m8": {
+          "stat": 0.255,
+          "p": 0.7987
+        },
+        "block_perm_vs_bh_p": 0.0319
+      },
+      "risk": {
+        "var95_hist": 0.03736,
+        "cvar95_hist": 0.04504,
+        "var95_cf": 0.03466,
+        "cvar95_cf": 0.04417,
+        "sortino": 0.0611,
+        "calmar": -0.1876,
+        "information_ratio_vs_bh": {
+          "ir": -1.5099,
+          "tracking_error": 0.3988,
+          "active_mean_ann": -0.6022
+        }
+      },
+      "econ": {
+        "turnover": 0.6279,
+        "adv_usd": 30622994896.0,
+        "capacidad_1pct_adv_usd": 306229949.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 0.0424,
+            "equity": 0.9552
+          },
+          "100": {
+            "sharpe": 0.0321,
+            "equity": 0.9517
+          },
+          "300": {
+            "sharpe": 0.0115,
+            "equity": 0.9448
+          },
+          "500": {
+            "sharpe": -0.0091,
+            "equity": 0.9379
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": -0.10778,
+        "t_alpha": -0.39901,
+        "betas": {
+          "Mkt-RF": 0.1861,
+          "SMB": 0.1328,
+          "HML": -0.2159,
+          "RMW": 0.0927,
+          "CMA": -1.2477,
+          "MOM": 0.1605
+        },
+        "t_betas": {
+          "Mkt-RF": 0.5414,
+          "SMB": 0.4426,
+          "HML": -0.7243,
+          "RMW": 0.3316,
+          "CMA": -2.8773,
+          "MOM": 0.9859
+        },
+        "r2": 0.16292,
+        "n_obs": 246.0
+      }
+    },
+    "BAC": {
+      "headline": {
+        "accuracy_m10": 0.4187,
+        "accuracy_m5": 0.4512,
+        "accuracy_m8": 0.5163,
+        "accuracy_bh": 0.561,
+        "sharpe_m10": -2.7273,
+        "sharpe_bh": 0.7401,
+        "equity_final": 0.558,
+        "max_drawdown": -0.4885,
+        "n_eval": 246
+      },
+      "skill_vs_luck": {
+        "hac_tstat": -2.9874,
+        "hac_p": 0.0028,
+        "sharpe_lo": {
+          "sharpe": -2.9129,
+          "se": 1.0889,
+          "ci_low": -5.0472,
+          "ci_high": -0.7786,
+          "eta": 1.068,
+          "sharpe_period": -0.1718,
+          "se_period": 0.0642
+        },
+        "psr_dsr": {
+          "sr_daily": -0.1718,
+          "psr": 1.0,
+          "dsr": 0.0,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.0,
+            "12": 0.0,
+            "24": 0.0
+          }
+        },
+        "sign_test": {
+          "k": 103,
+          "n": 246,
+          "p_2colas": 0.0127,
+          "p_skill_1cola": 0.9956,
+          "ci95": [
+            0.3563,
+            0.4831
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.5483,
+        "mcnemar_vs_m8_p": 0.0469,
+        "mcnemar_vs_bh_p": 0.0026,
+        "dm_pnl_vs_m8": {
+          "stat": 2.9616,
+          "p": 0.0031
+        },
+        "block_perm_vs_bh_p": 0.0
+      },
+      "risk": {
+        "var95_hist": 0.02702,
+        "cvar95_hist": 0.03341,
+        "var95_cf": 0.02448,
+        "cvar95_cf": 0.03251,
+        "sortino": -3.3531,
+        "calmar": -0.9211,
+        "information_ratio_vs_bh": {
+          "ir": -2.718,
+          "tracking_error": 0.2699,
+          "active_mean_ann": -0.7336
+        }
+      },
+      "econ": {
+        "turnover": 0.7184,
+        "adv_usd": 1657120437.0,
+        "capacidad_1pct_adv_usd": 16571204.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": -2.7273,
+            "equity": 0.558
+          },
+          "100": {
+            "sharpe": -2.7516,
+            "equity": 0.5551
+          },
+          "300": {
+            "sharpe": -2.8003,
+            "equity": 0.5496
+          },
+          "500": {
+            "sharpe": -2.8489,
+            "equity": 0.544
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": -0.53207,
+        "t_alpha": -2.73703,
+        "betas": {
+          "Mkt-RF": 0.0444,
+          "SMB": 0.0169,
+          "HML": 0.2666,
+          "RMW": -0.2368,
+          "CMA": -0.4289,
+          "MOM": -0.1776
+        },
+        "t_betas": {
+          "Mkt-RF": 0.1995,
+          "SMB": 0.0907,
+          "HML": 1.0092,
+          "RMW": -1.3461,
+          "CMA": -1.4885,
+          "MOM": -1.5995
+        },
+        "r2": 0.03292,
+        "n_obs": 239.0
+      }
+    },
+    "TSLA": {
+      "headline": {
+        "accuracy_m10": 0.5219,
+        "accuracy_m5": 0.4741,
+        "accuracy_m8": 0.4781,
+        "accuracy_bh": 0.5299,
+        "sharpe_m10": 1.218,
+        "sharpe_bh": 0.9299,
+        "equity_final": 1.5903,
+        "max_drawdown": -0.2142,
+        "n_eval": 251
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 1.2191,
+        "hac_p": 0.2228,
+        "sharpe_lo": {
+          "sharpe": 1.1965,
+          "se": 0.9858,
+          "ci_low": -0.7356,
+          "ci_high": 3.1286,
+          "eta": 0.9824,
+          "sharpe_period": 0.0767,
+          "se_period": 0.0632
+        },
+        "psr_dsr": {
+          "sr_daily": 0.0767,
+          "psr": 1.0,
+          "dsr": 0.4648,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.4648,
+            "12": 0.3233,
+            "24": 0.2182
+          }
+        },
+        "sign_test": {
+          "k": 131,
+          "n": 251,
+          "p_2colas": 0.528,
+          "p_skill_1cola": 0.264,
+          "ci95": [
+            0.4582,
+            0.5851
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.3193,
+        "mcnemar_vs_m8_p": 0.4063,
+        "mcnemar_vs_bh_p": 0.9296,
+        "dm_pnl_vs_m8": {
+          "stat": -1.226,
+          "p": 0.2202
+        },
+        "block_perm_vs_bh_p": 0.8865
+      },
+      "risk": {
+        "var95_hist": 0.04381,
+        "cvar95_hist": 0.05751,
+        "var95_cf": 0.04145,
+        "cvar95_cf": 0.05879,
+        "sortino": 1.9066,
+        "calmar": 2.7703,
+        "information_ratio_vs_bh": {
+          "ir": 0.1873,
+          "tracking_error": 0.7145,
+          "active_mean_ann": 0.1338
+        }
+      },
+      "econ": {
+        "turnover": 0.72,
+        "adv_usd": 28726759522.0,
+        "capacidad_1pct_adv_usd": 287267595.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 1.218,
+            "equity": 1.5903
+          },
+          "100": {
+            "sharpe": 1.2073,
+            "equity": 1.5823
+          },
+          "300": {
+            "sharpe": 1.1858,
+            "equity": 1.5665
+          },
+          "500": {
+            "sharpe": 1.1644,
+            "equity": 1.5507
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": 0.93558,
+        "t_alpha": 1.87438,
+        "betas": {
+          "Mkt-RF": -0.6547,
+          "SMB": 1.0118,
+          "HML": -0.5627,
+          "RMW": 0.4779,
+          "CMA": -0.3367,
+          "MOM": 0.0659
+        },
+        "t_betas": {
+          "Mkt-RF": -1.9367,
+          "SMB": 2.0904,
+          "HML": -1.5953,
+          "RMW": 1.1541,
+          "CMA": -0.5963,
+          "MOM": 0.2767
+        },
+        "r2": 0.03431,
+        "n_obs": 244.0
+      }
+    },
+    "XLE": {
+      "headline": {
+        "accuracy_m10": 0.5161,
+        "accuracy_m5": 0.4476,
+        "accuracy_m8": 0.5282,
+        "accuracy_bh": 0.5645,
+        "sharpe_m10": 0.3277,
+        "sharpe_bh": 2.0054,
+        "equity_final": 1.0463,
+        "max_drawdown": -0.1474,
+        "n_eval": 248
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 0.3437,
+        "hac_p": 0.7311,
+        "sharpe_lo": {
+          "sharpe": 0.3504,
+          "se": 1.0778,
+          "ci_low": -1.762,
+          "ci_high": 2.4628,
+          "eta": 1.0691,
+          "sharpe_period": 0.0206,
+          "se_period": 0.0635
+        },
+        "psr_dsr": {
+          "sr_daily": 0.0206,
+          "psr": 1.0,
+          "dsr": 0.1654,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.1654,
+            "12": 0.0908,
+            "24": 0.0495
+          }
+        },
+        "sign_test": {
+          "k": 128,
+          "n": 248,
+          "p_2colas": 0.6568,
+          "p_skill_1cola": 0.3284,
+          "ci95": [
+            0.452,
+            0.5798
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.1987,
+        "mcnemar_vs_m8_p": 0.8391,
+        "mcnemar_vs_bh_p": 0.2129,
+        "dm_pnl_vs_m8": {
+          "stat": 0.2968,
+          "p": 0.7666
+        },
+        "block_perm_vs_bh_p": 0.0207
+      },
+      "risk": {
+        "var95_hist": 0.02025,
+        "cvar95_hist": 0.02893,
+        "var95_cf": 0.02192,
+        "cvar95_cf": 0.02852,
+        "sortino": 0.4559,
+        "calmar": 0.3196,
+        "information_ratio_vs_bh": {
+          "ir": -1.588,
+          "tracking_error": 0.2136,
+          "active_mean_ann": -0.3392
+        }
+      },
+      "econ": {
+        "turnover": 0.664,
+        "adv_usd": 1376623075.0,
+        "capacidad_1pct_adv_usd": 13766231.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 0.3277,
+            "equity": 1.0463
+          },
+          "100": {
+            "sharpe": 0.3122,
+            "equity": 1.0431
+          },
+          "300": {
+            "sharpe": 0.2812,
+            "equity": 1.0366
+          },
+          "500": {
+            "sharpe": 0.2503,
+            "equity": 1.0302
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": 0.06644,
+        "t_alpha": 0.34112,
+        "betas": {
+          "Mkt-RF": 0.077,
+          "SMB": -0.0893,
+          "HML": 0.1293,
+          "RMW": -0.1133,
+          "CMA": -0.1713,
+          "MOM": -0.0744
+        },
+        "t_betas": {
+          "Mkt-RF": 0.4138,
+          "SMB": -0.4983,
+          "HML": 0.6948,
+          "RMW": -0.6134,
+          "CMA": -0.7676,
+          "MOM": -0.5728
+        },
+        "r2": 0.00794,
+        "n_obs": 241.0
+      }
+    },
+    "UNG": {
+      "headline": {
+        "accuracy_m10": 0.5182,
+        "accuracy_m5": 0.5101,
+        "accuracy_m8": 0.502,
+        "accuracy_bh": 0.4858,
+        "sharpe_m10": 0.1768,
+        "sharpe_bh": -0.7497,
+        "equity_final": 0.9253,
+        "max_drawdown": -0.5172,
+        "n_eval": 247
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 0.1733,
+        "hac_p": 0.8624,
+        "sharpe_lo": {
+          "sharpe": 0.1653,
+          "se": 0.9445,
+          "ci_low": -1.686,
+          "ci_high": 2.0165,
+          "eta": 0.9351,
+          "sharpe_period": 0.0111,
+          "se_period": 0.0636
+        },
+        "psr_dsr": {
+          "sr_daily": 0.0111,
+          "psr": 1.0,
+          "dsr": 0.1281,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.1281,
+            "12": 0.0664,
+            "24": 0.0343
+          }
+        },
+        "sign_test": {
+          "k": 128,
+          "n": 247,
+          "p_2colas": 0.6108,
+          "p_skill_1cola": 0.3054,
+          "ci95": [
+            0.454,
+            0.582
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.9226,
+        "mcnemar_vs_m8_p": 0.7545,
+        "mcnemar_vs_bh_p": 0.5541,
+        "dm_pnl_vs_m8": {
+          "stat": -0.1223,
+          "p": 0.9027
+        },
+        "block_perm_vs_bh_p": 0.3728
+      },
+      "risk": {
+        "var95_hist": 0.05477,
+        "cvar95_hist": 0.0806,
+        "var95_cf": 0.03541,
+        "cvar95_cf": 0.0855,
+        "sortino": 0.2781,
+        "calmar": -0.1472,
+        "information_ratio_vs_bh": {
+          "ir": 0.6142,
+          "tracking_error": 0.9485,
+          "active_mean_ann": 0.5826
+        }
+      },
+      "econ": {
+        "turnover": 0.7886,
+        "adv_usd": 126320074.0,
+        "capacidad_1pct_adv_usd": 1263201.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 0.1768,
+            "equity": 0.9253
+          },
+          "100": {
+            "sharpe": 0.1678,
+            "equity": 0.9202
+          },
+          "300": {
+            "sharpe": 0.1499,
+            "equity": 0.9102
+          },
+          "500": {
+            "sharpe": 0.132,
+            "equity": 0.9002
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": 0.07942,
+        "t_alpha": 0.12509,
+        "betas": {
+          "Mkt-RF": 0.2896,
+          "SMB": 0.4172,
+          "HML": -0.8042,
+          "RMW": 0.7324,
+          "CMA": 1.2795,
+          "MOM": 0.8005
+        },
+        "t_betas": {
+          "Mkt-RF": 0.4831,
+          "SMB": 0.6088,
+          "HML": -1.9137,
+          "RMW": 1.3507,
+          "CMA": 1.9241,
+          "MOM": 2.4453
+        },
+        "r2": 0.03748,
+        "n_obs": 240.0
+      }
+    },
+    "MSTR": {
+      "headline": {
+        "accuracy_m10": 0.5339,
+        "accuracy_m5": 0.5538,
+        "accuracy_m8": 0.5578,
+        "accuracy_bh": 0.4502,
+        "sharpe_m10": -0.1433,
+        "sharpe_bh": -1.1585,
+        "equity_final": 0.7182,
+        "max_drawdown": -0.4925,
+        "n_eval": 251
+      },
+      "skill_vs_luck": {
+        "hac_tstat": -0.1816,
+        "hac_p": 0.8559,
+        "sharpe_lo": {
+          "sharpe": -0.2339,
+          "se": 1.6362,
+          "ci_low": -3.4408,
+          "ci_high": 2.9729,
+          "eta": 1.6329,
+          "sharpe_period": -0.009,
+          "se_period": 0.0631
+        },
+        "psr_dsr": {
+          "sr_daily": -0.009,
+          "psr": 1.0,
+          "dsr": 0.0747,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.0747,
+            "12": 0.0355,
+            "24": 0.017
+          }
+        },
+        "sign_test": {
+          "k": 134,
+          "n": 251,
+          "p_2colas": 0.3125,
+          "p_skill_1cola": 0.1563,
+          "ci95": [
+            0.4701,
+            0.5968
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.7325,
+        "mcnemar_vs_m8_p": 0.6704,
+        "mcnemar_vs_bh_p": 0.0599,
+        "dm_pnl_vs_m8": {
+          "stat": 0.2735,
+          "p": 0.7845
+        },
+        "block_perm_vs_bh_p": 0.0666
+      },
+      "risk": {
+        "var95_hist": 0.06648,
+        "cvar95_hist": 0.09222,
+        "var95_cf": 0.06553,
+        "cvar95_cf": 0.10634,
+        "sortino": -0.202,
+        "calmar": -0.574,
+        "information_ratio_vs_bh": {
+          "ir": 0.8825,
+          "tracking_error": 0.7861,
+          "active_mean_ann": 0.6937
+        }
+      },
+      "econ": {
+        "turnover": 0.6,
+        "adv_usd": 4107027749.0,
+        "capacidad_1pct_adv_usd": 41070277.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": -0.1433,
+            "equity": 0.7182
+          },
+          "100": {
+            "sharpe": -0.1498,
+            "equity": 0.715
+          },
+          "300": {
+            "sharpe": -0.1628,
+            "equity": 0.7087
+          },
+          "500": {
+            "sharpe": -0.1758,
+            "equity": 0.7024
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": -0.17429,
+        "t_alpha": -0.32602,
+        "betas": {
+          "Mkt-RF": 0.9441,
+          "SMB": -0.968,
+          "HML": 1.1825,
+          "RMW": -1.6692,
+          "CMA": 0.3448,
+          "MOM": -0.0189
+        },
+        "t_betas": {
+          "Mkt-RF": 1.9483,
+          "SMB": -1.5324,
+          "HML": 2.1977,
+          "RMW": -2.1522,
+          "CMA": 0.4692,
+          "MOM": -0.0566
+        },
+        "r2": 0.07358,
+        "n_obs": 244.0
+      }
+    },
+    "SMCI": {
+      "headline": {
+        "accuracy_m10": 0.552,
+        "accuracy_m5": 0.484,
+        "accuracy_m8": 0.496,
+        "accuracy_bh": 0.484,
+        "sharpe_m10": 1.8362,
+        "sharpe_bh": 0.0339,
+        "equity_final": 3.2375,
+        "max_drawdown": -0.3427,
+        "n_eval": 250
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 2.0853,
+        "hac_p": 0.037,
+        "sharpe_lo": {
+          "sharpe": 2.0095,
+          "se": 1.1024,
+          "ci_low": -0.1512,
+          "ci_high": 4.1701,
+          "eta": 1.0943,
+          "sharpe_period": 0.1157,
+          "se_period": 0.0635
+        },
+        "psr_dsr": {
+          "sr_daily": 0.1157,
+          "psr": 1.0,
+          "dsr": 0.7155,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.7155,
+            "12": 0.5691,
+            "24": 0.4335
+          }
+        },
+        "sign_test": {
+          "k": 138,
+          "n": 250,
+          "p_2colas": 0.1137,
+          "p_skill_1cola": 0.0568,
+          "ci95": [
+            0.4881,
+            0.6147
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.1621,
+        "mcnemar_vs_m8_p": 0.243,
+        "mcnemar_vs_bh_p": 0.1391,
+        "dm_pnl_vs_m8": {
+          "stat": -1.8292,
+          "p": 0.0674
+        },
+        "block_perm_vs_bh_p": 0.0472
+      },
+      "risk": {
+        "var95_hist": 0.05815,
+        "cvar95_hist": 0.09862,
+        "var95_cf": 0.03342,
+        "cvar95_cf": 0.11923,
+        "sortino": 3.2271,
+        "calmar": 6.6181,
+        "information_ratio_vs_bh": {
+          "ir": 1.1802,
+          "tracking_error": 1.2521,
+          "active_mean_ann": 1.4778
+        }
+      },
+      "econ": {
+        "turnover": 0.6104,
+        "adv_usd": 1314874941.0,
+        "capacidad_1pct_adv_usd": 13148749.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 1.8362,
+            "equity": 3.2375
+          },
+          "100": {
+            "sharpe": 1.8306,
+            "equity": 3.2227
+          },
+          "300": {
+            "sharpe": 1.8193,
+            "equity": 3.1932
+          },
+          "500": {
+            "sharpe": 1.808,
+            "equity": 3.1641
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": 2.08167,
+        "t_alpha": 2.4693,
+        "betas": {
+          "Mkt-RF": -2.0501,
+          "SMB": 0.1282,
+          "HML": -1.0451,
+          "RMW": -0.1819,
+          "CMA": -0.0908,
+          "MOM": -0.0315
+        },
+        "t_betas": {
+          "Mkt-RF": -3.8992,
+          "SMB": 0.2102,
+          "HML": -1.6393,
+          "RMW": -0.3038,
+          "CMA": -0.0966,
+          "MOM": -0.0619
+        },
+        "r2": 0.08059,
+        "n_obs": 243.0
+      }
+    },
+    "ROKU": {
+      "headline": {
+        "accuracy_m10": 0.508,
+        "accuracy_m5": 0.444,
+        "accuracy_m8": 0.528,
+        "accuracy_bh": 0.548,
+        "sharpe_m10": 0.1497,
+        "sharpe_bh": 1.618,
+        "equity_final": 0.968,
+        "max_drawdown": -0.34,
+        "n_eval": 250
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 0.1603,
+        "hac_p": 0.8726,
+        "sharpe_lo": {
+          "sharpe": 0.17,
+          "se": 1.1397,
+          "ci_low": -2.0638,
+          "ci_high": 2.4037,
+          "eta": 1.1351,
+          "sharpe_period": 0.0094,
+          "se_period": 0.0632
+        },
+        "psr_dsr": {
+          "sr_daily": 0.0094,
+          "psr": 1.0,
+          "dsr": 0.124,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.124,
+            "12": 0.0641,
+            "24": 0.0331
+          }
+        },
+        "sign_test": {
+          "k": 127,
+          "n": 250,
+          "p_2colas": 0.8496,
+          "p_skill_1cola": 0.4248,
+          "ci95": [
+            0.4443,
+            0.5716
+          ]
+        },
+        "mcnemar_vs_m5_p": 0.1814,
+        "mcnemar_vs_m8_p": 0.6963,
+        "mcnemar_vs_bh_p": 0.4113,
+        "dm_pnl_vs_m8": {
+          "stat": -0.0307,
+          "p": 0.9755
+        },
+        "block_perm_vs_bh_p": 0.3521
+      },
+      "risk": {
+        "var95_hist": 0.04253,
+        "cvar95_hist": 0.05766,
+        "var95_cf": 0.03805,
+        "cvar95_cf": 0.05994,
+        "sortino": 0.2246,
+        "calmar": -0.0948,
+        "information_ratio_vs_bh": {
+          "ir": -0.9968,
+          "tracking_error": 0.6874,
+          "active_mean_ann": -0.6852
+        }
+      },
+      "econ": {
+        "turnover": 0.7791,
+        "adv_usd": 267060860.0,
+        "capacidad_1pct_adv_usd": 2670609.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 0.1497,
+            "equity": 0.968
+          },
+          "100": {
+            "sharpe": 0.1391,
+            "equity": 0.9634
+          },
+          "300": {
+            "sharpe": 0.1178,
+            "equity": 0.9542
+          },
+          "500": {
+            "sharpe": 0.0966,
+            "equity": 0.9452
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": 0.09214,
+        "t_alpha": 0.20051,
+        "betas": {
+          "Mkt-RF": -0.291,
+          "SMB": 0.1139,
+          "HML": 0.0757,
+          "RMW": -0.2215,
+          "CMA": -0.0667,
+          "MOM": 0.2056
+        },
+        "t_betas": {
+          "Mkt-RF": -0.7263,
+          "SMB": 0.3061,
+          "HML": 0.1632,
+          "RMW": -0.5916,
+          "CMA": -0.1206,
+          "MOM": 0.991
+        },
+        "r2": 0.01037,
+        "n_obs": 243.0
+      }
+    },
+    "MARA": {
+      "headline": {
+        "accuracy_m10": 0.5323,
+        "accuracy_m5": 0.5282,
+        "accuracy_m8": 0.5282,
+        "accuracy_bh": 0.4677,
+        "sharpe_m10": 1.3543,
+        "sharpe_bh": -0.264,
+        "equity_final": 2.0929,
+        "max_drawdown": -0.4856,
+        "n_eval": 248
+      },
+      "skill_vs_luck": {
+        "hac_tstat": 1.3645,
+        "hac_p": 0.1724,
+        "sharpe_lo": {
+          "sharpe": 1.4391,
+          "se": 1.0731,
+          "ci_low": -0.6641,
+          "ci_high": 3.5424,
+          "eta": 1.0626,
+          "sharpe_period": 0.0853,
+          "se_period": 0.0636
+        },
+        "psr_dsr": {
+          "sr_daily": 0.0853,
+          "psr": 1.0,
+          "dsr": 0.5161,
+          "n_trials": 6,
+          "dsr_sensibilidad": {
+            "6": 0.5161,
+            "12": 0.3738,
+            "24": 0.2629
+          }
+        },
+        "sign_test": {
+          "k": 132,
+          "n": 248,
+          "p_2colas": 0.3409,
+          "p_skill_1cola": 0.1704,
+          "ci95": [
+            0.4681,
+            0.5957
+          ]
+        },
+        "mcnemar_vs_m5_p": 1.0,
+        "mcnemar_vs_m8_p": 1.0,
+        "mcnemar_vs_bh_p": 0.1883,
+        "dm_pnl_vs_m8": {
+          "stat": -1.2608,
+          "p": 0.2074
+        },
+        "block_perm_vs_bh_p": 0.3876
+      },
+      "risk": {
+        "var95_hist": 0.07019,
+        "cvar95_hist": 0.10477,
+        "var95_cf": 0.07571,
+        "cvar95_cf": 0.11294,
+        "sortino": 2.0375,
+        "calmar": 2.3024,
+        "information_ratio_vs_bh": {
+          "ir": 1.337,
+          "tracking_error": 0.9435,
+          "active_mean_ann": 1.2615
+        }
+      },
+      "econ": {
+        "turnover": 0.7368,
+        "adv_usd": 600175053.0,
+        "capacidad_1pct_adv_usd": 6001751.0,
+        "borrow_scenarios": {
+          "0": {
+            "sharpe": 1.3543,
+            "equity": 2.0929
+          },
+          "100": {
+            "sharpe": 1.3476,
+            "equity": 2.0823
+          },
+          "300": {
+            "sharpe": 1.3343,
+            "equity": 2.0611
+          },
+          "500": {
+            "sharpe": 1.321,
+            "equity": 2.0402
+          }
+        }
+      },
+      "factor_attribution": {
+        "alpha_ann": 1.22704,
+        "t_alpha": 1.45856,
+        "betas": {
+          "Mkt-RF": -0.3645,
+          "SMB": 0.2067,
+          "HML": 0.1215,
+          "RMW": -1.7809,
+          "CMA": 0.114,
+          "MOM": 0.0811
+        },
+        "t_betas": {
+          "Mkt-RF": -0.6326,
+          "SMB": 0.3096,
+          "HML": 0.2051,
+          "RMW": -2.1724,
+          "CMA": 0.1092,
+          "MOM": 0.1906
+        },
+        "r2": 0.04551,
+        "n_obs": 241.0
+      }
+    }
+  },
+  "multiplicity_panel": {
+    "n_tickers": 10,
+    "metodo_fdr": "p binomial de una cola (accuracy > 0.5) por activo; FDR a alpha=0.10",
+    "fdr_bh": {
+      "n_rejected": 0,
+      "threshold": 0.0
+    },
+    "fdr_by": {
+      "n_rejected": 0,
+      "threshold": 0.0
+    },
+    "haircut_sharpe_mejor_activo": {
+      "ticker": "SMCI",
+      "sr_obs": 1.8362,
+      "sr_haircut_bonferroni": 0.4221,
+      "sr_haircut_bhy": 0.0,
+      "haircut_pct": 1.0,
+      "nota": "n_trials=10 (best-of-panel); Holm≡Bonferroni en rango 1"
+    },
+    "alpha_mejor_activo": {
+      "ticker": "SMCI",
+      "alpha_ann": 2.08167,
+      "t_alpha": 2.4693,
+      "p2_nominal": 0.0135,
+      "p2_bonferroni_panel": 0.1354
+    },
+    "pbo_cscv": {
+      "pbo": 0.3806,
+      "n_combinations": 12870,
+      "n_configs": 10,
+      "slope_degradation": -0.5773,
+      "prob_oos_loss": 0.3
+    },
+    "min_btl_years": 2.48,
+    "white_reality_check_vs_cash": {
+      "best": "SMCI",
+      "V": 0.1026,
+      "p_value": 0.024,
+      "nota": "benchmark laxo = cash; mide rentabilidad, no habilidad"
+    },
+    "white_reality_check_vs_bh": {
+      "best": "SMCI",
+      "V": 0.1157,
+      "p_value": 0.069,
+      "nota": "benchmark exigente = B&H del propio activo (exceso M10−B&H)"
+    },
+    "hansen_spa_vs_cash": {
+      "t_spa": 2.2684,
+      "p_consistent": 0.094
+    },
+    "hansen_spa_vs_bh": {
+      "t_spa": 1.9474,
+      "p_consistent": 0.1685
+    }
+  },
+  "verdict": {
+    "n_tickers_sig_raw": 1,
+    "n_tickers_survive_fdr_bh": 0,
+    "pbo": 0.3806,
+    "reality_check_vs_cash_p": 0.024,
+    "reality_check_vs_bh_p": 0.069,
+    "go_no_go": "NO-GO (condicional)",
+    "comentario": "El cuello de botella NO es el coste de préstamo: M10 no está permanentemente corto como M5, así que el borrow apenas mueve el Sharpe (p. ej. SMCI 1,84→1,81 a 500 pb). El bloqueo es la multiplicidad y el tamaño muestral: ningún activo sobrevive al FDR de habilidad direccional del panel, el Sharpe del mejor activo se recorta ~100% por Harvey-Liu-Zhu (best-of-10) y la PBO es 0,38. SMCI muestra señales nominalmente fuertes (alpha factorial t≈2,5; block-perm vs B&H p=0,047) y White RC rechaza (p=0,024), pero ese contraste es vs cash (benchmark laxo) y mide rentabilidad, no habilidad direccional. Veredicto honesto: prometedor en el activo-caso, NO apto para producción con evidencia de panel controlada por multiplicidad (~250 d). Falsable: cambiaría con muestra más larga (MinBTL≈2,5 años), forward test y borrow calibrado por activo difícil de tomar prestado."
+  }
+}
