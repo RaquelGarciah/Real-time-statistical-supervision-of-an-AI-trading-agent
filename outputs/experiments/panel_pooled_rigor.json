@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ],
+    "fuente": "_archivo_proyecto_anterior/outputs_canonicos/decision_level",
+    "ventana": "OOS completo (M8 es regla fija, sin burn-in)",
+    "N_ticker_dias": 4003,
+    "n_fechas": 402,
+    "n_perm": 100000,
+    "seed": 42
+  },
+  "pooled": {
+    "acc_m5": 0.4739,
+    "acc_m8": 0.4949,
+    "delta_acc": 0.021,
+    "b_rompe": 657,
+    "c_arregla": 741,
+    "discordantes": 1398,
+    "nivel1_mcnemar_pooled_p2": 0.02639,
+    "nivel1_p1_mejora": 0.0132,
+    "nivel2_fisher_stat": 30.048,
+    "nivel2_fisher_p": 0.06908,
+    "nivel3_cluster_fecha_Tobs": 84.0,
+    "nivel3_cluster_fecha_p2": 0.06974,
+    "nivel3_cluster_fecha_p1_direccional": 0.03576
+  },
+  "leave_one_out_cluster_p2": {
+    "SPY": 0.1296,
+    "NVDA": 0.1049,
+    "BAC": 0.1153,
+    "TSLA": 0.0641,
+    "XLE": 0.2814,
+    "UNG": 0.0635,
+    "MSTR": 0.0739,
+    "SMCI": 0.0085,
+    "ROKU": 0.0694,
+    "MARA": 0.0707
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 402,
+      "acc_m5": 0.3831,
+      "acc_m8": 0.4328,
+      "b_rompe": 52,
+      "c_arregla": 72,
+      "mcnemar_p2": 0.0876,
+      "mcnemar_p1_mejora": 0.0438
+    },
+    "NVDA": {
+      "n": 402,
+      "acc_m5": 0.4652,
+      "acc_m8": 0.5124,
+      "b_rompe": 123,
+      "c_arregla": 142,
+      "mcnemar_p2": 0.2688,
+      "mcnemar_p1_mejora": 0.1344
+    },
+    "BAC": {
+      "n": 397,
+      "acc_m5": 0.4383,
+      "acc_m8": 0.4811,
+      "b_rompe": 87,
+      "c_arregla": 104,
+      "mcnemar_p2": 0.2469,
+      "mcnemar_p1_mejora": 0.1235
+    },
+    "TSLA": {
+      "n": 402,
+      "acc_m5": 0.4975,
+      "acc_m8": 0.5174,
+      "b_rompe": 108,
+      "c_arregla": 116,
+      "mcnemar_p2": 0.6401,
+      "mcnemar_p1_mejora": 0.32
+    },
+    "XLE": {
+      "n": 399,
+      "acc_m5": 0.4386,
+      "acc_m8": 0.5338,
+      "b_rompe": 114,
+      "c_arregla": 152,
+      "mcnemar_p2": 0.0231,
+      "mcnemar_p1_mejora": 0.0116
+    },
+    "UNG": {
+      "n": 398,
+      "acc_m5": 0.4925,
+      "acc_m8": 0.4874,
+      "b_rompe": 2,
+      "c_arregla": 0,
+      "mcnemar_p2": 0.5,
+      "mcnemar_p1_mejora": 1.0
+    },
+    "MSTR": {
+      "n": 402,
+      "acc_m5": 0.5274,
+      "acc_m8": 0.5299,
+      "b_rompe": 0,
+      "c_arregla": 1,
+      "mcnemar_p2": 1.0,
+      "mcnemar_p1_mejora": 0.5
+    },
+    "SMCI": {
+      "n": 401,
+      "acc_m5": 0.5087,
+      "acc_m8": 0.4613,
+      "b_rompe": 148,
+      "c_arregla": 129,
+      "mcnemar_p2": 0.2794,
+      "mcnemar_p1_mejora": 0.8853
+    },
+    "ROKU": {
+      "n": 401,
+      "acc_m5": 0.4638,
+      "acc_m8": 0.4663,
+      "b_rompe": 15,
+      "c_arregla": 16,
+      "mcnemar_p2": 1.0,
+      "mcnemar_p1_mejora": 0.5
+    },
+    "MARA": {
+      "n": 399,
+      "acc_m5": 0.5238,
+      "acc_m8": 0.5263,
+      "b_rompe": 8,
+      "c_arregla": 9,
+      "mcnemar_p2": 1.0,
+      "mcnemar_p1_mejora": 0.5
+    }
+  }
+}
