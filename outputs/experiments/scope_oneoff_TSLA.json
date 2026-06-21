@@ -1,0 +1,72 @@
+{
+  "ticker": "TSLA",
+  "n_eval": 251,
+  "naturaleza": {
+    "leverage_corr": -0.0212,
+    "crisis_mean": 0.003993,
+    "oos_crisis_frac": 0.1155,
+    "agent_short_frac": 0.996,
+    "oos_vol_media": 0.5311
+  },
+  "canal_regimen": {
+    "regime_dir_acc": 0.4861,
+    "acc_m5": 0.4741,
+    "acc_m8": 0.4781,
+    "strata_valor_m8_m5": 0.004
+  },
+  "canal_m10": {
+    "acc_m10": 0.5219,
+    "sharpe_m10": 1.218,
+    "max_drawdown": -0.2142,
+    "skill_p_1cola": 0.264,
+    "hac_t": 1.2191,
+    "hac_p": 0.2228,
+    "mcnemar_vs_m5_p": 0.3193
+  },
+  "estrategias": {
+    "M5 (agente)": {
+      "accuracy": 0.4741,
+      "sharpe": -0.6584,
+      "equity": 0.6553,
+      "max_dd": -0.4062
+    },
+    "M8 (STRATA)": {
+      "accuracy": 0.4781,
+      "sharpe": -0.3689,
+      "equity": 0.7517,
+      "max_dd": -0.4383
+    },
+    "M10 (meta-learner)": {
+      "accuracy": 0.5219,
+      "sharpe": 1.218,
+      "equity": 1.5903,
+      "max_dd": -0.2142
+    },
+    "Régimen (RAM crudo)": {
+      "accuracy": 0.4861,
+      "sharpe": 0.3902,
+      "equity": 1.0769,
+      "max_dd": -0.4967
+    },
+    "B&H (siempre largo)": {
+      "accuracy": 0.5299,
+      "sharpe": 0.8362,
+      "equity": 1.326,
+      "max_dd": -0.3174
+    },
+    "S&H (siempre corto)": {
+      "accuracy": 0.4701,
+      "sharpe": -0.8366,
+      "equity": 0.6024,
+      "max_dd": -0.4541
+    },
+    "Mayoría (ZeroR/NIR)": {
+      "accuracy": 0.5299,
+      "sharpe": 0.8362,
+      "equity": 1.326,
+      "max_dd": -0.3174
+    }
+  },
+  "frac_up": 0.5299,
+  "lectura_canal_regimen": "NO confirma (régimen no direccional o STRATA no aporta)"
+}

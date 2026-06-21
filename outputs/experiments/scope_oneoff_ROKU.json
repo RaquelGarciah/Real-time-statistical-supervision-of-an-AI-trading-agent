@@ -1,0 +1,72 @@
+{
+  "ticker": "ROKU",
+  "n_eval": 250,
+  "naturaleza": {
+    "leverage_corr": 0.0028,
+    "crisis_mean": 0.003179,
+    "oos_crisis_frac": 0.004,
+    "agent_short_frac": 0.968,
+    "oos_vol_media": 0.6184
+  },
+  "canal_regimen": {
+    "regime_dir_acc": 0.468,
+    "acc_m5": 0.444,
+    "acc_m8": 0.528,
+    "strata_valor_m8_m5": 0.084
+  },
+  "canal_m10": {
+    "acc_m10": 0.508,
+    "sharpe_m10": 0.1497,
+    "max_drawdown": -0.34,
+    "skill_p_1cola": 0.4248,
+    "hac_t": 0.1603,
+    "hac_p": 0.8726,
+    "mcnemar_vs_m5_p": 0.1814
+  },
+  "estrategias": {
+    "M5 (agente)": {
+      "accuracy": 0.444,
+      "sharpe": -1.5652,
+      "equity": 0.4511,
+      "max_dd": -0.5489
+    },
+    "M8 (STRATA)": {
+      "accuracy": 0.528,
+      "sharpe": 0.4396,
+      "equity": 1.0994,
+      "max_dd": -0.4163
+    },
+    "M10 (meta-learner)": {
+      "accuracy": 0.508,
+      "sharpe": 0.1497,
+      "equity": 0.968,
+      "max_dd": -0.34
+    },
+    "Régimen (RAM crudo)": {
+      "accuracy": 0.468,
+      "sharpe": -0.4229,
+      "equity": 0.7488,
+      "max_dd": -0.3807
+    },
+    "B&H (siempre largo)": {
+      "accuracy": 0.548,
+      "sharpe": 1.402,
+      "equity": 1.6884,
+      "max_dd": -0.2845
+    },
+    "S&H (siempre corto)": {
+      "accuracy": 0.452,
+      "sharpe": -1.4024,
+      "equity": 0.4838,
+      "max_dd": -0.5216
+    },
+    "Mayoría (ZeroR/NIR)": {
+      "accuracy": 0.548,
+      "sharpe": 1.402,
+      "equity": 1.6884,
+      "max_dd": -0.2845
+    }
+  },
+  "frac_up": 0.548,
+  "lectura_canal_regimen": "NO confirma (régimen no direccional o STRATA no aporta)"
+}

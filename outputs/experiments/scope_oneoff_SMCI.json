@@ -1,0 +1,72 @@
+{
+  "ticker": "SMCI",
+  "n_eval": 250,
+  "naturaleza": {
+    "leverage_corr": -0.0042,
+    "crisis_mean": 0.001613,
+    "oos_crisis_frac": 0.524,
+    "agent_short_frac": 0.952,
+    "oos_vol_media": 0.7737
+  },
+  "canal_regimen": {
+    "regime_dir_acc": 0.472,
+    "acc_m5": 0.484,
+    "acc_m8": 0.496,
+    "strata_valor_m8_m5": 0.012
+  },
+  "canal_m10": {
+    "acc_m10": 0.552,
+    "sharpe_m10": 1.8362,
+    "max_drawdown": -0.3427,
+    "skill_p_1cola": 0.0568,
+    "hac_t": 2.0853,
+    "hac_p": 0.037,
+    "mcnemar_vs_m5_p": 0.1621
+  },
+  "estrategias": {
+    "M5 (agente)": {
+      "accuracy": 0.484,
+      "sharpe": -0.2012,
+      "equity": 0.618,
+      "max_dd": -0.5386
+    },
+    "M8 (STRATA)": {
+      "accuracy": 0.496,
+      "sharpe": 0.1719,
+      "equity": 0.8366,
+      "max_dd": -0.4884
+    },
+    "M10 (meta-learner)": {
+      "accuracy": 0.552,
+      "sharpe": 1.8362,
+      "equity": 3.2375,
+      "max_dd": -0.3427
+    },
+    "Régimen (RAM crudo)": {
+      "accuracy": 0.472,
+      "sharpe": -0.398,
+      "equity": 0.4998,
+      "max_dd": -0.8189
+    },
+    "B&H (siempre largo)": {
+      "accuracy": 0.484,
+      "sharpe": 0.0383,
+      "equity": 0.715,
+      "max_dd": -0.741
+    },
+    "S&H (siempre corto)": {
+      "accuracy": 0.516,
+      "sharpe": -0.0386,
+      "equity": 0.6998,
+      "max_dd": -0.5084
+    },
+    "Mayoría (ZeroR/NIR)": {
+      "accuracy": 0.516,
+      "sharpe": -0.0386,
+      "equity": 0.6998,
+      "max_dd": -0.5084
+    }
+  },
+  "frac_up": 0.484,
+  "lectura_canal_regimen": "NO confirma (régimen no direccional o STRATA no aporta)"
+}
