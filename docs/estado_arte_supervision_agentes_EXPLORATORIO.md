@@ -180,11 +180,13 @@ Referencias que **faltaban** y que el redactor debería incorporar al estado del
 están en `bibliography.bib` se marcan; las nuevas requieren verificación de `@experto-citas`.
 
 **Prioridad alta:**
-- **Li et al. (2026), *Behavioral Consistency Validation for LLM Agents* (arXiv:2602.07023).** El
-  trabajo más cercano a la motivación del **PSA**: valida si los agentes LLM cambian de estilo de
-  forma coherente con la teoría financiera. Diferencia con STRATA: Li et al. validan *ex-post* por
-  simulación; STRATA lo detecta en tiempo real y *actúa*. **Cita casi obligatoria** (un tribunal
-  podría usarla para preguntar qué añade STRATA). NUEVA — verificar.
+- **Li, Z. et al. (2026), *Behavioral Consistency Validation for LLM Agents: An Analysis of
+  Trading-Style Switching through Stock-Market Simulation* (arXiv:2602.07023).** El trabajo más
+  cercano a la motivación del **PSA**: valida si los agentes LLM cambian de estilo de forma
+  coherente con drivers de finanzas conductuales (aversión a pérdidas, herding) en simulación del
+  S&P 500. Diferencia con STRATA: Li et al. validan *ex-post* por simulación; STRATA lo detecta en
+  tiempo real y *actúa*. **Cita casi obligatoria** (un tribunal podría usarla para preguntar qué
+  añade STRATA). ✓ VERIFICADA — ya en `bibliography.bib` como `li2026behavioral`.
 - **Yan et al. (2025), *TradeTrap* (arXiv:2512.02261, ya en `.bib` como `yan2025tradetrap`).** Los
   agentes LLM de trading son manipulables y fallan sistemáticamente → refuerza la premisa de que
   hace falta supervisión exógena. Solo mencionarlo en el texto.
@@ -196,7 +198,8 @@ están en `bibliography.bib` se marcan; las nuevas requieren verificación de `@
 - **Nelson (1991), EGARCH** y **Glosten, Jagannathan & Runkle (1993), GJR-GARCH.** Si se motiva el
   GSO con el leverage effect, el tribunal preguntará por qué GARCH(1,1) simétrico y no asimétrico.
   Citarlas como alternativas consideradas y descartadas (parsimonia, estabilidad en ventanas
-  largas, suficiencia para señal de sizing). NUEVAS — verificar.
+  largas, suficiencia para señal de sizing). ✓ VERIFICADAS — ya en `bibliography.bib` como
+  `nelson1991` y `glosten1993`.
 - **Guidolin & Timmermann (2007) (ya en `.bib`).** Referencia canónica de régimen/HMM en
   asignación de activos; citarla junto a Hamilton (1989) para anclar el **RAM** en literatura
   financiera, no solo de NLP.
@@ -385,10 +388,11 @@ IDs de §6, matizada Atlantic Council como opinión.
   y §7.
 - Literatura ausente prioritaria añadida en §6.bis (Li et al. 2026, meta-labeling, EGARCH/GJR).
 
-**Pendiente antes de pasar al `.bib`:**
-- Verificar con `@experto-citas` las referencias NUEVAS de §6.bis: Li et al. (arXiv:2602.07023),
-  Nelson (1991) EGARCH, Glosten-Jagannathan-Runkle (1993) GJR-GARCH.
-- Confirmar que ninguna clave BibTeX nueva colisiona con las existentes al insertarla.
+**Referencias NUEVAS de §6.bis ya verificadas y añadidas a `bibliography.bib`** (jun-2026):
+`li2026behavioral`, `nelson1991`, `glosten1993`. Sin colisión de claves.
+
+**Pendiente antes de pasar al `.bib` las de LinkedIn/agentes (§8.3):** insertar las entradas
+verificadas de §8.3 cuando el redactor decida usarlas (las académicas de §6.bis ya están dentro).
 
 **Recordatorio de uso:** los ítems **[extracto]** y toda cita de LinkedIn valen solo como
 evidencia de *discurso de industria* (intro/estado del arte), nunca como afirmación técnica.
