@@ -13,9 +13,20 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import signal
 import sys
 import time
 from pathlib import Path
+
+DECISION_TIMEOUT = 240  # s; una decisión normal tarda ~10-80s. Más allá = llamada de red colgada.
+
+
+class _Timeout(Exception):
+    pass
+
+
+def _alarm(_signum, _frame):
+    raise _Timeout()
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -68,7 +79,12 @@ def generate(ticker: str, dates: list[str]) -> tuple[int, int, int]:
             continue
         try:
             t0 = time.time()
-            out = run_agent(ticker, d)
+            signal.signal(signal.SIGALRM, _alarm)
+            signal.alarm(DECISION_TIMEOUT)  # corta llamadas de red colgadas
+            try:
+                out = run_agent(ticker, d)
+            finally:
+                signal.alarm(0)
             if _looks_like_failure(out):
                 errores += 1
                 print(f"  {ticker} {d} FALLO-LLM (todo hold/conf0) → no se cachea, se reintenta", flush=True)
