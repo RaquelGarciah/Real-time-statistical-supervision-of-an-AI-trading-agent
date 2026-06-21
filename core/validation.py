@@ -591,6 +591,49 @@ def factor_attribution(returns, factors: pd.DataFrame, freq: int = ANN,
 # 5 · Coste de préstamo en corto
 # ============================================================================
 
+def panel_pooled_test(delta, dates, n_boot: int = 2000, block_dates: int | None = None,
+                      seed: int = SEED, alpha: float = 0.05) -> dict:
+    """Test pooled de panel de la media de una diferencia pareada, clusterizado por FECHA.
+
+    ``delta``: diferencias pareadas A−B, una por (activo, día) — p. ej. acierto_A−acierto_B o
+    P&L_A−P&L_B. ``dates``: la fecha de cada fila. Remuestrea **fechas** en bloques circulares
+    (longitud media ``sqrt(nº fechas)``) llevando TODAS las filas de cada fecha elegida: respeta
+    a la vez la autocorrelación serial (bloques) y la correlación transversal entre activos
+    (todos los activos del día van juntos). Concatenar las filas e ignorar la fecha inflaría n.
+
+    Devuelve ``{delta, ci_low, ci_high, p_greater, p_two, n_pairs, n_dates, n_eff}`` donde
+    ``p_greater`` = fracción de medias bootstrap ≤ 0 (H0: media ≤ 0) y el IC es percentil.
+    """
+    d = np.asarray(delta, dtype=float)
+    dt = pd.Index(dates)
+    obs = float(d.mean())
+    uniq = pd.unique(dt)
+    rows_by_date = {u: np.where(dt == u)[0] for u in uniq}
+    nd = len(uniq)
+    if nd < 3:
+        return {"delta": obs, "ci_low": float("nan"), "ci_high": float("nan"),
+                "p_greater": float("nan"), "p_two": float("nan"),
+                "n_pairs": int(d.size), "n_dates": int(nd), "n_eff": float(nd)}
+    bl = block_dates or max(2, int(round(np.sqrt(nd))))
+    p = 1.0 / bl
+    rng = np.random.default_rng(seed)
+    boot = np.empty(n_boot)
+    date_arr = np.asarray(uniq, dtype=object)
+    for i in range(n_boot):
+        # secuencia de índices de FECHA por bloques circulares (bootstrap estacionario sobre fechas)
+        seq = np.empty(nd, dtype=np.int64)
+        seq[0] = rng.integers(0, nd)
+        u = rng.random(nd - 1); jmp = rng.integers(0, nd, nd - 1)
+        for t in range(1, nd):
+            seq[t] = jmp[t - 1] if u[t - 1] < p else (seq[t - 1] + 1) % nd
+        rows = np.concatenate([rows_by_date[date_arr[s]] for s in seq])
+        boot[i] = d[rows].mean()
+    ci_low, ci_high = (float(x) for x in np.quantile(boot, [alpha / 2, 1 - alpha / 2]))
+    return {"delta": obs, "ci_low": ci_low, "ci_high": ci_high,
+            "p_greater": float((boot <= 0).mean()), "p_two": float(2 * min((boot <= 0).mean(), (boot >= 0).mean())),
+            "n_pairs": int(d.size), "n_dates": int(nd), "n_eff": float(nd)}
+
+
 def apply_borrow_cost(returns, weights, borrow_bps_yr: float = 0.0,
                       cost_bps: float = COST_BPS, signal_lag: int = 1,
                       ann: int = ANN) -> pd.DataFrame:
