@@ -1,0 +1,321 @@
+{
+  "meta": {
+    "panel_actual": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ],
+    "candidatos": [
+      "QQQ",
+      "DIA",
+      "IWM",
+      "XLF",
+      "XLK"
+    ],
+    "calibration_window": [
+      "2000-01-01",
+      "2024-09-30"
+    ],
+    "seed": 42,
+    "criterio": "media de retorno del régimen Crisis (HMM K=3) en calibración; <0 = leverage fuerte",
+    "nota": "pre-registrable: medido SOLO en calibración, sin tocar el OOS (sin data-snooping)",
+    "hipotesis_alcance": "STRATA/RAM funciona donde el leverage es fuerte (Crisis_mean<0); no en leverage débil/inverso"
+  },
+  "por_activo": {
+    "SPY": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000651,
+        "Estrés": 0.000168,
+        "Crisis": -0.00036
+      },
+      "frac_regimen": {
+        "Calma": 0.4382,
+        "Estrés": 0.4072,
+        "Crisis": 0.1546
+      },
+      "crisis_mean": -0.00036,
+      "leverage_corr": -0.1099,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "NVDA": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.001503,
+        "Estrés": 0.000437,
+        "Crisis": 0.001725
+      },
+      "frac_regimen": {
+        "Calma": 0.4796,
+        "Estrés": 0.3277,
+        "Crisis": 0.1926
+      },
+      "crisis_mean": 0.001725,
+      "leverage_corr": 0.0015,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "BAC": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000562,
+        "Estrés": -1.4e-05,
+        "Crisis": -0.000585
+      },
+      "frac_regimen": {
+        "Calma": 0.4382,
+        "Estrés": 0.459,
+        "Crisis": 0.1029
+      },
+      "crisis_mean": -0.000585,
+      "leverage_corr": -0.0662,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "TSLA": {
+      "n_calib": 3566,
+      "media_regimen": {
+        "Calma": 0.001645,
+        "Estrés": -0.00039,
+        "Crisis": 0.003993
+      },
+      "frac_regimen": {
+        "Calma": 0.3446,
+        "Estrés": 0.3912,
+        "Crisis": 0.2642
+      },
+      "crisis_mean": 0.003993,
+      "leverage_corr": -0.0212,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_ini": "2010-07-29",
+      "calib_fin": "2024-09-27"
+    },
+    "XLE": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000414,
+        "Estrés": 0.000207,
+        "Crisis": 6.8e-05
+      },
+      "frac_regimen": {
+        "Calma": 0.4857,
+        "Estrés": 0.3985,
+        "Crisis": 0.1158
+      },
+      "crisis_mean": 6.8e-05,
+      "leverage_corr": -0.0891,
+      "clase": "leverage débil/neutro",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "UNG": {
+      "n_calib": 4372,
+      "media_regimen": {
+        "Calma": -0.00126,
+        "Estrés": -0.001008,
+        "Crisis": -0.001983
+      },
+      "frac_regimen": {
+        "Calma": 0.4446,
+        "Estrés": 0.2916,
+        "Crisis": 0.2637
+      },
+      "crisis_mean": -0.001983,
+      "leverage_corr": 0.0409,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_ini": "2007-05-17",
+      "calib_fin": "2024-09-27"
+    },
+    "MSTR": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000442,
+        "Estrés": 0.000327,
+        "Crisis": -0.001011
+      },
+      "frac_regimen": {
+        "Calma": 0.3914,
+        "Estrés": 0.3647,
+        "Crisis": 0.2439
+      },
+      "crisis_mean": -0.001011,
+      "leverage_corr": 0.0172,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "SMCI": {
+      "n_calib": 4385,
+      "media_regimen": {
+        "Calma": -5e-06,
+        "Estrés": 0.001628,
+        "Crisis": 0.001613
+      },
+      "frac_regimen": {
+        "Calma": 0.4762,
+        "Estrés": 0.3535,
+        "Crisis": 0.1704
+      },
+      "crisis_mean": 0.001613,
+      "leverage_corr": -0.0042,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_ini": "2007-04-30",
+      "calib_fin": "2024-09-27"
+    },
+    "ROKU": {
+      "n_calib": 1740,
+      "media_regimen": {
+        "Calma": -0.000256,
+        "Estrés": 0.000879,
+        "Crisis": 0.003179
+      },
+      "frac_regimen": {
+        "Calma": 0.492,
+        "Estrés": 0.3006,
+        "Crisis": 0.2075
+      },
+      "crisis_mean": 0.003179,
+      "leverage_corr": 0.0028,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_ini": "2017-10-27",
+      "calib_fin": "2024-09-27"
+    },
+    "MARA": {
+      "n_calib": 3099,
+      "media_regimen": {
+        "Calma": -0.001831,
+        "Estrés": -0.002575,
+        "Crisis": 0.005577
+      },
+      "frac_regimen": {
+        "Calma": 0.3175,
+        "Estrés": 0.4666,
+        "Crisis": 0.2159
+      },
+      "crisis_mean": 0.005577,
+      "leverage_corr": -0.0595,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_ini": "2012-06-05",
+      "calib_fin": "2024-09-27"
+    },
+    "QQQ": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000828,
+        "Estrés": 0.000574,
+        "Crisis": -0.001245
+      },
+      "frac_regimen": {
+        "Calma": 0.4603,
+        "Estrés": 0.3218,
+        "Crisis": 0.218
+      },
+      "crisis_mean": -0.001245,
+      "leverage_corr": -0.0921,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "DIA": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000536,
+        "Estrés": 0.000163,
+        "Crisis": -0.000255
+      },
+      "frac_regimen": {
+        "Calma": 0.5178,
+        "Estrés": 0.3566,
+        "Crisis": 0.1256
+      },
+      "crisis_mean": -0.000255,
+      "leverage_corr": -0.1117,
+      "clase": "leverage débil/neutro",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "IWM": {
+      "n_calib": 6102,
+      "media_regimen": {
+        "Calma": 0.000524,
+        "Estrés": 6.7e-05,
+        "Crisis": 0.000318
+      },
+      "frac_regimen": {
+        "Calma": 0.3972,
+        "Estrés": 0.4361,
+        "Crisis": 0.1667
+      },
+      "crisis_mean": 0.000318,
+      "leverage_corr": -0.1022,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_ini": "2000-06-27",
+      "calib_fin": "2024-09-27"
+    },
+    "XLF": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.00057,
+        "Estrés": -0.00019,
+        "Crisis": -6e-05
+      },
+      "frac_regimen": {
+        "Calma": 0.5181,
+        "Estrés": 0.3534,
+        "Crisis": 0.1285
+      },
+      "crisis_mean": -6e-05,
+      "leverage_corr": -0.0909,
+      "clase": "leverage débil/neutro",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    },
+    "XLK": {
+      "n_calib": 6203,
+      "media_regimen": {
+        "Calma": 0.000742,
+        "Estrés": 0.000851,
+        "Crisis": -0.000865
+      },
+      "frac_regimen": {
+        "Calma": 0.3619,
+        "Estrés": 0.3303,
+        "Crisis": 0.3078
+      },
+      "crisis_mean": -0.000865,
+      "leverage_corr": -0.0863,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_ini": "2000-02-02",
+      "calib_fin": "2024-09-27"
+    }
+  },
+  "grupos": {
+    "leverage_fuerte": [
+      "SPY",
+      "BAC",
+      "UNG",
+      "MSTR",
+      "QQQ",
+      "XLK"
+    ],
+    "leverage_inverso_o_ausente": [
+      "NVDA",
+      "TSLA",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "IWM"
+    ]
+  }
+}
