@@ -1,0 +1,328 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA"
+    ],
+    "n": 10,
+    "seed": 42,
+    "nota": "análisis inductivo de alcance; correlaciones con n=10 son ILUSTRATIVAS, no significativas; régimen y master recomputados por activo; accuracies M5/M8/M10 del panel auditado",
+    "regime_dir_acc": "accuracy de seguir el signo de calibración del régimen dominante vs r_{t+1}"
+  },
+  "por_activo": {
+    "SPY": {
+      "clase": "índice",
+      "naturaleza": {
+        "leverage_corr": -0.1099,
+        "crisis_mean": -0.00036,
+        "regime_sign_prior": {
+          "Calma": 1.0,
+          "Estrés": 1.0,
+          "Crisis": -1.0
+        },
+        "oos_crisis_frac": 0.0723,
+        "oos_calm_frac": 0.4464,
+        "oos_vol_media": 0.1552,
+        "agent_short_frac": 0.7556,
+        "agent_abs_size": 0.2073
+      },
+      "resultado": {
+        "regime_dir_acc": 0.5461,
+        "ram_interv_frac": 0.3017,
+        "acc_m5": 0.3665,
+        "acc_m8": 0.4422,
+        "acc_m10": 0.494,
+        "skill_p_1cola": 0.5996,
+        "strata_valor_m8_m5": 0.0757,
+        "strata_valor_m10_m5": 0.1275
+      }
+    },
+    "NVDA": {
+      "clase": "acción",
+      "naturaleza": {
+        "leverage_corr": 0.0015,
+        "crisis_mean": 0.001725,
+        "regime_sign_prior": {
+          "Calma": 1.0,
+          "Estrés": 1.0,
+          "Crisis": 1.0
+        },
+        "oos_crisis_frac": 0.11,
+        "oos_calm_frac": 0.7139,
+        "oos_vol_media": 0.4557,
+        "agent_short_frac": 0.8093,
+        "agent_abs_size": 0.1309
+      },
+      "resultado": {
+        "regime_dir_acc": 0.5428,
+        "ram_interv_frac": 0.6039,
+        "acc_m5": 0.4672,
+        "acc_m8": 0.5212,
+        "acc_m10": 0.4788,
+        "skill_p_1cola": 0.772,
+        "strata_valor_m8_m5": 0.054,
+        "strata_valor_m10_m5": 0.0116
+      }
+    },
+    "BAC": {
+      "clase": "acción",
+      "naturaleza": {
+        "leverage_corr": -0.0662,
+        "crisis_mean": -0.000585,
+        "regime_sign_prior": {
+          "Calma": 1.0,
+          "Estrés": -1.0,
+          "Crisis": -1.0
+        },
+        "oos_crisis_frac": 0.0556,
+        "oos_calm_frac": 0.6338,
+        "oos_vol_media": 0.2588,
+        "agent_short_frac": 0.7803,
+        "agent_abs_size": 0.1793
+      },
+      "resultado": {
+        "regime_dir_acc": 0.4924,
+        "ram_interv_frac": 0.4773,
+        "acc_m5": 0.4512,
+        "acc_m8": 0.5163,
+        "acc_m10": 0.4187,
+        "skill_p_1cola": 0.9956,
+        "strata_valor_m8_m5": 0.0651,
+        "strata_valor_m10_m5": -0.0325
+      }
+    },
+    "TSLA": {
+      "clase": "acción",
+      "naturaleza": {
+        "leverage_corr": -0.0212,
+        "crisis_mean": 0.003993,
+        "regime_sign_prior": {
+          "Calma": 1.0,
+          "Estrés": -1.0,
+          "Crisis": 1.0
+        },
+        "oos_crisis_frac": 0.3067,
+        "oos_calm_frac": 0.2469,
+        "oos_vol_media": 0.6053,
+        "agent_short_frac": 0.9975,
+        "agent_abs_size": 0.1128
+      },
+      "resultado": {
+        "regime_dir_acc": 0.5187,
+        "ram_interv_frac": 0.2469,
+        "acc_m5": 0.4741,
+        "acc_m8": 0.4781,
+        "acc_m10": 0.5219,
+        "skill_p_1cola": 0.264,
+        "strata_valor_m8_m5": 0.004,
+        "strata_valor_m10_m5": 0.0478
+      }
+    },
+    "XLE": {
+      "clase": "ETF sector",
+      "naturaleza": {
+        "leverage_corr": -0.0891,
+        "crisis_mean": 6.8e-05,
+        "regime_sign_prior": {
+          "Calma": 1.0,
+          "Estrés": 1.0,
+          "Crisis": 1.0
+        },
+        "oos_crisis_frac": 0.0653,
+        "oos_calm_frac": 0.6759,
+        "oos_vol_media": 0.2284,
+        "agent_short_frac": 0.8593,
+        "agent_abs_size": 0.1839
+      },
+      "resultado": {
+        "regime_dir_acc": 0.5653,
+        "ram_interv_frac": 0.5955,
+        "acc_m5": 0.4476,
+        "acc_m8": 0.5282,
+        "acc_m10": 0.5161,
+        "skill_p_1cola": 0.3284,
+        "strata_valor_m8_m5": 0.0806,
+        "strata_valor_m10_m5": 0.0685
+      }
+    },
+    "UNG": {
+      "clase": "ETF commodity",
+      "naturaleza": {
+        "leverage_corr": 0.0409,
+        "crisis_mean": -0.001983,
+        "regime_sign_prior": {
+          "Calma": -1.0,
+          "Estrés": -1.0,
+          "Crisis": -1.0
+        },
+        "oos_crisis_frac": 0.5139,
+        "oos_calm_frac": 0.073,
+        "oos_vol_media": 0.6024,
+        "agent_short_frac": 0.9899,
+        "agent_abs_size": 0.1103
+      },
+      "resultado": {
+        "regime_dir_acc": 0.4962,
+        "ram_interv_frac": 0.0781,
+        "acc_m5": 0.5101,
+        "acc_m8": 0.502,
+        "acc_m10": 0.5182,
+        "skill_p_1cola": 0.3054,
+        "strata_valor_m8_m5": -0.0081,
+        "strata_valor_m10_m5": 0.0081
+      }
+    },
+    "MSTR": {
+      "clase": "acción/cripto",
+      "naturaleza": {
+        "leverage_corr": 0.0172,
+        "crisis_mean": -0.001011,
+        "regime_sign_prior": {
+          "Calma": 1.0,
+          "Estrés": 1.0,
+          "Crisis": -1.0
+        },
+        "oos_crisis_frac": 0.409,
+        "oos_calm_frac": 0.0025,
+        "oos_vol_media": 0.8405,
+        "agent_short_frac": 0.9975,
+        "agent_abs_size": 0.0998
+      },
+      "resultado": {
+        "regime_dir_acc": 0.4663,
+        "ram_interv_frac": 0.0025,
+        "acc_m5": 0.5538,
+        "acc_m8": 0.5578,
+        "acc_m10": 0.5339,
+        "skill_p_1cola": 0.1563,
+        "strata_valor_m8_m5": 0.004,
+        "strata_valor_m10_m5": -0.0199
+      }
+    },
+    "SMCI": {
+      "clase": "acción",
+      "naturaleza": {
+        "leverage_corr": -0.0042,
+        "crisis_mean": 0.001613,
+        "regime_sign_prior": {
+          "Calma": -1.0,
+          "Estrés": 1.0,
+          "Crisis": 1.0
+        },
+        "oos_crisis_frac": 0.6975,
+        "oos_calm_frac": 0.0175,
+        "oos_vol_media": 0.9299,
+        "agent_short_frac": 0.9675,
+        "agent_abs_size": 0.0974
+      },
+      "resultado": {
+        "regime_dir_acc": 0.4575,
+        "ram_interv_frac": 0.0175,
+        "acc_m5": 0.484,
+        "acc_m8": 0.496,
+        "acc_m10": 0.552,
+        "skill_p_1cola": 0.0568,
+        "strata_valor_m8_m5": 0.012,
+        "strata_valor_m10_m5": 0.068
+      }
+    },
+    "ROKU": {
+      "clase": "acción",
+      "naturaleza": {
+        "leverage_corr": 0.0028,
+        "crisis_mean": 0.003179,
+        "regime_sign_prior": {
+          "Calma": -1.0,
+          "Estrés": 1.0,
+          "Crisis": 1.0
+        },
+        "oos_crisis_frac": 0.05,
+        "oos_calm_frac": 0.73,
+        "oos_vol_media": 0.6477,
+        "agent_short_frac": 0.9725,
+        "agent_abs_size": 0.1119
+      },
+      "resultado": {
+        "regime_dir_acc": 0.475,
+        "ram_interv_frac": 0.71,
+        "acc_m5": 0.444,
+        "acc_m8": 0.528,
+        "acc_m10": 0.508,
+        "skill_p_1cola": 0.4248,
+        "strata_valor_m8_m5": 0.084,
+        "strata_valor_m10_m5": 0.064
+      }
+    },
+    "MARA": {
+      "clase": "acción/cripto",
+      "naturaleza": {
+        "leverage_corr": -0.0595,
+        "crisis_mean": 0.005577,
+        "regime_sign_prior": {
+          "Calma": -1.0,
+          "Estrés": -1.0,
+          "Crisis": 1.0
+        },
+        "oos_crisis_frac": 0.0377,
+        "oos_calm_frac": 0.4171,
+        "oos_vol_media": 1.0985,
+        "agent_short_frac": 0.9874,
+        "agent_abs_size": 0.0991
+      },
+      "resultado": {
+        "regime_dir_acc": 0.5327,
+        "ram_interv_frac": 0.4146,
+        "acc_m5": 0.5282,
+        "acc_m8": 0.5282,
+        "acc_m10": 0.5323,
+        "skill_p_1cola": 0.1704,
+        "strata_valor_m8_m5": 0.0,
+        "strata_valor_m10_m5": 0.0041
+      }
+    }
+  },
+  "correlaciones": {
+    "leverage_corr ~ regime_dir_acc": -0.64,
+    "leverage_corr ~ acc_m10": 0.327,
+    "leverage_corr ~ strata_valor_m8_m5": -0.546,
+    "oos_crisis_frac ~ regime_dir_acc": -0.624,
+    "oos_crisis_frac ~ strata_valor_m8_m5": -0.677,
+    "agent_short_frac ~ acc_m10": 0.75,
+    "oos_vol_media ~ acc_m10": 0.67,
+    "regime_dir_acc ~ acc_m10": -0.189
+  },
+  "grupos_por_leverage": {
+    "leverage_fuerte": {
+      "tickers": [
+        "SPY",
+        "BAC",
+        "XLE",
+        "MARA"
+      ],
+      "regime_dir_acc_medio": 0.5341,
+      "acc_m10_medio": 0.4903,
+      "strata_valor_m8_m5_medio": 0.0554
+    },
+    "leverage_debil": {
+      "tickers": [
+        "NVDA",
+        "TSLA",
+        "UNG",
+        "MSTR",
+        "SMCI",
+        "ROKU"
+      ],
+      "regime_dir_acc_medio": 0.4928,
+      "acc_m10_medio": 0.5188,
+      "strata_valor_m8_m5_medio": 0.025
+    }
+  }
+}
