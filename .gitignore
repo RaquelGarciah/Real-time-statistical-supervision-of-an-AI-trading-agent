@@ -63,3 +63,7 @@ notebooks/logic_esential.ipynb
 # los textos propios (TFB, ensayos…) se quedan en local para calibrar el estilo.
 tesis_assets/estilo_raquel/*
 !tesis_assets/estilo_raquel/README.md
+
+# Memoria compartida entre sesiones: el código sí se versiona; las transcripciones
+# crudas de chats (fuente intermedia) NO — la memoria.db reconstruible las contiene.
+claude_shared_memory/conversaciones_md/
