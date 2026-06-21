@@ -77,6 +77,13 @@ def _regime_drift(tk: str):
                          "gmax": gamma.to_numpy().max(1)}, index=idx), gamma, sigma, oos_ret
 
 
+# Variantes de DISEÑO (ex-ante, motivadas por teoría; se reportan TODAS, no se elige a dedo):
+#  - regime_flip : el régimen VOLTEA la dirección (corto en Crisis fiable). [STRATA-U v1]
+#  - risk_overlay: dirección = agente fiable / drift; el régimen solo DE-RISKea en Crisis (no voltea).
+#  - trend       : dirección = agente fiable / drift; sin régimen direccional (puro trend + vol-target).
+MODES = ["regime_flip", "risk_overlay", "trend"]
+
+
 def _series(tk: str) -> dict:
     data.load_market_data(tk, CALIBRATION_START, datetime.date.today().isoformat())  # asegura OOS
     reg, gamma, sigma, oos_ret = _regime_drift(tk)
@@ -86,117 +93,121 @@ def _series(tk: str) -> dict:
     truth = np.sign(mv["r_next"].to_numpy())
     agent_sign = np.sign(mv["agent_size"].to_numpy())
     sig = mv["garch_sigma"].to_numpy()
+    crisis = (mv["regime_dom"].to_numpy().astype(int) == 2)   # estado de mayor vol = Crisis
 
-    # fiabilidad expansible del agente (causal)
     c_ag = (agent_sign == truth).astype(float)
     ag_gate = pd.Series(c_ag, index=mv.index).expanding().mean().shift(1).fillna(0.5).to_numpy()
     ag_obs = np.arange(len(mv))
+    agent_ok = (ag_obs >= AGENT_MIN_OBS) & (ag_gate > AGENT_REL_MIN) & (agent_sign != 0)
 
     s_dom = R["s_dom"].to_numpy(); reg_gate = R["reg_gate"].to_numpy()
     drift = R["drift"].to_numpy(); gmax = R["gmax"].to_numpy()
-    d = np.empty(len(mv))
-    for i in range(len(mv)):
-        reg_on = (reg_gate[i] > REG_REL_MIN) and (gmax[i] >= TAU_CONF) and (s_dom[i] != 0)
-        base = s_dom[i] if reg_on else (drift[i] if drift[i] != 0 else 1.0)
-        if (ag_obs[i] >= AGENT_MIN_OBS) and (ag_gate[i] > AGENT_REL_MIN) and (agent_sign[i] != 0):
-            base = agent_sign[i]                          # agente fiable manda (supervisión condicional)
-        d[i] = base if base != 0 else 1.0
+    reg_on = (reg_gate > REG_REL_MIN) & (gmax >= TAU_CONF) & (s_dom != 0)
+    drift_dir = np.where(drift != 0, drift, 1.0)
     vol_scale = np.where(sig > 0, np.minimum(CAP, TARGET_VOL / sig), CAP)
-    derisk = np.where((reg_gate <= REG_REL_MIN) & (ag_gate <= AGENT_REL_MIN) & (gmax < TAU_CONF), DERISK, 1.0)
-    w = d * vol_scale * derisk
 
-    # P&L causales
+    def weights(mode: str):
+        if mode == "regime_flip":
+            base = np.where(reg_on, s_dom, drift_dir)
+            base = np.where(agent_ok, agent_sign, base)
+            fac = np.where((~reg_on) & (~agent_ok) & (gmax < TAU_CONF), DERISK, 1.0)
+        else:  # risk_overlay / trend: dirección = agente fiable / drift (sigue la tendencia, como ZeroR)
+            base = np.where(agent_ok, agent_sign, drift_dir)
+            fac = np.where(crisis, DERISK, 1.0) if mode == "risk_overlay" else np.ones(len(mv))
+        base = np.where(base == 0, 1.0, base)
+        return base * vol_scale * fac
+
     def nr(pos):
         ws = pd.Series(0.0, index=mv.index); ws.loc[mv.index] = pos
         return run_backtest(oos_ret, ws, signal_lag=1)["net_return"].reindex(mv.index)
-    frac_up = float((truth > 0).mean()); maj = 1.0 if frac_up >= 0.5 else -1.0
-    nr_u = run_backtest(oos_ret, pd.Series(w, index=mv.index), signal_lag=1)["net_return"].reindex(mv.index)
-    nr_m5 = nr(agent_sign); nr_zr = nr(np.full_like(truth, maj)); nr_bh = nr(np.ones_like(truth))
 
     def stats(nrx, accpos):
         return {"acc": round(float((accpos == truth).mean()), 4), "sharpe": round(float(sharpe(nrx)), 4),
                 "calmar": round(float(calmar(nrx)), 4), "maxdd": round(float(max_drawdown(equity_curve(nrx))), 4),
                 "equity": round(float((1 + nrx.fillna(0)).prod()), 4)}
-    su = stats(nr_u, np.sign(w.astype(float))); m5 = stats(nr_m5, agent_sign)
+
+    frac_up = float((truth > 0).mean()); maj = 1.0 if frac_up >= 0.5 else -1.0
+    nr_m5 = nr(agent_sign); nr_zr = nr(np.full_like(truth, maj)); nr_bh = nr(np.ones_like(truth))
+    m5 = stats(nr_m5, agent_sign)
     zr = {"acc": round(max(frac_up, 1 - frac_up), 4), **{k: v for k, v in stats(nr_zr, np.full_like(truth, maj)).items() if k != "acc"}}
     bh = {"acc": round(frac_up, 4), **{k: v for k, v in stats(nr_bh, np.ones_like(truth)).items() if k != "acc"}}
 
-    return {"dates": mv.index, "truth": truth,
-            "c_u": (np.sign(w) == truth).astype(float), "c_m5": (agent_sign == truth).astype(float),
-            "c_zr": (np.full_like(truth, maj) == truth).astype(float),
-            "nr_u": nr_u.to_numpy(), "nr_m5": nr_m5.to_numpy(), "nr_zr": nr_zr.to_numpy(),
-            "perfil": {"n": int(len(mv)), "frac_up": round(frac_up, 4),
-                       "reg_on_frac": round(float(((reg_gate > REG_REL_MIN) & (gmax >= TAU_CONF)).mean()), 4),
-                       "agent_on_frac": round(float(((ag_obs >= AGENT_MIN_OBS) & (ag_gate > AGENT_REL_MIN)).mean()), 4),
-                       "strata_u": su, "m5": m5, "zeror": zr, "bh": bh}}
+    out = {"dates": mv.index, "truth": truth, "agent_sign": agent_sign, "maj": maj,
+           "nr_m5": nr_m5.to_numpy(), "nr_zr": nr_zr.to_numpy(), "c_m5": (agent_sign == truth).astype(float),
+           "c_zr": (np.full_like(truth, maj) == truth).astype(float), "modes": {},
+           "perfil_base": {"n": int(len(mv)), "frac_up": round(frac_up, 4),
+                           "reg_on_frac": round(float(reg_on.mean()), 4),
+                           "agent_on_frac": round(float(agent_ok.mean()), 4),
+                           "m5": m5, "zeror": zr, "bh": bh}}
+    for mode in MODES:
+        w = weights(mode); nr_u = nr(w)
+        out["modes"][mode] = {"stats": stats(nr_u, np.sign(w)),
+                              "c_u": (np.sign(w) == truth).astype(float), "nr_u": nr_u.to_numpy()}
+    return out
 
 
 def main() -> None:
+    from scipy.stats import binomtest
     wf.reset_thresholds_cache()
-    por_activo = {}
-    pool = {"acc_vs_m5": [], "acc_vs_zr": [], "pnl_vs_m5": [], "pnl_vs_zr": [], "dates": []}
+    S = {}
     for tk in PANEL:
         try:
-            s = _series(tk)
-            por_activo[tk] = s["perfil"]
-            pool["acc_vs_m5"].append(s["c_u"] - s["c_m5"]); pool["acc_vs_zr"].append(s["c_u"] - s["c_zr"])
-            pool["pnl_vs_m5"].append(s["nr_u"] - s["nr_m5"]); pool["pnl_vs_zr"].append(s["nr_u"] - s["nr_zr"])
-            pool["dates"].append(np.asarray(s["dates"]))
-            p = s["perfil"]
-            print(f"{tk:5s} acc U={p['strata_u']['acc']:.3f} M5={p['m5']['acc']:.3f} ZeroR={p['zeror']['acc']:.3f} | "
-                  f"Sh U={p['strata_u']['sharpe']:+.2f} M5={p['m5']['sharpe']:+.2f} ZeroR={p['zeror']['sharpe']:+.2f} | "
-                  f"reg_on={p['reg_on_frac']:.2f}", flush=True)
+            S[tk] = _series(tk)
+            print(f"{tk:5s} OK (n={S[tk]['perfil_base']['n']}, reg_on={S[tk]['perfil_base']['reg_on_frac']:.2f}, "
+                  f"agent_on={S[tk]['perfil_base']['agent_on_frac']:.2f})", flush=True)
         except Exception as e:  # noqa: BLE001
-            por_activo[tk] = {"error": f"{type(e).__name__}: {e}"}
+            S[tk] = {"error": f"{type(e).__name__}: {e}"}
             print(f"{tk:5s} ERROR {type(e).__name__}: {e}", flush=True)
+    ok = [t for t in PANEL if "error" not in S[t]]
+    dates = np.concatenate([np.asarray(S[t]["dates"]) for t in ok])
 
-    ok = [t for t in PANEL if "error" not in por_activo[t]]
-    dates = np.concatenate(pool["dates"])
-    pooled = {
-        "acc_vs_m5": panel_pooled_test(np.concatenate(pool["acc_vs_m5"]), dates),
-        "acc_vs_zeror": panel_pooled_test(np.concatenate(pool["acc_vs_zr"]), dates),
-        "pnl_vs_m5": panel_pooled_test(np.concatenate(pool["pnl_vs_m5"]), dates),
-        "pnl_vs_zeror": panel_pooled_test(np.concatenate(pool["pnl_vs_zr"]), dates)}
+    por_modo = {}
+    for mode in MODES:
+        cob = {}
+        for base in ("m5", "zeror", "bh"):
+            for met in ("acc", "sharpe", "calmar"):
+                cob[f"{met}_vs_{base}"] = int(sum(
+                    S[t]["modes"][mode]["stats"][met] > S[t]["perfil_base"][base][met] for t in ok))
+        pos_acc = sum(S[t]["modes"][mode]["stats"]["acc"] >= S[t]["perfil_base"]["m5"]["acc"] for t in ok)
+        pos_sh = sum(S[t]["modes"][mode]["stats"]["sharpe"] >= S[t]["perfil_base"]["m5"]["sharpe"] for t in ok)
+        pooled = {
+            "acc_vs_m5": panel_pooled_test(np.concatenate([S[t]["modes"][mode]["c_u"] - S[t]["c_m5"] for t in ok]), dates),
+            "acc_vs_zeror": panel_pooled_test(np.concatenate([S[t]["modes"][mode]["c_u"] - S[t]["c_zr"] for t in ok]), dates),
+            "pnl_vs_m5": panel_pooled_test(np.concatenate([S[t]["modes"][mode]["nr_u"] - S[t]["nr_m5"] for t in ok]), dates),
+            "pnl_vs_zeror": panel_pooled_test(np.concatenate([S[t]["modes"][mode]["nr_u"] - S[t]["nr_zr"] for t in ok]), dates)}
+        por_modo[mode] = {
+            "cobertura": {k: f"{v}/{len(ok)}" for k, v in cob.items()},
+            "obj1_m5": {"acc_ge": f"{pos_acc}/{len(ok)}", "sharpe_ge": f"{pos_sh}/{len(ok)}",
+                        "sign_p_acc": round(float(binomtest(pos_acc, len(ok), 0.5, "greater").pvalue), 4),
+                        "sign_p_sharpe": round(float(binomtest(pos_sh, len(ok), 0.5, "greater").pvalue), 4)},
+            "obj2_zeror": {"sharpe": cob["sharpe_vs_zeror"], "calmar": cob["calmar_vs_zeror"], "acc": cob["acc_vs_zeror"]},
+            "pooled": pooled,
+            "por_activo": {t: {"strata_u": S[t]["modes"][mode]["stats"], "m5": S[t]["perfil_base"]["m5"],
+                               "zeror": S[t]["perfil_base"]["zeror"], "bh": S[t]["perfil_base"]["bh"]} for t in ok}}
 
-    def cobertura(base, metric):
-        return int(sum(por_activo[t]["strata_u"][metric] > por_activo[t][base][metric] for t in ok))
-    cov = {f"gana_{m}_vs_{b}": f"{cobertura(b, m)}/{len(ok)}"
-           for b in ("m5", "zeror", "bh") for m in ("acc", "sharpe", "calmar")}
-    # sign test 12/12 de Δacc y ΔSharpe vs M5
-    from scipy.stats import binomtest
-    pos_acc_m5 = sum(por_activo[t]["strata_u"]["acc"] >= por_activo[t]["m5"]["acc"] for t in ok)
-    pos_sh_m5 = sum(por_activo[t]["strata_u"]["sharpe"] >= por_activo[t]["m5"]["sharpe"] for t in ok)
-
-    res = {"meta": {"panel": PANEL, "n_activos": len(ok), "params": {
+    res = {"meta": {"panel": PANEL, "n_activos": len(ok), "modes": MODES, "params": {
         "target_vol": TARGET_VOL, "cap": CAP, "tau_conf": TAU_CONF, "drift_L": DRIFT_L,
         "reg_rel_min": REG_REL_MIN, "agent_rel_min": AGENT_REL_MIN, "agent_min_obs": AGENT_MIN_OBS,
         "derisk": DERISK}, "seed": config.SEED, "signal_lag": 1,
-        "nota": "STRATA-U: núcleo régimen(HMM)+vol(GARCH) con gate causal expansible + tilt agente; "
-                "parámetros ex-ante idénticos para los 12, sin tuning por activo; exploratorio (docs/)"},
-        "por_activo": por_activo, "cobertura": cov,
-        "pooled": pooled,
-        "obj1_m5": {"acc_ge_en": f"{pos_acc_m5}/{len(ok)}", "sharpe_ge_en": f"{pos_sh_m5}/{len(ok)}",
-                    "sign_p_acc": round(float(binomtest(pos_acc_m5, len(ok), 0.5, "greater").pvalue), 4),
-                    "sign_p_sharpe": round(float(binomtest(pos_sh_m5, len(ok), 0.5, "greater").pvalue), 4)},
-        "veredicto": {
-            "obj1_batir_m5": (pos_sh_m5 == len(ok) or pos_acc_m5 == len(ok)),
-            "obj2_max_zeror_sharpe": cobertura("zeror", "sharpe"),
-            "obj2_max_zeror_acc": cobertura("zeror", "acc")}}
+        "nota": "3 variantes de DISEÑO ex-ante (no tuning de parámetros al OOS); se reportan TODAS. "
+                "Elegir la mejor variante por el conteo OOS vs ZeroR sería multiplicidad (3 pruebas): "
+                "honestidad obliga a mostrarlas todas y descontar. Exploratorio (docs/)",
+        "perfiles": {t: S[t]["perfil_base"] for t in ok}},
+        "por_modo": por_modo}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(res, indent=2, ensure_ascii=False))
 
-    assert set(res) >= {"meta", "por_activo", "cobertura", "pooled", "obj1_m5", "veredicto"}
-    print("\n=== COBERTURA (de {} activos) ===".format(len(ok)))
-    for k, v in cov.items():
-        print(f"  {k:22s} {v}")
-    print("\n=== POOLED (clusterizado por fecha) ===")
-    for k, v in pooled.items():
-        print(f"  {k:14s} Δ={v['delta']:+.5f} IC95=[{v['ci_low']:+.5f},{v['ci_high']:+.5f}] "
-              f"p_greater={v['p_greater']:.4f} (n={v['n_pairs']}, fechas={v['n_dates']})")
-    print(f"\nOBJ1 batir M5: acc≥ en {res['obj1_m5']['acc_ge_en']} (sign p={res['obj1_m5']['sign_p_acc']}), "
-          f"Sharpe≥ en {res['obj1_m5']['sharpe_ge_en']} (sign p={res['obj1_m5']['sign_p_sharpe']})")
-    print(f"OBJ2 batir ZeroR: Sharpe {cov['gana_sharpe_vs_zeror']}, acc {cov['gana_acc_vs_zeror']}")
-    print(f"OK · {OUT}")
+    assert set(res) >= {"meta", "por_modo"}
+    for mode in MODES:
+        pm = por_modo[mode]
+        print(f"\n=== {mode} ===")
+        print(f"  OBJ1 batir M5: acc≥ {pm['obj1_m5']['acc_ge']} (p={pm['obj1_m5']['sign_p_acc']}), "
+              f"Sharpe≥ {pm['obj1_m5']['sharpe_ge']} (p={pm['obj1_m5']['sign_p_sharpe']}) | "
+              f"pooled acc Δ={pm['pooled']['acc_vs_m5']['delta']:+.4f} p={pm['pooled']['acc_vs_m5']['p_greater']:.4f}")
+        print(f"  OBJ2 batir ZeroR: Sharpe {pm['obj2_zeror']['sharpe']}/{len(ok)} · "
+              f"Calmar {pm['obj2_zeror']['calmar']}/{len(ok)} · acc {pm['obj2_zeror']['acc']}/{len(ok)} | "
+              f"pooled Sh Δ={pm['pooled']['pnl_vs_zeror']['delta']:+.5f} p={pm['pooled']['pnl_vs_zeror']['p_greater']:.4f}")
+    print(f"\nOK · {OUT}")
 
 
 if __name__ == "__main__":
