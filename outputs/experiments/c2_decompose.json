@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "cluster": "C2",
+    "activos": [
+      "UNG",
+      "MSTR",
+      "SMCI"
+    ],
+    "seed": 42,
+    "nota": "diagnóstico honesto: ¿M10 en C2 es habilidad o drift+ruido? n por activo ~250"
+  },
+  "por_activo": {
+    "UNG": {
+      "n": 247,
+      "frac_up": 0.4858,
+      "maj": -1.0,
+      "acc_m10": 0.5182,
+      "acc_m5": 0.5101,
+      "acc_zeror": 0.5142,
+      "m10_frac_corto": 0.5668,
+      "m10_frac_coincide_mayoria": 0.5668,
+      "acc_m10_cuando_coincide_mayoria": 0.5286,
+      "acc_m10_cuando_contraria_mayoria": 0.5047,
+      "mcnemar_m10_vs_m5_p": 0.9226,
+      "mcnemar_m10_vs_zeror_p": 1.0,
+      "n_dias_disagree": 107,
+      "shap_cuota_strata7": 0.6989,
+      "shap_metodo": "TreeSHAP",
+      "top6_features": {
+        "stress_prob": 0.44137,
+        "ram_score": 0.43063,
+        "garch_sigma": 0.39147,
+        "psa_score": 0.29379,
+        "warren_buffett_conf": 0.25485,
+        "crisis_prob": 0.24811
+      }
+    },
+    "MSTR": {
+      "n": 251,
+      "frac_up": 0.4502,
+      "maj": -1.0,
+      "acc_m10": 0.5339,
+      "acc_m5": 0.5538,
+      "acc_zeror": 0.5498,
+      "m10_frac_corto": 0.4502,
+      "m10_frac_coincide_mayoria": 0.4502,
+      "acc_m10_cuando_coincide_mayoria": 0.5929,
+      "acc_m10_cuando_contraria_mayoria": 0.4855,
+      "mcnemar_m10_vs_m5_p": 0.7325,
+      "mcnemar_m10_vs_zeror_p": 0.7984,
+      "n_dias_disagree": 138,
+      "shap_cuota_strata7": 0.6799,
+      "shap_metodo": "TreeSHAP",
+      "top6_features": {
+        "garch_sigma": 0.32579,
+        "crisis_prob": 0.2848,
+        "psa_score": 0.25549,
+        "stress_prob": 0.2549,
+        "ram_score": 0.20373,
+        "stanley_druckenmiller_conf": 0.15403
+      }
+    },
+    "SMCI": {
+      "n": 250,
+      "frac_up": 0.484,
+      "maj": -1.0,
+      "acc_m10": 0.552,
+      "acc_m5": 0.484,
+      "acc_zeror": 0.516,
+      "m10_frac_corto": 0.468,
+      "m10_frac_coincide_mayoria": 0.468,
+      "acc_m10_cuando_coincide_mayoria": 0.5726,
+      "acc_m10_cuando_contraria_mayoria": 0.5338,
+      "mcnemar_m10_vs_m5_p": 0.1621,
+      "mcnemar_m10_vs_zeror_p": 0.4879,
+      "n_dias_disagree": 133,
+      "shap_cuota_strata7": 0.6469,
+      "shap_metodo": "TreeSHAP",
+      "top6_features": {
+        "garch_sigma": 0.34212,
+        "ram_score": 0.30737,
+        "stress_prob": 0.28998,
+        "psa_score": 0.28319,
+        "crisis_prob": 0.20233,
+        "cathie_wood_conf": 0.17668
+      }
+    }
+  },
+  "pooled_acc_m10_vs_zeror": {
+    "delta": 0.008021390374331552,
+    "ci_low": -0.0333789526855772,
+    "ci_high": 0.04840747254632796,
+    "p_greater": 0.346,
+    "p_two": 0.692,
+    "n_pairs": 748,
+    "n_dates": 251,
+    "n_eff": 251.0
+  },
+  "pooled_acc_m10_vs_m5": {
+    "delta": 0.01871657754010695,
+    "ci_low": -0.02400080106809079,
+    "ci_high": 0.06117839060188868,
+    "p_greater": 0.1995,
+    "p_two": 0.399,
+    "n_pairs": 748,
+    "n_dates": 251,
+    "n_eff": 251.0
+  }
+}

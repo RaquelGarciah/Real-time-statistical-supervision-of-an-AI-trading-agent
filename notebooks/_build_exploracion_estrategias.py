@@ -193,6 +193,40 @@ for cname, d in CLUS.items():
     print(f"{cname} {d['activos']}: mejor no-trivial acc={d['mejor_acc_no_trivial']}, "
           f"sharpe={d['mejor_sharpe_no_trivial']} · ΔM8-M5={d['delta_M8_M5_acc']:+.3f} ΔM10-M8={d['delta_M10_M8_acc']:+.3f}")""")
 
+# ── §4c ¿Qué hace M10 en C2 y es real? ──
+md(r"""### §4c. ¿Qué hace M10 en C2 (donde el régimen falla) y es real?
+
+En C2 (UNG/MSTR/SMCI, leverage inverso) M10 tenía la mejor accuracy desplegable. ¿Habilidad o
+*drift* + ruido? Diagnóstico de `c2_decompose.json`: significancia (McNemar + pooled), si solo va
+con la dirección mayoritaria, y de qué features tira (SHAP).""")
+
+code(r"""C2 = J("c2_decompose"); pa2 = C2["por_activo"]; A2 = list(pa2)
+fig, ax = plt.subplots(1, 3, figsize=(15, 4.2))
+# (a) acc M10/M5/ZeroR + p-valores
+x = np.arange(len(A2)); w = 0.25
+for i, (s, c) in enumerate([("acc_m5", COL["M5"]), ("acc_m10", COL["M10"]), ("acc_zeror", COL["ZeroR"])]):
+    ax[0].bar(x + (i-1)*w, [pa2[a][s] for a in A2], w, label=s.replace("acc_", "").upper(), color=c)
+ax[0].axhline(0.5, color="k", ls="--", lw=0.8); ax[0].set_xticks(x); ax[0].set_xticklabels(A2)
+ax[0].set_title("Accuracy en C2"); ax[0].legend(); ax[0].set_ylim(0.4, 0.6)
+for j, a in enumerate(A2):
+    ax[0].text(x[j], 0.41, f"vsZeroR\np={pa2[a]['mcnemar_m10_vs_zeror_p']:.2f}", ha="center", fontsize=7)
+# (b) acc M10 cuando coincide vs contracorriente con la mayoría
+ax[1].bar(x - w/2, [pa2[a]["acc_m10_cuando_coincide_mayoria"] for a in A2], w, label="coincide drift", color="#2e9e4f")
+ax[1].bar(x + w/2, [pa2[a]["acc_m10_cuando_contraria_mayoria"] for a in A2], w, label="contracorriente", color="#c0392b")
+ax[1].axhline(0.5, color="k", ls="--", lw=0.8); ax[1].set_xticks(x); ax[1].set_xticklabels(A2)
+ax[1].set_title("acc de M10 según coincida con el drift"); ax[1].legend(); ax[1].set_ylim(0.4, 0.65)
+# (c) cuota de features STRATA/régimen
+ax[2].bar(x, [pa2[a]["shap_cuota_strata7"] for a in A2], color="#185", edgecolor="black")
+ax[2].axhline(0.318, color="k", ls="--", lw=0.8, label="7/22 (si fuera uniforme)")
+ax[2].set_xticks(x); ax[2].set_xticklabels(A2); ax[2].set_ylim(0, 1)
+ax[2].set_title("Cuota SHAP de features régimen/vol"); ax[2].legend()
+plt.tight_layout(); plt.show()
+pz = C2["pooled_acc_m10_vs_zeror"]; pm = C2["pooled_acc_m10_vs_m5"]
+print(f"POOLED C2 — M10 vs ZeroR: Δ={pz['delta']:+.4f} p={pz['p_greater']:.3f} (IC95 incluye 0: {pz['ci_low']<0<pz['ci_high']})")
+print(f"POOLED C2 — M10 vs M5:    Δ={pm['delta']:+.4f} p={pm['p_greater']:.3f} (IC95 incluye 0: {pm['ci_low']<0<pm['ci_high']})")
+print("→ El margen de M10 en C2 NO es significativo (cabe en el ruido). M10 no es 'siempre corto'")
+print("  (va corto ~45-57%); usa vol/régimen como CONTEXTO (SHAP), pero su edge direccional es nominal.")""")
+
 # ── §5 Variantes redefinidas (contraste) ──
 md(r"""## §5. ¿Y si redefinimos el supervisor? (contraste exploratorio)
 
