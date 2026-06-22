@@ -1,17 +1,20 @@
-"""Tabla completa de estrategias (ventana 250) + clustering de activos + regla candidata.
+"""Agrupación de los 15 activos por su NATURALEZA y qué estrategia funciona mejor en cada grupo.
 
-Para los 12 activos con caché de agente completa: calcula sobre la MISMA ventana de evaluación
-(la del walk-forward de M10, ~250 d tras burn-in) la accuracy y el Sharpe de las 6 estrategias
-(M5, M8, M10, régimen, B&H, ZeroR), más features de NATURALEZA del activo (pre-especificadas,
-ex-ante donde es posible: leverage de Black, media del régimen Crisis, fracción de Crisis OOS,
-vol media, sesgo corto del agente). Luego agrupa los activos por su naturaleza (KMeans, k elegido
-por silueta) y caracteriza cada grupo por qué estrategia funciona → regla candidata.
+Reúne, por activo: features de naturaleza (ex-ante: leverage de Black y media del régimen Crisis, de
+leverage_screen.json; OOS: fracción de Crisis, vol media, sesgo corto del agente) y la accuracy/Sharpe de
+cada estrategia (M5/M8/M10/Régimen/ZeroR/B&H de decision_automl_prep.json + AutoML del panel mm25). Luego
+prueba VARIOS algoritmos de agrupación adecuados a la naturaleza de los datos (n=15 pequeño, ~5 features
+continuas y correladas) y muestra cómo separa cada uno — la elección final del algoritmo la decide Raquel.
 
-HONESTIDAD: n=12 → el clustering es EXPLORATORIO/descriptivo, no confirmatorio; la regla es una
-HIPÓTESIS pre-registrable para test futuro, no un resultado probado. Features pre-especificadas
-para evitar el dragado de datos (garden of forking paths). Exploratorio (docs/).
+  - KMeans (centroides, esférico)            - Agglomerative/Ward (jerárquico, distancias)
+  - GaussianMixture (probabilístico, +BIC)   - Spectral (no convexo, k-NN)
+  DBSCAN se descarta (con n=15 y sin densidad clara no forma clusters estables) — se comenta, no se usa.
 
-Uso: python experiments/strategy_clustering.py
+Para cada método y k∈{2,3,4}: etiquetas + silhouette (+ BIC en GMM). Concordancia entre métodos (Rand
+ajustado) a k=3. Perfil por cluster (naturaleza media + estrategia ganadora) a k=3 por método.
+
+HONESTIDAD: n=15 → EXPLORATORIO/descriptivo, no confirmatorio; la "regla por grupo" es HIPÓTESIS
+pre-registrable, no probada. Features pre-especificadas (anti-dragado). Uso: python experiments/strategy_clustering.py
 """
 from __future__ import annotations
 
@@ -24,10 +27,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score
+from sklearn.cluster import AgglomerativeClustering, KMeans, SpectralClustering
+from sklearn.metrics import adjusted_rand_score, silhouette_score
+from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 
 import config
@@ -36,132 +38,142 @@ from core import data
 from core.backtest import run_backtest
 from core.metrics import sharpe
 import experiments.walkforward_robustez as wf
-from experiments.quant_validation_panel import build_states, wf_p1, ALL22
+from experiments.quant_validation_panel import build_states
 
-PANEL = ["SPY", "NVDA", "BAC", "TSLA", "XLE", "UNG", "MSTR", "SMCI", "ROKU", "MARA", "QQQ", "DIA"]
+PANEL = ["SPY", "QQQ", "DIA", "IWM", "XLE", "XLF", "XLK", "NVDA", "BAC", "TSLA",
+         "MSTR", "SMCI", "ROKU", "MARA", "UNG"]
 REGNAMES = ["Calma", "Estrés", "Crisis"]
 N0 = 150
-CLASE = {"SPY": "índice", "QQQ": "índice", "DIA": "índice", "XLE": "ETF sect.", "XLF": "ETF sect.",
-         "XLK": "ETF sect.", "UNG": "ETF commod.", "NVDA": "acción", "BAC": "acción", "TSLA": "acción",
-         "MSTR": "cripto-px", "SMCI": "acción", "ROKU": "acción", "MARA": "cripto-px", "IWM": "índice"}
-OUT = Path("outputs/experiments/strategy_clustering.json")
-FIG = Path("outputs/experiments/strategy_clusters.png")
-# Features de NATURALEZA para agrupar (ex-ante/estructurales; pre-especificadas):
+STRATS = ["M5", "M8", "M10", "Régimen", "AutoML", "ZeroR", "B&H"]
+NO_TRIV = ["M5", "M8", "M10", "Régimen", "AutoML"]
 CLUS_FEATS = ["leverage_corr", "crisis_mean", "oos_crisis_frac", "oos_vol", "agent_short_frac"]
+CLASE = {"SPY": "índice", "QQQ": "índice", "DIA": "índice", "IWM": "índice", "XLE": "ETF sect.",
+         "XLF": "ETF sect.", "XLK": "ETF sect.", "UNG": "ETF commod.", "NVDA": "acción", "BAC": "acción",
+         "TSLA": "acción", "MSTR": "cripto-px", "SMCI": "acción", "ROKU": "acción", "MARA": "cripto-px"}
+PREP = "outputs/experiments/decision_automl_prep.json"
+PANEL_AUTOML = "outputs/experiments/automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21_kfold_seed42.json"
+OUT = Path("outputs/experiments/strategy_clustering15.json")
 
 
-def _row(tk: str, lev: dict) -> dict:
+def _nature_and_regime(tk: str, lev: dict) -> dict:
+    """Naturaleza OOS (Crisis frac, vol, sesgo corto) + acc/Sharpe de la estrategia Régimen (sign prior)."""
     data.load_market_data(tk, CALIBRATION_START, datetime.date.today().isoformat())
     gamma, sigma, oos_ret = build_states(tk)
     m = wf.run_master(gamma, sigma, oos_ret, wf.load_agent(tk))
     mv = m.loc[m["r_next"].notna() & (np.sign(m["r_next"]) != 0)].copy()
-    y = (mv["r_next"] > 0).astype(int)
-    p1 = wf_p1(mv[ALL22], y)
-    sub = mv.index[p1.notna().to_numpy()]
+    sub = mv.index[N0:]                                   # ventana desplegable (≡ M10)
     truth = np.sign(mv.loc[sub, "r_next"].to_numpy())
-    sign_prior = {k: float(np.sign(lev["media_regimen"][nm])) for k, nm in enumerate(REGNAMES)}
     dom = mv.loc[sub, "regime_dom"].to_numpy().astype(int)
-
-    pos = {"M5": np.sign(mv.loc[sub, "agent_size"].to_numpy()),
-           "M8": np.sign(mv.loc[sub, "final_size"].to_numpy()),
-           "M10": np.where(p1.dropna().to_numpy() >= 0.5, 1.0, -1.0),
-           "Régimen": np.array([sign_prior[d] for d in dom]),
-           "B&H": np.ones_like(truth)}
-    frac_up = float((truth > 0).mean()); maj = 1.0 if frac_up >= 0.5 else -1.0
-    pos["ZeroR"] = np.full_like(truth, maj)
-
-    def nr(p):
-        ws = pd.Series(0.0, index=mv.index); ws.loc[sub] = p
-        return run_backtest(oos_ret, ws, signal_lag=1)["net_return"].reindex(sub)
-    acc = {k: round(float((v == truth).mean()), 4) for k, v in pos.items()}
-    shp = {k: round(float(sharpe(nr(v))), 4) for k, v in pos.items()}
-
-    return {"clase": CLASE.get(tk, "?"), "n": int(len(sub)), "frac_up": round(frac_up, 4),
-            "acc": acc, "sharpe": shp,
+    sign_prior = {k: float(np.sign(lev["media_regimen"][nm])) for k, nm in enumerate(REGNAMES)}
+    pos_reg = np.array([sign_prior.get(d, 1.0) for d in dom])
+    w = pd.Series(0.0, index=m.index); w.loc[sub] = pos_reg
+    nr = run_backtest(oos_ret, w, signal_lag=1)["net_return"].reindex(sub)
+    return {"reg_acc": round(float((pos_reg == truth).mean()), 4), "reg_sharpe": round(float(sharpe(nr)), 4),
             "nat": {"leverage_corr": lev["leverage_corr"], "crisis_mean": lev["crisis_mean"],
                     "oos_crisis_frac": round(float((dom == 2).mean()), 4),
                     "oos_vol": round(float(mv.loc[sub, "garch_sigma"].mean()), 4),
-                    "agent_short_frac": round(float((mv.loc[sub, "agent_size"] < 0).mean()), 4),
-                    "regime_dir_acc": acc["Régimen"]}}
+                    "agent_short_frac": round(float((mv.loc[sub, "agent_size"] < 0).mean()), 4)}}
+
+
+def _profiles(labels: np.ndarray, ok: list, rows: dict, k: int) -> dict:
+    prof = {}
+    for c in range(k):
+        members = [ok[i] for i in range(len(ok)) if labels[i] == c]
+        if not members:
+            continue
+        nat = {f: round(float(np.mean([rows[t]["nat"][f] for t in members])), 4) for f in CLUS_FEATS}
+        accm = {s: round(float(np.mean([rows[t]["acc"][s] for t in members])), 4) for s in STRATS}
+        shpm = {s: round(float(np.mean([rows[t]["sharpe"][s] for t in members])), 4) for s in STRATS}
+        prof[f"C{c}"] = {"activos": members, "naturaleza_media": nat, "acc_media": accm, "sharpe_media": shpm,
+                         "mejor_acc_no_trivial": max(NO_TRIV, key=lambda s: accm[s]),
+                         "mejor_sharpe_no_trivial": max(NO_TRIV, key=lambda s: shpm[s])}
+    return prof
 
 
 def main() -> None:
+    config.set_seeds(config.SEED)
     wf.reset_thresholds_cache()
     lev = json.load(open("outputs/experiments/leverage_screen.json"))["por_activo"]
+    prep = json.load(open(PREP))["por_activo"]
+    autx = json.load(open(PANEL_AUTOML))["por_activo"]
+
     rows = {}
     for tk in PANEL:
         try:
-            rows[tk] = _row(tk, lev[tk])
-            r = rows[tk]
-            print(f"{tk:5s} {r['clase']:10s} acc M5={r['acc']['M5']:.3f} M8={r['acc']['M8']:.3f} "
-                  f"M10={r['acc']['M10']:.3f} Rég={r['acc']['Régimen']:.3f} ZeroR={r['acc']['ZeroR']:.3f}", flush=True)
+            nr = _nature_and_regime(tk, lev[tk])
+            p = prep[tk]; a = autx[tk]["table"]
+            acc = {"M5": p["accuracy"]["m5"], "M8": p["accuracy"]["m8"], "M10": p["accuracy"]["m10"],
+                   "Régimen": nr["reg_acc"], "AutoML": a["automl"]["accuracy"],
+                   "ZeroR": p["accuracy"]["zeror"], "B&H": p["accuracy"]["bh"]}
+            shp = {"M5": p["sharpe"]["m5"], "M8": p["sharpe"]["m8"], "M10": p["sharpe"]["m10"],
+                   "Régimen": nr["reg_sharpe"], "AutoML": a["automl"]["sharpe"],
+                   "ZeroR": p["sharpe"]["zeror"], "B&H": p["sharpe"]["bh"]}
+            rows[tk] = {"clase": CLASE.get(tk, "?"), "nat": nr["nat"], "acc": acc, "sharpe": shp}
+            print(f"{tk:5s} {rows[tk]['clase']:10s} lev={nr['nat']['leverage_corr']:+.3f} "
+                  f"acc M8={acc['M8']:.3f} M10={acc['M10']:.3f} AutoML={acc['AutoML']:.3f} ZeroR={acc['ZeroR']:.3f}", flush=True)
         except Exception as e:  # noqa: BLE001
+            import traceback; traceback.print_exc()
             print(f"{tk:5s} ERROR {type(e).__name__}: {e}", flush=True)
     ok = [t for t in PANEL if t in rows]
 
-    # --- matriz de features de naturaleza (estandarizada) ---
-    X = np.array([[rows[t]["nat"][f] if f != "agent_short_frac" else rows[t]["nat"][f] for f in CLUS_FEATS] for t in ok])
+    X = np.array([[rows[t]["nat"][f] for f in CLUS_FEATS] for t in ok])
     Xs = StandardScaler().fit_transform(X)
-    # elegir k por silueta (k=2..4)
-    sil = {}
+
+    # --- VARIOS algoritmos (no se elige automáticamente: lo decide Raquel) ---
+    methods = {}
     for k in (2, 3, 4):
+        algos = {}
         km = KMeans(n_clusters=k, random_state=config.SEED, n_init=10).fit(Xs)
-        sil[k] = float(silhouette_score(Xs, km.labels_))
-    k_best = max(sil, key=sil.get)
-    km = KMeans(n_clusters=k_best, random_state=config.SEED, n_init=10).fit(Xs)
-    labels = km.labels_
+        algos["kmeans"] = {"labels": km.labels_.tolist(), "silhouette": round(float(silhouette_score(Xs, km.labels_)), 4)}
+        ag = AgglomerativeClustering(n_clusters=k, linkage="ward").fit(Xs)
+        algos["ward"] = {"labels": ag.labels_.tolist(), "silhouette": round(float(silhouette_score(Xs, ag.labels_)), 4)}
+        gm = GaussianMixture(n_components=k, random_state=config.SEED, n_init=5).fit(Xs)
+        gl = gm.predict(Xs)
+        algos["gmm"] = {"labels": gl.tolist(), "silhouette": round(float(silhouette_score(Xs, gl)), 4),
+                        "bic": round(float(gm.bic(Xs)), 2)}
+        try:
+            sp = SpectralClustering(n_clusters=k, random_state=config.SEED, affinity="nearest_neighbors",
+                                    n_neighbors=5, assign_labels="kmeans").fit(Xs)
+            algos["spectral"] = {"labels": sp.labels_.tolist(),
+                                 "silhouette": round(float(silhouette_score(Xs, sp.labels_)), 4)}
+        except Exception as e:  # noqa: BLE001
+            algos["spectral"] = {"error": f"{type(e).__name__}: {e}"}
+        methods[f"k{k}"] = algos
 
-    clusters = {}
-    for c in range(k_best):
-        members = [ok[i] for i in range(len(ok)) if labels[i] == c]
-        # naturaleza media + estrategia ganadora media del grupo
-        nat_mean = {f: round(float(np.mean([rows[t]["nat"][f] for t in members])), 4) for f in CLUS_FEATS}
-        acc_mean = {s: round(float(np.mean([rows[t]["acc"][s] for t in members])), 4)
-                    for s in ("M5", "M8", "M10", "Régimen", "B&H", "ZeroR")}
-        shp_mean = {s: round(float(np.mean([rows[t]["sharpe"][s] for t in members])), 4)
-                    for s in ("M5", "M8", "M10", "Régimen", "B&H", "ZeroR")}
-        # mejor estrategia NO trivial (excluye B&H/ZeroR) por accuracy y por Sharpe
-        no_triv = ("M5", "M8", "M10", "Régimen")
-        best_acc = max(no_triv, key=lambda s: acc_mean[s]); best_shp = max(no_triv, key=lambda s: shp_mean[s])
-        clusters[f"C{c}"] = {"activos": members, "naturaleza_media": nat_mean,
-                             "acc_media": acc_mean, "sharpe_media": shp_mean,
-                             "mejor_acc_no_trivial": best_acc, "mejor_sharpe_no_trivial": best_shp,
-                             "delta_M8_M5_acc": round(acc_mean["M8"] - acc_mean["M5"], 4),
-                             "delta_M10_M8_acc": round(acc_mean["M10"] - acc_mean["M8"], 4)}
+    # Concordancia entre métodos a k=3 (Rand ajustado)
+    lab3 = {mth: methods["k3"][mth]["labels"] for mth in ("kmeans", "ward", "gmm", "spectral")
+            if "labels" in methods["k3"][mth]}
+    concord = {}
+    mlist = list(lab3)
+    for i in range(len(mlist)):
+        for j in range(i + 1, len(mlist)):
+            concord[f"{mlist[i]}~{mlist[j]}"] = round(float(adjusted_rand_score(lab3[mlist[i]], lab3[mlist[j]])), 3)
 
-    # figura PCA 2D
-    pca = PCA(n_components=2).fit_transform(Xs)
-    fig, ax = plt.subplots(figsize=(7.5, 5.5))
-    for c in range(k_best):
-        mask = labels == c
-        ax.scatter(pca[mask, 0], pca[mask, 1], s=120, label=f"C{c}")
-    for i, t in enumerate(ok):
-        ax.annotate(t, (pca[i, 0], pca[i, 1]), fontsize=8, xytext=(4, 4), textcoords="offset points")
-    ax.set_xlabel("PC1"); ax.set_ylabel("PC2")
-    ax.set_title(f"Clustering de activos por naturaleza (k={k_best}, silueta={sil[k_best]:.2f})")
-    ax.legend(); plt.tight_layout(); FIG.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG, dpi=110, bbox_inches="tight"); plt.close(fig)
+    # Perfiles por cluster a k=3, para cada método (naturaleza + estrategia ganadora)
+    profiles_k3 = {mth: _profiles(np.array(lab3[mth]), ok, rows, 3) for mth in lab3}
 
-    res = {"meta": {"panel": ok, "n_activos": len(ok), "ventana": "M10 walk-forward (~250 d tras burn-in 150)",
-                    "cluster_features": CLUS_FEATS, "k_silueta": sil, "k_elegido": k_best, "seed": config.SEED,
-                    "aviso": "n=12 → clustering EXPLORATORIO/descriptivo, no confirmatorio; la regla es HIPÓTESIS "
-                             "pre-registrable, no probada. Features pre-especificadas (anti-dragado). Exploratorio (docs/)."},
-           "por_activo": rows, "clusters": clusters}
+    res = {"meta": {"panel": ok, "n_activos": len(ok), "cluster_features": CLUS_FEATS, "seed": config.SEED,
+                    "ventana": "desplegable M10 (~250 d tras burn-in 150)",
+                    "estrategias": STRATS, "X_estandarizada": Xs.round(4).tolist(),
+                    "metodos": "kmeans, ward, gmm(+BIC), spectral; DBSCAN descartado (n=15 sin densidad)",
+                    "decision": "la elección del algoritmo/k la decide Raquel; aquí se muestran todos.",
+                    "aviso": "n=15 → EXPLORATORIO/descriptivo, no confirmatorio; regla = HIPÓTESIS pre-registrable."},
+           "por_activo": rows, "clustering": methods, "concordancia_k3_randajustado": concord,
+           "perfiles_k3": profiles_k3}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(res, indent=2, ensure_ascii=False))
 
-    print(f"\n=== CLUSTERING (k={k_best}, silueta={sil[k_best]:.2f}; siluetas {sil}) ===")
-    for c, d in clusters.items():
-        print(f"\n{c}: {d['activos']}")
-        nm = d["naturaleza_media"]
-        print(f"   naturaleza: leverage={nm['leverage_corr']:+.3f} crisis_mean={nm['crisis_mean']:+.5f} "
-              f"crisisOOS={nm['oos_crisis_frac']:.2f} vol={nm['oos_vol']:.2f} agente_corto={nm['agent_short_frac']:.2f}")
-        print(f"   acc media: " + " ".join(f"{s}={d['acc_media'][s]:.3f}" for s in ("M5","M8","M10","Régimen","ZeroR")))
-        print(f"   → mejor no-trivial: acc={d['mejor_acc_no_trivial']} sharpe={d['mejor_sharpe_no_trivial']} "
-              f"· ΔM8-M5={d['delta_M8_M5_acc']:+.3f} ΔM10-M8={d['delta_M10_M8_acc']:+.3f}")
-    print(f"\nfigura: {FIG}\nOK · {OUT}")
+    print("\n=== SILHOUETTE por método y k (mayor = mejor separación) ===")
+    for k in ("k2", "k3", "k4"):
+        row = " ".join(f"{mth}={methods[k][mth].get('silhouette','—')}" for mth in ("kmeans", "ward", "gmm", "spectral"))
+        print(f"  {k}: {row}")
+    print(f"\nConcordancia k=3 (Rand ajustado): {concord}")
+    print("\n=== Perfiles k=3 (KMeans) — naturaleza y mejor estrategia por grupo ===")
+    for c, d in profiles_k3.get("kmeans", {}).items():
+        print(f"  {c}: {d['activos']} → mejor acc={d['mejor_acc_no_trivial']} sharpe={d['mejor_sharpe_no_trivial']} "
+              f"(lev={d['naturaleza_media']['leverage_corr']:+.3f} vol={d['naturaleza_media']['oos_vol']:.2f})")
+    print(f"\nOK · {OUT}")
 
 
 if __name__ == "__main__":
-    config.set_seeds(config.SEED)
     main()

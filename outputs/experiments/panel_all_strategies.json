@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM",
+      "XLF",
+      "XLK"
+    ],
+    "N0": 150,
+    "regimen": "RAM crudo: calm_prob>=crisis_prob → largo (leverage effect)",
+    "nota_m8_m10": "M8/M10 solo para los 10 originales (panel_intervention_scan.json); 5 nuevos pendientes de pipeline"
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 251,
+      "frac_up": 0.566,
+      "bh": 0.5657,
+      "zeror": 0.5657,
+      "m5": 0.3665,
+      "regimen": 0.498,
+      "m8": 0.4422,
+      "m10": 0.502
+    },
+    "NVDA": {
+      "n": 259,
+      "frac_up": 0.552,
+      "bh": 0.5521,
+      "zeror": 0.5521,
+      "m5": 0.4672,
+      "regimen": 0.4479,
+      "m8": 0.5212,
+      "m10": 0.4865
+    },
+    "BAC": {
+      "n": 246,
+      "frac_up": 0.561,
+      "bh": 0.561,
+      "zeror": 0.561,
+      "m5": 0.4512,
+      "regimen": 0.4146,
+      "m8": 0.5163,
+      "m10": 0.4268
+    },
+    "TSLA": {
+      "n": 251,
+      "frac_up": 0.53,
+      "bh": 0.5299,
+      "zeror": 0.5299,
+      "m5": 0.4741,
+      "regimen": 0.4701,
+      "m8": 0.4781,
+      "m10": 0.5259
+    },
+    "XLE": {
+      "n": 248,
+      "frac_up": 0.565,
+      "bh": 0.5645,
+      "zeror": 0.5645,
+      "m5": 0.4476,
+      "regimen": 0.4637,
+      "m8": 0.5282,
+      "m10": 0.4879
+    },
+    "UNG": {
+      "n": 247,
+      "frac_up": 0.486,
+      "bh": 0.4858,
+      "zeror": 0.5142,
+      "m5": 0.5101,
+      "regimen": 0.5142,
+      "m8": 0.502,
+      "m10": 0.5101
+    },
+    "MSTR": {
+      "n": 251,
+      "frac_up": 0.45,
+      "bh": 0.4502,
+      "zeror": 0.5498,
+      "m5": 0.5538,
+      "regimen": 0.5498,
+      "m8": 0.5578,
+      "m10": 0.5179
+    },
+    "SMCI": {
+      "n": 250,
+      "frac_up": 0.484,
+      "bh": 0.484,
+      "zeror": 0.516,
+      "m5": 0.484,
+      "regimen": 0.516,
+      "m8": 0.496,
+      "m10": 0.52
+    },
+    "ROKU": {
+      "n": 250,
+      "frac_up": 0.548,
+      "bh": 0.548,
+      "zeror": 0.548,
+      "m5": 0.444,
+      "regimen": 0.452,
+      "m8": 0.528,
+      "m10": 0.512
+    },
+    "MARA": {
+      "n": 248,
+      "frac_up": 0.468,
+      "bh": 0.4677,
+      "zeror": 0.5323,
+      "m5": 0.5282,
+      "regimen": 0.5323,
+      "m8": 0.5282,
+      "m10": 0.5242
+    },
+    "QQQ": {
+      "n": 251,
+      "frac_up": 0.59,
+      "bh": 0.5896,
+      "zeror": 0.5896,
+      "m5": 0.4183,
+      "regimen": 0.4861,
+      "m8": null,
+      "m10": null
+    },
+    "DIA": {
+      "n": 250,
+      "frac_up": 0.556,
+      "bh": 0.556,
+      "zeror": 0.556,
+      "m5": 0.44,
+      "regimen": 0.536,
+      "m8": null,
+      "m10": null
+    },
+    "IWM": {
+      "n": 251,
+      "frac_up": 0.574,
+      "bh": 0.5737,
+      "zeror": 0.5737,
+      "m5": 0.4502,
+      "regimen": 0.4382,
+      "m8": null,
+      "m10": null
+    },
+    "XLF": {
+      "n": 247,
+      "frac_up": 0.538,
+      "bh": 0.5385,
+      "zeror": 0.5385,
+      "m5": 0.4291,
+      "regimen": 0.4939,
+      "m8": null,
+      "m10": null
+    },
+    "XLK": {
+      "n": 251,
+      "frac_up": 0.641,
+      "bh": 0.6414,
+      "zeror": 0.6414,
+      "m5": 0.51,
+      "regimen": 0.4024,
+      "m8": null,
+      "m10": null
+    }
+  }
+}
