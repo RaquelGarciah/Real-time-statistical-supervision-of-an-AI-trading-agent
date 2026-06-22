@@ -13,7 +13,9 @@
       "MARA",
       "QQQ",
       "DIA",
-      "IWM"
+      "IWM",
+      "XLF",
+      "XLK"
     ],
     "seed": 42,
     "nota": "Días que M8 (mismatch τ=0.5) NO interviene: acc del agente vs acc del régimen (s_dom) y coincidencia agente↔régimen. Ventana mv[150:]. Exploratorio (docs/)."
@@ -135,14 +137,32 @@
       "agente_coincide_regimen_noint": 0.34,
       "acc_M8_total": 0.47,
       "acc_regimen_total": 0.574
+    },
+    "XLF": {
+      "n": 247,
+      "interv": 0.696,
+      "acc_agente_noint": 0.387,
+      "acc_regimen_noint": 0.507,
+      "agente_coincide_regimen_noint": 0.533,
+      "acc_M8_total": 0.502,
+      "acc_regimen_total": 0.538
+    },
+    "XLK": {
+      "n": 251,
+      "interv": 0.104,
+      "acc_agente_noint": 0.489,
+      "acc_regimen_noint": 0.547,
+      "agente_coincide_regimen_noint": 0.813,
+      "acc_M8_total": 0.47,
+      "acc_regimen_total": 0.522
     }
   },
   "medias": {
-    "interv": 0.373,
-    "acc_agente_noint": 0.465,
-    "acc_regimen_noint": 0.534,
-    "agente_coincide_regimen_noint": 0.481,
-    "acc_M8_total": 0.503,
-    "acc_regimen_total": 0.537
+    "interv": 0.376,
+    "acc_agente_noint": 0.462,
+    "acc_regimen_noint": 0.533,
+    "agente_coincide_regimen_noint": 0.506,
+    "acc_M8_total": 0.501,
+    "acc_regimen_total": 0.536
   }
 }

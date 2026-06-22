@@ -13,7 +13,9 @@
       "MARA",
       "QQQ",
       "DIA",
-      "IWM"
+      "IWM",
+      "XLF",
+      "XLK"
     ],
     "ventana": "~250 (mv[150:])",
     "sizing": "MISMO vol-target para todas (target_vol/σ)",
@@ -722,56 +724,164 @@
           "calmar": 3.1167
         }
       }
+    },
+    "XLF": {
+      "n": 247,
+      "frac_up": 0.5385,
+      "estrategias": {
+        "M5": {
+          "acc": 0.4291,
+          "sharpe": -0.4651,
+          "maxdd": -0.1088,
+          "calmar": -0.4155
+        },
+        "M8": {
+          "acc": 0.502,
+          "sharpe": -0.3695,
+          "maxdd": -0.0805,
+          "calmar": -0.4588
+        },
+        "M10": {
+          "acc": 0.5263,
+          "sharpe": -0.4111,
+          "maxdd": -0.1202,
+          "calmar": -0.3473
+        },
+        "STRATA-U": {
+          "acc": 0.4575,
+          "sharpe": -1.0102,
+          "maxdd": -0.1516,
+          "calmar": -0.6183
+        },
+        "Régimen": {
+          "acc": 0.5385,
+          "sharpe": -0.0665,
+          "maxdd": -0.0902,
+          "calmar": -0.1163
+        },
+        "B&H": {
+          "acc": 0.5385,
+          "sharpe": -0.0665,
+          "maxdd": -0.0902,
+          "calmar": -0.1163
+        },
+        "S&H": {
+          "acc": 0.4615,
+          "sharpe": 0.049,
+          "maxdd": -0.073,
+          "calmar": 0.0034
+        },
+        "ZeroR": {
+          "acc": 0.5385,
+          "sharpe": -0.0665,
+          "maxdd": -0.0902,
+          "calmar": -0.1163
+        }
+      }
+    },
+    "XLK": {
+      "n": 251,
+      "frac_up": 0.6414,
+      "estrategias": {
+        "M5": {
+          "acc": 0.51,
+          "sharpe": 0.8226,
+          "maxdd": -0.0883,
+          "calmar": 0.9202
+        },
+        "M8": {
+          "acc": 0.4701,
+          "sharpe": 0.2115,
+          "maxdd": -0.1061,
+          "calmar": 0.1549
+        },
+        "M10": {
+          "acc": 0.5418,
+          "sharpe": 0.1041,
+          "maxdd": -0.0711,
+          "calmar": 0.0766
+        },
+        "STRATA-U": {
+          "acc": 0.5259,
+          "sharpe": 0.3463,
+          "maxdd": -0.1537,
+          "calmar": 0.1992
+        },
+        "Régimen": {
+          "acc": 0.5219,
+          "sharpe": 0.1319,
+          "maxdd": -0.172,
+          "calmar": 0.0483
+        },
+        "B&H": {
+          "acc": 0.6414,
+          "sharpe": 2.0107,
+          "maxdd": -0.0936,
+          "calmar": 2.3457
+        },
+        "S&H": {
+          "acc": 0.3586,
+          "sharpe": -2.023,
+          "maxdd": -0.1889,
+          "calmar": -1.0036
+        },
+        "ZeroR": {
+          "acc": 0.6414,
+          "sharpe": 2.0107,
+          "maxdd": -0.0936,
+          "calmar": 2.3457
+        }
+      }
     }
   },
   "resumen_medias": {
     "M5": {
-      "acc": 0.4642,
-      "sharpe": -0.8632,
-      "maxdd": -0.1267,
-      "calmar": -0.3732
+      "acc": 0.465,
+      "sharpe": -0.7243,
+      "maxdd": -0.1229,
+      "calmar": -0.2898
     },
     "M8": {
-      "acc": 0.5029,
-      "sharpe": 0.4781,
-      "maxdd": -0.0852,
-      "calmar": 0.6721
+      "acc": 0.5007,
+      "sharpe": 0.4038,
+      "maxdd": -0.0863,
+      "calmar": 0.5622
     },
     "M10": {
-      "acc": 0.5014,
-      "sharpe": -0.1231,
-      "maxdd": -0.1112,
-      "calmar": 0.5848
+      "acc": 0.5057,
+      "sharpe": -0.1272,
+      "maxdd": -0.1092,
+      "calmar": 0.4888
     },
     "STRATA-U": {
-      "acc": 0.5299,
-      "sharpe": 0.7329,
-      "maxdd": -0.0818,
-      "calmar": 1.1118
+      "acc": 0.5248,
+      "sharpe": 0.5909,
+      "maxdd": -0.0912,
+      "calmar": 0.9357
     },
     "Régimen": {
-      "acc": 0.5373,
-      "sharpe": 0.7699,
-      "maxdd": -0.0915,
-      "calmar": 1.3306
+      "acc": 0.5364,
+      "sharpe": 0.6716,
+      "maxdd": -0.0967,
+      "calmar": 1.1487
     },
     "B&H": {
-      "acc": 0.5329,
-      "sharpe": 0.8043,
+      "acc": 0.5405,
+      "sharpe": 0.8267,
       "maxdd": -0.0919,
-      "calmar": 1.3098
+      "calmar": 1.2838
     },
     "S&H": {
-      "acc": 0.4671,
-      "sharpe": -0.8125,
-      "maxdd": -0.1257,
-      "calmar": -0.3738
+      "acc": 0.4595,
+      "sharpe": -0.8358,
+      "maxdd": -0.1264,
+      "calmar": -0.3906
     },
     "ZeroR": {
-      "acc": 0.5502,
-      "sharpe": 1.1737,
-      "maxdd": -0.0724,
-      "calmar": 1.6736
+      "acc": 0.5555,
+      "sharpe": 1.1468,
+      "maxdd": -0.075,
+      "calmar": 1.5991
     }
   }
 }

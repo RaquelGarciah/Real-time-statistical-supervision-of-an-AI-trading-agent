@@ -45,7 +45,8 @@ import experiments.walkforward_robustez as wf
 from experiments.strata_u import (_regime_drift, TARGET_VOL, CAP, TAU_CONF, REG_REL_MIN,
                                    AGENT_REL_MIN, AGENT_MIN_OBS)
 
-PANEL = ["SPY", "NVDA", "BAC", "TSLA", "XLE", "UNG", "MSTR", "SMCI", "ROKU", "MARA", "QQQ", "DIA", "IWM"]
+PANEL = ["SPY", "NVDA", "BAC", "TSLA", "XLE", "UNG", "MSTR", "SMCI", "ROKU", "MARA", "QQQ", "DIA",
+         "IWM", "XLF", "XLK"]
 N0 = 150
 OUT = Path("outputs/experiments/strata_adaptada.json")
 FAIR = Path("outputs/experiments/fair_sizing_compare.json")   # fuente de M10 (misma ventana)
