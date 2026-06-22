@@ -35,6 +35,20 @@ def realized_vol_annualized(returns: pd.Series, window: int = 21) -> pd.Series:
     return returns.rolling(window).std() * np.sqrt(252)
 
 
+def ewma_vol_annualized(returns: pd.Series, lam: float = 0.94) -> pd.Series:
+    """Volatilidad EWMA anualizada estilo RiskMetrics (J.P. Morgan 1996).
+
+    ``sigma_t^2 = lam * sigma_{t-1}^2 + (1-lam) * r_t^2``, anualizada con ``√252``.
+    Reacciona más rápido que la ventana móvil rectangular ``realized_vol_annualized``
+    (pondera exponencialmente el pasado reciente, sin ventana dura). ``adjust=False``
+    la hace estrictamente backward-looking: cada punto usa solo ``r_{1:t}`` → causal,
+    apta para el filtrado del HMM sin look-ahead. ``lam=0.94`` es el valor diario
+    canónico de RiskMetrics.
+    """
+    var = returns.pow(2).ewm(alpha=1 - lam, adjust=False).mean()
+    return np.sqrt(var) * np.sqrt(252)
+
+
 def rsi(prices: pd.Series, window: int = 14) -> pd.Series:
     """Relative Strength Index de Wilder (1978) con suavizado exponencial.
 
