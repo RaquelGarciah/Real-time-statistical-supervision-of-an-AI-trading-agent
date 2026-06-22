@@ -192,8 +192,61 @@ same = all(abs(PA[a]["fair"]["A_reg_sdom_τ00"]["acc"] - PA[a]["fair"]["Régimen
 print("A_reg_sdom_τ00 == Régimen en accuracy (todos los activos)?", same,
       "→ a τ=0 el override-C con signo s_dom ES seguir el régimen cada día (con vol-target).")""")
 
-# ── §5 Cobertura ──
-md(r"""## §5. Cobertura: ¿en cuántos activos cada config iguala/supera a M8, STRATA-U, M5 y ZeroR?
+# ── §5 Por qué actuar solo en contradicción se queda corto ──
+md(r"""## §5. ¿Por qué "actuar solo cuando el agente contradice al régimen" da peor que seguir el régimen?
+
+Intuición tentadora: *"si M8 no interviene, será que el agente ya está alineado con el régimen, así que
+está bien"*. **Los datos lo desmienten.** RAM (modo *mismatch*) **no comprueba que el agente esté
+alineado** — solo que no haya una contradicción **fuerte** (masa ≥ τ=0,5). **Silencio ≠ aprobación.**
+
+Descomponemos la ventana de M8 en días que **interviene** y días que **no**. En los días que NO
+interviene, M8 sigue al agente; comparamos la accuracy del **agente** vs la que habría dado el
+**régimen** (`s_dom`), y cuánto **coincide** de hecho el agente con el régimen.
+Fuente: `outputs/experiments/m8_nonintervention_diag.json`.""")
+
+code(r"""DG = json.load(open("outputs/experiments/m8_nonintervention_diag.json"))
+dpa = DG["por_activo"]; dm = DG["medias"]; DA = list(dpa)
+tab = pd.DataFrame({
+    "%no-interv": {a: 1 - dpa[a]["interv"] for a in DA},
+    "acc agente (no-int)": {a: dpa[a]["acc_agente_noint"] for a in DA},
+    "acc régimen (no-int)": {a: dpa[a]["acc_regimen_noint"] for a in DA},
+    "agente≡régimen (no-int)": {a: dpa[a]["agente_coincide_regimen_noint"] for a in DA},
+    "M8 total": {a: dpa[a]["acc_M8_total"] for a in DA},
+    "Régimen total": {a: dpa[a]["acc_regimen_total"] for a in DA}}).loc[DA]
+tab.loc["— MEDIA —"] = [1 - dm["interv"], dm["acc_agente_noint"], dm["acc_regimen_noint"],
+                        dm["agente_coincide_regimen_noint"], dm["acc_M8_total"], dm["acc_regimen_total"]]
+with pd.option_context("display.float_format", lambda v: f"{v:.3f}", "display.width", 200):
+    print(tab)
+print(f"\nMedia: M8 NO interviene el {1-dm['interv']:.0%} de los días; en ellos el agente coincide con el "
+      f"régimen solo el {dm['agente_coincide_regimen_noint']:.0%}.\n"
+      f"En esos días: agente acc={dm['acc_agente_noint']:.3f} (bajo el azar) vs régimen acc={dm['acc_regimen_noint']:.3f}."
+      f"  → M8 entrega la 'zona gris' a un agente malo.")""")
+
+code(r"""# visual: en días de NO intervención, agente vs régimen por activo
+x = np.arange(len(DA)); w = 0.38
+ag = [dpa[a]["acc_agente_noint"] for a in DA]; rg = [dpa[a]["acc_regimen_noint"] for a in DA]
+fig, ax = plt.subplots(figsize=(12, 4.6))
+ax.bar(x - w/2, ag, w, label="agente (días no-interv.)", color="#9e9e9e")
+ax.bar(x + w/2, rg, w, label="régimen s_dom (esos días)", color="#c0392b")
+ax.axhline(0.5, color="k", lw=0.8, ls=":")
+ax.set_xticks(x); ax.set_xticklabels(DA); ax.set_ylim(0.3, 0.65)
+ax.set_ylabel("accuracy"); ax.legend()
+ax.set_title("Días que M8 NO interviene: a quién deja decidir (agente) vs quién acierta (régimen)")
+plt.tight_layout(); plt.show()""")
+
+md(r"""**Lectura.** De media M8 calla el ~63 % de los días, y en ellos el agente coincide con el régimen
+**solo el ~48 %** (no el ~100 % que sugiere la intuición). Y justo ahí el agente va por **debajo del
+azar** (~0,465) mientras el régimen acierta más (~0,534): M8 entrega esa **zona gris** —contradicciones
+débiles, régimen poco confiado, agente plano— a un predictor malo. Ese es el origen del gap M8 0,503 ↔
+Régimen 0,537.
+
+**Pero NO es universal** (clave para no sobrevender): en **MSTR/SMCI** (prior-flip) M8 casi no interviene
+y ahí el **agente es mejor** que el régimen (MSTR 0,556 vs 0,452) → M8 gana *por seguir al agente*. Por
+eso llegar a STRATA-U exigió el signo causal `s_dom`: baja τ para capturar la zona gris donde el régimen
+es bueno, **y se apaga** donde el régimen es malo. El leverage hardcoded no se apaga → se quedaba corto.""")
+
+# ── §6 Cobertura ──
+md(r"""## §6. Cobertura: ¿en cuántos activos cada config iguala/supera a M8, STRATA-U, M5 y ZeroR?
 
 `acc≥STRATA-U` y `Sh≥STRATA-U` miden si la adaptada **alcanza** STRATA-U por activo. Solo
 `A_reg_sdom_τ00` lo hace de forma generalizada (11/13). `acc>ZeroR` y `Sh>ZeroR` confirman el muro:
@@ -203,8 +256,8 @@ code(r"""cob = pd.DataFrame(COB).T
 cob = cob[["acc≥M5", "acc≥M8", "sharpe≥M8", "acc≥STRATA-U", "sharpe≥STRATA-U", "acc>ZeroR", "sharpe>ZeroR"]]
 print(cob.to_string())""")
 
-# ── §6 Conclusión ──
-md(r"""## §6. Conclusión (verificada, sin adornos)
+# ── §7 Conclusión ──
+md(r"""## §7. Conclusión (verificada, sin adornos)
 
 1. **Sí se puede unificar M8 y STRATA-U en UNA sola estrategia parametrizada** del mismo supervisor
    (override-C intacto). El **dial es τ** (la tasa de intervención): M8 = extremo conservador (agente

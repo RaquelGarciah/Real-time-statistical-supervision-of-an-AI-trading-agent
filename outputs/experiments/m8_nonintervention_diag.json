@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "activos": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM"
+    ],
+    "seed": 42,
+    "nota": "Días que M8 (mismatch τ=0.5) NO interviene: acc del agente vs acc del régimen (s_dom) y coincidencia agente↔régimen. Ventana mv[150:]. Exploratorio (docs/)."
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 251,
+      "interv": 0.339,
+      "acc_agente_noint": 0.355,
+      "acc_regimen_noint": 0.542,
+      "agente_coincide_regimen_noint": 0.325,
+      "acc_M8_total": 0.442,
+      "acc_regimen_total": 0.566
+    },
+    "NVDA": {
+      "n": 259,
+      "interv": 0.664,
+      "acc_agente_noint": 0.483,
+      "acc_regimen_noint": 0.586,
+      "agente_coincide_regimen_noint": 0.621,
+      "acc_M8_total": 0.521,
+      "acc_regimen_total": 0.552
+    },
+    "BAC": {
+      "n": 246,
+      "interv": 0.553,
+      "acc_agente_noint": 0.464,
+      "acc_regimen_noint": 0.564,
+      "agente_coincide_regimen_noint": 0.409,
+      "acc_M8_total": 0.516,
+      "acc_regimen_total": 0.561
+    },
+    "TSLA": {
+      "n": 251,
+      "interv": 0.394,
+      "acc_agente_noint": 0.461,
+      "acc_regimen_noint": 0.546,
+      "agente_coincide_regimen_noint": 0.007,
+      "acc_M8_total": 0.478,
+      "acc_regimen_total": 0.53
+    },
+    "XLE": {
+      "n": 248,
+      "interv": 0.613,
+      "acc_agente_noint": 0.469,
+      "acc_regimen_noint": 0.562,
+      "agente_coincide_regimen_noint": 0.406,
+      "acc_M8_total": 0.528,
+      "acc_regimen_total": 0.565
+    },
+    "UNG": {
+      "n": 247,
+      "interv": 0.121,
+      "acc_agente_noint": 0.507,
+      "acc_regimen_noint": 0.516,
+      "agente_coincide_regimen_noint": 0.991,
+      "acc_M8_total": 0.502,
+      "acc_regimen_total": 0.514
+    },
+    "MSTR": {
+      "n": 251,
+      "interv": 0.004,
+      "acc_agente_noint": 0.556,
+      "acc_regimen_noint": 0.452,
+      "agente_coincide_regimen_noint": 0.384,
+      "acc_M8_total": 0.558,
+      "acc_regimen_total": 0.454
+    },
+    "SMCI": {
+      "n": 250,
+      "interv": 0.028,
+      "acc_agente_noint": 0.49,
+      "acc_regimen_noint": 0.477,
+      "agente_coincide_regimen_noint": 0.016,
+      "acc_M8_total": 0.496,
+      "acc_regimen_total": 0.472
+    },
+    "ROKU": {
+      "n": 250,
+      "interv": 0.884,
+      "acc_agente_noint": 0.379,
+      "acc_regimen_noint": 0.448,
+      "agente_coincide_regimen_noint": 0.897,
+      "acc_M8_total": 0.528,
+      "acc_regimen_total": 0.536
+    },
+    "MARA": {
+      "n": 248,
+      "interv": 0.484,
+      "acc_agente_noint": 0.555,
+      "acc_regimen_noint": 0.555,
+      "agente_coincide_regimen_noint": 0.953,
+      "acc_M8_total": 0.528,
+      "acc_regimen_total": 0.528
+    },
+    "QQQ": {
+      "n": 251,
+      "interv": 0.267,
+      "acc_agente_noint": 0.435,
+      "acc_regimen_noint": 0.56,
+      "agente_coincide_regimen_noint": 0.473,
+      "acc_M8_total": 0.486,
+      "acc_regimen_total": 0.578
+    },
+    "DIA": {
+      "n": 250,
+      "interv": 0.316,
+      "acc_agente_noint": 0.444,
+      "acc_regimen_noint": 0.55,
+      "agente_coincide_regimen_noint": 0.427,
+      "acc_M8_total": 0.484,
+      "acc_regimen_total": 0.556
+    },
+    "IWM": {
+      "n": 251,
+      "interv": 0.179,
+      "acc_agente_noint": 0.451,
+      "acc_regimen_noint": 0.578,
+      "agente_coincide_regimen_noint": 0.34,
+      "acc_M8_total": 0.47,
+      "acc_regimen_total": 0.574
+    }
+  },
+  "medias": {
+    "interv": 0.373,
+    "acc_agente_noint": 0.465,
+    "acc_regimen_noint": 0.534,
+    "agente_coincide_regimen_noint": 0.481,
+    "acc_M8_total": 0.503,
+    "acc_regimen_total": 0.537
+  }
+}

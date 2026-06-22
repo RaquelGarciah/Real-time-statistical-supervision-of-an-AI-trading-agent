@@ -62,6 +62,25 @@ expansible `s_dom`**, el que usa STRATA-U).
 Cobertura de `A_reg_sdom_τ00`: **acc≥STRATA-U 11/13, Sharpe≥STRATA-U 11/13**; acc≥M8 11/13; pero
 **acc>ZeroR 0/13** y Sh>ZeroR 0/13.
 
+## Por qué M8 (actuar solo en contradicción) < seguir el régimen — [verificado]
+
+`experiments/m8_nonintervention_diag.py` → `m8_nonintervention_diag.json`. RAM (mismatch) **no comprueba
+que el agente esté alineado**, solo que no haya contradicción fuerte (masa ≥ τ=0,5): **silencio ≠
+aprobación**. Descomposición de la ventana de M8 (media panel):
+
+| | media |
+|---|---:|
+| % días que M8 NO interviene | 63% |
+| coincidencia agente↔régimen en esos días | **48%** (no ~100%) |
+| acc del agente en esos días | **0,465** (bajo el azar) |
+| acc que habría dado el régimen | **0,534** |
+| M8 total / Régimen total | 0,503 / 0,537 |
+
+M8 entrega la "zona gris" (contradicciones débiles, régimen poco confiado, agente plano) a un predictor
+malo → ahí está el gap. **No universal:** en prior-flip (MSTR 0,556 > régimen 0,452) M8 gana por seguir
+al agente; por eso llegar a STRATA-U exigió el signo causal `s_dom` (baja τ donde el régimen es bueno y
+**se apaga** donde es malo; el leverage hardcoded no se apaga).
+
 ## Conclusión
 
 1. **Sí se unifican M8 y STRATA-U en UNA estrategia parametrizada** del mismo supervisor (override-C
