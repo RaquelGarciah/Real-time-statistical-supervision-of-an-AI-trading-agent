@@ -1,0 +1,966 @@
+{
+  "meta": {
+    "activos": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM",
+      "XLF",
+      "XLK"
+    ],
+    "calib_end": "2019-12-31",
+    "test": "2020-01-01..2024-09-30",
+    "sizing": "vol-target (target_vol/σ) para Régimen/B&H/ZeroR; B&H_1x = comprar y mantener 1x",
+    "causal": "HMM/GARCH calibrados ≤2019 por activo; s_dom expansible; signal_lag=1",
+    "seed": 42,
+    "crisis": {
+      "COVID-2020": [
+        "2020-02-15",
+        "2020-04-30"
+      ],
+      "bear-2022": [
+        "2022-01-01",
+        "2022-10-15"
+      ]
+    },
+    "nota": "Canal de régimen SIN agente → ventana larga con crisis. Exploratorio (docs/)."
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 1191,
+      "frac_up": 0.5466,
+      "short_frac": 0.0017,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5466,
+          "sharpe": 0.8002,
+          "maxdd": -0.1502,
+          "calmar": 0.524,
+          "equity": 1.4306
+        },
+        "B&H": {
+          "acc": 0.5466,
+          "sharpe": 0.8283,
+          "maxdd": -0.1502,
+          "calmar": 0.5444,
+          "equity": 1.45
+        },
+        "ZeroR": {
+          "acc": 0.5466,
+          "sharpe": 0.8283,
+          "maxdd": -0.1502,
+          "calmar": 0.5444,
+          "equity": 1.45
+        },
+        "B&H_1x": {
+          "acc": 0.5466,
+          "sharpe": 0.6143,
+          "maxdd": -0.3575,
+          "calmar": 0.3207,
+          "equity": 1.6702
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0977,
+            "maxdd": -0.1228
+          },
+          "B&H": {
+            "ret": -0.0855,
+            "maxdd": -0.1193
+          }
+        },
+        "bear-2022": {
+          "n": 197,
+          "Régimen": {
+            "ret": -0.145,
+            "maxdd": -0.1502
+          },
+          "B&H": {
+            "ret": -0.145,
+            "maxdd": -0.1502
+          }
+        }
+      }
+    },
+    "NVDA": {
+      "n": 1191,
+      "frac_up": 0.5474,
+      "short_frac": 0.0025,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5449,
+          "sharpe": 1.2568,
+          "maxdd": -0.17,
+          "calmar": 0.7854,
+          "equity": 1.8084
+        },
+        "B&H": {
+          "acc": 0.5474,
+          "sharpe": 1.3792,
+          "maxdd": -0.17,
+          "calmar": 0.8702,
+          "equity": 1.9198
+        },
+        "ZeroR": {
+          "acc": 0.5474,
+          "sharpe": 1.3792,
+          "maxdd": -0.17,
+          "calmar": 0.8702,
+          "equity": 1.9198
+        },
+        "B&H_1x": {
+          "acc": 0.5474,
+          "sharpe": 1.1605,
+          "maxdd": -0.7187,
+          "calmar": 0.8633,
+          "equity": 9.7898
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0772,
+            "maxdd": -0.1327
+          },
+          "B&H": {
+            "ret": -0.0204,
+            "maxdd": -0.0793
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": -0.1499,
+            "maxdd": -0.1534
+          },
+          "B&H": {
+            "ret": -0.1499,
+            "maxdd": -0.1534
+          }
+        }
+      }
+    },
+    "BAC": {
+      "n": 1188,
+      "frac_up": 0.5042,
+      "short_frac": 0.0749,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5,
+          "sharpe": 0.0401,
+          "maxdd": -0.2435,
+          "calmar": -0.005,
+          "equity": 0.9943
+        },
+        "B&H": {
+          "acc": 0.5042,
+          "sharpe": 0.0328,
+          "maxdd": -0.2435,
+          "calmar": -0.0081,
+          "equity": 0.9908
+        },
+        "ZeroR": {
+          "acc": 0.5042,
+          "sharpe": 0.0328,
+          "maxdd": -0.2435,
+          "calmar": -0.0081,
+          "equity": 0.9908
+        },
+        "B&H_1x": {
+          "acc": 0.5042,
+          "sharpe": 0.1367,
+          "maxdd": -0.5256,
+          "calmar": -0.0304,
+          "equity": 0.927
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.1388,
+            "maxdd": -0.1422
+          },
+          "B&H": {
+            "ret": -0.11,
+            "maxdd": -0.1321
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": -0.104,
+            "maxdd": -0.1573
+          },
+          "B&H": {
+            "ret": -0.104,
+            "maxdd": -0.1573
+          }
+        }
+      }
+    },
+    "TSLA": {
+      "n": 1192,
+      "frac_up": 0.5344,
+      "short_frac": 0.0,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5344,
+          "sharpe": 0.7146,
+          "maxdd": -0.2204,
+          "calmar": 0.3339,
+          "equity": 1.3991
+        },
+        "B&H": {
+          "acc": 0.5344,
+          "sharpe": 0.7146,
+          "maxdd": -0.2204,
+          "calmar": 0.3339,
+          "equity": 1.3991
+        },
+        "ZeroR": {
+          "acc": 0.5344,
+          "sharpe": 0.7146,
+          "maxdd": -0.2204,
+          "calmar": 0.3339,
+          "equity": 1.3991
+        },
+        "B&H_1x": {
+          "acc": 0.5344,
+          "sharpe": 0.678,
+          "maxdd": -0.8127,
+          "calmar": 0.3147,
+          "equity": 2.9367
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0155,
+            "maxdd": -0.098
+          },
+          "B&H": {
+            "ret": -0.0155,
+            "maxdd": -0.098
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": -0.0964,
+            "maxdd": -0.1161
+          },
+          "B&H": {
+            "ret": -0.0964,
+            "maxdd": -0.1161
+          }
+        }
+      }
+    },
+    "XLE": {
+      "n": 1189,
+      "frac_up": 0.529,
+      "short_frac": 0.0261,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5248,
+          "sharpe": 0.0349,
+          "maxdd": -0.2802,
+          "calmar": -0.0069,
+          "equity": 0.991
+        },
+        "B&H": {
+          "acc": 0.529,
+          "sharpe": 0.131,
+          "maxdd": -0.2513,
+          "calmar": 0.033,
+          "equity": 1.0397
+        },
+        "ZeroR": {
+          "acc": 0.529,
+          "sharpe": 0.131,
+          "maxdd": -0.2513,
+          "calmar": 0.033,
+          "equity": 1.0397
+        },
+        "B&H_1x": {
+          "acc": 0.529,
+          "sharpe": 0.2837,
+          "maxdd": -0.6371,
+          "calmar": 0.0558,
+          "equity": 1.179
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.1436,
+            "maxdd": -0.1554
+          },
+          "B&H": {
+            "ret": -0.1171,
+            "maxdd": -0.1576
+          }
+        },
+        "bear-2022": {
+          "n": 197,
+          "Régimen": {
+            "ret": 0.1135,
+            "maxdd": -0.0803
+          },
+          "B&H": {
+            "ret": 0.1135,
+            "maxdd": -0.0803
+          }
+        }
+      }
+    },
+    "UNG": {
+      "n": 1183,
+      "frac_up": 0.4996,
+      "short_frac": 1.0,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5004,
+          "sharpe": 0.2665,
+          "maxdd": -0.2733,
+          "calmar": 0.0847,
+          "equity": 1.1134
+        },
+        "B&H": {
+          "acc": 0.4996,
+          "sharpe": -0.2714,
+          "maxdd": -0.2986,
+          "calmar": -0.1151,
+          "equity": 0.8486
+        },
+        "ZeroR": {
+          "acc": 0.5004,
+          "sharpe": 0.2665,
+          "maxdd": -0.2733,
+          "calmar": 0.0847,
+          "equity": 1.1134
+        },
+        "B&H_1x": {
+          "acc": 0.4996,
+          "sharpe": -0.5089,
+          "maxdd": -0.9374,
+          "calmar": -0.4242,
+          "equity": 0.0926
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": 0.0086,
+            "maxdd": -0.0388
+          },
+          "B&H": {
+            "ret": -0.0117,
+            "maxdd": -0.0564
+          }
+        },
+        "bear-2022": {
+          "n": 197,
+          "Régimen": {
+            "ret": -0.0901,
+            "maxdd": -0.1527
+          },
+          "B&H": {
+            "ret": 0.0884,
+            "maxdd": -0.0717
+          }
+        }
+      }
+    },
+    "MSTR": {
+      "n": 1192,
+      "frac_up": 0.5067,
+      "short_frac": 0.8356,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.4899,
+          "sharpe": -0.188,
+          "maxdd": -0.2013,
+          "calmar": -0.1348,
+          "equity": 0.878
+        },
+        "B&H": {
+          "acc": 0.5067,
+          "sharpe": 0.6423,
+          "maxdd": -0.2372,
+          "calmar": 0.2873,
+          "equity": 1.366
+        },
+        "ZeroR": {
+          "acc": 0.5067,
+          "sharpe": 0.6423,
+          "maxdd": -0.2372,
+          "calmar": 0.2873,
+          "equity": 1.366
+        },
+        "B&H_1x": {
+          "acc": 0.5067,
+          "sharpe": 0.5781,
+          "maxdd": -0.9621,
+          "calmar": 0.117,
+          "equity": 1.656
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0327,
+            "maxdd": -0.0781
+          },
+          "B&H": {
+            "ret": -0.0959,
+            "maxdd": -0.1562
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": 0.1312,
+            "maxdd": -0.0664
+          },
+          "B&H": {
+            "ret": -0.1255,
+            "maxdd": -0.1477
+          }
+        }
+      }
+    },
+    "SMCI": {
+      "n": 1190,
+      "frac_up": 0.5336,
+      "short_frac": 0.1689,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5395,
+          "sharpe": 0.9241,
+          "maxdd": -0.167,
+          "calmar": 0.6058,
+          "equity": 1.5764
+        },
+        "B&H": {
+          "acc": 0.5336,
+          "sharpe": 0.8852,
+          "maxdd": -0.167,
+          "calmar": 0.5774,
+          "equity": 1.5446
+        },
+        "ZeroR": {
+          "acc": 0.5336,
+          "sharpe": 0.8852,
+          "maxdd": -0.167,
+          "calmar": 0.5774,
+          "equity": 1.5446
+        },
+        "B&H_1x": {
+          "acc": 0.5336,
+          "sharpe": 0.8759,
+          "maxdd": -0.7391,
+          "calmar": 0.5979,
+          "equity": 5.6298
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.032,
+            "maxdd": -0.0676
+          },
+          "B&H": {
+            "ret": -0.032,
+            "maxdd": -0.0676
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": 0.0545,
+            "maxdd": -0.0609
+          },
+          "B&H": {
+            "ret": 0.0709,
+            "maxdd": -0.0609
+          }
+        }
+      }
+    },
+    "ROKU": {
+      "n": 1191,
+      "frac_up": 0.4979,
+      "short_frac": 0.1637,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5071,
+          "sharpe": -0.0817,
+          "maxdd": -0.3014,
+          "calmar": -0.038,
+          "equity": 0.947
+        },
+        "B&H": {
+          "acc": 0.4979,
+          "sharpe": -0.1728,
+          "maxdd": -0.2786,
+          "calmar": -0.0703,
+          "equity": 0.9107
+        },
+        "ZeroR": {
+          "acc": 0.5021,
+          "sharpe": 0.172,
+          "maxdd": -0.2273,
+          "calmar": 0.0508,
+          "equity": 1.0558
+        },
+        "B&H_1x": {
+          "acc": 0.4979,
+          "sharpe": -0.1751,
+          "maxdd": -0.9547,
+          "calmar": -0.3332,
+          "equity": 0.1637
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0233,
+            "maxdd": -0.0878
+          },
+          "B&H": {
+            "ret": -0.0233,
+            "maxdd": -0.0878
+          }
+        },
+        "bear-2022": {
+          "n": 197,
+          "Régimen": {
+            "ret": -0.1559,
+            "maxdd": -0.2264
+          },
+          "B&H": {
+            "ret": -0.1744,
+            "maxdd": -0.1767
+          }
+        }
+      }
+    },
+    "MARA": {
+      "n": 1170,
+      "frac_up": 0.4744,
+      "short_frac": 0.8581,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5256,
+          "sharpe": -0.2008,
+          "maxdd": -0.2928,
+          "calmar": -0.0939,
+          "equity": 0.8786
+        },
+        "B&H": {
+          "acc": 0.4744,
+          "sharpe": 0.3999,
+          "maxdd": -0.2232,
+          "calmar": 0.1721,
+          "equity": 1.1913
+        },
+        "ZeroR": {
+          "acc": 0.5256,
+          "sharpe": -0.4116,
+          "maxdd": -0.3518,
+          "calmar": -0.141,
+          "equity": 0.7896
+        },
+        "B&H_1x": {
+          "acc": 0.4744,
+          "sharpe": 0.4778,
+          "maxdd": -0.9831,
+          "calmar": -0.2062,
+          "equity": 0.3493
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 46,
+          "Régimen": {
+            "ret": 0.0848,
+            "maxdd": -0.0209
+          },
+          "B&H": {
+            "ret": -0.0811,
+            "maxdd": -0.0795
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": 0.1134,
+            "maxdd": -0.1026
+          },
+          "B&H": {
+            "ret": -0.0773,
+            "maxdd": -0.1516
+          }
+        }
+      }
+    },
+    "QQQ": {
+      "n": 1192,
+      "frac_up": 0.5579,
+      "short_frac": 0.3104,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5562,
+          "sharpe": 0.6217,
+          "maxdd": -0.1292,
+          "calmar": 0.4647,
+          "equity": 1.3176
+        },
+        "B&H": {
+          "acc": 0.5579,
+          "sharpe": 0.8586,
+          "maxdd": -0.1643,
+          "calmar": 0.5232,
+          "equity": 1.4771
+        },
+        "ZeroR": {
+          "acc": 0.5579,
+          "sharpe": 0.8586,
+          "maxdd": -0.1643,
+          "calmar": 0.5232,
+          "equity": 1.4771
+        },
+        "B&H_1x": {
+          "acc": 0.5579,
+          "sharpe": 0.6771,
+          "maxdd": -0.385,
+          "calmar": 0.3978,
+          "equity": 1.9623
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0793,
+            "maxdd": -0.0889
+          },
+          "B&H": {
+            "ret": -0.0614,
+            "maxdd": -0.1018
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": 0.0047,
+            "maxdd": -0.1006
+          },
+          "B&H": {
+            "ret": -0.1487,
+            "maxdd": -0.1525
+          }
+        }
+      }
+    },
+    "DIA": {
+      "n": 1191,
+      "frac_up": 0.5474,
+      "short_frac": 0.0,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5474,
+          "sharpe": 0.5552,
+          "maxdd": -0.1502,
+          "calmar": 0.3458,
+          "equity": 1.2703
+        },
+        "B&H": {
+          "acc": 0.5474,
+          "sharpe": 0.5552,
+          "maxdd": -0.1502,
+          "calmar": 0.3458,
+          "equity": 1.2703
+        },
+        "ZeroR": {
+          "acc": 0.5474,
+          "sharpe": 0.5552,
+          "maxdd": -0.1502,
+          "calmar": 0.3458,
+          "equity": 1.2703
+        },
+        "B&H_1x": {
+          "acc": 0.5474,
+          "sharpe": 0.4687,
+          "maxdd": -0.3903,
+          "calmar": 0.2036,
+          "equity": 1.4353
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0903,
+            "maxdd": -0.1178
+          },
+          "B&H": {
+            "ret": -0.0903,
+            "maxdd": -0.1178
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": -0.1185,
+            "maxdd": -0.1403
+          },
+          "B&H": {
+            "ret": -0.1185,
+            "maxdd": -0.1403
+          }
+        }
+      }
+    },
+    "IWM": {
+      "n": 1191,
+      "frac_up": 0.5197,
+      "short_frac": 0.005,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5181,
+          "sharpe": 0.1126,
+          "maxdd": -0.1996,
+          "calmar": 0.0317,
+          "equity": 1.0303
+        },
+        "B&H": {
+          "acc": 0.5197,
+          "sharpe": 0.2104,
+          "maxdd": -0.1996,
+          "calmar": 0.0839,
+          "equity": 1.0817
+        },
+        "ZeroR": {
+          "acc": 0.5197,
+          "sharpe": 0.2104,
+          "maxdd": -0.1996,
+          "calmar": 0.0839,
+          "equity": 1.0817
+        },
+        "B&H_1x": {
+          "acc": 0.5197,
+          "sharpe": 0.2901,
+          "maxdd": -0.4305,
+          "calmar": 0.0987,
+          "equity": 1.2173
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.1468,
+            "maxdd": -0.1691
+          },
+          "B&H": {
+            "ret": -0.1042,
+            "maxdd": -0.1392
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": -0.1147,
+            "maxdd": -0.1252
+          },
+          "B&H": {
+            "ret": -0.1147,
+            "maxdd": -0.1252
+          }
+        }
+      }
+    },
+    "XLF": {
+      "n": 1182,
+      "frac_up": 0.5254,
+      "short_frac": 0.0871,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5212,
+          "sharpe": 0.3905,
+          "maxdd": -0.1609,
+          "calmar": 0.2173,
+          "equity": 1.1749
+        },
+        "B&H": {
+          "acc": 0.5254,
+          "sharpe": 0.4347,
+          "maxdd": -0.1609,
+          "calmar": 0.246,
+          "equity": 1.1997
+        },
+        "ZeroR": {
+          "acc": 0.5254,
+          "sharpe": 0.4347,
+          "maxdd": -0.1609,
+          "calmar": 0.246,
+          "equity": 1.1997
+        },
+        "B&H_1x": {
+          "acc": 0.5254,
+          "sharpe": 0.3233,
+          "maxdd": -0.4574,
+          "calmar": 0.1132,
+          "equity": 1.2672
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0911,
+            "maxdd": -0.1103
+          },
+          "B&H": {
+            "ret": -0.1061,
+            "maxdd": -0.1288
+          }
+        },
+        "bear-2022": {
+          "n": 197,
+          "Régimen": {
+            "ret": -0.0962,
+            "maxdd": -0.1322
+          },
+          "B&H": {
+            "ret": -0.0962,
+            "maxdd": -0.1322
+          }
+        }
+      }
+    },
+    "XLK": {
+      "n": 1192,
+      "frac_up": 0.5419,
+      "short_frac": 0.4547,
+      "estrategias": {
+        "Régimen": {
+          "acc": 0.5419,
+          "sharpe": 0.8811,
+          "maxdd": -0.1021,
+          "calmar": 0.8798,
+          "equity": 1.5019
+        },
+        "B&H": {
+          "acc": 0.5419,
+          "sharpe": 0.8423,
+          "maxdd": -0.1431,
+          "calmar": 0.5969,
+          "equity": 1.4736
+        },
+        "ZeroR": {
+          "acc": 0.5419,
+          "sharpe": 0.8423,
+          "maxdd": -0.1431,
+          "calmar": 0.5969,
+          "equity": 1.4736
+        },
+        "B&H_1x": {
+          "acc": 0.5419,
+          "sharpe": 0.6735,
+          "maxdd": -0.3621,
+          "calmar": 0.4493,
+          "equity": 2.0401
+        }
+      },
+      "crisis": {
+        "COVID-2020": {
+          "n": 52,
+          "Régimen": {
+            "ret": -0.0146,
+            "maxdd": -0.0412
+          },
+          "B&H": {
+            "ret": -0.0619,
+            "maxdd": -0.0947
+          }
+        },
+        "bear-2022": {
+          "n": 198,
+          "Régimen": {
+            "ret": 0.1817,
+            "maxdd": -0.0682
+          },
+          "B&H": {
+            "ret": -0.1378,
+            "maxdd": -0.1412
+          }
+        }
+      }
+    }
+  },
+  "medias": {
+    "Régimen": {
+      "acc": 0.5265,
+      "sharpe": 0.4085,
+      "maxdd": -0.2028,
+      "calmar": 0.2663,
+      "equity": 1.2208
+    },
+    "B&H": {
+      "acc": 0.5244,
+      "sharpe": 0.498,
+      "maxdd": -0.2039,
+      "calmar": 0.2947,
+      "equity": 1.2775
+    },
+    "ZeroR": {
+      "acc": 0.5282,
+      "sharpe": 0.5028,
+      "maxdd": -0.2073,
+      "calmar": 0.2952,
+      "equity": 1.2781
+    },
+    "B&H_1x": {
+      "acc": 0.5244,
+      "sharpe": 0.4369,
+      "maxdd": -0.6436,
+      "calmar": 0.1692,
+      "equity": 2.1544
+    }
+  },
+  "cobertura_regimen": {
+    "B&H": {
+      "sharpe": "5/15",
+      "calmar": "5/15",
+      "acc": "4/15"
+    },
+    "ZeroR": {
+      "sharpe": "4/15",
+      "calmar": "4/15",
+      "acc": "2/15"
+    }
+  }
+}
