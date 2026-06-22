@@ -1,0 +1,878 @@
+{
+  "meta": {
+    "grupos": {
+      "leverage-effect": [
+        "SPY",
+        "QQQ",
+        "XLK",
+        "BAC",
+        "DIA",
+        "XLF"
+      ],
+      "prior-flip": [
+        "MSTR",
+        "SMCI"
+      ],
+      "inverso-estable": [
+        "NVDA",
+        "TSLA",
+        "MARA",
+        "ROKU"
+      ]
+    },
+    "bloques": {
+      "agente": [
+        "warren_buffett_sign",
+        "warren_buffett_size",
+        "warren_buffett_conf",
+        "cathie_wood_sign",
+        "cathie_wood_size",
+        "cathie_wood_conf",
+        "stanley_druckenmiller_sign",
+        "stanley_druckenmiller_size",
+        "stanley_druckenmiller_conf",
+        "michael_burry_sign",
+        "michael_burry_size",
+        "michael_burry_conf",
+        "bill_ackman_sign",
+        "bill_ackman_size",
+        "bill_ackman_conf"
+      ],
+      "régimen": [
+        "calm_prob",
+        "stress_prob",
+        "crisis_prob",
+        "ram_score"
+      ],
+      "volatilidad": [
+        "garch_sigma",
+        "gso_score"
+      ],
+      "psa": [
+        "psa_score"
+      ]
+    },
+    "features": [
+      "warren_buffett_sign",
+      "warren_buffett_size",
+      "warren_buffett_conf",
+      "cathie_wood_sign",
+      "cathie_wood_size",
+      "cathie_wood_conf",
+      "stanley_druckenmiller_sign",
+      "stanley_druckenmiller_size",
+      "stanley_druckenmiller_conf",
+      "michael_burry_sign",
+      "michael_burry_size",
+      "michael_burry_conf",
+      "bill_ackman_sign",
+      "bill_ackman_size",
+      "bill_ackman_conf",
+      "ram_score",
+      "psa_score",
+      "gso_score",
+      "calm_prob",
+      "stress_prob",
+      "crisis_prob",
+      "garch_sigma"
+    ],
+    "seed": 42,
+    "nota": "SHAP in-sample (describe en qué se apoya M10, no rendimiento). n≈250/activo; prior-flip n=2 → EXPLORATORIO, no confirmatorio. Exploratorio (docs/)."
+  },
+  "por_activo": {
+    "SPY": {
+      "grupo": "leverage-effect",
+      "n": 401,
+      "shares": {
+        "warren_buffett_sign": 0.0099,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0657,
+        "cathie_wood_sign": 0.0073,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0238,
+        "stanley_druckenmiller_sign": 0.032,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.033,
+        "michael_burry_sign": 0.0207,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0637,
+        "bill_ackman_sign": 0.0049,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0245,
+        "ram_score": 0.1628,
+        "psa_score": 0.134,
+        "gso_score": 0.0,
+        "calm_prob": 0.0823,
+        "stress_prob": 0.1174,
+        "crisis_prob": 0.1166,
+        "garch_sigma": 0.1017
+      },
+      "bloques": {
+        "agente": 0.2853,
+        "régimen": 0.4791,
+        "volatilidad": 0.1017,
+        "psa": 0.134
+      },
+      "top5": [
+        [
+          "ram_score",
+          0.1628
+        ],
+        [
+          "psa_score",
+          0.134
+        ],
+        [
+          "stress_prob",
+          0.1174
+        ],
+        [
+          "crisis_prob",
+          0.1166
+        ],
+        [
+          "garch_sigma",
+          0.1017
+        ]
+      ]
+    },
+    "QQQ": {
+      "grupo": "leverage-effect",
+      "n": 401,
+      "shares": {
+        "warren_buffett_sign": 0.0187,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0494,
+        "cathie_wood_sign": 0.0092,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0851,
+        "stanley_druckenmiller_sign": 0.0034,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0354,
+        "michael_burry_sign": 0.0093,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0664,
+        "bill_ackman_sign": 0.0213,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0138,
+        "ram_score": 0.1123,
+        "psa_score": 0.1258,
+        "gso_score": 0.0,
+        "calm_prob": 0.0783,
+        "stress_prob": 0.072,
+        "crisis_prob": 0.1424,
+        "garch_sigma": 0.1572
+      },
+      "bloques": {
+        "agente": 0.312,
+        "régimen": 0.405,
+        "volatilidad": 0.1572,
+        "psa": 0.1258
+      },
+      "top5": [
+        [
+          "garch_sigma",
+          0.1572
+        ],
+        [
+          "crisis_prob",
+          0.1424
+        ],
+        [
+          "psa_score",
+          0.1258
+        ],
+        [
+          "ram_score",
+          0.1123
+        ],
+        [
+          "cathie_wood_conf",
+          0.0851
+        ]
+      ]
+    },
+    "XLK": {
+      "grupo": "leverage-effect",
+      "n": 401,
+      "shares": {
+        "warren_buffett_sign": 0.0017,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.018,
+        "cathie_wood_sign": 0.0025,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0887,
+        "stanley_druckenmiller_sign": 0.0176,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.037,
+        "michael_burry_sign": 0.0279,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.077,
+        "bill_ackman_sign": 0.0129,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.031,
+        "ram_score": 0.0881,
+        "psa_score": 0.1803,
+        "gso_score": 0.0,
+        "calm_prob": 0.0843,
+        "stress_prob": 0.1419,
+        "crisis_prob": 0.0629,
+        "garch_sigma": 0.1284
+      },
+      "bloques": {
+        "agente": 0.3141,
+        "régimen": 0.3772,
+        "volatilidad": 0.1284,
+        "psa": 0.1803
+      },
+      "top5": [
+        [
+          "psa_score",
+          0.1803
+        ],
+        [
+          "stress_prob",
+          0.1419
+        ],
+        [
+          "garch_sigma",
+          0.1284
+        ],
+        [
+          "cathie_wood_conf",
+          0.0887
+        ],
+        [
+          "ram_score",
+          0.0881
+        ]
+      ]
+    },
+    "BAC": {
+      "grupo": "leverage-effect",
+      "n": 396,
+      "shares": {
+        "warren_buffett_sign": 0.0057,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0337,
+        "cathie_wood_sign": 0.002,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0404,
+        "stanley_druckenmiller_sign": 0.0046,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0701,
+        "michael_burry_sign": 0.0868,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0757,
+        "bill_ackman_sign": 0.0196,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0791,
+        "ram_score": 0.125,
+        "psa_score": 0.1153,
+        "gso_score": 0.0,
+        "calm_prob": 0.0533,
+        "stress_prob": 0.0522,
+        "crisis_prob": 0.1078,
+        "garch_sigma": 0.1287
+      },
+      "bloques": {
+        "agente": 0.4177,
+        "régimen": 0.3383,
+        "volatilidad": 0.1287,
+        "psa": 0.1153
+      },
+      "top5": [
+        [
+          "garch_sigma",
+          0.1287
+        ],
+        [
+          "ram_score",
+          0.125
+        ],
+        [
+          "psa_score",
+          0.1153
+        ],
+        [
+          "crisis_prob",
+          0.1078
+        ],
+        [
+          "michael_burry_sign",
+          0.0868
+        ]
+      ]
+    },
+    "DIA": {
+      "grupo": "leverage-effect",
+      "n": 400,
+      "shares": {
+        "warren_buffett_sign": 0.008,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0088,
+        "cathie_wood_sign": 0.0247,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0871,
+        "stanley_druckenmiller_sign": 0.0112,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0532,
+        "michael_burry_sign": 0.0286,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0985,
+        "bill_ackman_sign": 0.0194,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.017,
+        "ram_score": 0.1092,
+        "psa_score": 0.1627,
+        "gso_score": 0.0,
+        "calm_prob": 0.0756,
+        "stress_prob": 0.0715,
+        "crisis_prob": 0.1126,
+        "garch_sigma": 0.112
+      },
+      "bloques": {
+        "agente": 0.3564,
+        "régimen": 0.3689,
+        "volatilidad": 0.112,
+        "psa": 0.1627
+      },
+      "top5": [
+        [
+          "psa_score",
+          0.1627
+        ],
+        [
+          "crisis_prob",
+          0.1126
+        ],
+        [
+          "garch_sigma",
+          0.112
+        ],
+        [
+          "ram_score",
+          0.1092
+        ],
+        [
+          "michael_burry_conf",
+          0.0985
+        ]
+      ]
+    },
+    "XLF": {
+      "grupo": "leverage-effect",
+      "n": 397,
+      "shares": {
+        "warren_buffett_sign": 0.0019,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0048,
+        "cathie_wood_sign": 0.041,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0419,
+        "stanley_druckenmiller_sign": 0.0219,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0839,
+        "michael_burry_sign": 0.0388,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0923,
+        "bill_ackman_sign": 0.0084,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0412,
+        "ram_score": 0.0865,
+        "psa_score": 0.1228,
+        "gso_score": 0.0,
+        "calm_prob": 0.0703,
+        "stress_prob": 0.0443,
+        "crisis_prob": 0.1289,
+        "garch_sigma": 0.171
+      },
+      "bloques": {
+        "agente": 0.3761,
+        "régimen": 0.3301,
+        "volatilidad": 0.171,
+        "psa": 0.1228
+      },
+      "top5": [
+        [
+          "garch_sigma",
+          0.171
+        ],
+        [
+          "crisis_prob",
+          0.1289
+        ],
+        [
+          "psa_score",
+          0.1228
+        ],
+        [
+          "michael_burry_conf",
+          0.0923
+        ],
+        [
+          "ram_score",
+          0.0865
+        ]
+      ]
+    },
+    "MSTR": {
+      "grupo": "prior-flip",
+      "n": 401,
+      "shares": {
+        "warren_buffett_sign": 0.0247,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0298,
+        "cathie_wood_sign": 0.0104,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0545,
+        "stanley_druckenmiller_sign": 0.0213,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0655,
+        "michael_burry_sign": 0.0,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0585,
+        "bill_ackman_sign": 0.0036,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0519,
+        "ram_score": 0.0866,
+        "psa_score": 0.1086,
+        "gso_score": 0.0526,
+        "calm_prob": 0.0642,
+        "stress_prob": 0.1084,
+        "crisis_prob": 0.1211,
+        "garch_sigma": 0.1385
+      },
+      "bloques": {
+        "agente": 0.3201,
+        "régimen": 0.3803,
+        "volatilidad": 0.1911,
+        "psa": 0.1086
+      },
+      "top5": [
+        [
+          "garch_sigma",
+          0.1385
+        ],
+        [
+          "crisis_prob",
+          0.1211
+        ],
+        [
+          "psa_score",
+          0.1086
+        ],
+        [
+          "stress_prob",
+          0.1084
+        ],
+        [
+          "ram_score",
+          0.0866
+        ]
+      ]
+    },
+    "SMCI": {
+      "grupo": "prior-flip",
+      "n": 400,
+      "shares": {
+        "warren_buffett_sign": 0.0142,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0448,
+        "cathie_wood_sign": 0.0028,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0666,
+        "stanley_druckenmiller_sign": 0.023,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.042,
+        "michael_burry_sign": 0.0178,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0476,
+        "bill_ackman_sign": 0.032,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0622,
+        "ram_score": 0.1158,
+        "psa_score": 0.1067,
+        "gso_score": 0.051,
+        "calm_prob": 0.0589,
+        "stress_prob": 0.1093,
+        "crisis_prob": 0.0763,
+        "garch_sigma": 0.1289
+      },
+      "bloques": {
+        "agente": 0.3531,
+        "régimen": 0.3603,
+        "volatilidad": 0.1799,
+        "psa": 0.1067
+      },
+      "top5": [
+        [
+          "garch_sigma",
+          0.1289
+        ],
+        [
+          "ram_score",
+          0.1158
+        ],
+        [
+          "stress_prob",
+          0.1093
+        ],
+        [
+          "psa_score",
+          0.1067
+        ],
+        [
+          "crisis_prob",
+          0.0763
+        ]
+      ]
+    },
+    "NVDA": {
+      "grupo": "inverso-estable",
+      "n": 409,
+      "shares": {
+        "warren_buffett_sign": 0.0079,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0143,
+        "cathie_wood_sign": 0.0138,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0275,
+        "stanley_druckenmiller_sign": 0.0142,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.1076,
+        "michael_burry_sign": 0.0,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.015,
+        "bill_ackman_sign": 0.0121,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0216,
+        "ram_score": 0.0928,
+        "psa_score": 0.1433,
+        "gso_score": 0.0,
+        "calm_prob": 0.077,
+        "stress_prob": 0.1256,
+        "crisis_prob": 0.1646,
+        "garch_sigma": 0.1628
+      },
+      "bloques": {
+        "agente": 0.2338,
+        "régimen": 0.4601,
+        "volatilidad": 0.1628,
+        "psa": 0.1433
+      },
+      "top5": [
+        [
+          "crisis_prob",
+          0.1646
+        ],
+        [
+          "garch_sigma",
+          0.1628
+        ],
+        [
+          "psa_score",
+          0.1433
+        ],
+        [
+          "stress_prob",
+          0.1256
+        ],
+        [
+          "stanley_druckenmiller_conf",
+          0.1076
+        ]
+      ]
+    },
+    "TSLA": {
+      "grupo": "inverso-estable",
+      "n": 401,
+      "shares": {
+        "warren_buffett_sign": 0.0092,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0495,
+        "cathie_wood_sign": 0.0029,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0262,
+        "stanley_druckenmiller_sign": 0.0008,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.113,
+        "michael_burry_sign": 0.0117,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.088,
+        "bill_ackman_sign": 0.0,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0394,
+        "ram_score": 0.0688,
+        "psa_score": 0.1162,
+        "gso_score": 0.0,
+        "calm_prob": 0.021,
+        "stress_prob": 0.0983,
+        "crisis_prob": 0.1817,
+        "garch_sigma": 0.1735
+      },
+      "bloques": {
+        "agente": 0.3406,
+        "régimen": 0.3697,
+        "volatilidad": 0.1735,
+        "psa": 0.1162
+      },
+      "top5": [
+        [
+          "crisis_prob",
+          0.1817
+        ],
+        [
+          "garch_sigma",
+          0.1735
+        ],
+        [
+          "psa_score",
+          0.1162
+        ],
+        [
+          "stanley_druckenmiller_conf",
+          0.113
+        ],
+        [
+          "stress_prob",
+          0.0983
+        ]
+      ]
+    },
+    "MARA": {
+      "grupo": "inverso-estable",
+      "n": 398,
+      "shares": {
+        "warren_buffett_sign": 0.0192,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.039,
+        "cathie_wood_sign": 0.0034,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0473,
+        "stanley_druckenmiller_sign": 0.0067,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0609,
+        "michael_burry_sign": 0.0,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.048,
+        "bill_ackman_sign": 0.0019,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.0563,
+        "ram_score": 0.0924,
+        "psa_score": 0.1687,
+        "gso_score": 0.085,
+        "calm_prob": 0.0487,
+        "stress_prob": 0.1189,
+        "crisis_prob": 0.1044,
+        "garch_sigma": 0.0989
+      },
+      "bloques": {
+        "agente": 0.2828,
+        "régimen": 0.3645,
+        "volatilidad": 0.184,
+        "psa": 0.1687
+      },
+      "top5": [
+        [
+          "psa_score",
+          0.1687
+        ],
+        [
+          "stress_prob",
+          0.1189
+        ],
+        [
+          "crisis_prob",
+          0.1044
+        ],
+        [
+          "garch_sigma",
+          0.0989
+        ],
+        [
+          "ram_score",
+          0.0924
+        ]
+      ]
+    },
+    "ROKU": {
+      "grupo": "inverso-estable",
+      "n": 400,
+      "shares": {
+        "warren_buffett_sign": 0.0133,
+        "warren_buffett_size": 0.0,
+        "warren_buffett_conf": 0.0309,
+        "cathie_wood_sign": 0.0118,
+        "cathie_wood_size": 0.0,
+        "cathie_wood_conf": 0.0674,
+        "stanley_druckenmiller_sign": 0.0346,
+        "stanley_druckenmiller_size": 0.0,
+        "stanley_druckenmiller_conf": 0.0767,
+        "michael_burry_sign": 0.0119,
+        "michael_burry_size": 0.0,
+        "michael_burry_conf": 0.0661,
+        "bill_ackman_sign": 0.0187,
+        "bill_ackman_size": 0.0,
+        "bill_ackman_conf": 0.065,
+        "ram_score": 0.0852,
+        "psa_score": 0.1221,
+        "gso_score": 0.0,
+        "calm_prob": 0.0525,
+        "stress_prob": 0.0858,
+        "crisis_prob": 0.1293,
+        "garch_sigma": 0.1285
+      },
+      "bloques": {
+        "agente": 0.3964,
+        "régimen": 0.3529,
+        "volatilidad": 0.1285,
+        "psa": 0.1221
+      },
+      "top5": [
+        [
+          "crisis_prob",
+          0.1293
+        ],
+        [
+          "garch_sigma",
+          0.1285
+        ],
+        [
+          "psa_score",
+          0.1221
+        ],
+        [
+          "stress_prob",
+          0.0858
+        ],
+        [
+          "ram_score",
+          0.0852
+        ]
+      ]
+    }
+  },
+  "por_grupo": {
+    "leverage-effect": {
+      "activos": [
+        "SPY",
+        "QQQ",
+        "XLK",
+        "BAC",
+        "DIA",
+        "XLF"
+      ],
+      "bloques": {
+        "agente": 0.3436,
+        "régimen": 0.3831,
+        "volatilidad": 0.1332,
+        "psa": 0.1401
+      },
+      "top6": [
+        [
+          "psa_score",
+          0.1401
+        ],
+        [
+          "garch_sigma",
+          0.1332
+        ],
+        [
+          "ram_score",
+          0.114
+        ],
+        [
+          "crisis_prob",
+          0.1119
+        ],
+        [
+          "stress_prob",
+          0.0832
+        ],
+        [
+          "michael_burry_conf",
+          0.0789
+        ]
+      ]
+    },
+    "prior-flip": {
+      "activos": [
+        "MSTR",
+        "SMCI"
+      ],
+      "bloques": {
+        "agente": 0.3366,
+        "régimen": 0.3703,
+        "volatilidad": 0.1855,
+        "psa": 0.1076
+      },
+      "top6": [
+        [
+          "garch_sigma",
+          0.1337
+        ],
+        [
+          "stress_prob",
+          0.1089
+        ],
+        [
+          "psa_score",
+          0.1076
+        ],
+        [
+          "ram_score",
+          0.1012
+        ],
+        [
+          "crisis_prob",
+          0.0987
+        ],
+        [
+          "calm_prob",
+          0.0615
+        ]
+      ]
+    },
+    "inverso-estable": {
+      "activos": [
+        "NVDA",
+        "TSLA",
+        "MARA",
+        "ROKU"
+      ],
+      "bloques": {
+        "agente": 0.3134,
+        "régimen": 0.3868,
+        "volatilidad": 0.1622,
+        "psa": 0.1376
+      },
+      "top6": [
+        [
+          "crisis_prob",
+          0.145
+        ],
+        [
+          "garch_sigma",
+          0.1409
+        ],
+        [
+          "psa_score",
+          0.1376
+        ],
+        [
+          "stress_prob",
+          0.1071
+        ],
+        [
+          "stanley_druckenmiller_conf",
+          0.0896
+        ],
+        [
+          "ram_score",
+          0.0848
+        ]
+      ]
+    }
+  }
+}
