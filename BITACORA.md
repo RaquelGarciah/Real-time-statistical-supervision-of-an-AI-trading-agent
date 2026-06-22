@@ -2079,3 +2079,45 @@ bai1998/bai2003, newey1987, chen2016 (XGBoost), lundberg2017 (SHAP).
 detector-IA bajo umbral; LaTeX compila; estructura conforme a los 4 bloques.
 
 **Salida.** `tesis/chapters/03_marco_teorico.tex`. Rama `docs/cap-3-marco-teorico`.
+
+---
+
+## [2026-06-22] [Pre-registro] - Experimento automl-seed-ensemble (AutoML-M10 como ensemble de semillas + sensibilidad)
+
+**Contexto.** La semilla de H2O AutoML es una fuente de ruido, no un hiperparámetro del modelo.
+Surge la tentación (bajo presión de plazo) de elegir la semilla que maximiza el OOS para inflar el
+número de activos donde AutoML "bate a todo". Eso sería overfitting del test (p-hacking) y queda
+descartado. Este experimento es la versión defendible de "variar la semilla".
+
+**Hipótesis.** El ensemble de AutoML sobre 10 semillas fijadas a priori reduce la varianza de la
+predicción frente a una semilla única, pero NO altera la conclusión de universalidad.
+
+**H0.** El ensemble de AutoML no bate a ZeroR causal en accuracy (universalidad §2 nivel 3).
+
+**Estadístico.** McNemar pareado del ensemble vs ZeroR / M5 / M8 / M10-XGBoost; sign test vs 0.5;
+bootstrap estacionario pareado de ΔSharpe vs M5. Mismas pruebas que automl_m10.py.
+
+**Diseño.** Semillas = SEED+0..9 = 42..51, IDÉNTICAS al ensemble canónico de M10-XGBoost
+(automl_m10.xgb_wf_p1, línea 85). Se promedian las probabilidades p1 entre semillas. Las semillas se
+fijan ANTES de mirar el OOS; no se selecciona ninguna por su resultado. Pipeline causal sin cambios:
+ALL22 features, target signo(r_{t+1}), WF expandible N0=150 (~250 días), embargo=1, Purged K-Fold
+interno (López de Prado 2018, sec. 7.4), HMM+GARCH al vuelo por activo.
+
+**Capa de honestidad (anti-cherry-picking).** Además del ensemble se reporta por activo la
+DISTRIBUCIÓN de accuracy entre las 10 semillas: min/mediana/máx/std y nº de semillas que baten a
+ZeroR. Documenta la fragilidad ante la semilla en lugar de ocultarla. Es lo que el tribunal espera.
+
+**Criterio de éxito.** Ninguno que dependa de elegir semilla. Solo se reporta el ensemble (criterio a
+priori) y la dispersión.
+
+**Criterio de fracaso (preservado).** Si el ensemble batiera a ZeroR causal de forma robusta en
+varios activos (McNemar p<0.10), refutaría que la señal direccional ya está agotada — sería hallazgo,
+no fracaso, pero exigiría revisar la tesis de "STRATA aporta en riesgo, no en accuracy".
+
+**Datos.** OOS desplegable [150:] por activo, panel de 15. Embargo=1. Mismo que automl_panel.json.
+
+**Output esperado.** `outputs/experiments/automl_seed_ensemble.json` con, por activo: table (6
+estrategias × accuracy/auc/sharpe/equity/max_dd/calmar), tests (McNemar matrix + sign), y
+seed_sensibilidad (acc_by_seed, min/med/max/std, n_seeds_beat_zeror).
+
+**Referencias.** experiments/automl_seed_ensemble.py; reusa experiments/automl_m10.py; commit pendiente.

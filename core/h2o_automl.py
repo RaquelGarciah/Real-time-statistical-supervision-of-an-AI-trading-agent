@@ -32,12 +32,25 @@ _H2O_INIT = False
 
 
 def _ensure_h2o() -> Any:
-    """Inicializa el clúster H2O local una sola vez por proceso y lo devuelve."""
+    """Inicializa el clúster H2O local una sola vez por proceso y lo devuelve.
+
+    Configurable por entorno para paralelizar varios workers sin colisión de puerto:
+    H2O_PORT (clúster aislado en ese puerto + nombre), H2O_NTHREADS, H2O_MEM."""
     global _H2O_INIT
+    import os
+
     import h2o
 
     if not _H2O_INIT:
-        h2o.init(nthreads=-1, max_mem_size="4G", verbose=False)
+        kwargs: dict[str, Any] = dict(
+            nthreads=int(os.environ.get("H2O_NTHREADS", "-1")),
+            max_mem_size=os.environ.get("H2O_MEM", "4G"),
+            verbose=False,
+        )
+        port = os.environ.get("H2O_PORT")
+        if port:  # workers paralelos: clúster propio por proceso (puerto + nombre únicos)
+            kwargs.update(port=int(port), name=f"h2o_{port}", bind_to_localhost=True)
+        h2o.init(**kwargs)
         _H2O_INIT = True
     return h2o
 
@@ -119,9 +132,13 @@ def train_h2o(
     *,
     use_fold_column: bool,
     max_runtime_secs: int = 600,
+    max_models: int | None = None,
     n_splits: int = 5,
     embargo: int = 5,
     seed: int = 42,
+    holdout_frac: float | None = None,
+    sort_metric: str = "AUC",
+    include_algos: list[str] | None = None,
 ) -> tuple[Any, H2OLeaderResult]:
     """Entrena H2OAutoML y devuelve ``(leader, H2OLeaderResult)``.
 
@@ -131,7 +148,13 @@ def train_h2o(
         use_fold_column: si ``True``, precalcula ``fold_id`` con
             ``purged_kfold_fold_ids`` y lo pasa a H2O vía ``fold_column``.
             Si ``False``, deja a H2O usar su KFold convencional (M3).
-        max_runtime_secs: presupuesto de búsqueda AutoML.
+        max_runtime_secs: presupuesto de búsqueda por TIEMPO. NO reproducible:
+            el conjunto de modelos entrenados depende del timing de la máquina.
+        max_models: si se da, fija el NÚMERO de modelos (ignora el tiempo) y
+            excluye DeepLearning → búsqueda **determinista** dada la semilla
+            (reproducibilidad de H2O AutoML, docs sec. Reproducibility). Es la
+            vía defendible para un experimento; ``max_runtime_secs`` solo para
+            exploración rápida.
         n_splits, embargo: parámetros de Purged K-Fold cuando aplica.
         seed: semilla H2O para reproducibilidad.
 
@@ -142,28 +165,35 @@ def train_h2o(
     h2o = _ensure_h2o()
     from h2o.automl import H2OAutoML
 
-    if use_fold_column:
+    # max_models => determinista: nº fijo de modelos, sin DeepLearning (no reproducible con multithread).
+    det = max_models is not None
+    common = dict(seed=seed, sort_metric=sort_metric, verbosity=None,
+                  max_runtime_secs=0 if det else max_runtime_secs)
+    if det:
+        common["max_models"] = max_models
+        if include_algos:
+            common["include_algos"] = list(include_algos)   # acota familias (p.ej. GBM/XGBoost/StackedEnsemble)
+        else:
+            common["exclude_algos"] = ["DeepLearning"]
+
+    if holdout_frac:
+        # Holdout cronológico ESTRICTAMENTE causal: entrena [0:cut], selecciona el leader por el bloque
+        # más reciente [cut:] (validation+leaderboard). A diferencia del fold_column, NO entrena con
+        # futuro-dentro-de-ventana → único deployable de verdad; favorece modelos del régimen reciente.
+        cut = max(1, int(round(len(X) * (1.0 - holdout_frac))))
+        train_df = _to_h2o_frame(h2o, X.iloc[:cut], y.iloc[:cut], None)
+        valid_df = _to_h2o_frame(h2o, X.iloc[cut:], y.iloc[cut:], None)
+        aml = H2OAutoML(nfolds=0, **common)
+        aml.train(x=list(X.columns), y="y", training_frame=train_df,
+                  validation_frame=valid_df, leaderboard_frame=valid_df)
+    elif use_fold_column:
         keep_idx, fold_ids = purged_kfold_fold_ids(len(X), n_splits=n_splits, embargo=embargo)
-        X_trim = X.iloc[keep_idx]
-        y_trim = y.iloc[keep_idx]
-        train_df = _to_h2o_frame(h2o, X_trim, y_trim, fold_ids)
-        aml = H2OAutoML(
-            max_runtime_secs=max_runtime_secs,
-            seed=seed,
-            sort_metric="AUC",
-            nfolds=0,  # H2O usa fold_column para la xval, no nfolds.
-            verbosity=None,
-        )
+        train_df = _to_h2o_frame(h2o, X.iloc[keep_idx], y.iloc[keep_idx], fold_ids)
+        aml = H2OAutoML(nfolds=0, **common)  # usa fold_column para la xval, no nfolds.
         aml.train(x=list(X.columns), y="y", training_frame=train_df, fold_column="fold_id")
     else:
         train_df = _to_h2o_frame(h2o, X, y, None)
-        aml = H2OAutoML(
-            max_runtime_secs=max_runtime_secs,
-            seed=seed,
-            sort_metric="AUC",
-            nfolds=5,  # KFold convencional — sesgo intencional para M3.
-            verbosity=None,
-        )
+        aml = H2OAutoML(nfolds=5, **common)  # KFold convencional — sesgo intencional para M3.
         aml.train(x=list(X.columns), y="y", training_frame=train_df)
 
     lb = aml.leaderboard.as_data_frame(use_pandas=True)
