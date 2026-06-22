@@ -217,3 +217,44 @@ drawdown/Calmar/capital preservado en los activos que caen, no accuracy contra u
 **Próximo refinamiento candidato.** De-risk **solo en Crisis sin vol-target permanente** (mantener
 tamaño pleno en Calma → preserva el Sharpe de los índices, recorta solo las caídas). No cambiará el
 titular (no hay alfa de retorno posible aquí) pero acota mejor el coste en Sharpe de los alcistas.
+
+---
+
+## 6. Búsqueda exhaustiva de ACCURACY direccional (todas las palancas) — pared confirmada
+
+Artefacto: `experiments/regime_accuracy_search.py` → `outputs/experiments/regime_accuracy_search.json`.
+Bar honesto = **ZeroR causal** (clase mayoritaria expansible: corto en bajistas, largo en alcistas;
+sin el look-ahead del ZeroR fijo del panel). 14 señales causales vs ZeroR, por activo y pooled.
+
+| señal | acc media | acc>ZeroR | Δ pooled | p_greater |
+|---|---:|:--:|---:|---:|
+| ZeroR_exp (bar) | 0,5266 | — | — | — |
+| RegK2 | 0,5271 | 3/13 | +0,0005 | 0,42 |
+| RegK3 | 0,5266 | 3/13 | +0,0000 | 0,50 |
+| RegK4 | 0,5263 | 3/13 | −0,0004 | 0,54 |
+| RegK5 | 0,5194 | 3/13 | −0,0072 | 0,91 |
+| Trend20 | 0,5032 | 3/13 | −0,0234 | 0,99 |
+| Trend63 | 0,5068 | 2/13 | −0,0198 | 0,92 |
+| Trend126 | 0,5091 | 2/13 | −0,0175 | 0,94 |
+| MA50_200 | 0,5059 | 2/13 | −0,0207 | 0,96 |
+| Trend_RegFlip | 0,5088 | 2/13 | −0,0178 | 0,89 |
+| Trend_RegDir | 0,5124 | 4/13 | −0,0142 | 0,93 |
+| BestExpert (online) | 0,5205 | 2/13 | −0,0061 | 0,79 |
+| WeightVote (ensemble) | 0,5261 | 2/13 | −0,0005 | 0,53 |
+
+**Ninguna bate a ZeroR causal pooled.** El máximo es **empatar** (WeightVote, RegK2/K3). Por activo,
+el trend gana en los bajistas (SMCI 0,539 vs 0,468; MSTR 0,517 vs 0,464; UNG 0,520 vs 0,492) pero
+pierde en los alcistas (SPY/QQQ/DIA) y en el agregado se cancela.
+
+**La pared, en matemáticas.** En este OOS la dirección diaria condicionada a cualquier feature de
+precio es ~Bernoulli i.i.d. con p ≈ frac_up. El clasificador de Bayes óptimo para una Bernoulli sin
+información condicional es predecir la clase mayoritaria → accuracy = max(p, 1−p) = **ZeroR**. Batir a
+ZeroR exige una X con P(subida|X_t) ≠ p en días concretos; ninguna de las 14 señales la tiene en
+2024-10→2026-06. No es fallo de modelado: el mercado subió casi a diario con independencia del
+régimen/vol/tendencia (eficiencia a horizonte diario). Coherente con CLAUDE.md: **"STRATA NO predice
+retornos"** — la accuracy-sobre-ZeroR no es el terreno donde la técnica gana en este OOS.
+
+**Decisión metodológica.** Se cierra la búsqueda de accuracy: con 14 señales probadas, añadir más
+solo produciría una ganadora por azar (p-hacking, prohibido por LECCIONES_APRENDIDAS). La mejora real
+y demostrable de STRATA está en el riesgo (§5), no en la dirección. Para mostrar valor direccional
+haría falta un OOS que contenga una crisis sostenida — inexistente post-cutoff del LLM.
