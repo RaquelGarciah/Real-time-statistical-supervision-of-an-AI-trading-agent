@@ -64,6 +64,7 @@ notebooks/logic_esential.ipynb
 tesis_assets/estilo_raquel/*
 !tesis_assets/estilo_raquel/README.md
 
-# Memoria compartida entre sesiones: el código sí se versiona; las transcripciones
-# crudas de chats (fuente intermedia) NO — la memoria.db reconstruible las contiene.
-claude_shared_memory/conversaciones_md/
+# Memoria compartida entre sesiones: es tooling local, no parte del TFG. Su .venv y
+# __pycache__ ya están ignorados arriba; la memory.db es binaria y reconstruible, así
+# que se queda en local entera.
+claude_shared_memory/
