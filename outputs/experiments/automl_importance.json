@@ -1,0 +1,374 @@
+{
+  "meta": {
+    "seed": 42,
+    "panel": [
+      "SPY",
+      "MARA",
+      "UNG"
+    ],
+    "max_models": 25,
+    "config": "H2O AutoML in-sample (importancia, no rendimiento); GBM/XGBoost/SE, AUC, Purged K-Fold emb=1",
+    "nota": "Ensemble sin atribución exacta por feature → SHAP sobre mejor XGBoost del leaderboard; permutation importance sobre el ensemble (sensible a features correladas).",
+    "bloques": {
+      "agente": [
+        "warren_buffett_sign",
+        "warren_buffett_size",
+        "warren_buffett_conf",
+        "cathie_wood_sign",
+        "cathie_wood_size",
+        "cathie_wood_conf",
+        "stanley_druckenmiller_sign",
+        "stanley_druckenmiller_size",
+        "stanley_druckenmiller_conf",
+        "michael_burry_sign",
+        "michael_burry_size",
+        "michael_burry_conf",
+        "bill_ackman_sign",
+        "bill_ackman_size",
+        "bill_ackman_conf"
+      ],
+      "régimen": [
+        "calm_prob",
+        "stress_prob",
+        "crisis_prob",
+        "ram_score"
+      ],
+      "volatilidad": [
+        "garch_sigma",
+        "gso_score"
+      ],
+      "psa": [
+        "psa_score"
+      ]
+    }
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 401,
+      "leader_family": "GBM",
+      "shap_tree": {
+        "modelo": "GBM_grid_1_AutoML_1_20260622_225525_model_3",
+        "bloques": {
+          "agente": 0.4348,
+          "régimen": 0.3254,
+          "volatilidad": 0.1297,
+          "psa": 0.1101
+        },
+        "cuota_strata": 0.5652,
+        "top10": [
+          [
+            "garch_sigma",
+            0.1279
+          ],
+          [
+            "psa_score",
+            0.1101
+          ],
+          [
+            "stress_prob",
+            0.1019
+          ],
+          [
+            "ram_score",
+            0.0964
+          ],
+          [
+            "calm_prob",
+            0.079
+          ],
+          [
+            "warren_buffett_conf",
+            0.0745
+          ],
+          [
+            "stanley_druckenmiller_conf",
+            0.0672
+          ],
+          [
+            "cathie_wood_conf",
+            0.0529
+          ],
+          [
+            "crisis_prob",
+            0.048
+          ],
+          [
+            "michael_burry_conf",
+            0.0471
+          ]
+        ]
+      },
+      "perm_importance_ensemble": {
+        "metrica": "logloss",
+        "n_repeats": 5,
+        "bloques": {
+          "agente": 0.4365,
+          "régimen": 0.3062,
+          "volatilidad": 0.1487,
+          "psa": 0.1085
+        },
+        "cuota_strata": 0.5635,
+        "top10": [
+          [
+            "garch_sigma",
+            0.148
+          ],
+          [
+            "psa_score",
+            0.1085
+          ],
+          [
+            "ram_score",
+            0.1001
+          ],
+          [
+            "stress_prob",
+            0.0967
+          ],
+          [
+            "warren_buffett_conf",
+            0.0805
+          ],
+          [
+            "calm_prob",
+            0.0687
+          ],
+          [
+            "stanley_druckenmiller_conf",
+            0.0672
+          ],
+          [
+            "michael_burry_sign",
+            0.0522
+          ],
+          [
+            "cathie_wood_conf",
+            0.0464
+          ],
+          [
+            "cathie_wood_sign",
+            0.0458
+          ]
+        ]
+      }
+    },
+    "MARA": {
+      "n": 398,
+      "leader_family": "GBM",
+      "shap_tree": {
+        "modelo": "GBM_grid_1_AutoML_2_20260622_225557_model_40",
+        "bloques": {
+          "agente": 0.3025,
+          "régimen": 0.338,
+          "volatilidad": 0.2387,
+          "psa": 0.1209
+        },
+        "cuota_strata": 0.6975,
+        "top10": [
+          [
+            "garch_sigma",
+            0.1629
+          ],
+          [
+            "stress_prob",
+            0.1458
+          ],
+          [
+            "calm_prob",
+            0.1281
+          ],
+          [
+            "bill_ackman_conf",
+            0.1212
+          ],
+          [
+            "psa_score",
+            0.1209
+          ],
+          [
+            "gso_score",
+            0.0758
+          ],
+          [
+            "stanley_druckenmiller_conf",
+            0.0755
+          ],
+          [
+            "ram_score",
+            0.064
+          ],
+          [
+            "cathie_wood_conf",
+            0.0463
+          ],
+          [
+            "michael_burry_conf",
+            0.032
+          ]
+        ]
+      },
+      "perm_importance_ensemble": {
+        "metrica": "logloss",
+        "n_repeats": 5,
+        "bloques": {
+          "agente": 0.1582,
+          "régimen": 0.3371,
+          "volatilidad": 0.3653,
+          "psa": 0.1394
+        },
+        "cuota_strata": 0.8418,
+        "top10": [
+          [
+            "gso_score",
+            0.1933
+          ],
+          [
+            "garch_sigma",
+            0.172
+          ],
+          [
+            "stress_prob",
+            0.166
+          ],
+          [
+            "psa_score",
+            0.1394
+          ],
+          [
+            "calm_prob",
+            0.1251
+          ],
+          [
+            "bill_ackman_conf",
+            0.0664
+          ],
+          [
+            "stanley_druckenmiller_conf",
+            0.0531
+          ],
+          [
+            "ram_score",
+            0.046
+          ],
+          [
+            "warren_buffett_conf",
+            0.0148
+          ],
+          [
+            "michael_burry_conf",
+            0.0091
+          ]
+        ]
+      }
+    },
+    "UNG": {
+      "n": 397,
+      "leader_family": "GBM",
+      "shap_tree": {
+        "modelo": "GBM_grid_1_AutoML_3_20260622_225623_model_37",
+        "bloques": {
+          "agente": 0.4795,
+          "régimen": 0.2325,
+          "volatilidad": 0.1889,
+          "psa": 0.0991
+        },
+        "cuota_strata": 0.5205,
+        "top10": [
+          [
+            "garch_sigma",
+            0.1889
+          ],
+          [
+            "warren_buffett_conf",
+            0.1345
+          ],
+          [
+            "stanley_druckenmiller_conf",
+            0.1314
+          ],
+          [
+            "stress_prob",
+            0.1077
+          ],
+          [
+            "psa_score",
+            0.0991
+          ],
+          [
+            "cathie_wood_conf",
+            0.0897
+          ],
+          [
+            "crisis_prob",
+            0.0587
+          ],
+          [
+            "ram_score",
+            0.0505
+          ],
+          [
+            "bill_ackman_conf",
+            0.0481
+          ],
+          [
+            "michael_burry_conf",
+            0.0363
+          ]
+        ]
+      },
+      "perm_importance_ensemble": {
+        "metrica": "logloss",
+        "n_repeats": 5,
+        "bloques": {
+          "agente": 0.4643,
+          "régimen": 0.1808,
+          "volatilidad": 0.277,
+          "psa": 0.078
+        },
+        "cuota_strata": 0.5357,
+        "top10": [
+          [
+            "garch_sigma",
+            0.277
+          ],
+          [
+            "warren_buffett_conf",
+            0.177
+          ],
+          [
+            "stress_prob",
+            0.1199
+          ],
+          [
+            "stanley_druckenmiller_conf",
+            0.106
+          ],
+          [
+            "cathie_wood_conf",
+            0.0996
+          ],
+          [
+            "psa_score",
+            0.078
+          ],
+          [
+            "crisis_prob",
+            0.0373
+          ],
+          [
+            "bill_ackman_conf",
+            0.0343
+          ],
+          [
+            "warren_buffett_sign",
+            0.0262
+          ],
+          [
+            "michael_burry_conf",
+            0.0208
+          ]
+        ]
+      }
+    }
+  }
+}

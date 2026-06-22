@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "seed": 42,
+    "signal_lag": 1,
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM",
+      "XLF",
+      "XLK"
+    ],
+    "max_models": 25,
+    "scheme": "AutoML (H2O, Purged K-Fold, max_models DETERMINISTA sin DeepLearning) WF por activo",
+    "states": "HMM+GARCH calibrados al vuelo por activo (build_states_onthefly)",
+    "enfoque": "rescate de M5/M8 + Sharpe/maxDD; universalidad §2 nivel 3 (no batir ZeroR)",
+    "reproducibilidad": "max_models fijo + semilla → determinista; max_runtime_secs NO lo era",
+    "pre_registro": "docstring de este fichero"
+  },
+  "por_activo": {
+    "SPY": {
+      "error": "H2OResponseError: Server error java.lang.IllegalArgumentException:\n  Error: Job is missing\n  Request: GET /3/Jobs/$03017f00000132d4ffffffff$_a7875fe3b85a69ec4ee95ede5a874c26\n"
+    }
+  }
+}
