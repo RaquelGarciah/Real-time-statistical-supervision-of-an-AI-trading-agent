@@ -1,0 +1,411 @@
+{
+  "meta": {
+    "activos": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM"
+    ],
+    "ventana": "~250 (mv[150:])",
+    "seed": 42,
+    "configs": {
+      "M8": {
+        "gso_mode": "absolute",
+        "ram_thresholds": [
+          0.25,
+          0.5,
+          0.7
+        ]
+      },
+      "STRATA-U?": {
+        "gso_mode": "relative",
+        "ram_thresholds": [
+          0.25,
+          0.5,
+          0.7
+        ]
+      },
+      "STRATA-U+": {
+        "gso_mode": "relative",
+        "ram_thresholds": [
+          0.125,
+          0.25,
+          0.5
+        ]
+      }
+    },
+    "nota": "MISMO StrataSupervisor (override-C); solo cambia gso_mode y ram_thresholds. Verifica si absolute→relative (GSO siempre on) reproduce STRATA-U. Exploratorio."
+  },
+  "por_activo": {
+    "SPY": {
+      "M8": {
+        "acc": 0.4422,
+        "sharpe": 1.5944,
+        "calmar": 1.6309,
+        "maxdd": -0.0596,
+        "interv_rate": 0.3386,
+        "n": 251
+      },
+      "STRATA-U?": {
+        "acc": 0.4422,
+        "sharpe": 0.3755,
+        "calmar": 0.34,
+        "maxdd": -0.0834,
+        "interv_rate": 1.0,
+        "n": 251
+      },
+      "STRATA-U+": {
+        "acc": 0.4263,
+        "sharpe": -0.2153,
+        "calmar": -0.1721,
+        "maxdd": -0.1239,
+        "interv_rate": 1.0,
+        "n": 251
+      }
+    },
+    "NVDA": {
+      "M8": {
+        "acc": 0.5212,
+        "sharpe": 1.1904,
+        "calmar": 1.7636,
+        "maxdd": -0.0556,
+        "interv_rate": 0.6641,
+        "n": 259
+      },
+      "STRATA-U?": {
+        "acc": 0.5212,
+        "sharpe": 1.1492,
+        "calmar": 1.5028,
+        "maxdd": -0.0707,
+        "interv_rate": 1.0,
+        "n": 259
+      },
+      "STRATA-U+": {
+        "acc": 0.529,
+        "sharpe": 1.2503,
+        "calmar": 1.882,
+        "maxdd": -0.0619,
+        "interv_rate": 1.0,
+        "n": 259
+      }
+    },
+    "BAC": {
+      "M8": {
+        "acc": 0.5163,
+        "sharpe": 1.1903,
+        "calmar": 2.0368,
+        "maxdd": -0.0478,
+        "interv_rate": 0.5528,
+        "n": 246
+      },
+      "STRATA-U?": {
+        "acc": 0.5163,
+        "sharpe": 1.3481,
+        "calmar": 2.7157,
+        "maxdd": -0.0484,
+        "interv_rate": 0.9919,
+        "n": 246
+      },
+      "STRATA-U+": {
+        "acc": 0.5163,
+        "sharpe": 0.7674,
+        "calmar": 1.5098,
+        "maxdd": -0.0469,
+        "interv_rate": 0.9919,
+        "n": 246
+      }
+    },
+    "TSLA": {
+      "M8": {
+        "acc": 0.4781,
+        "sharpe": -0.1302,
+        "calmar": -0.1305,
+        "maxdd": -0.0928,
+        "interv_rate": 0.3944,
+        "n": 251
+      },
+      "STRATA-U?": {
+        "acc": 0.4781,
+        "sharpe": -0.3654,
+        "calmar": -0.3039,
+        "maxdd": -0.1081,
+        "interv_rate": 0.6813,
+        "n": 251
+      },
+      "STRATA-U+": {
+        "acc": 0.4741,
+        "sharpe": -0.409,
+        "calmar": -0.3359,
+        "maxdd": -0.1081,
+        "interv_rate": 0.6813,
+        "n": 251
+      }
+    },
+    "XLE": {
+      "M8": {
+        "acc": 0.5282,
+        "sharpe": 1.6408,
+        "calmar": 3.4774,
+        "maxdd": -0.0378,
+        "interv_rate": 0.6129,
+        "n": 248
+      },
+      "STRATA-U?": {
+        "acc": 0.5282,
+        "sharpe": 0.9084,
+        "calmar": 1.3209,
+        "maxdd": -0.0665,
+        "interv_rate": 1.0,
+        "n": 248
+      },
+      "STRATA-U+": {
+        "acc": 0.5363,
+        "sharpe": 1.059,
+        "calmar": 1.5629,
+        "maxdd": -0.0665,
+        "interv_rate": 1.0,
+        "n": 248
+      }
+    },
+    "UNG": {
+      "M8": {
+        "acc": 0.502,
+        "sharpe": 0.4215,
+        "calmar": 0.5103,
+        "maxdd": -0.0577,
+        "interv_rate": 0.1215,
+        "n": 247
+      },
+      "STRATA-U?": {
+        "acc": 0.502,
+        "sharpe": 0.6711,
+        "calmar": 0.7145,
+        "maxdd": -0.0902,
+        "interv_rate": 0.7611,
+        "n": 247
+      },
+      "STRATA-U+": {
+        "acc": 0.5101,
+        "sharpe": 0.9141,
+        "calmar": 1.0055,
+        "maxdd": -0.0902,
+        "interv_rate": 0.7611,
+        "n": 247
+      }
+    },
+    "MSTR": {
+      "M8": {
+        "acc": 0.5578,
+        "sharpe": 1.4126,
+        "calmar": 1.8014,
+        "maxdd": -0.0552,
+        "interv_rate": 0.004,
+        "n": 251
+      },
+      "STRATA-U?": {
+        "acc": 0.5578,
+        "sharpe": 1.7833,
+        "calmar": 2.9886,
+        "maxdd": -0.0552,
+        "interv_rate": 0.4422,
+        "n": 251
+      },
+      "STRATA-U+": {
+        "acc": 0.5578,
+        "sharpe": 1.7833,
+        "calmar": 2.9886,
+        "maxdd": -0.0552,
+        "interv_rate": 0.4422,
+        "n": 251
+      }
+    },
+    "SMCI": {
+      "M8": {
+        "acc": 0.496,
+        "sharpe": 0.3289,
+        "calmar": 0.4134,
+        "maxdd": -0.0588,
+        "interv_rate": 0.028,
+        "n": 250
+      },
+      "STRATA-U?": {
+        "acc": 0.496,
+        "sharpe": 0.4927,
+        "calmar": 0.746,
+        "maxdd": -0.0693,
+        "interv_rate": 0.452,
+        "n": 250
+      },
+      "STRATA-U+": {
+        "acc": 0.5,
+        "sharpe": 0.5018,
+        "calmar": 0.762,
+        "maxdd": -0.0693,
+        "interv_rate": 0.452,
+        "n": 250
+      }
+    },
+    "ROKU": {
+      "M8": {
+        "acc": 0.528,
+        "sharpe": 0.5093,
+        "calmar": 0.49,
+        "maxdd": -0.0715,
+        "interv_rate": 0.884,
+        "n": 250
+      },
+      "STRATA-U?": {
+        "acc": 0.528,
+        "sharpe": 0.5054,
+        "calmar": 0.4851,
+        "maxdd": -0.0717,
+        "interv_rate": 0.916,
+        "n": 250
+      },
+      "STRATA-U+": {
+        "acc": 0.532,
+        "sharpe": 0.6272,
+        "calmar": 0.6144,
+        "maxdd": -0.0717,
+        "interv_rate": 0.92,
+        "n": 250
+      }
+    },
+    "MARA": {
+      "M8": {
+        "acc": 0.5282,
+        "sharpe": 0.7578,
+        "calmar": 0.685,
+        "maxdd": -0.0875,
+        "interv_rate": 0.4839,
+        "n": 248
+      },
+      "STRATA-U?": {
+        "acc": 0.5282,
+        "sharpe": 0.6448,
+        "calmar": 0.5312,
+        "maxdd": -0.094,
+        "interv_rate": 0.5323,
+        "n": 248
+      },
+      "STRATA-U+": {
+        "acc": 0.504,
+        "sharpe": 0.4315,
+        "calmar": 0.3409,
+        "maxdd": -0.094,
+        "interv_rate": 0.5887,
+        "n": 248
+      }
+    },
+    "QQQ": {
+      "M8": {
+        "acc": 0.4861,
+        "sharpe": 0.7062,
+        "calmar": 0.6185,
+        "maxdd": -0.0674,
+        "interv_rate": 0.2669,
+        "n": 251
+      },
+      "STRATA-U?": {
+        "acc": 0.4861,
+        "sharpe": -0.0697,
+        "calmar": -0.0904,
+        "maxdd": -0.1279,
+        "interv_rate": 1.0,
+        "n": 251
+      },
+      "STRATA-U+": {
+        "acc": 0.494,
+        "sharpe": 0.31,
+        "calmar": 0.2514,
+        "maxdd": -0.103,
+        "interv_rate": 1.0,
+        "n": 251
+      }
+    },
+    "DIA": {
+      "M8": {
+        "acc": 0.484,
+        "sharpe": 0.1767,
+        "calmar": 0.2256,
+        "maxdd": -0.0401,
+        "interv_rate": 0.316,
+        "n": 250
+      },
+      "STRATA-U?": {
+        "acc": 0.484,
+        "sharpe": -0.9946,
+        "calmar": -0.9717,
+        "maxdd": -0.0968,
+        "interv_rate": 1.0,
+        "n": 250
+      },
+      "STRATA-U+": {
+        "acc": 0.488,
+        "sharpe": -0.9338,
+        "calmar": -0.827,
+        "maxdd": -0.1075,
+        "interv_rate": 1.0,
+        "n": 250
+      }
+    },
+    "IWM": {
+      "M8": {
+        "acc": 0.4701,
+        "sharpe": 0.4123,
+        "calmar": 0.6279,
+        "maxdd": -0.0368,
+        "interv_rate": 0.1793,
+        "n": 251
+      },
+      "STRATA-U?": {
+        "acc": 0.4701,
+        "sharpe": 0.24,
+        "calmar": 0.244,
+        "maxdd": -0.0771,
+        "interv_rate": 1.0,
+        "n": 251
+      },
+      "STRATA-U+": {
+        "acc": 0.4701,
+        "sharpe": 0.1833,
+        "calmar": 0.1608,
+        "maxdd": -0.0822,
+        "interv_rate": 1.0,
+        "n": 251
+      }
+    }
+  },
+  "resumen_medias": {
+    "M8": {
+      "acc": 0.5029,
+      "sharpe": 0.7855,
+      "maxdd": -0.0591,
+      "calmar": 1.0885,
+      "interv_rate": 0.3728
+    },
+    "STRATA-U?": {
+      "acc": 0.5029,
+      "sharpe": 0.5145,
+      "maxdd": -0.0815,
+      "calmar": 0.7864,
+      "interv_rate": 0.829
+    },
+    "STRATA-U+": {
+      "acc": 0.5029,
+      "sharpe": 0.4823,
+      "maxdd": -0.0831,
+      "calmar": 0.7495,
+      "interv_rate": 0.8336
+    }
+  }
+}
