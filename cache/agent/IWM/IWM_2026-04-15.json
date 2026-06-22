@@ -1,0 +1,40 @@
+{
+ "date": "2026-04-15",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19033856719970704,
+ "confidence": 0.85,
+ "reasoning": "Strong bearish signal from Burry",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While IWM has shown strong recent performance (+8.42% YTD and +8.42% over 1 month, outperforming SPY), we cannot confirm its exposure to truly disruptive innovation without deeper analysis of its underlying holdings. The Russell 2000 index typically includes smaller companies, some of which may have disruptive potential, but as an aggregate ETF it lacks the concentrated exposure to exponential growth technologies that we prioritize. The recent market rotation showing strength in financials (XLF +1.46%) and tech (XLK +3.53%) suggests some innovation exposure, but without visibility into specific company fundamentals, we maintain a neutral stance. For investors seeking small-cap exposure with innovation focus, we would recommend analyzing individual companies within disruptive sectors rather than the broad index."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The ETF IWM has demonstrated strong recent momentum with a 1-month return of +8.42% and YTD return of +8.48%, outperforming SPY over these periods. However, there is insufficient fundamental data to assess growth, valuation, or risk-reward asymmetry, which are critical for high-conviction decisions. Market sentiment appears neutral with no extreme signals from the VIX at 18.17. While the momentum is appealing, the lack of asymmetric risk-reward visibility and fundamental clarity prevents a stronger stance. Given Stanley Druckenmiller's principles, I would remain neutral until clearer catalysts or growth signals emerge."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "FCF data unavailable. Debt-to-equity data unavailable. No insider trade data. No recent news. Lack of fundamental visibility on ETF constituents. Bearish."
+  },
+  "bill_ackman": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Given the lack of fundamental data on the underlying businesses within IWM, it's impossible to apply Ackman's principles effectively. The ETF's recent performance (8.42% 1M return, 8.48% YTD) suggests momentum, but without visibility into business quality, cash flows, or valuation metrics, we cannot make a high-conviction call. The neutral stance reflects this uncertainty—while small caps (IWM) are outperforming large caps (SPY), we lack the necessary data to assess whether this is justified by underlying fundamentals or merely speculative. Proceed with caution until more granular data is available."
+  }
+ }
+}

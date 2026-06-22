@@ -1,0 +1,40 @@
+{
+ "date": "2026-01-14",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19520024871826172,
+ "confidence": 0.95,
+ "reasoning": "Strong bearish signal from Burry",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed signals. IWM strong YTD but insufficient data for intrinsic value."
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While IWM has shown strong recent performance with a 4.03% return over the past month and 5.79% YTD, outperforming SPY, we lack sufficient data on the disruptive innovation potential of its underlying holdings. As an ETF tracking small-cap stocks, IWM likely contains a mix of both innovative growth companies and traditional businesses. Without visibility into specific holdings' technological breakthroughs, R&D investment levels, or exponential growth metrics, we cannot make a conviction-driven recommendation aligned with Cathie Wood's principles. The neutral stance reflects this lack of visibility into the truly transformative potential of the portfolio, despite the positive price momentum in the small-cap space."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The analysis for IWM shows insufficient data to make a high-conviction call on growth momentum, risk-reward, or valuation, which are critical for Druckenmiller-style investing. While sentiment and insider activity are neutral, the lack of fundamental growth metrics and risk-reward asymmetry prevents a strong bullish or bearish stance. Given the current market context where small caps (IWM) are outperforming the broader market (SPY) with +5.79% YTD returns versus +1.05%, there may be relative strength, but without clear growth leadership or asymmetric upside, I prefer to remain neutral. The VIX at 16.75 (low percentile) suggests complacency, adding to the need for caution. Until clearer growth catalysts or a more favorable risk-reward setup emerges, capital preservation is prudent."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.95,
+   "reasoning": "FCF data unavailable. Financial metrics unavailable. No debt-to-equity data. No insider trade data. No recent news. Bearish."
+  },
+  "bill_ackman": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.3,
+   "reasoning": "The analysis provided for IWM is inconclusive due to insufficient data across all key metrics (business quality, financial discipline, activism potential, and valuation). However, recent market performance shows IWM outperforming SPY with a 1-month return of +4.03% and a YTD return of +5.79%, suggesting relative strength in small-cap equities. This may indicate underlying market sentiment favoring small-cap stocks, possibly due to economic recovery or risk-on behavior. Without sufficient data on fundamental factors, this signal is neutral with low confidence, relying solely on short-term market trends rather than Ackman's core principles of durable moats, cash flow, and valuation."
+  }
+ }
+}

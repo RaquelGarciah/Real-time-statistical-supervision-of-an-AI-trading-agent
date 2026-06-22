@@ -1,0 +1,40 @@
+{
+ "date": "2025-03-11",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19573743850708009,
+ "confidence": 0.7,
+ "reasoning": "Multiple bearish signals from top managers",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed signals, market uncertain, retornos negativos"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The IWM ETF represents small-cap stocks, which traditionally include a mix of companies with varying degrees of innovation and disruptive potential. However, without specific data on disruptive technologies, innovation pipelines, or valuation metrics, we cannot confidently assess its alignment with Cathie Wood's principles of investing in transformative, innovation-driven companies. Small-cap stocks often exhibit higher volatility and can include both future-facing disruptors and laggards, making it difficult to apply a bullish or bearish stance without further analysis. For investors focused on disruptive innovation, seeking out individual small-cap companies with clear evidence of exponential growth potential and breakthrough technologies may be more effective than taking a broad position in IWM."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "The IWM ETF is showing severe underperformance with a -11.17% return over the past month and -15.43% over three months, significantly lagging the broader market (SPY). This negative momentum is compounded by the lack of supportive growth or valuation data to justify a reversal. Market conditions are risk-off, evidenced by defensive sectors (XLP, XLV, XLRE) outperforming while cyclicals (XLY, XLK) lag. The VIX at 26.92 (98th percentile) indicates extreme market stress, creating asymmetric downside risk for small caps. With no positive catalysts visible and the 10Y yield rising (+1.78% today), IWM remains vulnerable to further outflows. The risk-reward is unfavorable—limited upside potential against continued downside in this macro environment. Preserving capital by avoiding small-cap exposure is prudent until momentum stabilizes."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "IWM down 11.17% in 1M, 15.43% in 3M. No fundamental data available, but small-cap underperformance severe. VIX at 26.92 (percentil 1Y 0.98) shows extreme fear. No insider support. Avoid until fundamentals stabilize or capitulation evident."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "The IWM ETF, representing small-cap stocks, has shown significant underperformance with a 1-month return of -11.17% and YTD return of -9.22%. Given the current market conditions with elevated volatility (VIX at 26.92) and rising interest rates (10Y at 4.29%), small caps are particularly vulnerable due to their higher sensitivity to financing costs and economic uncertainty. The lack of specific fundamental data on constituent companies prevents a detailed quality or valuation assessment, but the macroeconomic backdrop and recent price action suggest continued pressure. Small caps typically underperform in risk-off environments, and with sector rotation favoring defensive sectors (XLP, XLV leading), we maintain a bearish stance with 70% confidence."
+  }
+ }
+}

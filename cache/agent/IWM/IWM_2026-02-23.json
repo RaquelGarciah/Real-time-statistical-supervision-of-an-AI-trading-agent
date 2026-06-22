@@ -1,0 +1,40 @@
+{
+ "date": "2026-02-23",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19763511657714844,
+ "confidence": 0.75,
+ "reasoning": "Cathie Wood bearish, high confidence",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient fundamental data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.75,
+   "reasoning": "The IWM ETF, representing small-cap stocks, lacks sufficient data to demonstrate exposure to disruptive innovation or exponential growth potential. Cathie Wood's investment philosophy focuses on companies leveraging breakthrough technologies in sectors like technology and healthcare, with clear paths to scaling in large markets. Given the absence of innovation and disruption metrics, IWM does not align with Ark Invest's conviction-driven, high-growth strategy. Additionally, the ETF's recent performance (-3.45% over 1 month) suggests underperformance relative to transformational, future-facing opportunities. Until evidence of disruptive innovation within the small-cap universe emerges, IWM is not positioned to deliver the outsized returns we seek."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The IWM ETF shows mixed signals with insufficient data for a decisive Druckenmiller-style asymmetric call. While the YTD return of +4.71% and 3-month return of +11.97% suggest some positive momentum, the recent 1-month underperformance (-3.45% vs SPY's -0.96%) raises caution. The lack of fundamental growth metrics, insider activity data, and valuation context prevents a high-conviction assessment. Market-wide, defensive sectors (XLE, XLU) are leading while cyclicals (XLY, XLF) lag—a neutral stance on small caps is prudent until clearer leadership emerges. Risk-reward appears balanced given the data vacuum."
+  },
+  "michael_burry": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "No fundamental data available for ETF. Market context shows mixed signals: IWM YTD +4.71% vs SPY -0.11%, but 1M underperformance (-3.45%). Rotational leadership in defensive sectors (XLE, XLU, XLP) suggests risk-off environment. VIX elevated at 21.01 (percentil 1Y 0.79). Without hard numbers on FCF or balance sheet, cannot make conviction call."
+  },
+  "bill_ackman": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Given the lack of specific fundamental data on IWM's underlying holdings, we cannot apply Ackman's high-conviction investment framework. The ETF's recent underperformance (-3.45% over 1 month) and mixed YTD returns (+4.71%) suggest caution, but without visibility into individual business quality, moats, or cash flow generation, we maintain a neutral stance. The broader market's defensive rotation (XLE, XLU leading) indicates risk-off sentiment, further warranting prudence. Until we can identify specific high-quality small-cap businesses within IWM's portfolio that meet our criteria for durable competitive advantages and attractive valuations, we refrain from taking a directional view."
+  }
+ }
+}

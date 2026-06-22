@@ -1,0 +1,40 @@
+{
+ "date": "2026-02-19",
+ "ticker": "QQQ",
+ "action": "short",
+ "size": -0.193608671875,
+ "confidence": 0.7,
+ "reasoning": "Majority bearish signals",
+ "personalities": {
+  "warren_buffett": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "QQQ YTD -1.57%, underperforming SPY, tech weakness"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The QQQ ETF shows mixed signals with a slight YTD decline (-1.57%) but some positive momentum in recent months (+0.10% over 3 months). While tech-heavy, the broader market context shows rotation into more defensive sectors (XLE +14.91%, XLB +8.61%) rather than pure innovation plays. Without specific company data on disruptive technologies or innovation pipelines within the ETF holdings, we cannot confirm the presence of sufficient exponential growth potential to warrant a bullish stance. The neutral recommendation reflects this uncertainty, though the long-term potential of tech innovation remains intact."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "QQQ exhibits concerning momentum trends with the index down 0.75% over the past month and -1.57% YTD, significantly underperforming SPY's +1.02% monthly and +0.19% YTD returns. While specific financial and valuation data is unavailable, the relative weakness suggests waning bullish sentiment and growth leadership challenges, particularly given XLK's -2.17% and XLY's -3.44% sector drags that heavily influence QQQ. Risk-reward is unfavorable until we see evidence of a trend reversal. Current setup favors a cautious stance with potential downside catalysts from extended Tech sector valuations and FANG+ earnings risks. Without a clear growth catalyst or fundamental upside signal, preserving capital takes priority here. Cut losses quickly if weakness accelerates below key technical levels."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "No FCF or financial metrics available. No insider activity. Tech sector (XLK) underperforming SPY by 2.17% over 1M. QQQ YTD return -1.57% vs SPY +0.19%. Lack of hard data makes valuation impossible. Pass."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "Given the lack of fundamental business data on QQQ as an ETF, we rely on market context and technicals. QQQ has underperformed SPY YTD (-1.57% vs +0.19%) and shows relative weakness in tech (XLK -2.17% 1M). The elevated VIX (20.23, +3.11% daily) signals rising risk aversion, which historically pressures growth/tech names. Without visibility into underlying cash flows or valuation metrics, we adopt a cautious stance given the macro backdrop and sector rotation away from tech leadership."
+  }
+ }
+}

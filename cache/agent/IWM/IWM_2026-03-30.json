@@ -1,0 +1,40 @@
+{
+ "date": "2026-03-30",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19401861572265625,
+ "confidence": 0.7,
+ "reasoning": "Bearish signals across agents",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed market signals, insufficient fundamentals"
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "The IWM ETF, representing small-cap stocks, lacks clear exposure to disruptive innovation or exponential growth companies that align with Cathie Wood's investment principles. Small-cap indices typically contain fewer companies with transformative technologies or large TAM opportunities compared to growth-focused portfolios. The recent underperformance (-8.18% 1M, -4.53% 3M) suggests market skepticism about these companies' ability to drive breakthrough innovation. Without specific disruptive technologies, accelerating revenue growth metrics, or evidence of R&D-driven competitive advantages in constituent companies, IWM doesn't meet our criteria for high-conviction growth investing. In the current risk-off environment (VIX at 30.61), small caps without technological moats are particularly vulnerable."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "The IWM ETF is showing weak momentum with a -8.18% return over the past month and -4.53% over the past three months, underperforming the broader market (SPY) during this period. While we lack specific fundamental data on the underlying companies, the technical weakness combined with elevated market volatility (VIX at 30.61, in the top 1% of the past year) suggests an unfavorable risk environment. The risk-reward profile appears asymmetric to the downside given: 1) the ETF has already broken key support levels (down YTD), 2) small caps typically underperform in high volatility regimes, and 3) there are no visible catalysts to reverse the downtrend. While we can't assess valuation directly, the momentum damage suggests further downside potential outweighs upside in the near term. Following Druckenmiller's principle of preserving capital in drawdowns, I'd avoid small caps until volatility subsides and the technical picture improves."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "No fundamental data available for ETF. Market context shows SPY down 7.24% YTD, IWM underperforming SPY over 1M (-8.18% vs -7.62%). VIX at 30.61 indicates elevated fear. No hard data to justify bottom-fishing. Avoid until fundamentals stabilize."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.8,
+   "reasoning": "The analysis for IWM indicates insufficient data to assess key Ackman-style investment criteria such as business quality, financial discipline, activism potential, and valuation. Given the lack of fundamental insights and the broader market context—where the S&P 500 (SPY) has shown significant declines over the past month, quarter, and YTD—caution is warranted. Additionally, IWM itself has underperformed over the same periods, further supporting a bearish stance. Without clarity on free cash flow generation, competitive advantages, or actionable valuation metrics, it is prudent to avoid exposure to IWM until more robust data becomes available."
+  }
+ }
+}

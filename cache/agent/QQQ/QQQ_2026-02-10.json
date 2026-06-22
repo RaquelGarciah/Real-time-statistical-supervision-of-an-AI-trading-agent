@@ -1,0 +1,40 @@
+{
+ "date": "2026-02-10",
+ "ticker": "QQQ",
+ "action": "short",
+ "size": -0.19633484375,
+ "confidence": 0.85,
+ "reasoning": "majority bearish signals, QQQ underperforming",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While QQQ represents a basket of innovative tech companies, the current performance shows mixed signals with -2.42% 1-month return but positive 3-month and YTD figures. The sector rotation shows tech (XLK) underperforming at -2.18% vs SPY, suggesting short-term headwinds. However, the long-term disruptive potential of QQQ's underlying holdings in AI, genomics, and fintech remains compelling. The neutral rating reflects near-term volatility but maintains conviction in the multi-year exponential growth potential of these innovation-driven sectors."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.65,
+   "reasoning": "The QQQ ETF shows concerning momentum with a -2.42% return over the past month and underperformance vs SPY (-2.42% vs -0.28%). While we lack fundamental data on the underlying holdings, the technical weakness combined with sector rotation data showing tech (XLK) as the 3rd worst performing sector (-2.18% vs SPY) suggests capital is rotating away from growth names. The VIX at 17.79 (near 1-year lows) indicates complacency that could exacerbate downside if sentiment shifts. With tech leadership faltering and better opportunities in cyclical/value sectors (XLE +15.09%, XLP +10.25% vs SPY), we see asymmetric risk skewed to the downside. The lack of positive catalysts and YTD underperformance (-0.27% vs SPY +1.31%) further supports a defensive stance. While we'd normally seek growth leadership, current conditions favor preserving capital until we see either: 1) VIX spike signaling capitulation, or 2) XLK sector reclaiming leadership with improving momentum."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "QQQ fundamentals unavailable. Tech sector (XLK) underperforming SPY (-2.18% 1M). VIX low at 17.79 (percentil 1Y 0.59), complacency risk high. Rotation into defensives (XLP +10.25%). Retorno YTD -0.27% vs SPY +1.31%. Avoid."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "The QQQ ETF lacks the fundamental business quality metrics we typically seek for high-conviction investments. While the tech-heavy index may contain some strong individual companies, the aggregate ETF structure obscures visibility into durable competitive advantages, free cash flow generation, and proper valuation. The recent underperformance (-2.42% over 1 month, -0.27% YTD) suggests weakening momentum in the tech sector. Without clear moats, financial discipline metrics, or activism potential at the ETF level, we cannot apply our usual quality filters. The absence of valuation data further prevents establishing a margin of safety. Until we can analyze underlying holdings individually or see improved sector leadership, we maintain a cautious stance."
+  }
+ }
+}

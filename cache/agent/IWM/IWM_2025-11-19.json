@@ -1,0 +1,40 @@
+{
+ "date": "2025-11-19",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19464937683105468,
+ "confidence": 0.85,
+ "reasoning": "Bearish signals from Burry, Wood, Ackman, Druckenmiller.",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed signals from sector rotation and market performance."
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "The IWM ETF, representing small-cap stocks, lacks clear exposure to disruptive innovation or breakthrough technologies, which are core to Cathie Wood's investment philosophy. While the broader market has shown YTD growth of +14.33%, IWM has significantly underperformed with a YTD return of only +6.39% and a sharp 1-month decline of -5.49%. Small-cap companies often struggle to invest heavily in R&D or scale effectively in large markets, limiting their potential for exponential growth. Without identifiable disruptive technologies, innovation-driven revenue growth, or a transformative long-term vision, IWM does not align with the high-growth, future-focused opportunities we seek in the ARK portfolio. The multi-year trajectory for small-caps remains uncertain, especially given their underperformance relative to broader market leaders leveraging AI, genomics, and other transformative technologies."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "IWM shows concerning underperformance with a -5.49% return over the past month, significantly lagging SPY's -1.29%. The YTD return of +6.39% also trails SPY's +14.33%, indicating weak relative momentum. While we lack granular financial data, the broad market context shows defensive sectors (XLV, XLE) leading while cyclicals struggle - a risk-off signal that disproportionately impacts small caps. The VIX at 23.66 (near 1-year highs) suggests elevated volatility that typically harms higher-beta names like IWM. With the 10Y yield rising to 4.13% and growth sectors (XLK, XLY) under pressure, I see asymmetric downside risk of 15-20% versus limited upside potential given the deteriorating technicals. Small caps often lead market declines, and IWM's breakdown below its 50-day MA confirms weakening momentum. Until we see stabilization in interest rate sensitivity and sector rotation, I'm inclined to reduce exposure."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "FCF data unavailable. Debt-to-equity data unavailable. No insider trade data. IWM underperforming SPY: -5.49% vs -1.29% last month. Small-cap weakness concerning. Market rotation favoring defensive sectors (XLV, XLE). Avoid until fundamentals improve."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "The IWM ETF, representing small-cap stocks, has underperformed the broader market (SPY) with a -5.49% return over the past month and only +6.39% YTD compared to SPY's +14.33%. Small caps typically struggle in higher rate environments (10Y at 4.13%) due to tighter financing conditions. The lack of fundamental data on individual components prevents proper Ackman-style analysis, but the macro backdrop and relative weakness suggest caution. The VIX at 23.66 (near 1Y highs) indicates elevated market stress, which disproportionately impacts smaller companies. Without visibility into quality businesses with durable moats or activist opportunities within the index, we take a defensive stance."
+  }
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "date": "2025-04-14",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.14738898971557618,
+ "confidence": 0.95,
+ "reasoning": "Strong bearish consensus among analysts",
+ "personalities": {
+  "warren_buffett": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.65,
+   "reasoning": "Poor returns YTD, weak sector rotation, high VIX suggests risk-off sentiment"
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.75,
+   "reasoning": "The IWM (Russell 2000 small-cap ETF) has significantly underperformed the broader market with a YTD return of -15.46% and 1-month return of -7.86% versus SPY's -7.51% YTD. This underperformance suggests weakening risk appetite for smaller, growth-oriented companies—precisely the type of innovative firms we typically target. The extreme market stress is evidenced by the VIX at 30.89 (98th percentile), indicating high volatility that disproportionately impacts small caps. While we normally seek disruptive innovation in small caps, current macro conditions show capital fleeing to defensive sectors (XLP +7.25% vs SPY) rather than growth sectors (XLK -2.36%). Without visibility into specific disruptive companies within IWM's holdings, we maintain a bearish stance until volatility subsides and innovation-led small caps demonstrate relative strength."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "IWM is showing severe underperformance with a YTD decline of -15.46% and a 3-month drop of -13.95%, significantly worse than the broader market (SPY -7.51% YTD). The risk-reward profile is highly unfavorable given the lack of positive momentum and deteriorating technicals. Market sentiment remains weak as evidenced by the VIX at elevated levels (30.89, 1Y percentile 0.97), indicating persistent fear. While we lack granular fundamentals, the macro backdrop of rising rates (10Y at 4.36%) and sector rotation away from growth (XLK -2.36% 1M) further pressures small caps. Downside risk remains substantial with no visible catalysts, while upside appears limited until market conditions stabilize. Preserving capital is paramount here—better opportunities exist in defensive sectors (XLP +7.25% 1M) or cash."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.95,
+   "reasoning": "FCF data unavailable. Financial metrics unavailable. Debt-to-equity data unavailable. No insider trade data. No recent news. Subyacente IWM sin fundamentos claves para soportar tesis de valor. Retorno YTD -15.46%. Pass."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "Given the lack of fundamental data on individual businesses within IWM, we must rely on market context. The ETF has significantly underperformed SPY YTD (-15.46% vs -7.51%) with accelerating declines (-7.86% 1M vs SPY's -3.92%). The small-cap space appears particularly vulnerable in the current high-rate environment (10Y at 4.36%), which pressures financing costs for smaller firms. Without visibility into quality businesses with durable moats or strong cash flows within the index, and given the deteriorating technicals, we maintain a bearish stance. Our confidence is tempered only by the possibility of mean reversion if macro conditions improve."
+  }
+ }
+}

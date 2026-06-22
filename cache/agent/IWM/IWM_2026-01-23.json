@@ -1,0 +1,40 @@
+{
+ "date": "2026-01-23",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19613058013916015,
+ "confidence": 0.85,
+ "reasoning": "Strong bearish signals from high-confidence agents",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While IWM has shown strong recent performance (+4.43% 1M, +9.19% 3M, +6.44% YTD), we lack sufficient data to evaluate its exposure to truly disruptive innovation or exponential growth potential. As a small-cap index ETF, it likely contains a mix of both innovative and traditional companies without the concentrated exposure to breakthrough technologies we prioritize. The outperformance vs SPY suggests some rotation into risk assets, but without visibility into specific disruptive holdings or R&D intensity, we cannot make a conviction-driven call aligned with our investment principles. We would prefer to identify individual companies within the small-cap universe demonstrating clear disruptive characteristics rather than taking a broad market approach."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The analysis for IWM shows insufficient data across critical dimensions like growth momentum, risk-reward, and valuation, making it impossible to identify a clear asymmetric opportunity. While the ETF has shown strong recent performance (+4.43% over 1 month and +9.19% over 3 months), the lack of fundamental drivers or sentiment signals prevents high-conviction positioning. Without visibility into growth trajectories, leverage risks, or insider activity, we default to neutral—preserving capital until clearer edges emerge. Small caps (IWM) are outperforming SPY YTD (+6.44% vs +0.89%), but this momentum lacks corroborating catalysts. Monitor for breakout confirmation or sector rotation into cyclical/value names, which could reignite leadership."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "FCF and debt metrics unavailable. No insider activity or contrarian catalysts. ETF lacks fundamental depth for value analysis. Overvalued vs SPY on YTD returns (+6.44% vs +0.89%). Caution warranted."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The analysis indicates insufficient data to assess the key Ackman-style investment criteria, including business quality, financial discipline, activism potential, and valuation. Without these critical insights, it is difficult to form a high-conviction view on the investment merits of IWM. The bearish signal is primarily driven by the lack of transparency and actionable data, which is essential for Ackman's disciplined, fundamentals-driven approach. Until further clarity emerges on these metrics, caution is warranted. Confidence is moderate (50%) given the absence of definitive negative signals but the inability to verify positive attributes."
+  }
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "date": "2026-03-12",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19640572814941407,
+ "confidence": 0.7,
+ "reasoning": "Multiple bearish signals",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed sector performance and elevated VIX suggest uncertainty."
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "The IWM ETF, representing small-cap stocks, shows concerning performance trends with a 7.04% decline over the past month and underperformance relative to the broader market. While we lack specific disruptive innovation data on the underlying holdings, the macroeconomic environment appears unfavorable for risk assets - with elevated volatility (VIX at 27.29, in the top percentile) and rising rates (10Y at 4.27%). The rotation into defensive sectors (XLE, XLU leading) suggests investors are fleeing growth-oriented small caps. Without clear evidence of transformative technologies or exponential growth potential in the small-cap universe, we maintain a bearish stance. Small caps typically underperform during periods of economic uncertainty and tightening financial conditions, which aligns with current market dynamics."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.75,
+   "reasoning": "The IWM ETF shows weak momentum with a -7.04% return over the past month and -1.25% over three months, underperforming the broader market (SPY -3.77% and -2.20% respectively). Risk-reward is unfavorable given elevated market volatility (VIX at 27.29, +12.63% daily) and rising Treasury yields (TNX at 4.27%, +1.54% daily), which historically pressure small-cap equities. Sector rotation trends further support a bearish stance, with cyclical sectors like XLF (-5.05%) and XLY (-1.99%) lagging, indicating deteriorating market sentiment and risk appetite. While valuations cannot be assessed due to insufficient data, the clear momentum deterioration and unfavorable macro backdrop suggest limited upside potential and significant downside risk. Preservation of capital is critical here, and I’m cutting exposure to IWM aggressively."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "No fundamental data available. ETF showing weakness with -7.04% 1M return. Market risk elevated (VIX 27.29). Sector rotation favoring defensives (XLE, XLU leading). Avoid until fundamentals improve or risk appetite returns."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "Given the lack of fundamental data on IWM's underlying holdings, we must rely on market context. The ETF has underperformed SPY over 1M (-7.04% vs -3.77%) and shows no sector leadership (small caps typically lag in risk-off environments). The elevated VIX at 27.29 (98th percentile) signals heightened volatility, which disproportionately impacts small caps. Without visibility into cash flows, moats, or valuation metrics of constituent companies, we cannot apply Ackman's quality investing principles. The technical weakness combined with macro uncertainty warrants a bearish stance, though we'd require constituent-level analysis for full conviction."
+  }
+ }
+}

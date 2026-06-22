@@ -1,0 +1,40 @@
+{
+ "date": "2026-03-06",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19688591934204103,
+ "confidence": 0.68,
+ "reasoning": "Bearish consensus among high-conviction agents",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.75,
+   "reasoning": "While IWM provides exposure to small-cap stocks which can sometimes be a source of disruptive innovation, the current market environment shows significant risk-off sentiment with the VIX at elevated levels (29.49, 95th percentile). The underperformance of growth-oriented sectors like XLY (-2.70% vs SPY) and XLF (-4.27% vs SPY) suggests investors are rotating away from higher-risk, higher-growth potential names. Without clear evidence of disruptive technologies or innovation-driven growth within the index constituents, and given the broader market's defensive rotation into utilities (XLU +10.51%) and energy (XLE +9.09%), we see limited catalysts for the type of exponential growth potential we seek. The lack of specific disruptive analysis data further reinforces our cautious stance."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The subyacente es un ETF agregado, lo que limita el análisis de fundamentales empresariales. Sin embargo, evaluando el contexto macro y de mercado, el SPY muestra un rendimiento negativo en el último mes (-2.01%) y año a la fecha (-1.58%), con un VIX elevado en el percentil 1Y 0.95, indicando un mercado volátil y con riesgo. La rotación sectorial muestra liderazgo en sectores defensivos como servicios públicos (XLU) y energía (XLE), mientras que sectores más cíclicos como financiero (XLF) y consumo discrecional (XLY) están bajo presión. El subyacente IWM tiene un rendimiento ligeramente positivo año a la fecha (+0.85%), pero negativo en el último mes (-3.70%). Dado el entorno de alta volatilidad y la falta de claros catalizadores positivos, la recomendación es mantenerse neutral hasta que se clarifiquen las tendencias del mercado y se identifiquen oportunidades asimétricas con mejor perfil riesgo-recompensa."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "No fundamental data available for IWM. Market context shows SPY down YTD with elevated VIX (29.49, 95th percentile). Small caps (IWM) underperforming SPY last month (-3.70% vs -2.01%). No hard numbers to confirm value. Avoid until fundamentals visible."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "Given the lack of fundamental data on individual businesses within IWM, we must rely on broader market signals. The recent underperformance of IWM (-3.70% over 1 month vs SPY's -2.01%) combined with elevated market volatility (VIX at 29.49, 95th percentile) suggests a risk-off environment where small caps typically underperform. The sector rotation shows defensive sectors (XLU, XLE) leading while cyclicals (XLY, XLF) lag, further confirming this trend. Without visibility into specific high-quality businesses with durable moats within IWM, we cannot apply Ackman's core principles of investing in superior cash-generating companies at attractive valuations. The technical weakness and macro backdrop warrant a bearish stance until either: 1) volatility subsides, or 2) we can identify constituent companies meeting our quality and valuation criteria."
+  }
+ }
+}

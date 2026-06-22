@@ -1,0 +1,40 @@
+{
+ "date": "2026-03-25",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.1935880352783203,
+ "confidence": 0.7,
+ "reasoning": "Druckenmiller and Wood bearish",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed signals, would need more info"
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "The IWM ETF, representing small-cap stocks, shows insufficient evidence of disruptive innovation or exponential growth potential that aligns with Cathie Wood's investment principles. While it has slightly outperformed SPY YTD (+1.40% vs -3.59%), the recent 1-month performance (-4.20%) mirrors the broader market decline. Small-cap companies typically lack the R&D budgets and technological moats required for transformative breakthroughs. Without visibility into specific disruptive technologies, large TAM opportunities, or accelerating revenue growth trajectories within the index constituents, we cannot identify the characteristics of exponential growth companies that drive ARK's investment thesis. The bearish signal reflects our inability to find sufficient innovation-driven growth opportunities in this small-cap universe at this time."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "The IWM ETF, which tracks small-cap stocks, has shown weak momentum with a -4.20% return over the past month and only a modest +1.40% YTD gain, significantly underperforming the broader market. Small caps are particularly sensitive to macroeconomic conditions, and with the VIX at 25.33 indicating elevated market anxiety and the 10-year yield (TNX) at 4.33% reflecting tightening financial conditions, the risk-reward proposition for IWM is unfavorable. Small caps typically underperform in volatile and higher-rate environments due to their higher debt burdens and lower profit margins. While there is insufficient data to perform a detailed growth or valuation analysis, the broader market's recent weakness and the lack of compelling momentum in IWM suggest limited upside potential against significant downside risk. Given Druckenmiller's emphasis on preserving capital and avoiding drawdowns, IWM presents an unattractive opportunity in the current macro environment."
+  },
+  "michael_burry": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "No fundamental data available for IWM. Market context shows underperformance vs SPY (-4.20% 1M). Small caps (IWM) slightly outperforming YTD (+1.40%) but no hard numbers to confirm value. VIX elevated at 25.33 (percentil 1Y 0.91) indicating risk-off. No edge without fundamentals."
+  },
+  "bill_ackman": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "As IWM is an ETF representing small-cap stocks, traditional Ackman-style fundamental analysis cannot be applied directly. The bearish signal in the provided analysis is based on insufficient data rather than negative fundamentals. Given the YTD outperformance vs SPY (+1.40% vs -3.59%) and similar 1-month returns (-4.20% vs -4.18%), there's no clear edge for either bullish or bearish positioning. Small caps often lead during early recovery periods but suffer more in risk-off environments - with the VIX elevated at 25.33 (though down -6.01% today), this creates a balanced risk/reward profile. Without the ability to analyze underlying holdings' quality or valuation, a neutral stance with moderate confidence is most appropriate."
+  }
+ }
+}

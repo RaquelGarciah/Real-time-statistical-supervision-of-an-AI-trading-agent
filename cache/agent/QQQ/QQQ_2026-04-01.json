@@ -1,0 +1,40 @@
+{
+ "date": "2026-04-01",
+ "ticker": "QQQ",
+ "action": "short",
+ "size": -0.19624119750976562,
+ "confidence": 0.85,
+ "reasoning": "Bearish signals dominate",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While QQQ represents a basket of innovative and growth-oriented companies, the lack of specific data on disruptive technologies, growth metrics, and valuation prevents a definitive bullish or bearish stance. As Cathie Wood’s philosophy emphasizes identifying companies leveraging breakthrough innovations with exponential growth potential, the absence of granular insights into individual holdings within QQQ limits our ability to assess its alignment with these principles. Given the current macroeconomic environment, sector rotation trends, and QQQ's recent underperformance (-2.75% over 1 month and -5.55% over 3 months), a neutral position is prudent until more data-driven insights into the underlying innovation and growth trajectories are available."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.65,
+   "reasoning": "The QQQ shows concerning momentum with -2.75% 1-month and -5.55% 3-month returns, underperforming even the weak SPY. Sector rotation shows defensive sectors (XLE, XLU) leading while growth-oriented sectors lag. The VIX at 24.54 (percentile 0.85) indicates elevated market stress. With rising 10Y yields (+0.19% daily) pressuring tech valuations and no positive growth catalysts evident, the risk-reward appears unfavorable. While we lack specific company data, the macro backdrop suggests limited upside potential against significant downside risk in growth names. Druckenmiller would likely reduce exposure until momentum stabilizes."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "No fundamental data available for QQQ ETF. Market showing weakness with YTD -4.58%, 3-month -5.55%. Tech sector (XLK) underperforming SPY by +1.66% but still negative absolute returns. VIX elevated at 24.54 (percentil 1Y 0.85) indicating high volatility. Without visibility into cash flows or balance sheets, can't confirm value. Macro uncertainty with 10Y at 4.32% and rising. Pass."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.65,
+   "reasoning": "Given the lack of fundamental data on QQQ as an ETF, the bearish signal is primarily driven by recent market performance and macroeconomic conditions. The QQQ has underperformed YTD (-4.58%) and over the last 3 months (-5.55%), with elevated volatility (VIX at 24.54, near the top of its 1-year range). The tech-heavy Nasdaq faces headwinds from rising rates (10Y at 4.32%) and sector rotation away from growth (XLK only modestly outperforming SPY at +1.66% over 1M). Without visibility into underlying holdings' quality or valuation, and given the deteriorating technicals, we adopt a cautious stance. However, confidence is tempered at 65% due to the potential for rapid mean-reversion in tech if rate expectations shift."
+  }
+ }
+}

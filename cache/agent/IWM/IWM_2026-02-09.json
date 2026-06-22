@@ -1,0 +1,40 @@
+{
+ "date": "2026-02-09",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19530209716796876,
+ "confidence": 0.85,
+ "reasoning": "Michael Burry bearish signal",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Insufficient data for comprehensive analysis"
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While IWM has shown strong recent performance with 3-month returns of +11.41% and YTD returns of +7.28%, outpacing the SPY, we lack sufficient data to evaluate its exposure to truly disruptive innovation. As a small-cap ETF, it may contain some innovative companies, but without visibility into specific holdings' technological breakthroughs, R&D investment levels, or exponential growth metrics, we cannot confidently apply ARK's investment framework. The current market leadership in defensive sectors (XLE, XLP, XLB) suggests a risk-off rotation that may not favor high-growth innovation stocks typically found in small caps. Until we can identify specific disruptive technologies or exponential growth trajectories within IWM's holdings, we maintain a neutral stance."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "The IWM ETF shows strong recent performance with a 3.33% 1-month return and 11.41% 3-month return, outpacing the SPY. However, the lack of fundamental data on growth metrics, insider activity, and valuation makes it impossible to assess the true risk-reward profile. While small caps (IWM) are showing relative strength versus large caps (SPY), the absence of concrete growth catalysts or sentiment indicators prevents a high-conviction call. The neutral stance reflects this data gap - we need visibility on earnings momentum, sector composition within IWM, and institutional flows to make an asymmetric bet. Current technical strength is notable but insufficient alone for Druckenmiller-style conviction."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "FCF data unavailable. Debt-to-equity data unavailable. No insider trade data. No fundamentals to justify exposure. Market exuberance inflated valuations. Avoid."
+  },
+  "bill_ackman": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Given the lack of fundamental data on IWM (as it's an ETF tracking small-cap stocks), we cannot apply Ackman's principles of analyzing business quality, financial discipline, or valuation. However, the recent strong performance (YTD +7.28%, 3M +11.41%) suggests momentum in small caps, potentially driven by market rotation or economic conditions. Without visibility into the underlying holdings' quality or valuation, we maintain a neutral stance with moderate confidence. Further due diligence on constituent companies would be required for a high-conviction call."
+  }
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "date": "2026-05-01",
+ "ticker": "IWM",
+ "action": "long",
+ "size": 0.19134427734375,
+ "confidence": 0.7,
+ "reasoning": "Warren Buffett bullish signal",
+ "personalities": {
+  "warren_buffett": {
+   "action": "long",
+   "size": 0.0,
+   "confidence": 0.7,
+   "reasoning": "Strong YTD returns exceeding S&P 500 performance."
+  },
+  "cathie_wood": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "While IWM has shown strong recent performance with a 11.91% 1-month return and 12.46% YTD gain, we lack sufficient data to evaluate its exposure to truly disruptive innovation. As an ETF tracking small-cap stocks, it likely contains a mix of both traditional and innovative companies. The recent outperformance suggests market rotation into risk assets, but without visibility into specific holdings' technological breakthroughs, exponential growth potential, or R&D intensity, we cannot make a conviction-driven call. Small caps often benefit from early-stage innovation, but we'd need to analyze individual components to identify which are positioned for transformative growth versus those vulnerable to disruption."
+  },
+  "stanley_druckenmiller": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Given the lack of sufficient growth, momentum, and valuation data, it's difficult to make a decisive call on IWM. While the ETF has shown strong performance over the past month (+11.91% vs SPY's +9.98%) and YTD (+12.46% vs SPY's +5.77%), the absence of fundamentals and detailed risk-reward analysis leaves the setup incomplete. Market sentiment appears neutral, and there's no insider activity to provide additional clues. With the VIX at a low percentile (0.46) and the 10Y yield stable, broader market risks seem contained, but this doesn't compensate for the data deficiency. IWM's leadership in the small-cap space is notable, but without more granular insights, I prefer to wait for a clearer opportunity where asymmetric risk-reward is evident."
+  },
+  "michael_burry": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "No fundamental or insider data available for IWM ETF. Market-wide metrics show strong YTD performance (+12.46%), but sector rotation indicates lagging cyclicals and small-cap outperformance. Neutral until hard data confirms value or catalyst emerges."
+  },
+  "bill_ackman": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "The analysis for IWM indicates insufficient data to assess key Ackman-style investment criteria such as business quality, financial discipline, activism potential, and valuation. Given the lack of fundamental insights and the inability to evaluate durable competitive advantages or free cash flow generation—hallmarks of Ackman's investment philosophy—we default to a bearish stance. The absence of identifiable moats or operational improvement opportunities further supports this cautious approach. Until more granular data on constituent companies within IWM becomes available to perform proper due diligence, maintaining a bearish position with moderate confidence is prudent."
+  }
+ }
+}

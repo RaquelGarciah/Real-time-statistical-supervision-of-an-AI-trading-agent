@@ -1,0 +1,40 @@
+{
+ "date": "2026-03-02",
+ "ticker": "IWM",
+ "action": "short",
+ "size": -0.19784833129882812,
+ "confidence": 0.6,
+ "reasoning": "Bearish signals dominate, strongest from Cathie Wood.",
+ "personalities": {
+  "warren_buffett": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Mixed signals from rotation and risk metrics"
+  },
+  "cathie_wood": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.85,
+   "reasoning": "IWM is an ETF tracking small-cap companies, which inherently lacks the concentrated exposure to disruptive innovation that we prioritize. The analysis shows insufficient data to evaluate disruptive potential, innovation-driven growth, and valuation, suggesting these companies are not at the forefront of transformative technologies. Small-caps in aggregate tend to be more cyclical and less focused on exponential growth opportunities, which conflicts with our investment principles. While IWM has shown recent outperformance (+7.03% over 3 months), we believe this is driven more by cyclical factors than breakthrough innovation. Without evidence of significant R&D investment, large TAMs, or transformative technologies, IWM does not align with our focus on multi-year compounding driven by disruption. Higher volatility in small-caps is also less attractive without the potential for outsized returns from exponential growth trajectories."
+  },
+  "stanley_druckenmiller": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.6,
+   "reasoning": "The signal is bearish primarily due to the lack of convincing growth, momentum, and fundamental data supporting an upside thesis. With a low overall score of 1.25 against a max score of 10, there is insufficient evidence to justify a bullish stance. Additionally, sentiment and insider activity remain neutral, offering no supportive catalysts. The absence of financial data for growth and valuation analysis leaves the risk-reward profile opaque. Combined with the broader market's mixed performance, IWM lacks the asymmetric risk-reward setup Druckenmiller seeks. Given the lack of momentum drivers and insufficient data to identify clear upside potential, preserving capital by avoiding exposure is the prudent course."
+  },
+  "michael_burry": {
+   "action": "short",
+   "size": 0.0,
+   "confidence": 0.0,
+   "reasoning": "No fundamental data available. ETF lacks FCF metrics, balance sheet visibility, and insider signals. Pure beta play with no edge. Pass."
+  },
+  "bill_ackman": {
+   "action": "hold",
+   "size": 0.0,
+   "confidence": 0.5,
+   "reasoning": "Given the lack of specific fundamental data on individual holdings within IWM, we cannot apply Ackman's high-conviction investment framework effectively. The ETF's recent performance shows mixed signals (positive YTD but underperforming SPY over 1M). Without visibility into business quality, financial discipline, or valuation metrics of underlying companies, we maintain a neutral stance. The small-cap space may offer opportunities, but absent actionable insights into moats, cash flows, or activism potential, we cannot justify a bullish or bearish call with high confidence."
+  }
+ }
+}
