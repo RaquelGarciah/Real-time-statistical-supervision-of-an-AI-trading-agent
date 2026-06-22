@@ -40,6 +40,8 @@ class StrataSupervisor:
     ram_thresholds: tuple[float, float, float] | None = None
     psa_thresholds: tuple[float, float, float] | None = None
     gso_thresholds: tuple[float, float, float] | None = None
+    ram_mode: str = "mismatch"
+    regime_sign_map: dict[str, float] | None = None
 
     def __post_init__(self) -> None:
         if self.enabled is None:
@@ -71,7 +73,14 @@ class StrataSupervisor:
 
         detectors = {}
         if self.enabled["ram"]:
-            detectors["ram"] = ram_detector(agent.size, regime_probs, thresholds=self.ram_thresholds)
+            sign_override = None
+            if self.regime_sign_map is not None:
+                dom = "Calma" if regime_probs["Calma"] >= regime_probs["Crisis"] else "Crisis"
+                sign_override = self.regime_sign_map.get(dom)
+            detectors["ram"] = ram_detector(
+                agent.size, regime_probs, thresholds=self.ram_thresholds,
+                mode=self.ram_mode, regime_sign_override=sign_override,
+            )
         if self.enabled["psa"]:
             detectors["psa"] = psa_detector(
                 sizing_history, hazard=self.psa_hazard, signal=self.psa_signal,

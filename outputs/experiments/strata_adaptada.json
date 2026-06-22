@@ -1,0 +1,3407 @@
+{
+  "meta": {
+    "activos": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM"
+    ],
+    "ventana": "mv[150:] (≡ ventana M10 de fair_sizing_compare.json)",
+    "sizing_fair": "mismo vol-target (target_vol/σ) para TODAS → aísla dirección",
+    "m10_fuente": "fair_sizing_compare.json (no se recomputa)",
+    "configs": {
+      "A_mm_τ50_abs": {
+        "mode_ram": "mismatch",
+        "gso": "absolute",
+        "tau": 0.5,
+        "sign": "lev"
+      },
+      "A_mm_τ30_abs": {
+        "mode_ram": "mismatch",
+        "gso": "absolute",
+        "tau": 0.3,
+        "sign": "lev"
+      },
+      "A_mm_τ30_rel": {
+        "mode_ram": "mismatch",
+        "gso": "relative",
+        "tau": 0.3,
+        "sign": "lev"
+      },
+      "A_reg_lev_τ50": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.5,
+        "sign": "lev"
+      },
+      "A_reg_lev_τ45": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.45,
+        "sign": "lev"
+      },
+      "A_reg_dd_τ45": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.45,
+        "sign": "dd"
+      },
+      "A_reg_dd_τ50": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.5,
+        "sign": "dd"
+      },
+      "A_reg_dd_τ55": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.55,
+        "sign": "dd"
+      },
+      "A_reg_sdom_τ45": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.45,
+        "sign": "sdom"
+      },
+      "A_reg_sdom_τ00": {
+        "mode_ram": "regime",
+        "gso": "relative",
+        "tau": 0.0,
+        "sign": "sdom"
+      }
+    },
+    "estrategias": [
+      "M5",
+      "M8",
+      "M10",
+      "STRATA-U",
+      "Régimen",
+      "B&H",
+      "S&H",
+      "ZeroR",
+      "A_mm_τ50_abs",
+      "A_mm_τ30_abs",
+      "A_mm_τ30_rel",
+      "A_reg_lev_τ50",
+      "A_reg_lev_τ45",
+      "A_reg_dd_τ45",
+      "A_reg_dd_τ50",
+      "A_reg_dd_τ55",
+      "A_reg_sdom_τ45",
+      "A_reg_sdom_τ00"
+    ],
+    "seed": 42,
+    "signal_lag": 1,
+    "nota": "STRATA adaptada = MISMO override-C; solo cambia ram_mode, umbral RAM, gso_mode y signo data-driven (PSA omitido, no afecta dirección). Exploratorio (docs/)."
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 251,
+      "frac_up": 0.5657,
+      "clase": "leverage fuerte (régimen direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": -1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.3665,
+          "sharpe": -3.0634,
+          "maxdd": -0.2266,
+          "calmar": -0.998,
+          "equity": 0.7747
+        },
+        "Régimen": {
+          "acc": 0.5657,
+          "sharpe": 1.7928,
+          "maxdd": -0.0758,
+          "calmar": 2.3375,
+          "equity": 1.1763
+        },
+        "STRATA-U": {
+          "acc": 0.5618,
+          "sharpe": 1.7509,
+          "maxdd": -0.0758,
+          "calmar": 2.2774,
+          "equity": 1.1718
+        },
+        "B&H": {
+          "acc": 0.5657,
+          "sharpe": 1.7928,
+          "maxdd": -0.0758,
+          "calmar": 2.3375,
+          "equity": 1.1763
+        },
+        "S&H": {
+          "acc": 0.4343,
+          "sharpe": -1.8119,
+          "maxdd": -0.1588,
+          "calmar": -1.0036,
+          "equity": 0.8412
+        },
+        "ZeroR": {
+          "acc": 0.5657,
+          "sharpe": 1.7928,
+          "maxdd": -0.0758,
+          "calmar": 2.3375,
+          "equity": 1.1763
+        },
+        "M8": {
+          "acc": 0.4422,
+          "sharpe": 0.3755,
+          "maxdd": -0.0834,
+          "calmar": 0.34,
+          "equity": 1.0283
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4422,
+          "sharpe": 0.3755,
+          "maxdd": -0.0834,
+          "calmar": 0.34,
+          "equity": 1.0283
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.4303,
+          "sharpe": -0.1938,
+          "maxdd": -0.1224,
+          "calmar": -0.1599,
+          "equity": 0.9805
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.4303,
+          "sharpe": -0.1938,
+          "maxdd": -0.1224,
+          "calmar": -0.1599,
+          "equity": 0.9805
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.4422,
+          "sharpe": -0.6521,
+          "maxdd": -0.1508,
+          "calmar": -0.4156,
+          "equity": 0.9376
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.4661,
+          "sharpe": 0.0104,
+          "maxdd": -0.1301,
+          "calmar": -0.0255,
+          "equity": 0.9967
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5657,
+          "sharpe": 1.7928,
+          "maxdd": -0.0758,
+          "calmar": 2.3375,
+          "equity": 1.1763
+        },
+        "M10": {
+          "acc": 0.494,
+          "sharpe": -0.6914,
+          "maxdd": -0.1197,
+          "calmar": -0.56,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.3665,
+          "sharpe": -2.741,
+          "maxdd": -0.0685,
+          "calmar": -0.9968,
+          "equity": 0.9319
+        },
+        "M8": {
+          "acc": 0.4422,
+          "sharpe": 1.5944,
+          "maxdd": -0.0596,
+          "calmar": 1.6309,
+          "equity": 1.0968
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4422,
+          "sharpe": 1.5944,
+          "maxdd": -0.0596,
+          "calmar": 1.6309,
+          "equity": 1.0968
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.4303,
+          "sharpe": 1.0266,
+          "maxdd": -0.0864,
+          "calmar": 0.7303,
+          "equity": 1.0629
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.4303,
+          "sharpe": -0.1938,
+          "maxdd": -0.1224,
+          "calmar": -0.1599,
+          "equity": 0.9805
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.4502,
+          "sharpe": -0.3903,
+          "maxdd": -0.1301,
+          "calmar": -0.305,
+          "equity": 0.9605
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.4422,
+          "sharpe": -0.6521,
+          "maxdd": -0.1508,
+          "calmar": -0.4156,
+          "equity": 0.9376
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.4661,
+          "sharpe": 0.0104,
+          "maxdd": -0.1301,
+          "calmar": -0.0255,
+          "equity": 0.9967
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5657,
+          "sharpe": 1.7928,
+          "maxdd": -0.0758,
+          "calmar": 2.3375,
+          "equity": 1.1763
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.3386,
+        "A_mm_τ30_abs": 0.3665,
+        "A_mm_τ30_rel": 0.3665,
+        "A_reg_lev_τ50": 0.3904,
+        "A_reg_lev_τ45": 0.3904,
+        "A_reg_dd_τ45": 0.3904,
+        "A_reg_dd_τ50": 0.3904,
+        "A_reg_dd_τ55": 0.3825,
+        "A_reg_sdom_τ45": 0.4064,
+        "A_reg_sdom_τ00": 0.7849
+      }
+    },
+    "NVDA": {
+      "n": 259,
+      "frac_up": 0.5521,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.4672,
+          "sharpe": -0.8562,
+          "maxdd": -0.1098,
+          "calmar": -0.7226,
+          "equity": 0.9186
+        },
+        "Régimen": {
+          "acc": 0.5521,
+          "sharpe": 1.5294,
+          "maxdd": -0.0631,
+          "calmar": 2.3218,
+          "equity": 1.1508
+        },
+        "STRATA-U": {
+          "acc": 0.5521,
+          "sharpe": 1.5294,
+          "maxdd": -0.0631,
+          "calmar": 2.3218,
+          "equity": 1.1508
+        },
+        "B&H": {
+          "acc": 0.5521,
+          "sharpe": 1.5294,
+          "maxdd": -0.0631,
+          "calmar": 2.3218,
+          "equity": 1.1508
+        },
+        "S&H": {
+          "acc": 0.4479,
+          "sharpe": -1.533,
+          "maxdd": -0.1536,
+          "calmar": -0.8816,
+          "equity": 0.8611
+        },
+        "ZeroR": {
+          "acc": 0.5521,
+          "sharpe": 1.5294,
+          "maxdd": -0.0631,
+          "calmar": 2.3218,
+          "equity": 1.1508
+        },
+        "M8": {
+          "acc": 0.5212,
+          "sharpe": 1.1492,
+          "maxdd": -0.0707,
+          "calmar": 1.5028,
+          "equity": 1.1094
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5212,
+          "sharpe": 1.1492,
+          "maxdd": -0.0707,
+          "calmar": 1.5028,
+          "equity": 1.1094
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.529,
+          "sharpe": 1.2503,
+          "maxdd": -0.0619,
+          "calmar": 1.882,
+          "equity": 1.1199
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.529,
+          "sharpe": 1.2503,
+          "maxdd": -0.0619,
+          "calmar": 1.882,
+          "equity": 1.1199
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5328,
+          "sharpe": 1.0519,
+          "maxdd": -0.0784,
+          "calmar": 1.2421,
+          "equity": 1.1002
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5367,
+          "sharpe": 1.1395,
+          "maxdd": -0.0707,
+          "calmar": 1.5021,
+          "equity": 1.1093
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5367,
+          "sharpe": 1.2934,
+          "maxdd": -0.0707,
+          "calmar": 1.7246,
+          "equity": 1.1256
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5328,
+          "sharpe": 1.2056,
+          "maxdd": -0.0784,
+          "calmar": 1.4414,
+          "equity": 1.1163
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5367,
+          "sharpe": 1.2978,
+          "maxdd": -0.0703,
+          "calmar": 1.7408,
+          "equity": 1.126
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5367,
+          "sharpe": 1.2934,
+          "maxdd": -0.0707,
+          "calmar": 1.7246,
+          "equity": 1.1256
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5521,
+          "sharpe": 1.5294,
+          "maxdd": -0.0631,
+          "calmar": 2.3218,
+          "equity": 1.1508
+        },
+        "M10": {
+          "acc": 0.4826,
+          "sharpe": 0.4491,
+          "maxdd": -0.0523,
+          "calmar": 0.7268,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.4672,
+          "sharpe": -0.8577,
+          "maxdd": -0.0626,
+          "calmar": -0.692,
+          "equity": 0.9555
+        },
+        "M8": {
+          "acc": 0.5212,
+          "sharpe": 1.1904,
+          "maxdd": -0.0556,
+          "calmar": 1.7636,
+          "equity": 1.1008
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5212,
+          "sharpe": 1.1904,
+          "maxdd": -0.0556,
+          "calmar": 1.7636,
+          "equity": 1.1008
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.529,
+          "sharpe": 1.2734,
+          "maxdd": -0.0535,
+          "calmar": 1.9817,
+          "equity": 1.1091
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.529,
+          "sharpe": 1.2503,
+          "maxdd": -0.0619,
+          "calmar": 1.882,
+          "equity": 1.1199
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5328,
+          "sharpe": 1.0519,
+          "maxdd": -0.0784,
+          "calmar": 1.2421,
+          "equity": 1.1002
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5367,
+          "sharpe": 1.1395,
+          "maxdd": -0.0707,
+          "calmar": 1.5021,
+          "equity": 1.1093
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5367,
+          "sharpe": 1.2934,
+          "maxdd": -0.0707,
+          "calmar": 1.7246,
+          "equity": 1.1256
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5328,
+          "sharpe": 1.2056,
+          "maxdd": -0.0784,
+          "calmar": 1.4414,
+          "equity": 1.1163
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5367,
+          "sharpe": 1.2978,
+          "maxdd": -0.0703,
+          "calmar": 1.7408,
+          "equity": 1.126
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5367,
+          "sharpe": 1.2934,
+          "maxdd": -0.0707,
+          "calmar": 1.7246,
+          "equity": 1.1256
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5521,
+          "sharpe": 1.5294,
+          "maxdd": -0.0631,
+          "calmar": 2.3218,
+          "equity": 1.1508
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.6641,
+        "A_mm_τ30_abs": 0.6873,
+        "A_mm_τ30_rel": 0.6873,
+        "A_reg_lev_τ50": 0.6911,
+        "A_reg_lev_τ45": 0.695,
+        "A_reg_dd_τ45": 0.695,
+        "A_reg_dd_τ50": 0.6911,
+        "A_reg_dd_τ55": 0.6873,
+        "A_reg_sdom_τ45": 0.695,
+        "A_reg_sdom_τ00": 0.7876
+      }
+    },
+    "BAC": {
+      "n": 246,
+      "frac_up": 0.561,
+      "clase": "leverage fuerte (régimen direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": -1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.4512,
+          "sharpe": -0.2893,
+          "maxdd": -0.0702,
+          "calmar": -0.4495,
+          "equity": 0.9692
+        },
+        "Régimen": {
+          "acc": 0.561,
+          "sharpe": 0.5612,
+          "maxdd": -0.0712,
+          "calmar": 0.7091,
+          "equity": 1.0493
+        },
+        "STRATA-U": {
+          "acc": 0.5081,
+          "sharpe": -0.2579,
+          "maxdd": -0.15,
+          "calmar": -0.1929,
+          "equity": 0.9717
+        },
+        "B&H": {
+          "acc": 0.561,
+          "sharpe": 0.5612,
+          "maxdd": -0.0712,
+          "calmar": 0.7091,
+          "equity": 1.0493
+        },
+        "S&H": {
+          "acc": 0.439,
+          "sharpe": -0.5715,
+          "maxdd": -0.1105,
+          "calmar": -0.5221,
+          "equity": 0.9436
+        },
+        "ZeroR": {
+          "acc": 0.561,
+          "sharpe": 0.5612,
+          "maxdd": -0.0712,
+          "calmar": 0.7091,
+          "equity": 1.0493
+        },
+        "M8": {
+          "acc": 0.5163,
+          "sharpe": 1.3402,
+          "maxdd": -0.0484,
+          "calmar": 2.6989,
+          "equity": 1.1272
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5163,
+          "sharpe": 1.3402,
+          "maxdd": -0.0484,
+          "calmar": 2.6989,
+          "equity": 1.1272
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5203,
+          "sharpe": 1.0106,
+          "maxdd": -0.0469,
+          "calmar": 2.0421,
+          "equity": 1.0935
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5203,
+          "sharpe": 1.0106,
+          "maxdd": -0.0469,
+          "calmar": 2.0421,
+          "equity": 1.0935
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5285,
+          "sharpe": 1.4128,
+          "maxdd": -0.0484,
+          "calmar": 2.8792,
+          "equity": 1.1357
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5285,
+          "sharpe": 1.4128,
+          "maxdd": -0.0484,
+          "calmar": 2.8792,
+          "equity": 1.1357
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5285,
+          "sharpe": 1.4128,
+          "maxdd": -0.0484,
+          "calmar": 2.8792,
+          "equity": 1.1357
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5285,
+          "sharpe": 1.4128,
+          "maxdd": -0.0484,
+          "calmar": 2.8792,
+          "equity": 1.1357
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5244,
+          "sharpe": 1.1538,
+          "maxdd": -0.0672,
+          "calmar": 1.6598,
+          "equity": 1.1087
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5285,
+          "sharpe": 1.4128,
+          "maxdd": -0.0484,
+          "calmar": 2.8792,
+          "equity": 1.1357
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.561,
+          "sharpe": 0.5612,
+          "maxdd": -0.0712,
+          "calmar": 0.7091,
+          "equity": 1.0493
+        },
+        "M10": {
+          "acc": 0.4187,
+          "sharpe": -2.6722,
+          "maxdd": -0.2564,
+          "calmar": -0.8864,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.4512,
+          "sharpe": -0.298,
+          "maxdd": -0.0311,
+          "calmar": -0.4059,
+          "equity": 0.9877
+        },
+        "M8": {
+          "acc": 0.5163,
+          "sharpe": 1.1912,
+          "maxdd": -0.0478,
+          "calmar": 2.0385,
+          "equity": 1.0949
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5163,
+          "sharpe": 1.1912,
+          "maxdd": -0.0478,
+          "calmar": 2.0385,
+          "equity": 1.0949
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5203,
+          "sharpe": 0.9004,
+          "maxdd": -0.0463,
+          "calmar": 1.5817,
+          "equity": 1.0715
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5203,
+          "sharpe": 1.0199,
+          "maxdd": -0.0469,
+          "calmar": 2.0624,
+          "equity": 1.0944
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5285,
+          "sharpe": 1.4222,
+          "maxdd": -0.0484,
+          "calmar": 2.8997,
+          "equity": 1.1366
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5285,
+          "sharpe": 1.4222,
+          "maxdd": -0.0484,
+          "calmar": 2.8997,
+          "equity": 1.1366
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5285,
+          "sharpe": 1.4222,
+          "maxdd": -0.0484,
+          "calmar": 2.8997,
+          "equity": 1.1366
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5285,
+          "sharpe": 1.4222,
+          "maxdd": -0.0484,
+          "calmar": 2.8997,
+          "equity": 1.1366
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5244,
+          "sharpe": 1.1631,
+          "maxdd": -0.0672,
+          "calmar": 1.6742,
+          "equity": 1.1097
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5285,
+          "sharpe": 1.4222,
+          "maxdd": -0.0484,
+          "calmar": 2.8997,
+          "equity": 1.1366
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.561,
+          "sharpe": 0.5612,
+          "maxdd": -0.0712,
+          "calmar": 0.7091,
+          "equity": 1.0493
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.5528,
+        "A_mm_τ30_abs": 0.565,
+        "A_mm_τ30_rel": 0.565,
+        "A_reg_lev_τ50": 0.5732,
+        "A_reg_lev_τ45": 0.5732,
+        "A_reg_dd_τ45": 0.5732,
+        "A_reg_dd_τ50": 0.5732,
+        "A_reg_dd_τ55": 0.5691,
+        "A_reg_sdom_τ45": 0.5732,
+        "A_reg_sdom_τ00": 0.8171
+      }
+    },
+    "TSLA": {
+      "n": 251,
+      "frac_up": 0.5299,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.4741,
+          "sharpe": -0.6057,
+          "maxdd": -0.0869,
+          "calmar": -0.6497,
+          "equity": 0.9437
+        },
+        "Régimen": {
+          "acc": 0.5299,
+          "sharpe": 0.7917,
+          "maxdd": -0.0791,
+          "calmar": 0.8723,
+          "equity": 1.0688
+        },
+        "STRATA-U": {
+          "acc": 0.4622,
+          "sharpe": -0.4912,
+          "maxdd": -0.0869,
+          "calmar": -0.5381,
+          "equity": 0.9534
+        },
+        "B&H": {
+          "acc": 0.5299,
+          "sharpe": 0.7917,
+          "maxdd": -0.0791,
+          "calmar": 0.8723,
+          "equity": 1.0688
+        },
+        "S&H": {
+          "acc": 0.4701,
+          "sharpe": -0.7939,
+          "maxdd": -0.101,
+          "calmar": -0.7146,
+          "equity": 0.9281
+        },
+        "ZeroR": {
+          "acc": 0.5299,
+          "sharpe": 0.7917,
+          "maxdd": -0.0791,
+          "calmar": 0.8723,
+          "equity": 1.0688
+        },
+        "M8": {
+          "acc": 0.4781,
+          "sharpe": -0.287,
+          "maxdd": -0.1081,
+          "calmar": -0.2702,
+          "equity": 0.9709
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4781,
+          "sharpe": -0.287,
+          "maxdd": -0.1081,
+          "calmar": -0.2702,
+          "equity": 0.9709
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.4741,
+          "sharpe": -0.3271,
+          "maxdd": -0.1081,
+          "calmar": -0.3024,
+          "equity": 0.9674
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.4741,
+          "sharpe": -0.3271,
+          "maxdd": -0.1081,
+          "calmar": -0.3024,
+          "equity": 0.9674
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.4781,
+          "sharpe": -0.287,
+          "maxdd": -0.1081,
+          "calmar": -0.2702,
+          "equity": 0.9709
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.4781,
+          "sharpe": -0.287,
+          "maxdd": -0.1081,
+          "calmar": -0.2702,
+          "equity": 0.9709
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.494,
+          "sharpe": 0.3918,
+          "maxdd": -0.1081,
+          "calmar": 0.2918,
+          "equity": 1.0314
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.49,
+          "sharpe": 0.3524,
+          "maxdd": -0.1081,
+          "calmar": 0.2582,
+          "equity": 1.0278
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.49,
+          "sharpe": 0.3524,
+          "maxdd": -0.1081,
+          "calmar": 0.2582,
+          "equity": 1.0278
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.494,
+          "sharpe": 0.3918,
+          "maxdd": -0.1081,
+          "calmar": 0.2918,
+          "equity": 1.0314
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5299,
+          "sharpe": 0.7917,
+          "maxdd": -0.0791,
+          "calmar": 0.8723,
+          "equity": 1.0688
+        },
+        "M10": {
+          "acc": 0.5219,
+          "sharpe": 1.3666,
+          "maxdd": -0.0358,
+          "calmar": 3.4909,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.4741,
+          "sharpe": -0.6102,
+          "maxdd": -0.0566,
+          "calmar": -0.6264,
+          "equity": 0.9647
+        },
+        "M8": {
+          "acc": 0.4781,
+          "sharpe": -0.1302,
+          "maxdd": -0.0928,
+          "calmar": -0.1305,
+          "equity": 0.9879
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4781,
+          "sharpe": -0.1302,
+          "maxdd": -0.0928,
+          "calmar": -0.1305,
+          "equity": 0.9879
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.4741,
+          "sharpe": -0.1702,
+          "maxdd": -0.0928,
+          "calmar": -0.1617,
+          "equity": 0.9851
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.4741,
+          "sharpe": -0.409,
+          "maxdd": -0.1081,
+          "calmar": -0.3359,
+          "equity": 0.9638
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.4781,
+          "sharpe": -0.4034,
+          "maxdd": -0.1081,
+          "calmar": -0.3392,
+          "equity": 0.9635
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.4781,
+          "sharpe": -0.4034,
+          "maxdd": -0.1081,
+          "calmar": -0.3392,
+          "equity": 0.9635
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.494,
+          "sharpe": 0.3199,
+          "maxdd": -0.1081,
+          "calmar": 0.2185,
+          "equity": 1.0235
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.49,
+          "sharpe": 0.2779,
+          "maxdd": -0.1081,
+          "calmar": 0.1852,
+          "equity": 1.0199
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.49,
+          "sharpe": 0.2779,
+          "maxdd": -0.1081,
+          "calmar": 0.1852,
+          "equity": 1.0199
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.494,
+          "sharpe": 0.3199,
+          "maxdd": -0.1081,
+          "calmar": 0.2185,
+          "equity": 1.0235
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5299,
+          "sharpe": 0.7917,
+          "maxdd": -0.0791,
+          "calmar": 0.8723,
+          "equity": 1.0688
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.3944,
+        "A_mm_τ30_abs": 0.3984,
+        "A_mm_τ30_rel": 0.3984,
+        "A_reg_lev_τ50": 0.3944,
+        "A_reg_lev_τ45": 0.3944,
+        "A_reg_dd_τ45": 0.5139,
+        "A_reg_dd_τ50": 0.51,
+        "A_reg_dd_τ55": 0.51,
+        "A_reg_sdom_τ45": 0.5139,
+        "A_reg_sdom_τ00": 0.996
+      }
+    },
+    "XLE": {
+      "n": 248,
+      "frac_up": 0.5645,
+      "clase": "leverage débil/neutro",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.4476,
+          "sharpe": -2.4279,
+          "maxdd": -0.2294,
+          "calmar": -0.9312,
+          "equity": 0.7894
+        },
+        "Régimen": {
+          "acc": 0.5645,
+          "sharpe": 1.8958,
+          "maxdd": -0.056,
+          "calmar": 3.5295,
+          "equity": 1.1942
+        },
+        "STRATA-U": {
+          "acc": 0.5645,
+          "sharpe": 1.8958,
+          "maxdd": -0.056,
+          "calmar": 3.5295,
+          "equity": 1.1942
+        },
+        "B&H": {
+          "acc": 0.5645,
+          "sharpe": 1.8958,
+          "maxdd": -0.056,
+          "calmar": 3.5295,
+          "equity": 1.1942
+        },
+        "S&H": {
+          "acc": 0.4355,
+          "sharpe": -1.9042,
+          "maxdd": -0.2106,
+          "calmar": -0.8245,
+          "equity": 0.8288
+        },
+        "ZeroR": {
+          "acc": 0.5645,
+          "sharpe": 1.8958,
+          "maxdd": -0.056,
+          "calmar": 3.5295,
+          "equity": 1.1942
+        },
+        "M8": {
+          "acc": 0.5282,
+          "sharpe": 0.9115,
+          "maxdd": -0.0665,
+          "calmar": 1.3259,
+          "equity": 1.0867
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5282,
+          "sharpe": 0.9115,
+          "maxdd": -0.0665,
+          "calmar": 1.3259,
+          "equity": 1.0867
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5323,
+          "sharpe": 1.0397,
+          "maxdd": -0.0665,
+          "calmar": 1.5316,
+          "equity": 1.1002
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5323,
+          "sharpe": 1.0397,
+          "maxdd": -0.0665,
+          "calmar": 1.5316,
+          "equity": 1.1002
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5282,
+          "sharpe": 0.8228,
+          "maxdd": -0.0665,
+          "calmar": 1.1873,
+          "equity": 1.0777
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5242,
+          "sharpe": 0.7186,
+          "maxdd": -0.0665,
+          "calmar": 1.0226,
+          "equity": 1.0669
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5282,
+          "sharpe": 0.8665,
+          "maxdd": -0.0665,
+          "calmar": 1.257,
+          "equity": 1.0822
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5323,
+          "sharpe": 0.9709,
+          "maxdd": -0.0665,
+          "calmar": 1.4241,
+          "equity": 1.0932
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5323,
+          "sharpe": 0.9709,
+          "maxdd": -0.0665,
+          "calmar": 1.4241,
+          "equity": 1.0932
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5282,
+          "sharpe": 0.8665,
+          "maxdd": -0.0665,
+          "calmar": 1.257,
+          "equity": 1.0822
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5645,
+          "sharpe": 1.8958,
+          "maxdd": -0.056,
+          "calmar": 3.5295,
+          "equity": 1.1942
+        },
+        "M10": {
+          "acc": 0.5081,
+          "sharpe": 0.1792,
+          "maxdd": -0.0849,
+          "calmar": 0.1516,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.4476,
+          "sharpe": -2.3984,
+          "maxdd": -0.0946,
+          "calmar": -0.927,
+          "equity": 0.9137
+        },
+        "M8": {
+          "acc": 0.5282,
+          "sharpe": 1.6448,
+          "maxdd": -0.0377,
+          "calmar": 3.4957,
+          "equity": 1.1297
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5282,
+          "sharpe": 1.6448,
+          "maxdd": -0.0377,
+          "calmar": 3.4957,
+          "equity": 1.1297
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5323,
+          "sharpe": 1.751,
+          "maxdd": -0.0377,
+          "calmar": 3.773,
+          "equity": 1.14
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5323,
+          "sharpe": 1.0397,
+          "maxdd": -0.0665,
+          "calmar": 1.5316,
+          "equity": 1.1002
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5282,
+          "sharpe": 0.8228,
+          "maxdd": -0.0665,
+          "calmar": 1.1873,
+          "equity": 1.0777
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5242,
+          "sharpe": 0.7186,
+          "maxdd": -0.0665,
+          "calmar": 1.0226,
+          "equity": 1.0669
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5282,
+          "sharpe": 0.8665,
+          "maxdd": -0.0665,
+          "calmar": 1.257,
+          "equity": 1.0822
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5323,
+          "sharpe": 0.9709,
+          "maxdd": -0.0665,
+          "calmar": 1.4241,
+          "equity": 1.0932
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5323,
+          "sharpe": 0.9709,
+          "maxdd": -0.0665,
+          "calmar": 1.4241,
+          "equity": 1.0932
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5282,
+          "sharpe": 0.8665,
+          "maxdd": -0.0665,
+          "calmar": 1.257,
+          "equity": 1.0822
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5645,
+          "sharpe": 1.8958,
+          "maxdd": -0.056,
+          "calmar": 3.5295,
+          "equity": 1.1942
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.6129,
+        "A_mm_τ30_abs": 0.625,
+        "A_mm_τ30_rel": 0.625,
+        "A_reg_lev_τ50": 0.621,
+        "A_reg_lev_τ45": 0.625,
+        "A_reg_dd_τ45": 0.629,
+        "A_reg_dd_τ50": 0.625,
+        "A_reg_dd_τ55": 0.625,
+        "A_reg_sdom_τ45": 0.629,
+        "A_reg_sdom_τ00": 0.8427
+      }
+    },
+    "UNG": {
+      "n": 247,
+      "frac_up": 0.4858,
+      "clase": "leverage fuerte (régimen direccional)",
+      "sign_map": {
+        "Calma": -1.0,
+        "Crisis": -1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.5101,
+          "sharpe": 0.5282,
+          "maxdd": -0.094,
+          "calmar": 0.5434,
+          "equity": 1.0501
+        },
+        "Régimen": {
+          "acc": 0.5142,
+          "sharpe": 0.7202,
+          "maxdd": -0.076,
+          "calmar": 0.9528,
+          "equity": 1.0709
+        },
+        "STRATA-U": {
+          "acc": 0.5142,
+          "sharpe": 0.7202,
+          "maxdd": -0.076,
+          "calmar": 0.9528,
+          "equity": 1.0709
+        },
+        "B&H": {
+          "acc": 0.4858,
+          "sharpe": -0.7235,
+          "maxdd": -0.0995,
+          "calmar": -0.7832,
+          "equity": 0.9235
+        },
+        "S&H": {
+          "acc": 0.5142,
+          "sharpe": 0.7202,
+          "maxdd": -0.076,
+          "calmar": 0.9528,
+          "equity": 1.0709
+        },
+        "ZeroR": {
+          "acc": 0.5142,
+          "sharpe": 0.7202,
+          "maxdd": -0.076,
+          "calmar": 0.9528,
+          "equity": 1.0709
+        },
+        "M8": {
+          "acc": 0.502,
+          "sharpe": 0.543,
+          "maxdd": -0.094,
+          "calmar": 0.5608,
+          "equity": 1.0517
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.502,
+          "sharpe": 0.543,
+          "maxdd": -0.094,
+          "calmar": 0.5608,
+          "equity": 1.0517
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5061,
+          "sharpe": 0.7727,
+          "maxdd": -0.094,
+          "calmar": 0.8326,
+          "equity": 1.0767
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5061,
+          "sharpe": 0.7727,
+          "maxdd": -0.094,
+          "calmar": 0.8326,
+          "equity": 1.0767
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.502,
+          "sharpe": 0.543,
+          "maxdd": -0.094,
+          "calmar": 0.5608,
+          "equity": 1.0517
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.502,
+          "sharpe": 0.543,
+          "maxdd": -0.094,
+          "calmar": 0.5608,
+          "equity": 1.0517
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5061,
+          "sharpe": 0.4864,
+          "maxdd": -0.094,
+          "calmar": 0.4946,
+          "equity": 1.0456
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5061,
+          "sharpe": 0.4864,
+          "maxdd": -0.094,
+          "calmar": 0.4946,
+          "equity": 1.0456
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5061,
+          "sharpe": 0.4864,
+          "maxdd": -0.094,
+          "calmar": 0.4946,
+          "equity": 1.0456
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5061,
+          "sharpe": 0.4864,
+          "maxdd": -0.094,
+          "calmar": 0.4946,
+          "equity": 1.0456
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5142,
+          "sharpe": 0.7202,
+          "maxdd": -0.076,
+          "calmar": 0.9528,
+          "equity": 1.0709
+        },
+        "M10": {
+          "acc": 0.5182,
+          "sharpe": 0.0766,
+          "maxdd": -0.1282,
+          "calmar": 0.0201,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.5101,
+          "sharpe": 0.421,
+          "maxdd": -0.0577,
+          "calmar": 0.4639,
+          "equity": 1.0262
+        },
+        "M8": {
+          "acc": 0.502,
+          "sharpe": 0.4224,
+          "maxdd": -0.0577,
+          "calmar": 0.5115,
+          "equity": 1.0289
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.502,
+          "sharpe": 0.4224,
+          "maxdd": -0.0577,
+          "calmar": 0.5115,
+          "equity": 1.0289
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5061,
+          "sharpe": 0.6608,
+          "maxdd": -0.0577,
+          "calmar": 0.8408,
+          "equity": 1.0475
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5061,
+          "sharpe": 0.9107,
+          "maxdd": -0.0902,
+          "calmar": 1.0015,
+          "equity": 1.0885
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.502,
+          "sharpe": 0.5915,
+          "maxdd": -0.0902,
+          "calmar": 0.6369,
+          "equity": 1.0563
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.502,
+          "sharpe": 0.5915,
+          "maxdd": -0.0902,
+          "calmar": 0.6369,
+          "equity": 1.0563
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5061,
+          "sharpe": 0.5342,
+          "maxdd": -0.0902,
+          "calmar": 0.5676,
+          "equity": 1.0502
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5061,
+          "sharpe": 0.5342,
+          "maxdd": -0.0902,
+          "calmar": 0.5676,
+          "equity": 1.0502
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5061,
+          "sharpe": 0.5342,
+          "maxdd": -0.0902,
+          "calmar": 0.5676,
+          "equity": 1.0502
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5061,
+          "sharpe": 0.5342,
+          "maxdd": -0.0902,
+          "calmar": 0.5676,
+          "equity": 1.0502
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5142,
+          "sharpe": 0.7202,
+          "maxdd": -0.076,
+          "calmar": 0.9528,
+          "equity": 1.0709
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.1215,
+        "A_mm_τ30_abs": 0.1336,
+        "A_mm_τ30_rel": 0.1336,
+        "A_reg_lev_τ50": 0.1215,
+        "A_reg_lev_τ45": 0.1215,
+        "A_reg_dd_τ45": 0.004,
+        "A_reg_dd_τ50": 0.004,
+        "A_reg_dd_τ55": 0.004,
+        "A_reg_sdom_τ45": 0.004,
+        "A_reg_sdom_τ00": 0.0121
+      }
+    },
+    "MSTR": {
+      "n": 251,
+      "frac_up": 0.4502,
+      "clase": "leverage fuerte (régimen direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": -1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.5538,
+          "sharpe": 1.3194,
+          "maxdd": -0.0783,
+          "calmar": 1.7096,
+          "equity": 1.1333
+        },
+        "Régimen": {
+          "acc": 0.4542,
+          "sharpe": -2.2138,
+          "maxdd": -0.2158,
+          "calmar": -0.9246,
+          "equity": 0.8012
+        },
+        "STRATA-U": {
+          "acc": 0.5299,
+          "sharpe": 0.6863,
+          "maxdd": -0.0783,
+          "calmar": 0.8327,
+          "equity": 1.0649
+        },
+        "B&H": {
+          "acc": 0.4502,
+          "sharpe": -1.2992,
+          "maxdd": -0.2036,
+          "calmar": -0.6135,
+          "equity": 0.8755
+        },
+        "S&H": {
+          "acc": 0.5498,
+          "sharpe": 1.298,
+          "maxdd": -0.0783,
+          "calmar": 1.6791,
+          "equity": 1.1309
+        },
+        "ZeroR": {
+          "acc": 0.5498,
+          "sharpe": 1.298,
+          "maxdd": -0.0783,
+          "calmar": 1.6791,
+          "equity": 1.1309
+        },
+        "M8": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5578,
+          "sharpe": 1.4705,
+          "maxdd": -0.0783,
+          "calmar": 1.9257,
+          "equity": 1.1501
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.4542,
+          "sharpe": -2.2138,
+          "maxdd": -0.2158,
+          "calmar": -0.9246,
+          "equity": 0.8012
+        },
+        "M10": {
+          "acc": 0.5339,
+          "sharpe": -0.2578,
+          "maxdd": -0.093,
+          "calmar": -0.323,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.5538,
+          "sharpe": 1.2351,
+          "maxdd": -0.0552,
+          "calmar": 1.5563,
+          "equity": 1.0856
+        },
+        "M8": {
+          "acc": 0.5578,
+          "sharpe": 1.4126,
+          "maxdd": -0.0552,
+          "calmar": 1.8014,
+          "equity": 1.0991
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5578,
+          "sharpe": 1.4126,
+          "maxdd": -0.0552,
+          "calmar": 1.8014,
+          "equity": 1.0991
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5578,
+          "sharpe": 1.4126,
+          "maxdd": -0.0552,
+          "calmar": 1.8014,
+          "equity": 1.0991
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5578,
+          "sharpe": 1.7833,
+          "maxdd": -0.0552,
+          "calmar": 2.9886,
+          "equity": 1.1643
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5578,
+          "sharpe": 1.5795,
+          "maxdd": -0.0666,
+          "calmar": 2.2677,
+          "equity": 1.1503
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5578,
+          "sharpe": 1.5795,
+          "maxdd": -0.0666,
+          "calmar": 2.2677,
+          "equity": 1.1503
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5578,
+          "sharpe": 1.5795,
+          "maxdd": -0.0666,
+          "calmar": 2.2677,
+          "equity": 1.1503
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5578,
+          "sharpe": 1.5795,
+          "maxdd": -0.0666,
+          "calmar": 2.2677,
+          "equity": 1.1503
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5578,
+          "sharpe": 1.5707,
+          "maxdd": -0.0674,
+          "calmar": 2.224,
+          "equity": 1.1493
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5578,
+          "sharpe": 1.5795,
+          "maxdd": -0.0666,
+          "calmar": 2.2677,
+          "equity": 1.1503
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.4542,
+          "sharpe": -2.2138,
+          "maxdd": -0.2158,
+          "calmar": -0.9246,
+          "equity": 0.8012
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.004,
+        "A_mm_τ30_abs": 0.004,
+        "A_mm_τ30_rel": 0.004,
+        "A_reg_lev_τ50": 0.004,
+        "A_reg_lev_τ45": 0.004,
+        "A_reg_dd_τ45": 0.004,
+        "A_reg_dd_τ50": 0.004,
+        "A_reg_dd_τ55": 0.004,
+        "A_reg_sdom_τ45": 0.004,
+        "A_reg_sdom_τ00": 0.6175
+      }
+    },
+    "SMCI": {
+      "n": 250,
+      "frac_up": 0.484,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "sign_map": {
+        "Calma": -1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.484,
+          "sharpe": -0.1069,
+          "maxdd": -0.1121,
+          "calmar": -0.1807,
+          "equity": 0.9799
+        },
+        "Régimen": {
+          "acc": 0.472,
+          "sharpe": -0.6731,
+          "maxdd": -0.2096,
+          "calmar": -0.416,
+          "equity": 0.9135
+        },
+        "STRATA-U": {
+          "acc": 0.492,
+          "sharpe": -0.378,
+          "maxdd": -0.125,
+          "calmar": -0.4242,
+          "equity": 0.9474
+        },
+        "B&H": {
+          "acc": 0.484,
+          "sharpe": -0.0586,
+          "maxdd": -0.1578,
+          "calmar": -0.0947,
+          "equity": 0.9852
+        },
+        "S&H": {
+          "acc": 0.516,
+          "sharpe": 0.0553,
+          "maxdd": -0.1035,
+          "calmar": -0.0068,
+          "equity": 0.9993
+        },
+        "ZeroR": {
+          "acc": 0.516,
+          "sharpe": 0.0553,
+          "maxdd": -0.1035,
+          "calmar": -0.0068,
+          "equity": 0.9993
+        },
+        "M8": {
+          "acc": 0.496,
+          "sharpe": 0.4151,
+          "maxdd": -0.0876,
+          "calmar": 0.507,
+          "equity": 1.0441
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.496,
+          "sharpe": 0.4151,
+          "maxdd": -0.0876,
+          "calmar": 0.507,
+          "equity": 1.0441
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5,
+          "sharpe": 0.4237,
+          "maxdd": -0.0876,
+          "calmar": 0.5196,
+          "equity": 1.0452
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5,
+          "sharpe": 0.4237,
+          "maxdd": -0.0876,
+          "calmar": 0.5196,
+          "equity": 1.0452
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.512,
+          "sharpe": 0.556,
+          "maxdd": -0.0876,
+          "calmar": 0.7176,
+          "equity": 1.0624
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.512,
+          "sharpe": 0.556,
+          "maxdd": -0.0876,
+          "calmar": 0.7176,
+          "equity": 1.0624
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.476,
+          "sharpe": -0.3299,
+          "maxdd": -0.1614,
+          "calmar": -0.2908,
+          "equity": 0.9534
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.472,
+          "sharpe": -0.4155,
+          "maxdd": -0.1641,
+          "calmar": -0.3469,
+          "equity": 0.9435
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.472,
+          "sharpe": -0.4155,
+          "maxdd": -0.1641,
+          "calmar": -0.3469,
+          "equity": 0.9435
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.476,
+          "sharpe": -0.3299,
+          "maxdd": -0.1614,
+          "calmar": -0.2908,
+          "equity": 0.9534
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.472,
+          "sharpe": -0.6731,
+          "maxdd": -0.2096,
+          "calmar": -0.416,
+          "equity": 0.9135
+        },
+        "M10": {
+          "acc": 0.552,
+          "sharpe": 1.9995,
+          "maxdd": -0.054,
+          "calmar": 4.994,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.484,
+          "sharpe": -0.2396,
+          "maxdd": -0.0691,
+          "calmar": -0.3235,
+          "equity": 0.9778
+        },
+        "M8": {
+          "acc": 0.496,
+          "sharpe": 0.3292,
+          "maxdd": -0.0588,
+          "calmar": 0.4137,
+          "equity": 1.0241
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.496,
+          "sharpe": 0.3292,
+          "maxdd": -0.0588,
+          "calmar": 0.4137,
+          "equity": 1.0241
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5,
+          "sharpe": 0.3386,
+          "maxdd": -0.0588,
+          "calmar": 0.4274,
+          "equity": 1.0249
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5,
+          "sharpe": 0.502,
+          "maxdd": -0.0693,
+          "calmar": 0.7623,
+          "equity": 1.0524
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.512,
+          "sharpe": 0.624,
+          "maxdd": -0.0825,
+          "calmar": 0.8553,
+          "equity": 1.07
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.512,
+          "sharpe": 0.619,
+          "maxdd": -0.0829,
+          "calmar": 0.8429,
+          "equity": 1.0693
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.476,
+          "sharpe": -0.2839,
+          "maxdd": -0.1628,
+          "calmar": -0.2495,
+          "equity": 0.9597
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.472,
+          "sharpe": -0.3664,
+          "maxdd": -0.1655,
+          "calmar": -0.3028,
+          "equity": 0.9503
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.472,
+          "sharpe": -0.3664,
+          "maxdd": -0.1655,
+          "calmar": -0.3028,
+          "equity": 0.9503
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.476,
+          "sharpe": -0.2839,
+          "maxdd": -0.1628,
+          "calmar": -0.2495,
+          "equity": 0.9597
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.472,
+          "sharpe": -0.6731,
+          "maxdd": -0.2096,
+          "calmar": -0.416,
+          "equity": 0.9135
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.028,
+        "A_mm_τ30_abs": 0.032,
+        "A_mm_τ30_rel": 0.032,
+        "A_reg_lev_τ50": 0.044,
+        "A_reg_lev_τ45": 0.044,
+        "A_reg_dd_τ45": 0.536,
+        "A_reg_dd_τ50": 0.524,
+        "A_reg_dd_τ55": 0.524,
+        "A_reg_sdom_τ45": 0.536,
+        "A_reg_sdom_τ00": 0.956
+      }
+    },
+    "ROKU": {
+      "n": 250,
+      "frac_up": 0.548,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "sign_map": {
+        "Calma": -1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.444,
+          "sharpe": -1.4146,
+          "maxdd": -0.101,
+          "calmar": -1.0076,
+          "equity": 0.899
+        },
+        "Régimen": {
+          "acc": 0.536,
+          "sharpe": 0.6661,
+          "maxdd": -0.0588,
+          "calmar": 0.8145,
+          "equity": 1.0475
+        },
+        "STRATA-U": {
+          "acc": 0.504,
+          "sharpe": 0.2104,
+          "maxdd": -0.0655,
+          "calmar": 0.1982,
+          "equity": 1.0129
+        },
+        "B&H": {
+          "acc": 0.548,
+          "sharpe": 1.2499,
+          "maxdd": -0.0558,
+          "calmar": 1.6865,
+          "equity": 1.0934
+        },
+        "S&H": {
+          "acc": 0.452,
+          "sharpe": -1.2512,
+          "maxdd": -0.0922,
+          "calmar": -0.989,
+          "equity": 0.9095
+        },
+        "ZeroR": {
+          "acc": 0.548,
+          "sharpe": 1.2499,
+          "maxdd": -0.0558,
+          "calmar": 1.6865,
+          "equity": 1.0934
+        },
+        "M8": {
+          "acc": 0.528,
+          "sharpe": 0.3614,
+          "maxdd": -0.0797,
+          "calmar": 0.3056,
+          "equity": 1.0242
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.528,
+          "sharpe": 0.3614,
+          "maxdd": -0.0797,
+          "calmar": 0.3056,
+          "equity": 1.0242
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.532,
+          "sharpe": 0.5004,
+          "maxdd": -0.0797,
+          "calmar": 0.4388,
+          "equity": 1.0347
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.532,
+          "sharpe": 0.5004,
+          "maxdd": -0.0797,
+          "calmar": 0.4388,
+          "equity": 1.0347
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.528,
+          "sharpe": 0.2937,
+          "maxdd": -0.0843,
+          "calmar": 0.2287,
+          "equity": 1.0191
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.528,
+          "sharpe": 0.2937,
+          "maxdd": -0.0843,
+          "calmar": 0.2287,
+          "equity": 1.0191
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.448,
+          "sharpe": -1.0617,
+          "maxdd": -0.0795,
+          "calmar": -0.9858,
+          "equity": 0.9222
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.452,
+          "sharpe": -0.9643,
+          "maxdd": -0.0729,
+          "calmar": -0.9836,
+          "equity": 0.9289
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.452,
+          "sharpe": -0.9643,
+          "maxdd": -0.0729,
+          "calmar": -0.9836,
+          "equity": 0.9289
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.532,
+          "sharpe": 0.623,
+          "maxdd": -0.0618,
+          "calmar": 0.721,
+          "equity": 1.0442
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.536,
+          "sharpe": 0.6661,
+          "maxdd": -0.0588,
+          "calmar": 0.8145,
+          "equity": 1.0475
+        },
+        "M10": {
+          "acc": 0.508,
+          "sharpe": 0.3013,
+          "maxdd": -0.0617,
+          "calmar": 0.3221,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.444,
+          "sharpe": -1.1688,
+          "maxdd": -0.0646,
+          "calmar": -1.0077,
+          "equity": 0.9354
+        },
+        "M8": {
+          "acc": 0.528,
+          "sharpe": 0.5093,
+          "maxdd": -0.0715,
+          "calmar": 0.49,
+          "equity": 1.0347
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.528,
+          "sharpe": 0.5093,
+          "maxdd": -0.0715,
+          "calmar": 0.49,
+          "equity": 1.0347
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.532,
+          "sharpe": 0.6315,
+          "maxdd": -0.0715,
+          "calmar": 0.6198,
+          "equity": 1.0439
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.532,
+          "sharpe": 0.6272,
+          "maxdd": -0.0717,
+          "calmar": 0.6144,
+          "equity": 1.0437
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.528,
+          "sharpe": 0.3877,
+          "maxdd": -0.0794,
+          "calmar": 0.3296,
+          "equity": 1.026
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.528,
+          "sharpe": 0.4011,
+          "maxdd": -0.0785,
+          "calmar": 0.3465,
+          "equity": 1.027
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.448,
+          "sharpe": -0.9677,
+          "maxdd": -0.0731,
+          "calmar": -0.9739,
+          "equity": 0.9294
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.452,
+          "sharpe": -0.8835,
+          "maxdd": -0.0708,
+          "calmar": -0.9237,
+          "equity": 0.9351
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.452,
+          "sharpe": -0.8835,
+          "maxdd": -0.0708,
+          "calmar": -0.9237,
+          "equity": 0.9351
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.532,
+          "sharpe": 0.7341,
+          "maxdd": -0.0558,
+          "calmar": 0.9429,
+          "equity": 1.0522
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.536,
+          "sharpe": 0.6661,
+          "maxdd": -0.0588,
+          "calmar": 0.8145,
+          "equity": 1.0475
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.884,
+        "A_mm_τ30_abs": 0.888,
+        "A_mm_τ30_rel": 0.888,
+        "A_reg_lev_τ50": 0.888,
+        "A_reg_lev_τ45": 0.888,
+        "A_reg_dd_τ45": 0.036,
+        "A_reg_dd_τ50": 0.032,
+        "A_reg_dd_τ55": 0.032,
+        "A_reg_sdom_τ45": 0.892,
+        "A_reg_sdom_τ00": 0.896
+      }
+    },
+    "MARA": {
+      "n": 248,
+      "frac_up": 0.4677,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "sign_map": {
+        "Calma": -1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.5282,
+          "sharpe": 0.269,
+          "maxdd": -0.0601,
+          "calmar": 0.3044,
+          "equity": 1.018
+        },
+        "Régimen": {
+          "acc": 0.5282,
+          "sharpe": 0.2958,
+          "maxdd": -0.0642,
+          "calmar": 0.3191,
+          "equity": 1.0201
+        },
+        "STRATA-U": {
+          "acc": 0.5202,
+          "sharpe": -0.0099,
+          "maxdd": -0.0601,
+          "calmar": -0.0646,
+          "equity": 0.9962
+        },
+        "B&H": {
+          "acc": 0.4677,
+          "sharpe": -0.3274,
+          "maxdd": -0.1129,
+          "calmar": -0.2531,
+          "equity": 0.9719
+        },
+        "S&H": {
+          "acc": 0.5323,
+          "sharpe": 0.3202,
+          "maxdd": -0.0624,
+          "calmar": 0.3597,
+          "equity": 1.0221
+        },
+        "ZeroR": {
+          "acc": 0.5323,
+          "sharpe": 0.3202,
+          "maxdd": -0.0624,
+          "calmar": 0.3597,
+          "equity": 1.0221
+        },
+        "M8": {
+          "acc": 0.5282,
+          "sharpe": 0.7588,
+          "maxdd": -0.0889,
+          "calmar": 0.6572,
+          "equity": 1.0574
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5282,
+          "sharpe": 0.7588,
+          "maxdd": -0.0889,
+          "calmar": 0.6572,
+          "equity": 1.0574
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5,
+          "sharpe": 0.5023,
+          "maxdd": -0.0889,
+          "calmar": 0.419,
+          "equity": 1.0366
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5,
+          "sharpe": 0.5023,
+          "maxdd": -0.0889,
+          "calmar": 0.419,
+          "equity": 1.0366
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5282,
+          "sharpe": 0.7588,
+          "maxdd": -0.0889,
+          "calmar": 0.6572,
+          "equity": 1.0574
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5121,
+          "sharpe": 0.6299,
+          "maxdd": -0.0889,
+          "calmar": 0.537,
+          "equity": 1.0469
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5202,
+          "sharpe": 0.1605,
+          "maxdd": -0.0642,
+          "calmar": 0.1499,
+          "equity": 1.0095
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5202,
+          "sharpe": 0.1605,
+          "maxdd": -0.0642,
+          "calmar": 0.1499,
+          "equity": 1.0095
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5202,
+          "sharpe": 0.1605,
+          "maxdd": -0.0642,
+          "calmar": 0.1499,
+          "equity": 1.0095
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5202,
+          "sharpe": 0.1605,
+          "maxdd": -0.0642,
+          "calmar": 0.1499,
+          "equity": 1.0095
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5282,
+          "sharpe": 0.2958,
+          "maxdd": -0.0642,
+          "calmar": 0.3191,
+          "equity": 1.0201
+        },
+        "M10": {
+          "acc": 0.5323,
+          "sharpe": 1.2479,
+          "maxdd": -0.0558,
+          "calmar": 1.7882,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.5282,
+          "sharpe": 0.1814,
+          "maxdd": -0.0543,
+          "calmar": 0.2055,
+          "equity": 1.011
+        },
+        "M8": {
+          "acc": 0.5282,
+          "sharpe": 0.7581,
+          "maxdd": -0.0875,
+          "calmar": 0.6853,
+          "equity": 1.059
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.5282,
+          "sharpe": 0.7581,
+          "maxdd": -0.0875,
+          "calmar": 0.6853,
+          "equity": 1.059
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.5,
+          "sharpe": 0.5572,
+          "maxdd": -0.0875,
+          "calmar": 0.4902,
+          "equity": 1.0422
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.5,
+          "sharpe": 0.4114,
+          "maxdd": -0.094,
+          "calmar": 0.3232,
+          "equity": 1.0299
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.5282,
+          "sharpe": 0.6434,
+          "maxdd": -0.094,
+          "calmar": 0.5299,
+          "equity": 1.049
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.5121,
+          "sharpe": 0.5156,
+          "maxdd": -0.094,
+          "calmar": 0.4155,
+          "equity": 1.0384
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.5202,
+          "sharpe": 0.0559,
+          "maxdd": -0.0666,
+          "calmar": 0.019,
+          "equity": 1.0012
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.5202,
+          "sharpe": 0.0577,
+          "maxdd": -0.0666,
+          "calmar": 0.0212,
+          "equity": 1.0014
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.5202,
+          "sharpe": 0.0551,
+          "maxdd": -0.0666,
+          "calmar": 0.0181,
+          "equity": 1.0012
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.5202,
+          "sharpe": 0.0559,
+          "maxdd": -0.0666,
+          "calmar": 0.019,
+          "equity": 1.0012
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5282,
+          "sharpe": 0.2958,
+          "maxdd": -0.0642,
+          "calmar": 0.3191,
+          "equity": 1.0201
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.4839,
+        "A_mm_τ30_abs": 0.5363,
+        "A_mm_τ30_rel": 0.5363,
+        "A_reg_lev_τ50": 0.4839,
+        "A_reg_lev_τ45": 0.5,
+        "A_reg_dd_τ45": 0.0081,
+        "A_reg_dd_τ50": 0.0081,
+        "A_reg_dd_τ55": 0.0081,
+        "A_reg_sdom_τ45": 0.0081,
+        "A_reg_sdom_τ00": 0.0242
+      }
+    },
+    "QQQ": {
+      "n": 251,
+      "frac_up": 0.5896,
+      "clase": "leverage fuerte (régimen direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": -1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.4183,
+          "sharpe": -1.6319,
+          "maxdd": -0.152,
+          "calmar": -0.9955,
+          "equity": 0.8492
+        },
+        "Régimen": {
+          "acc": 0.5777,
+          "sharpe": 1.4232,
+          "maxdd": -0.0854,
+          "calmar": 1.6961,
+          "equity": 1.1442
+        },
+        "STRATA-U": {
+          "acc": 0.5737,
+          "sharpe": 1.3656,
+          "maxdd": -0.0905,
+          "calmar": 1.5297,
+          "equity": 1.1379
+        },
+        "B&H": {
+          "acc": 0.5896,
+          "sharpe": 1.8239,
+          "maxdd": -0.0854,
+          "calmar": 2.2289,
+          "equity": 1.1895
+        },
+        "S&H": {
+          "acc": 0.4104,
+          "sharpe": -1.8383,
+          "maxdd": -0.1686,
+          "calmar": -1.0036,
+          "equity": 0.8314
+        },
+        "ZeroR": {
+          "acc": 0.5896,
+          "sharpe": 1.8239,
+          "maxdd": -0.0854,
+          "calmar": 2.2289,
+          "equity": 1.1895
+        },
+        "M8": {
+          "acc": 0.4861,
+          "sharpe": -0.0697,
+          "maxdd": -0.1279,
+          "calmar": -0.0904,
+          "equity": 0.9885
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4861,
+          "sharpe": -0.0697,
+          "maxdd": -0.1279,
+          "calmar": -0.0904,
+          "equity": 0.9885
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.494,
+          "sharpe": 0.31,
+          "maxdd": -0.103,
+          "calmar": 0.2514,
+          "equity": 1.0258
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.494,
+          "sharpe": 0.31,
+          "maxdd": -0.103,
+          "calmar": 0.2514,
+          "equity": 1.0258
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.502,
+          "sharpe": -0.0822,
+          "maxdd": -0.1195,
+          "calmar": -0.1079,
+          "equity": 0.9871
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.506,
+          "sharpe": -0.0275,
+          "maxdd": -0.1148,
+          "calmar": -0.0659,
+          "equity": 0.9925
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.506,
+          "sharpe": -0.0275,
+          "maxdd": -0.1148,
+          "calmar": -0.0659,
+          "equity": 0.9925
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.502,
+          "sharpe": -0.0822,
+          "maxdd": -0.1195,
+          "calmar": -0.1079,
+          "equity": 0.9871
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.502,
+          "sharpe": -0.0822,
+          "maxdd": -0.1195,
+          "calmar": -0.1079,
+          "equity": 0.9871
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.506,
+          "sharpe": -0.0275,
+          "maxdd": -0.1148,
+          "calmar": -0.0659,
+          "equity": 0.9925
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5777,
+          "sharpe": 1.4232,
+          "maxdd": -0.0854,
+          "calmar": 1.6961,
+          "equity": 1.1442
+        },
+        "M10": {
+          "acc": 0.5219,
+          "sharpe": -1.3132,
+          "maxdd": -0.2005,
+          "calmar": -0.6275,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.4183,
+          "sharpe": -1.4482,
+          "maxdd": -0.0465,
+          "calmar": -0.9931,
+          "equity": 0.954
+        },
+        "M8": {
+          "acc": 0.4861,
+          "sharpe": 0.7062,
+          "maxdd": -0.0674,
+          "calmar": 0.6185,
+          "equity": 1.0415
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4861,
+          "sharpe": 0.7062,
+          "maxdd": -0.0674,
+          "calmar": 0.6185,
+          "equity": 1.0415
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.494,
+          "sharpe": 1.0304,
+          "maxdd": -0.0634,
+          "calmar": 1.0419,
+          "equity": 1.0658
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.494,
+          "sharpe": 0.31,
+          "maxdd": -0.103,
+          "calmar": 0.2514,
+          "equity": 1.0258
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.502,
+          "sharpe": -0.0822,
+          "maxdd": -0.1195,
+          "calmar": -0.1079,
+          "equity": 0.9871
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.506,
+          "sharpe": -0.0275,
+          "maxdd": -0.1148,
+          "calmar": -0.0659,
+          "equity": 0.9925
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.506,
+          "sharpe": -0.0275,
+          "maxdd": -0.1148,
+          "calmar": -0.0659,
+          "equity": 0.9925
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.502,
+          "sharpe": -0.0822,
+          "maxdd": -0.1195,
+          "calmar": -0.1079,
+          "equity": 0.9871
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.502,
+          "sharpe": -0.0822,
+          "maxdd": -0.1195,
+          "calmar": -0.1079,
+          "equity": 0.9871
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.506,
+          "sharpe": -0.0275,
+          "maxdd": -0.1148,
+          "calmar": -0.0659,
+          "equity": 0.9925
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5777,
+          "sharpe": 1.4232,
+          "maxdd": -0.0854,
+          "calmar": 1.6961,
+          "equity": 1.1442
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.2669,
+        "A_mm_τ30_abs": 0.2829,
+        "A_mm_τ30_rel": 0.2829,
+        "A_reg_lev_τ50": 0.3068,
+        "A_reg_lev_τ45": 0.3108,
+        "A_reg_dd_τ45": 0.3108,
+        "A_reg_dd_τ50": 0.3068,
+        "A_reg_dd_τ55": 0.3068,
+        "A_reg_sdom_τ45": 0.3108,
+        "A_reg_sdom_τ00": 0.6534
+      }
+    },
+    "DIA": {
+      "n": 250,
+      "frac_up": 0.556,
+      "clase": "leverage débil/neutro",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": -1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.44,
+          "sharpe": -2.3729,
+          "maxdd": -0.2044,
+          "calmar": -0.9962,
+          "equity": 0.7979
+        },
+        "Régimen": {
+          "acc": 0.556,
+          "sharpe": 1.4512,
+          "maxdd": -0.0737,
+          "calmar": 1.9695,
+          "equity": 1.144
+        },
+        "STRATA-U": {
+          "acc": 0.532,
+          "sharpe": 0.7372,
+          "maxdd": -0.0755,
+          "calmar": 0.9149,
+          "equity": 1.0685
+        },
+        "B&H": {
+          "acc": 0.556,
+          "sharpe": 1.4512,
+          "maxdd": -0.0737,
+          "calmar": 1.9695,
+          "equity": 1.144
+        },
+        "S&H": {
+          "acc": 0.444,
+          "sharpe": -1.4727,
+          "maxdd": -0.1495,
+          "calmar": -0.9152,
+          "equity": 0.8642
+        },
+        "ZeroR": {
+          "acc": 0.556,
+          "sharpe": 1.4512,
+          "maxdd": -0.0737,
+          "calmar": 1.9695,
+          "equity": 1.144
+        },
+        "M8": {
+          "acc": 0.484,
+          "sharpe": -0.9934,
+          "maxdd": -0.0968,
+          "calmar": -0.9706,
+          "equity": 0.9067
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.484,
+          "sharpe": -0.9934,
+          "maxdd": -0.0968,
+          "calmar": -0.9706,
+          "equity": 0.9067
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.488,
+          "sharpe": -0.9326,
+          "maxdd": -0.1075,
+          "calmar": -0.826,
+          "equity": 0.9119
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.488,
+          "sharpe": -0.9326,
+          "maxdd": -0.1075,
+          "calmar": -0.826,
+          "equity": 0.9119
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.512,
+          "sharpe": -0.7636,
+          "maxdd": -0.0968,
+          "calmar": -0.7771,
+          "equity": 0.9253
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.508,
+          "sharpe": -0.7984,
+          "maxdd": -0.0968,
+          "calmar": -0.8091,
+          "equity": 0.9223
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.508,
+          "sharpe": -0.7984,
+          "maxdd": -0.0968,
+          "calmar": -0.8091,
+          "equity": 0.9223
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.512,
+          "sharpe": -0.7636,
+          "maxdd": -0.0968,
+          "calmar": -0.7771,
+          "equity": 0.9253
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.508,
+          "sharpe": -0.7812,
+          "maxdd": -0.0983,
+          "calmar": -0.7811,
+          "equity": 0.9238
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.508,
+          "sharpe": -0.5792,
+          "maxdd": -0.0968,
+          "calmar": -0.6061,
+          "equity": 0.9418
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.556,
+          "sharpe": 1.4512,
+          "maxdd": -0.0737,
+          "calmar": 1.9695,
+          "equity": 1.144
+        },
+        "M10": {
+          "acc": 0.468,
+          "sharpe": -1.2076,
+          "maxdd": -0.132,
+          "calmar": -0.8689,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.44,
+          "sharpe": -2.2828,
+          "maxdd": -0.0604,
+          "calmar": -0.9929,
+          "equity": 0.9405
+        },
+        "M8": {
+          "acc": 0.484,
+          "sharpe": 0.1763,
+          "maxdd": -0.0401,
+          "calmar": 0.2249,
+          "equity": 1.009
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.484,
+          "sharpe": 0.1763,
+          "maxdd": -0.0401,
+          "calmar": 0.2249,
+          "equity": 1.009
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.488,
+          "sharpe": 0.2476,
+          "maxdd": -0.0461,
+          "calmar": 0.3,
+          "equity": 1.0137
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.488,
+          "sharpe": -0.9326,
+          "maxdd": -0.1075,
+          "calmar": -0.826,
+          "equity": 0.9119
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.512,
+          "sharpe": -0.7636,
+          "maxdd": -0.0968,
+          "calmar": -0.7771,
+          "equity": 0.9253
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.508,
+          "sharpe": -0.7984,
+          "maxdd": -0.0968,
+          "calmar": -0.8091,
+          "equity": 0.9223
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.508,
+          "sharpe": -0.7984,
+          "maxdd": -0.0968,
+          "calmar": -0.8091,
+          "equity": 0.9223
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.512,
+          "sharpe": -0.7636,
+          "maxdd": -0.0968,
+          "calmar": -0.7771,
+          "equity": 0.9253
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.508,
+          "sharpe": -0.7812,
+          "maxdd": -0.0983,
+          "calmar": -0.7811,
+          "equity": 0.9238
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.508,
+          "sharpe": -0.5792,
+          "maxdd": -0.0968,
+          "calmar": -0.6061,
+          "equity": 0.9418
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.556,
+          "sharpe": 1.4512,
+          "maxdd": -0.0737,
+          "calmar": 1.9695,
+          "equity": 1.144
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.316,
+        "A_mm_τ30_abs": 0.336,
+        "A_mm_τ30_rel": 0.336,
+        "A_reg_lev_τ50": 0.352,
+        "A_reg_lev_τ45": 0.356,
+        "A_reg_dd_τ45": 0.356,
+        "A_reg_dd_τ50": 0.352,
+        "A_reg_dd_τ55": 0.348,
+        "A_reg_sdom_τ45": 0.364,
+        "A_reg_sdom_τ00": 0.708
+      }
+    },
+    "IWM": {
+      "n": 251,
+      "frac_up": 0.5737,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "sign_map": {
+        "Calma": 1.0,
+        "Crisis": 1.0
+      },
+      "fair": {
+        "M5": {
+          "acc": 0.4502,
+          "sharpe": -0.5694,
+          "maxdd": -0.1221,
+          "calmar": -0.4776,
+          "equity": 0.9419
+        },
+        "Régimen": {
+          "acc": 0.5737,
+          "sharpe": 1.7688,
+          "maxdd": -0.0603,
+          "calmar": 3.1167,
+          "equity": 1.1872
+        },
+        "STRATA-U": {
+          "acc": 0.5737,
+          "sharpe": 1.7688,
+          "maxdd": -0.0603,
+          "calmar": 3.1167,
+          "equity": 1.1872
+        },
+        "B&H": {
+          "acc": 0.5737,
+          "sharpe": 1.7688,
+          "maxdd": -0.0603,
+          "calmar": 3.1167,
+          "equity": 1.1872
+        },
+        "S&H": {
+          "acc": 0.4263,
+          "sharpe": -1.7801,
+          "maxdd": -0.1694,
+          "calmar": -0.9898,
+          "equity": 0.8329
+        },
+        "ZeroR": {
+          "acc": 0.5737,
+          "sharpe": 1.7688,
+          "maxdd": -0.0603,
+          "calmar": 3.1167,
+          "equity": 1.1872
+        },
+        "M8": {
+          "acc": 0.4701,
+          "sharpe": 0.24,
+          "maxdd": -0.0771,
+          "calmar": 0.244,
+          "equity": 1.0187
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4701,
+          "sharpe": 0.24,
+          "maxdd": -0.0771,
+          "calmar": 0.244,
+          "equity": 1.0187
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.4701,
+          "sharpe": 0.1833,
+          "maxdd": -0.0822,
+          "calmar": 0.1608,
+          "equity": 1.0132
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.4701,
+          "sharpe": 0.1833,
+          "maxdd": -0.0822,
+          "calmar": 0.1608,
+          "equity": 1.0132
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.4781,
+          "sharpe": 0.0253,
+          "maxdd": -0.0963,
+          "calmar": -0.0252,
+          "equity": 0.9976
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.4781,
+          "sharpe": 0.0253,
+          "maxdd": -0.0963,
+          "calmar": -0.0252,
+          "equity": 0.9976
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5737,
+          "sharpe": 1.7688,
+          "maxdd": -0.0603,
+          "calmar": 3.1167,
+          "equity": 1.1872
+        },
+        "M10": {
+          "acc": 0.4582,
+          "sharpe": -1.0784,
+          "maxdd": -0.1717,
+          "calmar": -0.6254,
+          "equity": null
+        }
+      },
+      "nativo": {
+        "M5": {
+          "acc": 0.4502,
+          "sharpe": -0.5654,
+          "maxdd": -0.0448,
+          "calmar": -0.4481,
+          "equity": 0.98
+        },
+        "M8": {
+          "acc": 0.4701,
+          "sharpe": 0.4123,
+          "maxdd": -0.0368,
+          "calmar": 0.6279,
+          "equity": 1.023
+        },
+        "A_mm_τ50_abs": {
+          "acc": 0.4701,
+          "sharpe": 0.4123,
+          "maxdd": -0.0368,
+          "calmar": 0.6279,
+          "equity": 1.023
+        },
+        "A_mm_τ30_abs": {
+          "acc": 0.4701,
+          "sharpe": 0.3498,
+          "maxdd": -0.0379,
+          "calmar": 0.5102,
+          "equity": 1.0192
+        },
+        "A_mm_τ30_rel": {
+          "acc": 0.4701,
+          "sharpe": 0.1833,
+          "maxdd": -0.0822,
+          "calmar": 0.1608,
+          "equity": 1.0132
+        },
+        "A_reg_lev_τ50": {
+          "acc": 0.4781,
+          "sharpe": 0.0253,
+          "maxdd": -0.0963,
+          "calmar": -0.0252,
+          "equity": 0.9976
+        },
+        "A_reg_lev_τ45": {
+          "acc": 0.4781,
+          "sharpe": 0.0253,
+          "maxdd": -0.0963,
+          "calmar": -0.0252,
+          "equity": 0.9976
+        },
+        "A_reg_dd_τ45": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_dd_τ50": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_dd_τ55": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_sdom_τ45": {
+          "acc": 0.4861,
+          "sharpe": 0.3041,
+          "maxdd": -0.0945,
+          "calmar": 0.2722,
+          "equity": 1.0256
+        },
+        "A_reg_sdom_τ00": {
+          "acc": 0.5737,
+          "sharpe": 1.7688,
+          "maxdd": -0.0603,
+          "calmar": 3.1167,
+          "equity": 1.1872
+        }
+      },
+      "sanity_m8_absdiff": 0.0,
+      "interv": {
+        "A_mm_τ50_abs": 0.1793,
+        "A_mm_τ30_abs": 0.1873,
+        "A_mm_τ30_rel": 0.1873,
+        "A_reg_lev_τ50": 0.1952,
+        "A_reg_lev_τ45": 0.1952,
+        "A_reg_dd_τ45": 0.2032,
+        "A_reg_dd_τ50": 0.2032,
+        "A_reg_dd_τ55": 0.2032,
+        "A_reg_sdom_τ45": 0.2032,
+        "A_reg_sdom_τ00": 0.7211
+      }
+    }
+  },
+  "medias_fair": {
+    "M5": {
+      "acc": 0.4642,
+      "sharpe": -0.8632,
+      "maxdd": -0.1267,
+      "calmar": -0.3732,
+      "equity": 0.9281
+    },
+    "M8": {
+      "acc": 0.5029,
+      "sharpe": 0.4781,
+      "maxdd": -0.0852,
+      "calmar": 0.6721,
+      "equity": 1.0434
+    },
+    "M10": {
+      "acc": 0.5014,
+      "sharpe": -0.1231,
+      "maxdd": -0.1112,
+      "calmar": 0.5848,
+      "equity": null
+    },
+    "STRATA-U": {
+      "acc": 0.5299,
+      "sharpe": 0.7329,
+      "maxdd": -0.0818,
+      "calmar": 1.1118,
+      "equity": 1.0714
+    },
+    "Régimen": {
+      "acc": 0.5373,
+      "sharpe": 0.7699,
+      "maxdd": -0.0915,
+      "calmar": 1.3306,
+      "equity": 1.0745
+    },
+    "B&H": {
+      "acc": 0.5329,
+      "sharpe": 0.8043,
+      "maxdd": -0.0919,
+      "calmar": 1.3098,
+      "equity": 1.0777
+    },
+    "S&H": {
+      "acc": 0.4671,
+      "sharpe": -0.8125,
+      "maxdd": -0.1257,
+      "calmar": -0.3738,
+      "equity": 0.928
+    },
+    "ZeroR": {
+      "acc": 0.5502,
+      "sharpe": 1.1737,
+      "maxdd": -0.0724,
+      "calmar": 1.6736,
+      "equity": 1.1136
+    },
+    "A_mm_τ50_abs": {
+      "acc": 0.5029,
+      "sharpe": 0.4781,
+      "maxdd": -0.0852,
+      "calmar": 0.6721,
+      "equity": 1.0434
+    },
+    "A_mm_τ30_abs": {
+      "acc": 0.5026,
+      "sharpe": 0.4623,
+      "maxdd": -0.0867,
+      "calmar": 0.6704,
+      "equity": 1.0427
+    },
+    "A_mm_τ30_rel": {
+      "acc": 0.5026,
+      "sharpe": 0.4623,
+      "maxdd": -0.0867,
+      "calmar": 0.6704,
+      "equity": 1.0427
+    },
+    "A_reg_lev_τ50": {
+      "acc": 0.5106,
+      "sharpe": 0.4163,
+      "maxdd": -0.0906,
+      "calmar": 0.6087,
+      "equity": 1.0381
+    },
+    "A_reg_lev_τ45": {
+      "acc": 0.5094,
+      "sharpe": 0.4066,
+      "maxdd": -0.0896,
+      "calmar": 0.6076,
+      "equity": 1.0374
+    },
+    "A_reg_dd_τ45": {
+      "acc": 0.5035,
+      "sharpe": 0.2906,
+      "maxdd": -0.0929,
+      "calmar": 0.503,
+      "equity": 1.0274
+    },
+    "A_reg_dd_τ50": {
+      "acc": 0.5032,
+      "sharpe": 0.2883,
+      "maxdd": -0.0935,
+      "calmar": 0.4865,
+      "equity": 1.0269
+    },
+    "A_reg_dd_τ55": {
+      "acc": 0.5023,
+      "sharpe": 0.2539,
+      "maxdd": -0.0961,
+      "calmar": 0.4069,
+      "equity": 1.0236
+    },
+    "A_reg_sdom_τ45": {
+      "acc": 0.5112,
+      "sharpe": 0.4679,
+      "maxdd": -0.0915,
+      "calmar": 0.6714,
+      "equity": 1.0411
+    },
+    "A_reg_sdom_τ00": {
+      "acc": 0.5373,
+      "sharpe": 0.7699,
+      "maxdd": -0.0915,
+      "calmar": 1.3306,
+      "equity": 1.0745
+    }
+  },
+  "cobertura": {
+    "A_mm_τ50_abs": {
+      "acc≥M5": "12/13",
+      "sharpe≥M5": "13/13",
+      "acc≥M8": "13/13",
+      "sharpe≥M8": "13/13",
+      "acc≥STRATA-U": "6/13",
+      "sharpe≥STRATA-U": "6/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "4/13"
+    },
+    "A_mm_τ30_abs": {
+      "acc≥M5": "11/13",
+      "sharpe≥M5": "13/13",
+      "acc≥M8": "10/13",
+      "sharpe≥M8": "8/13",
+      "acc≥STRATA-U": "5/13",
+      "sharpe≥STRATA-U": "7/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "5/13"
+    },
+    "A_mm_τ30_rel": {
+      "acc≥M5": "11/13",
+      "sharpe≥M5": "13/13",
+      "acc≥M8": "10/13",
+      "sharpe≥M8": "8/13",
+      "acc≥STRATA-U": "5/13",
+      "sharpe≥STRATA-U": "7/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "5/13"
+    },
+    "A_reg_lev_τ50": {
+      "acc≥M5": "12/13",
+      "sharpe≥M5": "13/13",
+      "acc≥M8": "13/13",
+      "sharpe≥M8": "7/13",
+      "acc≥STRATA-U": "6/13",
+      "sharpe≥STRATA-U": "6/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "4/13"
+    },
+    "A_reg_lev_τ45": {
+      "acc≥M5": "11/13",
+      "sharpe≥M5": "13/13",
+      "acc≥M8": "11/13",
+      "sharpe≥M8": "7/13",
+      "acc≥STRATA-U": "5/13",
+      "sharpe≥STRATA-U": "6/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "4/13"
+    },
+    "A_reg_dd_τ45": {
+      "acc≥M5": "10/13",
+      "sharpe≥M5": "10/13",
+      "acc≥M8": "10/13",
+      "sharpe≥M8": "7/13",
+      "acc≥STRATA-U": "4/13",
+      "sharpe≥STRATA-U": "5/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "2/13"
+    },
+    "A_reg_dd_τ50": {
+      "acc≥M5": "10/13",
+      "sharpe≥M5": "10/13",
+      "acc≥M8": "10/13",
+      "sharpe≥M8": "7/13",
+      "acc≥STRATA-U": "4/13",
+      "sharpe≥STRATA-U": "4/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "2/13"
+    },
+    "A_reg_dd_τ55": {
+      "acc≥M5": "10/13",
+      "sharpe≥M5": "10/13",
+      "acc≥M8": "10/13",
+      "sharpe≥M8": "6/13",
+      "acc≥STRATA-U": "4/13",
+      "sharpe≥STRATA-U": "4/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "2/13"
+    },
+    "A_reg_sdom_τ45": {
+      "acc≥M5": "10/13",
+      "sharpe≥M5": "10/13",
+      "acc≥M8": "11/13",
+      "sharpe≥M8": "8/13",
+      "acc≥STRATA-U": "5/13",
+      "sharpe≥STRATA-U": "6/13",
+      "acc>ZeroR": "1/13",
+      "sharpe>ZeroR": "2/13"
+    },
+    "A_reg_sdom_τ00": {
+      "acc≥M5": "11/13",
+      "sharpe≥M5": "11/13",
+      "acc≥M8": "11/13",
+      "sharpe≥M8": "9/13",
+      "acc≥STRATA-U": "11/13",
+      "sharpe≥STRATA-U": "11/13",
+      "acc>ZeroR": "0/13",
+      "sharpe>ZeroR": "0/13"
+    }
+  }
+}

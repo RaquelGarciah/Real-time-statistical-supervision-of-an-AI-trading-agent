@@ -161,6 +161,8 @@ def ram_detector(
     agent_size: float,
     regime_probs: dict[str, float],
     thresholds: tuple[float, float, float] | None = None,
+    mode: str = "mismatch",
+    regime_sign_override: float | None = None,
 ) -> DetectorResult:
     """RAM — Regime-Action Mismatch.
 
@@ -186,28 +188,54 @@ def ram_detector(
     calibrados ex-ante por activo (p. ej. el punto donde el régimen se vuelve
     direccionalmente informativo en el histórico). Si es ``None`` se usa la
     tabla cargada de ``cache/models/strata_thresholds.json`` o los defaults.
+
+    ``mode`` selecciona QUÉ mide el score (y por tanto cuándo dispara el
+    override sin tocar su lógica):
+
+    - ``"mismatch"`` (por defecto; comportamiento histórico de M8): masa de
+      probabilidad sobre regímenes en los que la acción es *inconsistente*
+      (short en Calma, long en Crisis). RAM solo dispara cuando el agente
+      **contradice** al régimen; cuando coincide o se abstiene, score=0 y el
+      régimen no se aprovecha.
+    - ``"regime"``: confianza del régimen direccional dominante
+      ``max(P(Calma), P(Crisis))``. RAM dispara cuando el régimen es
+      direccionalmente confiado **con independencia del signo del agente**, de
+      modo que el override-C impone ``regime_sign · bound`` también cuando el
+      agente coincide o se abstiene → explota el régimen en muchos más casos.
+
+    ``regime_sign_override`` inyecta el signo del régimen dominante **calibrado
+    data-driven** por activo (media del estado en calibración), en lugar del
+    default leverage-effect. Cumple CLAUDE.md §9 (prior RAM data-driven, no
+    hardcodeado "Crisis ⇒ short").
     """
     agent_sign = 0 if abs(agent_size) < 1e-9 else (1 if agent_size > 0 else -1)
 
     calm_prob = float(regime_probs.get("Calma", 0.0))
     crisis_prob = float(regime_probs.get("Crisis", 0.0))
+    dominant_is_calm = calm_prob >= crisis_prob
+    p_dominant = calm_prob if dominant_is_calm else crisis_prob
 
-    inconsistency = 0.0
-    if agent_sign < 0:
-        inconsistency += calm_prob
-    if agent_sign > 0:
-        inconsistency += crisis_prob
+    if mode == "regime":
+        score = float(min(1.0, p_dominant))
+    else:
+        inconsistency = 0.0
+        if agent_sign < 0:
+            inconsistency += calm_prob
+        if agent_sign > 0:
+            inconsistency += crisis_prob
+        score = float(min(1.0, inconsistency))
 
-    score = float(min(1.0, inconsistency))
     if thresholds is not None:
         severity = _severity_from_levels(score, *thresholds)
     else:
         severity = _classify_severity_for("ram", score)
-    # Dirección implícita del régimen (leverage effect): Calma → long, Crisis →
-    # short. ``regime_sign`` y ``p_dominant`` los consume la capa de override
-    # para reorientar el sizing del agente hacia el régimen (variantes B/C).
-    regime_sign = 1.0 if calm_prob >= crisis_prob else -1.0
-    p_dominant = calm_prob if regime_sign > 0 else crisis_prob
+    # Dirección implícita del régimen: data-driven si se inyecta, si no el
+    # default leverage (Calma → long, Crisis → short). ``regime_sign`` y
+    # ``p_dominant`` los consume la capa de override para reorientar el sizing.
+    if regime_sign_override is not None and abs(float(regime_sign_override)) > 1e-12:
+        regime_sign = float(np.sign(regime_sign_override))
+    else:
+        regime_sign = 1.0 if dominant_is_calm else -1.0
     return DetectorResult(
         name="ram",
         score=score,
