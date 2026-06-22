@@ -1,0 +1,192 @@
+{
+  "meta": {
+    "seed": 42,
+    "signal_lag": 1,
+    "ticker": "SPY",
+    "scheme": "expanding_anchored_monthly_retrain + H2O AutoML (Purged K-Fold interno)",
+    "encaje": "Universalidad §2 nivel 3: se espera que AutoML NO bata a M10/ZeroR (redescubre).",
+    "pre_registro": "docstring de este fichero; H0 y criterios explícitos."
+  },
+  "por_activo": {
+    "SPY": {
+      "config": {
+        "N0": 150,
+        "step": 21,
+        "embargo": 5,
+        "n_splits_interno": 5,
+        "budget_secs_por_reentreno": 30,
+        "n_test": 251,
+        "n_retrains": 12,
+        "test_span": [
+          "2025-05-09",
+          "2026-05-11"
+        ],
+        "hmm_file": "hmm.pkl"
+      },
+      "metrics_test_span": {
+        "m5": {
+          "accuracy": 0.3665,
+          "auc": null,
+          "sharpe_causal": -3.07,
+          "sharpe_sameday": 0.506
+        },
+        "m8": {
+          "accuracy": 0.4422,
+          "auc": null,
+          "sharpe_causal": -0.464,
+          "sharpe_sameday": 0.987
+        },
+        "m10_xgb": {
+          "accuracy": 0.5339,
+          "auc": 0.5415,
+          "sharpe_causal": 0.503,
+          "sharpe_sameday": 0.013
+        },
+        "automl": {
+          "accuracy": 0.5458,
+          "auc": 0.5057,
+          "sharpe_causal": 1.27,
+          "sharpe_sameday": 0.107
+        },
+        "zeror": {
+          "accuracy": 0.5657,
+          "auc": null,
+          "sharpe_causal": 2.206,
+          "sharpe_sameday": 2.194
+        },
+        "bh": {
+          "accuracy": 0.5657,
+          "auc": null,
+          "sharpe_causal": 2.206,
+          "sharpe_sameday": 2.194
+        }
+      },
+      "tests": {
+        "automl_vs_m5": {
+          "p": 0.0008,
+          "b_ref_solo": 63,
+          "c_automl_solo": 108
+        },
+        "automl_vs_m8": {
+          "p": 0.0271,
+          "b_ref_solo": 51,
+          "c_automl_solo": 77
+        },
+        "automl_vs_m10_xgb": {
+          "p": 0.8357,
+          "b_ref_solo": 45,
+          "c_automl_solo": 48
+        },
+        "automl_vs_zeror": {
+          "p": 0.6251,
+          "b_ref_solo": 36,
+          "c_automl_solo": 31
+        },
+        "automl_sign_vs_0.5": {
+          "k": 137,
+          "n": 251,
+          "p": 0.1648,
+          "ci95": [
+            0.482,
+            0.6085
+          ]
+        }
+      },
+      "delta_sharpe_automl_vs_m5": {
+        "median": 4.3564,
+        "ci95": [
+          -0.1404,
+          8.5348
+        ],
+        "point": 4.3402,
+        "n_obs": 251
+      },
+      "leaders_por_reentreno": [
+        {
+          "retrain_start": "2025-05-09",
+          "leader_id": "GBM_lr_annealing_selection_AutoML_1_20260622_74950_select_model",
+          "metric": 0.5871152842983829,
+          "family": "GBM"
+        },
+        {
+          "retrain_start": "2025-06-10",
+          "leader_id": "DeepLearning_grid_1_AutoML_2_20260622_75022_model_9",
+          "metric": 0.5495761876601616,
+          "family": "DeepLearning"
+        },
+        {
+          "retrain_start": "2025-07-11",
+          "leader_id": "DeepLearning_grid_3_AutoML_3_20260622_75053_model_1",
+          "metric": 0.5931631455399061,
+          "family": "DeepLearning"
+        },
+        {
+          "retrain_start": "2025-08-11",
+          "leader_id": "GBM_grid_1_AutoML_4_20260622_75123_model_22",
+          "metric": 0.5582975264196958,
+          "family": "GBM"
+        },
+        {
+          "retrain_start": "2025-09-10",
+          "leader_id": "StackedEnsemble_BestOfFamily_5_AutoML_5_20260622_75154",
+          "metric": 0.5597826086956522,
+          "family": "StackedEnsemble"
+        },
+        {
+          "retrain_start": "2025-10-09",
+          "leader_id": "GBM_lr_annealing_selection_AutoML_6_20260622_75225_select_model",
+          "metric": 0.5622653316645807,
+          "family": "GBM"
+        },
+        {
+          "retrain_start": "2025-11-07",
+          "leader_id": "StackedEnsemble_AllModels_5_AutoML_7_20260622_75256",
+          "metric": 0.6126046572475145,
+          "family": "StackedEnsemble"
+        },
+        {
+          "retrain_start": "2025-12-09",
+          "leader_id": "DeepLearning_1_AutoML_8_20260622_75328",
+          "metric": 0.58733066844326,
+          "family": "DeepLearning"
+        },
+        {
+          "retrain_start": "2026-01-09",
+          "leader_id": "DeepLearning_grid_2_AutoML_9_20260622_75359_model_4",
+          "metric": 0.6013660942984537,
+          "family": "DeepLearning"
+        },
+        {
+          "retrain_start": "2026-02-10",
+          "leader_id": "GBM_grid_1_AutoML_10_20260622_75430_model_7",
+          "metric": 0.574709784411277,
+          "family": "GBM"
+        },
+        {
+          "retrain_start": "2026-03-13",
+          "leader_id": "GBM_grid_1_AutoML_11_20260622_75501_model_7",
+          "metric": 0.5669538976148923,
+          "family": "GBM"
+        },
+        {
+          "retrain_start": "2026-04-14",
+          "leader_id": "DeepLearning_grid_3_AutoML_12_20260622_75532_model_1",
+          "metric": 0.5825710158883005,
+          "family": "DeepLearning"
+        }
+      ],
+      "familias_ganadoras": [
+        "DeepLearning",
+        "GBM",
+        "StackedEnsemble"
+      ],
+      "verdict": {
+        "automl_bate_zeror": false,
+        "automl_bate_m10": false,
+        "automl_rescata_m5": true,
+        "refuta_universalidad": false,
+        "nota_multiple_testing": "AutoML prueba decenas de modelos; un p<0.10 crudo debe descontarse."
+      }
+    }
+  }
+}
