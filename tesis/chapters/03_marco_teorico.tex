@@ -594,6 +594,146 @@ El disparo se produce con severidad \emph{medium} o superior para GSO y RAM (es 
 
 El GSO acota la magnitud a la banda de volatilidad; el RAM, cuando $\mathrm{RAM}_t \ge \tau$ con $\tau = 0{,}50$, reorienta la posición al signo del régimen con esa banda (el único paso que cambia la dirección); el PSA frena a la mitad ante un cambio brusco de \emph{sizing}. La intervención trabaja solo con el posterior filtrado del régimen. La regla de referencia M8 es exactamente esta configuración, con $\mathrm{signal\_lag} = 1$.
 
+\section{Estrategias supervisadas: aprendizaje sobre las señales}
+\label{sec:estrategias}
+
+La regla M8 combina las tres señales con umbrales fijos, elegidos de antemano. La pregunta natural es si una combinación \emph{aprendida} de esas mismas señales lo haría mejor: en lugar de fijar los umbrales a mano, un modelo puede estimar de los datos cómo pesar la información del agente y de STRATA para anticipar la dirección del día siguiente. Esa es la estrategia M10, y su generalización mediante búsqueda automatizada de modelos es la estrategia AutoML. Ambas se apoyan en el aprendizaje supervisado por árboles potenciados, que esta sección desarrolla con el mismo nivel de detalle que los modelos de los detectores, porque son el objeto central del capítulo de resultados y porque la objeción natural del tribunal (¿el modelo supervisado bate a STRATA o solo la redescubre?) exige tenerlos bien especificados.
+
+\subsection{El problema de aprendizaje supervisado}
+\label{sec:sup-problema}
+
+Cada día disponemos de un vector de características $\mathbf{x}_t \in \mathbb{R}^{d}$ con $d = 22$, que reúne toda la información del día: las ternas de las cinco personalidades del agente (Buffett, Wood, Druckenmiller, Burry y Ackman), cada una con su \emph{signo}, \emph{tamaño} y \emph{confianza}, lo que aporta quince componentes, y las siete lecturas estadísticas de STRATA, a saber las tres señales $\mathrm{RAM}_t, \mathrm{PSA}_t, \mathrm{GSO}_t$, las tres probabilidades de régimen filtradas $\gammaf(\text{Calma}), \gammaf(\text{Estrés}), \gammaf(\text{Crisis})$ y la volatilidad condicional $\sigmat$ del GARCH. La etiqueta es la dirección realizada del día siguiente,
+\[
+y_t = \indic{\rnext > 0} \in \{0, 1\},
+\]
+de modo que el problema es de clasificación binaria causal: a partir de $\mathbf{x}_t$, conocido en $t$, predecir el signo de $\rnext$. Un modelo produce una probabilidad estimada $p(\mathbf{x}_t) = \widehat{\Prob}(y_t = 1 \mid \mathbf{x}_t)$, y la posición asociada es
+\[
+w_t = \operatorname{sign}\!\big(p(\mathbf{x}_t) - \tfrac{1}{2}\big),
+\]
+larga si el modelo da más de un medio a la subida y corta en caso contrario. Esta capa de segundo nivel, que aprende sobre las salidas de un primer nivel (el agente) en lugar de sobre los precios crudos, es un \emph{meta-learner} en el sentido del \emph{meta-labeling} de López de Prado \cite{lopezdeprado2018}.
+
+El ajuste minimiza la entropía cruzada (o \emph{pérdida logística}) sobre el conjunto de entrenamiento $\{(\mathbf{x}_i, y_i)\}_{i=1}^{n}$,
+\[
+L = -\sum_{i=1}^{n} \big[\, y_i \log p(\mathbf{x}_i) + (1 - y_i) \log\big(1 - p(\mathbf{x}_i)\big) \,\big],
+\]
+que es la verosimilitud negativa del modelo de Bernoulli y penaliza con dureza la confianza mal puesta. La familia de funciones $p(\cdot)$ que adoptamos es la de los árboles de decisión potenciados, que describimos a continuación de lo simple a lo compuesto.
+
+\subsection{Árboles de decisión}
+\label{sec:sup-arboles}
+
+La pieza elemental es el árbol de decisión, una función constante a trozos sobre una partición del espacio de características en regiones rectangulares \cite{hastie2009}. Un árbol con $T$ hojas que inducen una partición $\{R_1, \dots, R_T\}$ de $\mathbb{R}^d$ se escribe
+\[
+h(\mathbf{x}) = \sum_{j=1}^{T} w_j\, \indic{\mathbf{x} \in R_j},
+\]
+donde $w_j$ es el valor asignado a la hoja $j$. Las regiones se construyen de forma recursiva y voraz: en cada nodo se elige la variable y el punto de corte que más reducen una medida de impureza, y se repite sobre los dos hijos hasta un criterio de parada. Un árbol aislado tiene poco sesgo pero mucha varianza, y su frontera escalonada rara vez generaliza bien por sí sola; la potencia aparece al combinar muchos árboles, que es lo que hacen el \emph{boosting} y el apilamiento de las secciones siguientes.
+
+\subsection{Gradient boosting}
+\label{sec:sup-gbm}
+
+El \emph{gradient boosting} construye un predictor aditivo como suma de árboles ajustados en etapas \cite{friedman2001}. Partiendo de un valor inicial $F_0$, en la etapa $m$ se añade un árbol $h_m$ y se actualiza
+\[
+F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu\, \gamma_m\, h_m(\mathbf{x}),
+\]
+con $\nu \in (0,1]$ la tasa de aprendizaje (\emph{shrinkage}). La idea de Friedman es interpretar el ajuste como un descenso de gradiente en el espacio de funciones: el árbol $h_m$ se ajusta a los \emph{pseudo-residuos}, el gradiente negativo de la pérdida evaluado en el modelo actual,
+\[
+r_{im} = -\left[\frac{\partial L\big(y_i, F(\mathbf{x}_i)\big)}{\partial F(\mathbf{x}_i)}\right]_{F = F_{m-1}},
+\]
+y el paso $\gamma_m$ se fija por minimización unidimensional de la pérdida en esa dirección. La siguiente proposición especializa los pseudo-residuos al caso logístico, que es el que usamos, y conecta el boosting con la verosimilitud de Bernoulli.
+
+\begin{proposicion}[Pseudo-residuos del boosting logístico]
+\label{prop:gbm-residuo}
+Si $F$ es el logaritmo de la razón de momios y $p = \sigma(F) = (1 + e^{-F})^{-1}$ la probabilidad asociada, el pseudo-residuo de la pérdida logística es la diferencia entre la etiqueta y la probabilidad predicha,
+\[
+r_i = -\frac{\partial L}{\partial F}\bigg|_{F(\mathbf{x}_i)} = y_i - p(\mathbf{x}_i).
+\]
+\end{proposicion}
+
+\begin{proof}
+Con $p = \sigma(F)$ se tiene $\mathrm{d}p/\mathrm{d}F = p(1-p)$. La contribución de un dato a la pérdida es $L = -y\log p - (1-y)\log(1-p)$, de donde
+\[
+\frac{\partial L}{\partial p} = -\frac{y}{p} + \frac{1-y}{1-p} = \frac{p - y}{p(1-p)}.
+\]
+Por la regla de la cadena, $\partial L/\partial F = \big(\partial L/\partial p\big)\,p(1-p) = p - y$, y el pseudo-residuo es su opuesto, $y - p$ \cite{friedman2001}.
+\end{proof}
+
+Así, cada árbol corrige el error de probabilidad acumulado por los anteriores. El \emph{shrinkage} $\nu$ y el submuestreo de filas y columnas en cada etapa (\emph{stochastic gradient boosting}) regularizan el ajuste y reducen el sobreajuste \cite{friedman2001, hastie2009}.
+
+\subsection{XGBoost y el meta-learner M10}
+\label{sec:sup-xgboost}
+
+XGBoost es una realización de gradient boosting que añade una regularización explícita sobre la complejidad de cada árbol y usa la curvatura de la pérdida, no solo su gradiente \cite{chen2016}. El objetivo de la etapa $t$, al incorporar el árbol $f_t(\mathbf{x}) = w_{q(\mathbf{x})}$ definido por su estructura $q$ y sus pesos de hoja $w$, es
+\[
+\mathcal{L}^{(t)} = \sum_{i=1}^{n} l\big(y_i, \widehat{y}_i^{(t-1)} + f_t(\mathbf{x}_i)\big) + \Omega(f_t),
+\qquad
+\Omega(f) = \gamma\, T + \tfrac{1}{2}\lambda \sum_{j=1}^{T} w_j^2,
+\]
+donde $\gamma$ penaliza el número de hojas y $\lambda$ la magnitud de los pesos. Desarrollando la pérdida hasta segundo orden en torno a la predicción acumulada, con gradiente $g_i = \partial_{\widehat{y}}\, l(y_i, \widehat{y}_i^{(t-1)})$ y hessiana $h_i = \partial^2_{\widehat{y}}\, l(y_i, \widehat{y}_i^{(t-1)})$, el problema por hoja se vuelve cuadrático y admite solución cerrada.
+
+\begin{proposicion}[Pesos óptimos y ganancia de una división]
+\label{prop:xgb-score}
+Fijada la estructura $q$, con conjuntos de instancias por hoja $I_j = \{i : q(\mathbf{x}_i) = j\}$ y sumas $G_j = \sum_{i \in I_j} g_i$, $H_j = \sum_{i \in I_j} h_i$, el peso que minimiza la aproximación de segundo orden del objetivo y el valor óptimo correspondiente son
+\[
+w_j^{\star} = -\frac{G_j}{H_j + \lambda},
+\qquad
+\widetilde{\mathcal{L}}^{\star}(q) = -\frac{1}{2}\sum_{j=1}^{T} \frac{G_j^2}{H_j + \lambda} + \gamma\, T.
+\]
+En consecuencia, dividir una hoja en dos descendientes $L$ y $R$ reduce el objetivo en
+\[
+\mathrm{Gan} = \frac{1}{2}\left[\frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda}\right] - \gamma,
+\]
+que es el criterio con el que se eligen los cortes.
+\end{proposicion}
+
+\begin{proof}
+La expansión de Taylor de segundo orden de la pérdida y el descarte del término constante $l(y_i, \widehat{y}_i^{(t-1)})$ dan
+\[
+\widetilde{\mathcal{L}}^{(t)} = \sum_{i=1}^{n} \big[\, g_i f_t(\mathbf{x}_i) + \tfrac{1}{2} h_i f_t(\mathbf{x}_i)^2 \,\big] + \Omega(f_t).
+\]
+Como $f_t(\mathbf{x}_i) = w_j$ para todo $i \in I_j$, se agrupa por hoja,
+\[
+\widetilde{\mathcal{L}}^{(t)} = \sum_{j=1}^{T} \Big[\, G_j\, w_j + \tfrac{1}{2}(H_j + \lambda)\, w_j^2 \,\Big] + \gamma\, T.
+\]
+Para la pérdida logística, la Proposición~\ref{prop:gbm-residuo} da $g_i = p_i - y_i$ y un cálculo análogo $h_i = p_i(1 - p_i) \ge 0$, luego $H_j + \lambda > 0$ y cada sumando es una parábola convexa en $w_j$. Su mínimo está en $w_j^{\star} = -G_j/(H_j + \lambda)$, con valor $-\tfrac{1}{2} G_j^2/(H_j + \lambda)$; sumando sobre las hojas se obtiene $\widetilde{\mathcal{L}}^{\star}(q)$. La ganancia de una división es la diferencia entre el objetivo de la hoja madre y el de los dos hijos, que arroja la expresión del enunciado \cite{chen2016}.
+\end{proof}
+
+El \emph{meta-learner} M10 del trabajo es XGBoost con esta especificación y los hiperparámetros fijados en la calibración: trescientos árboles de profundidad cuatro, tasa de aprendizaje $\nu = 0{,}05$, submuestreo de filas y columnas al ochenta por ciento, regularización $\lambda = 1$ y pérdida logística. Para rebajar la varianza del estimador, M10 promedia diez ajustes que solo difieren en la semilla de aleatorización,
+\[
+\bar{p}(\mathbf{x}) = \frac{1}{B}\sum_{b=1}^{B} p^{(b)}(\mathbf{x}), \qquad B = 10,
+\]
+una forma de agregación cuya reducción de varianza es la del promediado de predictores \cite{breiman1996, hastie2009}: si los $B$ ajustes tienen varianza $\tau^2$ y correlación media $\varrho$, la varianza del promedio es $\varrho\,\tau^2 + (1-\varrho)\,\tau^2/B$, menor que $\tau^2$ siempre que la correlación no sea perfecta. La posición de M10 es $w_t = \operatorname{sign}\!\big(\bar{p}(\mathbf{x}_t) - \tfrac{1}{2}\big)$. El entrenamiento sigue el protocolo \emph{walk-forward} de la Sección~\ref{sec:cpcv-walkforward}, con ventana expandible y embargo $1$: cada modelo aprende solo del pasado y predice el tramo siguiente.
+
+\subsection{Apilamiento y super learner}
+\label{sec:sup-stacking}
+
+El apilamiento (\emph{stacking}) combina varios modelos base entrenando un segundo modelo, el \emph{metalearner}, sobre las predicciones que aquellos hacen fuera de muestra por validación cruzada \cite{wolpert1992}. Entrenar el metalearner sobre predicciones \emph{out-of-fold}, y no sobre las del propio ajuste, evita que un modelo base que sobreajusta arrastre al combinador. El \emph{super learner} es la formalización de esta idea por van der Laan, Polley y Hubbard \cite{vanderlaan2007}. El metalearner busca la combinación convexa de los modelos base que minimiza el riesgo de validación cruzada, y goza de una propiedad oráculo: asintóticamente, su riesgo es tan bueno como el del mejor de los modelos base, o el de su mejor combinación, sin conocerlo de antemano. Esta es exactamente la pieza \emph{StackedEnsemble} que la búsqueda automatizada de la siguiente sección apila sobre sus modelos base.
+
+\subsection{Búsqueda automatizada: H2O AutoML}
+\label{sec:sup-automl}
+
+La estrategia AutoML relaja la elección de la familia del modelo: en vez de fijar XGBoost de antemano, deja que una búsqueda automatizada entrene y compare modelos de varias familias y devuelva el mejor. Usamos H2O AutoML \cite{ledell2020}, restringido a tres familias por activo: árboles potenciados (GBM), XGBoost y el apilamiento (StackedEnsemble) sobre los anteriores. Cada modelo se evalúa por validación cruzada purgada (la $K$-\emph{fold} con \emph{fold\_column} y embargo de la Sección~\ref{sec:cpcv}, no la convencional), y el \emph{leader} es el de mayor AUC. La posición de AutoML es, igual que la de M10, $w_t = \operatorname{sign}\!\big(p_1(\mathbf{x}_t) - \tfrac{1}{2}\big)$, con $p_1$ la probabilidad del \emph{leader}, y se reentrena con el mismo \emph{walk-forward} causal.
+
+La búsqueda se acota por número fijo de modelos y semilla fija, no por presupuesto de tiempo, y esa elección es la que hace el resultado reproducible y defendible: con un límite temporal, el conjunto de modelos explorado depende de la carga de la máquina y el \emph{leader} cambia entre ejecuciones con la misma semilla, lo que invalidaría cualquier cifra reportada; con número fijo de modelos y semilla, la búsqueda es determinista. El papel metodológico de AutoML es servir de control de universalidad (Capítulo~\ref{cap:marco-practico}): si ni siquiera una búsqueda sobre varias familias bate de forma robusta a las referencias triviales, se refuerza la conclusión de que la señal aprovechable ya está capturada con independencia de la familia de modelos elegida.
+
+\subsection{Catálogo de estrategias}
+\label{sec:estrategias-catalogo}
+
+Todas las estrategias evaluadas son funciones que devuelven una posición $w_t$ contra $\rnext$ con $\mathrm{signal\_lag} = 1$; la probabilidad $p_1$ de los modelos supervisados es un paso intermedio.
+
+\begin{definicion}[Estrategias evaluadas]
+\label{def:estrategias}
+Sobre el mismo periodo de prueba y con causalidad $\mathrm{signal\_lag} = 1$:
+\begin{itemize}
+\item \textbf{M5} (agente): la posición cruda del agente, $w_t = \operatorname{sign}(\text{tamaño}_t)$, sin supervisión.
+\item \textbf{M8} (intervención): la regla determinista de umbrales fijos de la Definición~\ref{def:m8}, $w_t = w_t^{\star}$.
+\item \textbf{M10} (meta-learner): el promedio de diez XGBoost sobre las $22$ características, $w_t = \operatorname{sign}(\bar{p}(\mathbf{x}_t) - \tfrac{1}{2})$.
+\item \textbf{AutoML}: el \emph{leader} de la búsqueda H2O sobre GBM/XGBoost/StackedEnsemble, $w_t = \operatorname{sign}(p_1(\mathbf{x}_t) - \tfrac{1}{2})$.
+\item \textbf{ZeroR}: la referencia trivial sin habilidad, que predice la clase mayoritaria del pasado estricto, $w_t = \operatorname{sign}\!\big(\tfrac{1}{t-1}\sum_{s < t} y_s - \tfrac{1}{2}\big)$, calculada de forma causal.
+\item \textbf{B\&H} (\emph{buy and hold}): comprar y mantener, $w_t \equiv 1$.
+\end{itemize}
+\end{definicion}
+
+Las dos últimas son las referencias frente a las que cualquier estrategia con pretensión de habilidad debe demostrar valor: ZeroR fija el techo direccional que se alcanza sin información alguna, y B\&H, la exposición pasiva al activo. El capítulo de resultados contrasta M5, M8, M10 y AutoML contra ambas y entre sí.
+
 \section{Métricas de evaluación}
 \label{sec:metricas}
 
