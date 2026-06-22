@@ -256,8 +256,107 @@ code(r"""cob = pd.DataFrame(COB).T
 cob = cob[["acc≥M5", "acc≥M8", "sharpe≥M8", "acc≥STRATA-U", "sharpe≥STRATA-U", "acc>ZeroR", "sharpe>ZeroR"]]
 print(cob.to_string())""")
 
-# ── §7 Conclusión ──
-md(r"""## §7. Conclusión (verificada, sin adornos)
+# ── §7 Anatomía: Régimen vs STRATA-U, grupos, crisis y SHAP ──
+md(r"""## §7. Anatomía: cuándo funciona el régimen y de qué depende M10
+
+Consolida cuatro análisis (todos EXPLORATORIOS, leídos de sus JSON):
+**7.1** Régimen (regla simple) vs STRATA-U (regla elaborada); **7.2** los tres tipos de activo
+(leverage normal / inverso-estable / prior-flip); **7.3** backtest largo con crisis reales (sin agente);
+**7.4** de qué features depende M10 por tipo de activo (SHAP).""")
+
+code(r"""# JSON extra para esta sección
+LEV = json.load(open("outputs/experiments/leverage_screen.json"))["por_activo"]
+RL  = json.load(open("outputs/experiments/regime_largo.json"))
+SH  = json.load(open("outputs/experiments/m10_shap_priorflip.json"))
+GRP = {"leverage-effect": ["SPY","QQQ","XLK","BAC","DIA","XLF"],
+       "inverso-estable": ["NVDA","TSLA","MARA","ROKU"],
+       "prior-flip": ["MSTR","SMCI"]}
+print("cargados: leverage_screen, regime_largo, m10_shap_priorflip")""")
+
+md(r"""### 7.1 Régimen (simple) vs STRATA-U (elaborada)
+
+STRATA-U añade a Régimen: gate de fiabilidad del régimen, fallback de drift y **tilt del agente donde es
+fiable**. En este OOS corto (n≈250) esa complejidad **resta de media** — gana la regla simple.""")
+
+code(r"""ru = pd.DataFrame({"Régimen": {a: PA[a]["fair"]["Régimen"]["acc"] for a in ASSETS},
+                   "STRATA-U": {a: PA[a]["fair"]["STRATA-U"]["acc"] for a in ASSETS}}).loc[ASSETS]
+ru["gana"] = np.where(ru["Régimen"] > ru["STRATA-U"] + 1e-9, "Régimen",
+                      np.where(ru["STRATA-U"] > ru["Régimen"] + 1e-9, "STRATA-U", "="))
+ru.loc["— MEDIA —"] = [MED["Régimen"]["acc"], MED["STRATA-U"]["acc"], ""]
+with pd.option_context("display.float_format", lambda v: f"{v:.3f}"):
+    print(ru)
+print("\nMedias — Régimen: acc %.3f Sh %.2f Calmar %.2f | STRATA-U: acc %.3f Sh %.2f Calmar %.2f" % (
+    MED["Régimen"]["acc"], MED["Régimen"]["sharpe"], MED["Régimen"]["calmar"],
+    MED["STRATA-U"]["acc"], MED["STRATA-U"]["sharpe"], MED["STRATA-U"]["calmar"]))
+print("STRATA-U solo gana donde hay prior-flip (MSTR/SMCI): su gate apaga el régimen malo.")""")
+
+md(r"""### 7.2 Los tres tipos de activo (media de retorno por régimen en calibración)
+
+**Normal (leverage effect):** Crisis con media negativa → el régimen marca dirección (corto en Crisis).
+**Inverso-estable:** Crisis positivo, pero consistente → `s_dom` lo aprende y funciona igual.
+**Prior-flip:** el signo se invierte entre calibración y OOS → falla (falsación pre-registrada).""")
+
+code(r"""rows_grp = []
+for g, tks in GRP.items():
+    for tk in tks:
+        mr = LEV[tk]["media_regimen"]
+        rows_grp.append({"grupo": g, "activo": tk, "Calma%": round(mr["Calma"]*100, 3),
+                         "Crisis%": round(mr["Crisis"]*100, 3),
+                         "Régimen_acc_OOS": PA[tk]["fair"]["Régimen"]["acc"]})
+gt = pd.DataFrame(rows_grp).set_index(["grupo", "activo"])
+with pd.option_context("display.float_format", lambda v: f"{v:.3f}"):
+    print(gt)
+print("\nClave: lo que separa éxito de fracaso NO es normal-vs-inverso (s_dom maneja ambos), "
+      "sino ESTABLE-vs-prior-flip (el signo se sostiene calibración→OOS o no).")""")
+
+md(r"""### 7.3 Backtest LARGO con crisis reales (2020–2024, sin agente, causal)
+
+Régimen/B&H/ZeroR no dependen del agente → ventana con COVID-2020 y bear-2022. **¿Bate el régimen a
+B&H/ZeroR con crisis dentro? NO de media** — pero **amortigua los crashes**, y el control de drawdown lo
+da el **vol-target**, no la dirección del régimen.""")
+
+code(r"""med = RL["medias"]
+tab = pd.DataFrame(med).T[["acc", "sharpe", "maxdd", "calmar", "equity"]]
+with pd.option_context("display.float_format", lambda v: f"{v:.3f}"):
+    print("MEDIAS test 2020-2024 (vol-target; B&H_1x = comprar y mantener real):")
+    print(tab)
+print("\nRégimen bate a B&H:", RL["cobertura_regimen"]["B&H"], "| a ZeroR:", RL["cobertura_regimen"]["ZeroR"])
+print("\nDesglose por crisis (Régimen vs B&H, vol-target):")
+for name in RL["meta"]["crisis"]:
+    rr = [RL["por_activo"][t]["crisis"].get(name) for t in RL["meta"]["activos"]
+          if name in RL["por_activo"][t].get("crisis", {})]
+    if rr:
+        import numpy as _np
+        print(f"  {name:11s} Régimen ret={_np.mean([x['Régimen']['ret'] for x in rr]):+.1%} "
+              f"maxDD={_np.mean([x['Régimen']['maxdd'] for x in rr]):.1%}  |  "
+              f"B&H ret={_np.mean([x['B&H']['ret'] for x in rr]):+.1%} "
+              f"maxDD={_np.mean([x['B&H']['maxdd'] for x in rr]):.1%}")
+print(f"\nControl de drawdown = vol-target: B&H_1x maxDD {med['B&H_1x']['maxdd']:.0%} "
+      f"vs vol-target {med['B&H']['maxdd']:.0%}.")""")
+
+md(r"""### 7.4 ¿De qué features depende M10? (SHAP, por tipo de activo)
+
+Hipótesis tentadora: en prior-flip M10 se apoyaría en el agente. **No.** El perfil es casi idéntico en
+los tres grupos: domina el bloque **régimen**, y las features informativas son las de **STRATA**. M10
+**redescubre la señal de STRATA**, no una alternativa. (Caveat: prior-flip n=2, importancia in-sample.)""")
+
+code(r"""pg = SH["por_grupo"]
+sb = pd.DataFrame({g: pg[g]["bloques"] for g in pg}).T[["agente", "régimen", "volatilidad", "psa"]]
+print("Peso por bloque (|SHAP| medio normalizado):")
+with pd.option_context("display.float_format", lambda v: f"{v:.2f}"):
+    print(sb)
+fig, ax = plt.subplots(figsize=(9, 4))
+sb.plot(kind="bar", stacked=True, ax=ax, color=["#9e9e9e", "#c0392b", "#2c7fb8", "#f0a830"])
+ax.set_ylabel("peso |SHAP| (normalizado)"); ax.set_title("M10: peso por bloque de features, por tipo de activo")
+ax.legend(loc="center left", bbox_to_anchor=(1, 0.5)); ax.set_xticklabels(sb.index, rotation=0)
+plt.tight_layout(); plt.show()
+for g in pg:
+    print(f"  {g:16s} top: " + ", ".join(f"{f}={s:.2f}" for f, s in pg[g]["top6"][:4]))
+print("\nLas features informativas son STRATA (garch_sigma, psa/ram_score, probas régimen) en TODOS "
+      "los grupos → coherente con el control de universalidad (CLAUDE.md §3).")""")
+
+# ── §8 Conclusión ──
+md(r"""## §8. Conclusión (verificada, sin adornos)
 
 1. **Sí se puede unificar M8 y STRATA-U en UNA sola estrategia parametrizada** del mismo supervisor
    (override-C intacto). El **dial es τ** (la tasa de intervención): M8 = extremo conservador (agente
