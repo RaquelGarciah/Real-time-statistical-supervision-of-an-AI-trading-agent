@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "scheme": "Optuna en validación interna del burn-in (deployable), WF embargo=1 ensemble 10",
+    "no_phacking": "hiperparámetros desde burn-in; semilla NO elegida por OOS (no deployable)",
+    "seed": 42
+  },
+  "optuna": {
+    "best_params": {
+      "n_estimators": 250,
+      "max_depth": 6,
+      "learning_rate": 0.08960785365368121,
+      "subsample": 0.8394633936788146,
+      "colsample_bytree": 0.6624074561769746,
+      "reg_lambda": 0.18408992080552522,
+      "min_child_weight": 1,
+      "gamma": 0.8661761457749352
+    },
+    "best_val_acc": 0.6,
+    "n_trials": 80,
+    "val_n": 45
+  },
+  "table": {
+    "optuna": {
+      "accuracy": 0.5179,
+      "sharpe": 0.265,
+      "max_dd": -0.107,
+      "calmar": 0.24,
+      "equity_final": 1.0256
+    },
+    "m5": {
+      "accuracy": 0.3665,
+      "sharpe": -3.07,
+      "max_dd": -0.3025,
+      "calmar": -0.999,
+      "equity_final": 0.699
+    },
+    "m8": {
+      "accuracy": 0.4422,
+      "sharpe": -0.464,
+      "max_dd": -0.152,
+      "calmar": -0.39,
+      "equity_final": 0.941
+    },
+    "zeror": {
+      "accuracy": 0.5657,
+      "sharpe": 2.206,
+      "max_dd": -0.0982,
+      "calmar": 3.102,
+      "equity_final": 1.3032
+    },
+    "bh": {
+      "accuracy": 0.5657,
+      "sharpe": 2.206,
+      "max_dd": -0.0982,
+      "calmar": 3.102,
+      "equity_final": 1.3032
+    }
+  },
+  "optuna_vs_zeror": {
+    "p": 0.3193,
+    "zeror_solo": 67,
+    "optuna_solo": 55
+  },
+  "optuna_sign": {
+    "k": 130,
+    "n": 251,
+    "p": 0.6137
+  },
+  "bate_zeror": false
+}
