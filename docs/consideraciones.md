@@ -1,0 +1,18 @@
+## ALGUNAS CONSIDERACIONES TRATADAS EN LAS ULTIMAS DECISIONES
+# EL LIMITE DE LA SIGNIFICANCIA DE LA VALIDACIÓN ES LA MUESTRA, SE PODRÍA HACER ALGUNA TÉCNICA DE DATA AUGMENTATION?
+El límite fundamental (por qué es imposible)
+Cualquier dato sintético se genera con un modelo ajustado a tus 250 días reales. Por el principio de procesamiento de datos: una transformación de los datos no puede contener más información que los datos originales. Si tu generador no tiene estructura direccional (porque lo ajustas a datos donde la dirección es ~Bernoulli), el sintético tampoco la tendrá → tu estrategia seguirá sin batir a ZeroR. Y si el generador SÍ mete estructura, entonces estarías testando tu estrategia contra tus propias suposiciones, no contra el mercado — circular. El tribunal pregunta: "¿tu generador sintético es un modelo fiel de la predictibilidad real del mercado? ¿Cómo lo validas?" — y no puedes, porque esa es justo la pregunta que intentas responder.
+
+Por qué el data augmentation NO da potencia real
+La potencia estadística sale de observaciones independientes reales. Si generas muestra sintética (bootstrap repetido, ruido, GAN, ventanas solapadas…) a partir de los mismos 250 días, no añades información nueva — son copias/derivados de los mismos datos. El McNemar y el sign test asumen independencia; meterles 2500 "días" sintéticos correlacionados con los 250 reales infla n artificialmente y da p-valores pequeños falsos. Es pseudoreplicación: el clásico error que un tribunal detecta al instante ("¿esos 2500 son independientes? No → tu significancia es ficticia").
+
+Matiz: el bootstrap estacionario sí es válido, pero para estimar el IC del estimador de 250 días (lo usamos en ΔSharpe), no para aumentar la potencia. No convierte un no-significativo en significativo — y si lo hiciera, sería señal de mal uso.
+
+Lo que SÍ añade potencia real (información nueva)
+Agrupar (pool) los activos reales en un único test pareado: 15 × ~250 ≈ 3750 días reales → más potencia. Esto es legítimo (son activos distintos = información nueva), pero hay que corregir la correlación entre activos (bootstrap por bloques/clustered, no pooling naïve que vuelve a inflar). Ya lo hiciste (tu memoria accuracy-techo-zeror-oos: pooled sobre el panel → ZeroR sigue imbatido). Así que esa vía ya está agotada y honesta.
+Más tiempo real: extender el OOS según pasan los meses. Información nueva de verdad, pero es esperar.
+Un OOS histórico más largo con una crisis daría potencia direccional — pero reintroduce el look-ahead del LLM (tu OOS empieza post-cutoff justo para evitar eso). No se puede sin contaminar.
+El encuadre honesto (y defendible)
+La no-significancia no es un bug que parchear con augmentation — es el hallazgo: con la muestra real disponible, el efecto (si existe) es pequeño frente al ruido. Lo defendible es reportarlo como límite de potencia ("nominal pero no significativo a n≈250; significancia = trabajo futuro con muestra más larga") — que de hecho te blinda: tú llevas la limitación, no te pillan con ella. Lo contrario (augmentation para sacar p<0.05) sería exactamente el fraude que tu proyecto pre-registra para no cometer.
+
+En una frase: no se fabrica significancia; se consigue con datos reales nuevos (pool de activos —ya hecho, ZeroR sigue— o más tiempo) o se reporta honestamente la falta de potencia como límite. ¿Quieres que deje esto escrito como nota metodológica de defensa ("por qué no hacemos data augmentation para la significancia") en chats/automl_m10.md?
