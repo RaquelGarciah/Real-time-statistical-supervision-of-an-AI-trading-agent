@@ -160,3 +160,60 @@ cambios de régimen explotables en el OOS y la fuerza del leverage effect por ac
    pero dado que el régimen puro ya no mejora robustamente, no parece prioritario.
 4. **xcorr_kstar** es la métrica de lag más ambigua (el whipsaw de rv5 infla correlaciones líder
    espurias). Apoyarse en onset_lag + detección + whipsaw, que son más limpias.
+
+---
+
+## 5. Seguimiento: el régimen como DIAL DE RIESGO (no interruptor de dirección)
+
+Cerrado el lag, la pregunta pasa a ser **cómo mejorar la estrategia**. El diagnóstico (§3) dice que en
+un OOS con tendencia no se puede batir a "siempre largo" en dirección. Pero el régimen detecta los
+drawdowns con precisión ~0,93 → hipótesis: usarlo para **reducir exposición en Crisis** (manteniéndose
+largo) + vol-target debería mejorar el **riesgo-ajustado** (Sharpe/Calmar/drawdown), no la dirección.
+
+Artefacto: `experiments/regime_risk_overlay.py` → `outputs/experiments/regime_risk_overlay.json`.
+Estrategias (todas largas; difieren en el TAMAÑO; σ GARCH causal, vol-target anual 15%, régimen
+filtrado): **B&H** · **VolTgt** (vol-target) · **Overlay50** (×0,5 en Crisis) · **OverlayFlat** (a
+liquidez en Crisis) · **RegFlip** (direccional, referencia).
+
+| | B&H | VolTgt | Overlay50 | OverlayFlat | RegFlip |
+|---|---:|---:|---:|---:|---:|
+| Sharpe medio | **0,474** | 0,340 | 0,236 | 0,118 | 0,274 |
+| maxdd medio | −0,459 | −0,183 | **−0,170** | −0,171 | −0,189 |
+| Sharpe > B&H | — | 1/13 | 1/13 | 2/13 | 4/13 |
+| Calmar > B&H | — | 7/13 | 7/13 | 4/13 | 6/13 |
+| **maxdd mejor que B&H** | — | **13/13** | **13/13** | **13/13** | **13/13** |
+| pnlΔ vs B&H (p) | — | 0,66 | 0,69 | 0,71 | 0,66 |
+
+Por activo (B&H vs Overlay50, Sharpe/maxdd/equity):
+
+| activo | crisis_OOS | B&H | Overlay50 | OverlayFlat |
+|---|---:|---|---|---|
+| SPY * | 0,07 | +0,97 / −0,19 / 1,29 | +0,81 / −0,14 / 1,17 | +0,80 / −0,12 / 1,17 |
+| NVDA | 0,10 | +0,73 / −0,41 / 1,47 | +0,69 / −0,13 / 1,16 | +0,63 / −0,14 / 1,15 |
+| BAC | 0,05 | +0,85 / −0,28 / 1,37 | +0,66 / −0,15 / 1,16 | +0,66 / −0,13 / 1,16 |
+| TSLA | 0,29 | +0,42 / −0,58 / 1,13 | −0,09 / −0,17 / 0,97 | −0,53 / −0,21 / 0,88 |
+| XLE | 0,06 | +0,67 / −0,21 / 1,25 | **+0,68 / −0,13 / 1,17** | **+0,81 / −0,12 / 1,20** |
+| UNG | 0,48 | −0,28 / −0,64 / 0,53 | −0,65 / −0,18 / **0,86** | −0,95 / −0,21 / 0,83 |
+| MSTR | 0,39 | −0,23 / −0,85 / 0,39 | −1,21 / −0,31 / **0,76** | −1,92 / −0,34 / 0,68 |
+| SMCI | 0,72 | −0,26 / −0,81 / 0,23 | −0,35 / −0,19 / **0,89** | −0,30 / −0,15 / **0,91** |
+| ROKU | 0,05 | +0,62 / −0,47 / 1,38 | +0,55 / −0,12 / 1,11 | +0,54 / −0,12 / 1,11 |
+| MARA | 0,03 | −0,10 / −0,83 / 0,46 | −0,11 / −0,18 / **0,97** | −0,10 / −0,18 / **0,97** |
+| QQQ * | 0,07 | +1,12 / −0,23 / 1,45 | +0,89 / −0,15 / 1,22 | +0,83 / −0,14 / 1,20 |
+| DIA * | 0,06 | +0,84 / −0,16 / 1,22 | +0,59 / −0,15 / 1,12 | +0,49 / −0,16 / 1,10 |
+| IWM * | 0,06 | +0,81 / −0,28 / 1,30 | +0,60 / −0,21 / 1,15 | +0,56 / −0,20 / 1,13 |
+
+**Lectura.** (1) El de-risk recorta el drawdown en **13/13** (~63% de media). (2) En los activos que se
+desplomaron **preserva capital** (equity SMCI 0,23→0,89, MARA 0,46→0,97, UNG 0,53→0,86, MSTR
+0,39→0,76). (3) Pero el **Sharpe baja** (1/13 bate a B&H): en un OOS de recuperación, lo que cae
+también rebota, y de-riskear te quita el rebote. No hay comida gratis en retorno.
+
+**Veredicto.** Ningún ajuste (lag, regla, sizing) bate al baseline en retorno/accuracy en este OOS:
+es el dato (tendencia sin crisis sostenida), no la técnica. Lo único robusto que aporta STRATA es
+**control de drawdown** (13/13). La aportación honesta y defendible NO es alfa direccional sino
+**gestión de riesgo**: convertir drawdowns catastróficos en manejables con la fortaleza real del
+régimen (detección de Crisis, precisión 0,93). La métrica correcta para la técnica es
+drawdown/Calmar/capital preservado en los activos que caen, no accuracy contra un mercado alcista.
+
+**Próximo refinamiento candidato.** De-risk **solo en Crisis sin vol-target permanente** (mantener
+tamaño pleno en Calma → preserva el Sharpe de los índices, recorta solo las caídas). No cambiará el
+titular (no hay alfa de retorno posible aquí) pero acota mejor el coste en Sharpe de los alcistas.

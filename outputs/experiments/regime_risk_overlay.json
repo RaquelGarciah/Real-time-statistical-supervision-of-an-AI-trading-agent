@@ -1,0 +1,916 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "XLE",
+      "UNG",
+      "MSTR",
+      "SMCI",
+      "ROKU",
+      "MARA",
+      "QQQ",
+      "DIA",
+      "IWM"
+    ],
+    "n_activos": 13,
+    "estrategias": [
+      "B&H",
+      "VolTgt",
+      "Overlay50",
+      "OverlayFlat",
+      "RegFlip"
+    ],
+    "target_vol_ann": 0.15,
+    "cap": 1.0,
+    "seed": 42,
+    "signal_lag": 1,
+    "objetivo": "RIESGO-AJUSTADO (Sharpe/Calmar/maxdd) vs B&H; dirección = siempre larga",
+    "tesis": "el régimen como dial de riesgo (de-risk en Crisis) + vol-target, no como interruptor de dirección. Régimen filtrado causal + σ GARCH causal.",
+    "nota": "EXPLORATORIO (docs/). No toca caché canónica. DSR n_trials=nº estrategias."
+  },
+  "resumen_vs_BH": {
+    "VolTgt": {
+      "sharpe_gt_BH": "1/13",
+      "calmar_gt_BH": "7/13",
+      "maxdd_mejor_BH": "13/13",
+      "pnl_vs_BH": {
+        "delta": -0.00020275012845334163,
+        "ci_low": -0.0011882635932112362,
+        "ci_high": 0.00079120540086838,
+        "p_greater": 0.6555,
+        "p_two": 0.689,
+        "n_pairs": 5558,
+        "n_dates": 429,
+        "n_eff": 429.0
+      },
+      "sharpe_medio": 0.34,
+      "maxdd_medio": -0.1833
+    },
+    "Overlay50": {
+      "sharpe_gt_BH": "1/13",
+      "calmar_gt_BH": "7/13",
+      "maxdd_mejor_BH": "13/13",
+      "pnl_vs_BH": {
+        "delta": -0.00025347268081074207,
+        "ci_low": -0.0012859940391358687,
+        "ci_high": 0.0008101595466997176,
+        "p_greater": 0.689,
+        "p_two": 0.622,
+        "n_pairs": 5558,
+        "n_dates": 429,
+        "n_eff": 429.0
+      },
+      "sharpe_medio": 0.2362,
+      "maxdd_medio": -0.1702
+    },
+    "OverlayFlat": {
+      "sharpe_gt_BH": "2/13",
+      "calmar_gt_BH": "4/13",
+      "maxdd_mejor_BH": "13/13",
+      "pnl_vs_BH": {
+        "delta": -0.0003042184471710391,
+        "ci_low": -0.001399509728768599,
+        "ci_high": 0.0008025874997566098,
+        "p_greater": 0.7115,
+        "p_two": 0.577,
+        "n_pairs": 5558,
+        "n_dates": 429,
+        "n_eff": 429.0
+      },
+      "sharpe_medio": 0.1178,
+      "maxdd_medio": -0.1705
+    },
+    "RegFlip": {
+      "sharpe_gt_BH": "4/13",
+      "calmar_gt_BH": "6/13",
+      "maxdd_mejor_BH": "13/13",
+      "pnl_vs_BH": {
+        "delta": -0.00024812290554426656,
+        "ci_low": -0.0013844646028720587,
+        "ci_high": 0.0009105332284059477,
+        "p_greater": 0.664,
+        "p_two": 0.672,
+        "n_pairs": 5558,
+        "n_dates": 429,
+        "n_eff": 429.0
+      },
+      "sharpe_medio": 0.2741,
+      "maxdd_medio": -0.1887
+    },
+    "B&H": {
+      "sharpe_medio": 0.4739,
+      "maxdd_medio": -0.459
+    }
+  },
+  "por_activo": {
+    "SPY": {
+      "frac_up": 0.5688,
+      "crisis_frac_oos": 0.0674,
+      "vol_scale_med": 1.0,
+      "strats": {
+        "B&H": {
+          "acc": 0.5688,
+          "sharpe": 0.9681,
+          "sortino": 1.4151,
+          "calmar": 0.8502,
+          "maxdd": -0.1921,
+          "equity": 1.2937,
+          "turnover": 0.0,
+          "dsr": 0.528,
+          "n": 429
+        },
+        "VolTgt": {
+          "acc": 0.5688,
+          "sharpe": 0.7944,
+          "sortino": 1.0571,
+          "calmar": 0.6314,
+          "maxdd": -0.161,
+          "equity": 1.1791,
+          "turnover": 0.0183,
+          "dsr": 0.4392,
+          "n": 429
+        },
+        "Overlay50": {
+          "acc": 0.5688,
+          "sharpe": 0.8146,
+          "sortino": 1.0917,
+          "calmar": 0.7247,
+          "maxdd": -0.1357,
+          "equity": 1.1732,
+          "turnover": 0.0182,
+          "dsr": 0.4491,
+          "n": 429
+        },
+        "OverlayFlat": {
+          "acc": 0.5245,
+          "sharpe": 0.8005,
+          "sortino": 1.076,
+          "calmar": 0.7626,
+          "maxdd": -0.1236,
+          "equity": 1.1658,
+          "turnover": 0.0183,
+          "dsr": 0.4419,
+          "n": 429
+        },
+        "RegFlip": {
+          "acc": 0.5688,
+          "sharpe": 0.7944,
+          "sortino": 1.0571,
+          "calmar": 0.6314,
+          "maxdd": -0.161,
+          "equity": 1.1791,
+          "turnover": 0.0183,
+          "dsr": 0.4392,
+          "n": 429
+        }
+      }
+    },
+    "NVDA": {
+      "frac_up": 0.5361,
+      "crisis_frac_oos": 0.1047,
+      "vol_scale_med": 0.3667,
+      "strats": {
+        "B&H": {
+          "acc": 0.5361,
+          "sharpe": 0.731,
+          "sortino": 1.0234,
+          "calmar": 0.6191,
+          "maxdd": -0.4114,
+          "equity": 1.4715,
+          "turnover": 0.0,
+          "dsr": 0.4063,
+          "n": 429
+        },
+        "VolTgt": {
+          "acc": 0.5361,
+          "sharpe": 0.7371,
+          "sortino": 1.0291,
+          "calmar": 0.8225,
+          "maxdd": -0.1261,
+          "equity": 1.183,
+          "turnover": 0.0085,
+          "dsr": 0.4097,
+          "n": 429
+        },
+        "Overlay50": {
+          "acc": 0.5361,
+          "sharpe": 0.6901,
+          "sortino": 0.9589,
+          "calmar": 0.6987,
+          "maxdd": -0.1337,
+          "equity": 1.1642,
+          "turnover": 0.0091,
+          "dsr": 0.3865,
+          "n": 429
+        },
+        "OverlayFlat": {
+          "acc": 0.4779,
+          "sharpe": 0.6271,
+          "sortino": 0.8701,
+          "calmar": 0.584,
+          "maxdd": -0.1417,
+          "equity": 1.145,
+          "turnover": 0.0099,
+          "dsr": 0.3558,
+          "n": 429
+        },
+        "RegFlip": {
+          "acc": 0.5361,
+          "sharpe": 0.7371,
+          "sortino": 1.0291,
+          "calmar": 0.8225,
+          "maxdd": -0.1261,
+          "equity": 1.183,
+          "turnover": 0.0085,
+          "dsr": 0.4097,
+          "n": 429
+        }
+      }
+    },
+    "BAC": {
+      "frac_up": 0.5519,
+      "crisis_frac_oos": 0.0512,
+      "vol_scale_med": 0.6513,
+      "strats": {
+        "B&H": {
+          "acc": 0.5519,
+          "sharpe": 0.8547,
+          "sortino": 1.1722,
+          "calmar": 0.7302,
+          "maxdd": -0.2829,
+          "equity": 1.3716,
+          "turnover": 0.0,
+          "dsr": 0.467,
+          "n": 424
+        },
+        "VolTgt": {
+          "acc": 0.5519,
+          "sharpe": 0.6474,
+          "sortino": 0.8988,
+          "calmar": 0.5584,
+          "maxdd": -0.1691,
+          "equity": 1.1639,
+          "turnover": 0.0281,
+          "dsr": 0.3632,
+          "n": 424
+        },
+        "Overlay50": {
+          "acc": 0.5519,
+          "sharpe": 0.6608,
+          "sortino": 0.9291,
+          "calmar": 0.6313,
+          "maxdd": -0.1501,
+          "equity": 1.1646,
+          "turnover": 0.0285,
+          "dsr": 0.3693,
+          "n": 424
+        },
+        "OverlayFlat": {
+          "acc": 0.5165,
+          "sharpe": 0.6645,
+          "sortino": 0.9384,
+          "calmar": 0.7219,
+          "maxdd": -0.1312,
+          "equity": 1.1645,
+          "turnover": 0.029,
+          "dsr": 0.371,
+          "n": 424
+        },
+        "RegFlip": {
+          "acc": 0.5495,
+          "sharpe": 0.5858,
+          "sortino": 0.8121,
+          "calmar": 0.4688,
+          "maxdd": -0.1787,
+          "equity": 1.1449,
+          "turnover": 0.0302,
+          "dsr": 0.3338,
+          "n": 424
+        }
+      }
+    },
+    "TSLA": {
+      "frac_up": 0.5035,
+      "crisis_frac_oos": 0.2884,
+      "vol_scale_med": 0.2724,
+      "strats": {
+        "B&H": {
+          "acc": 0.5035,
+          "sharpe": 0.4195,
+          "sortino": 0.6276,
+          "calmar": 0.1317,
+          "maxdd": -0.576,
+          "equity": 1.1326,
+          "turnover": 0.0,
+          "dsr": 0.2581,
+          "n": 429
+        },
+        "VolTgt": {
+          "acc": 0.5035,
+          "sharpe": 0.2927,
+          "sortino": 0.4294,
+          "calmar": 0.1928,
+          "maxdd": -0.1712,
+          "equity": 1.0569,
+          "turnover": 0.0053,
+          "dsr": 0.208,
+          "n": 429
+        },
+        "Overlay50": {
+          "acc": 0.5035,
+          "sharpe": -0.0892,
+          "sortino": -0.1255,
+          "calmar": -0.1202,
+          "maxdd": -0.1711,
+          "equity": 0.9652,
+          "turnover": 0.0066,
+          "dsr": 0.0954,
+          "n": 429
+        },
+        "OverlayFlat": {
+          "acc": 0.3497,
+          "sharpe": -0.5254,
+          "sortino": -0.7263,
+          "calmar": -0.353,
+          "maxdd": -0.2059,
+          "equity": 0.8795,
+          "turnover": 0.008,
+          "dsr": 0.031,
+          "n": 429
+        },
+        "RegFlip": {
+          "acc": 0.5035,
+          "sharpe": 0.2927,
+          "sortino": 0.4294,
+          "calmar": 0.1928,
+          "maxdd": -0.1712,
+          "equity": 1.0569,
+          "turnover": 0.0053,
+          "dsr": 0.208,
+          "n": 429
+        }
+      }
+    },
+    "XLE": {
+      "frac_up": 0.5587,
+      "crisis_frac_oos": 0.0605,
+      "vol_scale_med": 0.7099,
+      "strats": {
+        "B&H": {
+          "acc": 0.5587,
+          "sharpe": 0.6686,
+          "sortino": 0.8809,
+          "calmar": 0.6557,
+          "maxdd": -0.2137,
+          "equity": 1.2482,
+          "turnover": 0.0,
+          "dsr": 0.376,
+          "n": 426
+        },
+        "VolTgt": {
+          "acc": 0.5587,
+          "sharpe": 0.5369,
+          "sortino": 0.6848,
+          "calmar": 0.4544,
+          "maxdd": -0.1695,
+          "equity": 1.1337,
+          "turnover": 0.0242,
+          "dsr": 0.3156,
+          "n": 426
+        },
+        "Overlay50": {
+          "acc": 0.5587,
+          "sharpe": 0.6803,
+          "sortino": 0.8969,
+          "calmar": 0.7215,
+          "maxdd": -0.134,
+          "equity": 1.1688,
+          "turnover": 0.0245,
+          "dsr": 0.3816,
+          "n": 426
+        },
+        "OverlayFlat": {
+          "acc": 0.5235,
+          "sharpe": 0.8066,
+          "sortino": 1.0778,
+          "calmar": 0.9897,
+          "maxdd": -0.1166,
+          "equity": 1.2027,
+          "turnover": 0.025,
+          "dsr": 0.444,
+          "n": 426
+        },
+        "RegFlip": {
+          "acc": 0.5587,
+          "sharpe": 0.5369,
+          "sortino": 0.6848,
+          "calmar": 0.4544,
+          "maxdd": -0.1695,
+          "equity": 1.1337,
+          "turnover": 0.0242,
+          "dsr": 0.3156,
+          "n": 426
+        }
+      }
+    },
+    "UNG": {
+      "frac_up": 0.5082,
+      "crisis_frac_oos": 0.4791,
+      "vol_scale_med": 0.2692,
+      "strats": {
+        "B&H": {
+          "acc": 0.5082,
+          "sharpe": -0.2826,
+          "sortino": -0.385,
+          "calmar": -0.4901,
+          "maxdd": -0.6445,
+          "equity": 0.5272,
+          "turnover": 0.0,
+          "dsr": 0.0586,
+          "n": 425
+        },
+        "VolTgt": {
+          "acc": 0.5082,
+          "sharpe": -0.3537,
+          "sortino": -0.4869,
+          "calmar": -0.322,
+          "maxdd": -0.2037,
+          "equity": 0.8919,
+          "turnover": 0.0092,
+          "dsr": 0.0492,
+          "n": 425
+        },
+        "Overlay50": {
+          "acc": 0.5082,
+          "sharpe": -0.6466,
+          "sortino": -0.864,
+          "calmar": -0.4614,
+          "maxdd": -0.1825,
+          "equity": 0.8621,
+          "turnover": 0.0096,
+          "dsr": 0.0208,
+          "n": 425
+        },
+        "OverlayFlat": {
+          "acc": 0.2541,
+          "sharpe": -0.9462,
+          "sortino": -1.2398,
+          "calmar": -0.4923,
+          "maxdd": -0.2137,
+          "equity": 0.8291,
+          "turnover": 0.0101,
+          "dsr": 0.0075,
+          "n": 425
+        },
+        "RegFlip": {
+          "acc": 0.4918,
+          "sharpe": 0.3505,
+          "sortino": 0.5109,
+          "calmar": 0.2946,
+          "maxdd": -0.1482,
+          "equity": 1.0748,
+          "turnover": 0.0092,
+          "dsr": 0.2301,
+          "n": 425
+        }
+      }
+    },
+    "MSTR": {
+      "frac_up": 0.4639,
+      "crisis_frac_oos": 0.3907,
+      "vol_scale_med": 0.1872,
+      "strats": {
+        "B&H": {
+          "acc": 0.4639,
+          "sharpe": -0.2317,
+          "sortino": -0.3378,
+          "calmar": -0.4962,
+          "maxdd": -0.8537,
+          "equity": 0.3914,
+          "turnover": 0.0,
+          "dsr": 0.0681,
+          "n": 429
+        },
+        "VolTgt": {
+          "acc": 0.4639,
+          "sharpe": -0.5485,
+          "sortino": -0.7706,
+          "calmar": -0.3072,
+          "maxdd": -0.2965,
+          "equity": 0.8499,
+          "turnover": 0.0027,
+          "dsr": 0.0289,
+          "n": 429
+        },
+        "Overlay50": {
+          "acc": 0.4639,
+          "sharpe": -1.2101,
+          "sortino": -1.5543,
+          "calmar": -0.4764,
+          "maxdd": -0.3099,
+          "equity": 0.7619,
+          "turnover": 0.0038,
+          "dsr": 0.0025,
+          "n": 429
+        },
+        "OverlayFlat": {
+          "acc": 0.2681,
+          "sharpe": -1.919,
+          "sortino": -2.3463,
+          "calmar": -0.599,
+          "maxdd": -0.3383,
+          "equity": 0.6801,
+          "turnover": 0.0049,
+          "dsr": 0.0001,
+          "n": 429
+        },
+        "RegFlip": {
+          "acc": 0.4732,
+          "sharpe": -1.6837,
+          "sortino": -2.1414,
+          "calmar": -0.54,
+          "maxdd": -0.4351,
+          "equity": 0.6339,
+          "turnover": 0.0141,
+          "dsr": 0.0003,
+          "n": 429
+        }
+      }
+    },
+    "SMCI": {
+      "frac_up": 0.4684,
+      "crisis_frac_oos": 0.7186,
+      "vol_scale_med": 0.1787,
+      "strats": {
+        "B&H": {
+          "acc": 0.4684,
+          "sharpe": -0.2602,
+          "sortino": -0.3486,
+          "calmar": -0.7097,
+          "maxdd": -0.815,
+          "equity": 0.2314,
+          "turnover": 0.0,
+          "dsr": 0.0616,
+          "n": 427
+        },
+        "VolTgt": {
+          "acc": 0.4684,
+          "sharpe": -0.3535,
+          "sortino": -0.4389,
+          "calmar": -0.3673,
+          "maxdd": -0.2266,
+          "equity": 0.8631,
+          "turnover": 0.01,
+          "dsr": 0.0442,
+          "n": 427
+        },
+        "Overlay50": {
+          "acc": 0.4684,
+          "sharpe": -0.3503,
+          "sortino": -0.4151,
+          "calmar": -0.3563,
+          "maxdd": -0.1866,
+          "equity": 0.89,
+          "turnover": 0.0101,
+          "dsr": 0.041,
+          "n": 427
+        },
+        "OverlayFlat": {
+          "acc": 0.1405,
+          "sharpe": -0.297,
+          "sortino": -0.3433,
+          "calmar": -0.3654,
+          "maxdd": -0.1453,
+          "equity": 0.9117,
+          "turnover": 0.0105,
+          "dsr": 0.0469,
+          "n": 427
+        },
+        "RegFlip": {
+          "acc": 0.4614,
+          "sharpe": -0.7019,
+          "sortino": -0.8563,
+          "calmar": -0.4793,
+          "maxdd": -0.2975,
+          "equity": 0.7706,
+          "turnover": 0.0155,
+          "dsr": 0.0126,
+          "n": 427
+        }
+      }
+    },
+    "ROKU": {
+      "frac_up": 0.5257,
+      "crisis_frac_oos": 0.0488,
+      "vol_scale_med": 0.239,
+      "strats": {
+        "B&H": {
+          "acc": 0.5257,
+          "sharpe": 0.617,
+          "sortino": 0.8885,
+          "calmar": 0.4405,
+          "maxdd": -0.4691,
+          "equity": 1.3757,
+          "turnover": 0.0,
+          "dsr": 0.3492,
+          "n": 428
+        },
+        "VolTgt": {
+          "acc": 0.5257,
+          "sharpe": 0.5625,
+          "sortino": 0.8013,
+          "calmar": 0.5555,
+          "maxdd": -0.1214,
+          "equity": 1.1172,
+          "turnover": 0.0026,
+          "dsr": 0.3237,
+          "n": 428
+        },
+        "Overlay50": {
+          "acc": 0.5257,
+          "sharpe": 0.5531,
+          "sortino": 0.7878,
+          "calmar": 0.5375,
+          "maxdd": -0.1214,
+          "equity": 1.1133,
+          "turnover": 0.0039,
+          "dsr": 0.3193,
+          "n": 428
+        },
+        "OverlayFlat": {
+          "acc": 0.5,
+          "sharpe": 0.5378,
+          "sortino": 0.766,
+          "calmar": 0.5178,
+          "maxdd": -0.1214,
+          "equity": 1.1091,
+          "turnover": 0.0061,
+          "dsr": 0.3123,
+          "n": 428
+        },
+        "RegFlip": {
+          "acc": 0.5304,
+          "sharpe": 0.6334,
+          "sortino": 0.9199,
+          "calmar": 0.8069,
+          "maxdd": -0.0959,
+          "equity": 1.135,
+          "turnover": 0.013,
+          "dsr": 0.3569,
+          "n": 428
+        }
+      }
+    },
+    "MARA": {
+      "frac_up": 0.4742,
+      "crisis_frac_oos": 0.0349,
+      "vol_scale_med": 0.1484,
+      "strats": {
+        "B&H": {
+          "acc": 0.4742,
+          "sharpe": -0.1001,
+          "sortino": -0.1464,
+          "calmar": -0.4428,
+          "maxdd": -0.8282,
+          "equity": 0.4619,
+          "turnover": 0.0,
+          "dsr": 0.0932,
+          "n": 426
+        },
+        "VolTgt": {
+          "acc": 0.4742,
+          "sharpe": -0.1245,
+          "sortino": -0.1796,
+          "calmar": -0.1196,
+          "maxdd": -0.1882,
+          "equity": 0.9623,
+          "turnover": 0.0171,
+          "dsr": 0.0879,
+          "n": 426
+        },
+        "Overlay50": {
+          "acc": 0.4742,
+          "sharpe": -0.1104,
+          "sortino": -0.1597,
+          "calmar": -0.1148,
+          "maxdd": -0.1789,
+          "equity": 0.9655,
+          "turnover": 0.0173,
+          "dsr": 0.0909,
+          "n": 426
+        },
+        "OverlayFlat": {
+          "acc": 0.4554,
+          "sharpe": -0.0954,
+          "sortino": -0.1381,
+          "calmar": -0.1053,
+          "maxdd": -0.1772,
+          "equity": 0.9687,
+          "turnover": 0.0174,
+          "dsr": 0.0941,
+          "n": 426
+        },
+        "RegFlip": {
+          "acc": 0.5282,
+          "sharpe": 0.0562,
+          "sortino": 0.0776,
+          "calmar": -0.0052,
+          "maxdd": -0.1181,
+          "equity": 0.999,
+          "turnover": 0.0185,
+          "dsr": 0.1315,
+          "n": 426
+        }
+      }
+    },
+    "QQQ": {
+      "frac_up": 0.5758,
+      "crisis_frac_oos": 0.0651,
+      "vol_scale_med": 0.8208,
+      "strats": {
+        "B&H": {
+          "acc": 0.5758,
+          "sharpe": 1.1184,
+          "sortino": 1.63,
+          "calmar": 1.0506,
+          "maxdd": -0.2338,
+          "equity": 1.4535,
+          "turnover": 0.0,
+          "dsr": 0.6055,
+          "n": 429
+        },
+        "VolTgt": {
+          "acc": 0.5758,
+          "sharpe": 0.9215,
+          "sortino": 1.2364,
+          "calmar": 0.8129,
+          "maxdd": -0.1681,
+          "equity": 1.2437,
+          "turnover": 0.0301,
+          "dsr": 0.5032,
+          "n": 429
+        },
+        "Overlay50": {
+          "acc": 0.5758,
+          "sharpe": 0.8901,
+          "sortino": 1.1885,
+          "calmar": 0.8493,
+          "maxdd": -0.1487,
+          "equity": 1.2244,
+          "turnover": 0.0303,
+          "dsr": 0.4874,
+          "n": 429
+        },
+        "OverlayFlat": {
+          "acc": 0.5361,
+          "sharpe": 0.8324,
+          "sortino": 1.1096,
+          "calmar": 0.8322,
+          "maxdd": -0.1385,
+          "equity": 1.2041,
+          "turnover": 0.0306,
+          "dsr": 0.4582,
+          "n": 429
+        },
+        "RegFlip": {
+          "acc": 0.5618,
+          "sharpe": 0.6541,
+          "sortino": 0.8765,
+          "calmar": 0.5407,
+          "maxdd": -0.1694,
+          "equity": 1.1609,
+          "turnover": 0.035,
+          "dsr": 0.3691,
+          "n": 429
+        }
+      }
+    },
+    "DIA": {
+      "frac_up": 0.5397,
+      "crisis_frac_oos": 0.0605,
+      "vol_scale_med": 1.0,
+      "strats": {
+        "B&H": {
+          "acc": 0.5397,
+          "sharpe": 0.8444,
+          "sortino": 1.2604,
+          "calmar": 0.7696,
+          "maxdd": -0.1642,
+          "equity": 1.2239,
+          "turnover": 0.0,
+          "dsr": 0.4624,
+          "n": 428
+        },
+        "VolTgt": {
+          "acc": 0.5397,
+          "sharpe": 0.6709,
+          "sortino": 0.9333,
+          "calmar": 0.539,
+          "maxdd": -0.1569,
+          "equity": 1.1479,
+          "turnover": 0.0171,
+          "dsr": 0.3767,
+          "n": 428
+        },
+        "Overlay50": {
+          "acc": 0.5397,
+          "sharpe": 0.5852,
+          "sortino": 0.8017,
+          "calmar": 0.4602,
+          "maxdd": -0.1534,
+          "equity": 1.1229,
+          "turnover": 0.017,
+          "dsr": 0.336,
+          "n": 428
+        },
+        "OverlayFlat": {
+          "acc": 0.5047,
+          "sharpe": 0.4873,
+          "sortino": 0.6641,
+          "calmar": 0.3544,
+          "maxdd": -0.1595,
+          "equity": 1.0979,
+          "turnover": 0.0175,
+          "dsr": 0.291,
+          "n": 428
+        },
+        "RegFlip": {
+          "acc": 0.5397,
+          "sharpe": 0.6709,
+          "sortino": 0.9333,
+          "calmar": 0.539,
+          "maxdd": -0.1569,
+          "equity": 1.1479,
+          "turnover": 0.0171,
+          "dsr": 0.3767,
+          "n": 428
+        }
+      }
+    },
+    "IWM": {
+      "frac_up": 0.5431,
+      "crisis_frac_oos": 0.0628,
+      "vol_scale_med": 0.7541,
+      "strats": {
+        "B&H": {
+          "acc": 0.5431,
+          "sharpe": 0.8132,
+          "sortino": 1.2006,
+          "calmar": 0.5914,
+          "maxdd": -0.2823,
+          "equity": 1.3006,
+          "turnover": 0.0,
+          "dsr": 0.4471,
+          "n": 429
+        },
+        "VolTgt": {
+          "acc": 0.5431,
+          "sharpe": 0.6368,
+          "sortino": 0.916,
+          "calmar": 0.4154,
+          "maxdd": -0.2251,
+          "equity": 1.1644,
+          "turnover": 0.0326,
+          "dsr": 0.3588,
+          "n": 429
+        },
+        "Overlay50": {
+          "acc": 0.5431,
+          "sharpe": 0.6036,
+          "sortino": 0.8677,
+          "calmar": 0.4135,
+          "maxdd": -0.2069,
+          "equity": 1.15,
+          "turnover": 0.0329,
+          "dsr": 0.3428,
+          "n": 429
+        },
+        "OverlayFlat": {
+          "acc": 0.5035,
+          "sharpe": 0.5576,
+          "sortino": 0.8015,
+          "calmar": 0.3793,
+          "maxdd": -0.2033,
+          "equity": 1.1348,
+          "turnover": 0.0335,
+          "dsr": 0.321,
+          "n": 429
+        },
+        "RegFlip": {
+          "acc": 0.5431,
+          "sharpe": 0.6368,
+          "sortino": 0.916,
+          "calmar": 0.4154,
+          "maxdd": -0.2251,
+          "equity": 1.1644,
+          "turnover": 0.0326,
+          "dsr": 0.3588,
+          "n": 429
+        }
+      }
+    }
+  }
+}
