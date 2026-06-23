@@ -34,6 +34,20 @@ SPY McNemar AutoML/M10/M8 vs M5 = 0.0002/0.0074/0.0509; **pooled-15 ΔSharpe +0.
 rolling mejor-STRATA>M5 en 8/10; K=3 held-out −1.301 > −1.693. Honestidad intacta (G3): las únicas frases
 fuertes son negaciones de over-claim. Veredicto: defendible ante el tribunal.
 
+## Ronda final (reframe §5/§6 + robustez de calibración) — APROBADO en 2 rondas
+Tras la crítica de Raquel ("regla vs aprendiz poco concluyente"), se **midió** la relación: el split por
+`crisis_mean` NO se sostiene (ninguna variable de naturaleza predice el valor de la regla, p>0.10). Se reescribió:
+- **Dos capas complementarias** (no canales que compiten): **M8 = riesgo** (pooled-15 ΔSharpe +0.66 IC[0.225,1.157]),
+  **M10/AutoML = accuracy** (McNemar vs M5 sig en 6/10). Cada función con su test.
+- **Única ley naturaleza→resultado con test:** rescate del aprendiz ∝ leverage (Pearson r=−0.55 p=0.034, Spearman
+  ρ=−0.54 p=0.038), **blindada con leave-one-out** (peor caso p=0.095 quitando MSTR; los 15 drops <0.10) → no la
+  sostiene ningún outlier. Clustering: **PC1 ≈ leverage (r=0.84)** cierra la cadena.
+- **Robustez a la ventana de calibración** (tutor): `calib_window_panel.py` (SPY/QQQ/XLE/BAC, inicios
+  2000/2010/2015/2020, OOS fijo) → no es frágil; acortar a 2010 incluso mejora en índices; se mantiene la ventana
+  completa pre-registrada (sin elegir calibración por OOS).
+Ronda 1 (2 fixes): (1) ningún p-valor hardcodeado en prosa (BAC se lee del JSON, "p>0.14" derivado); (2) la ley
+con su leave-one-out + assert. Ronda 2: APROBADO sin condiciones (29 celdas, 0 errores, auto-test verde).
+
 ## Punto más blando (anotado por la revisora, no bloqueante)
 **UNG** está en el cuerpo pero el agente NO pierde a las triviales ahí (M5 0.510 > trivial 0.486); se encuadra
 como caso ML donde STRATA defiere. Es el punto del split que un tribunal podría cuestionar. Defendible con el

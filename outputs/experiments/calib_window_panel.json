@@ -1,0 +1,273 @@
+{
+  "meta": {
+    "tickers": [
+      "SPY",
+      "QQQ",
+      "XLE",
+      "BAC"
+    ],
+    "calibration_end": "2024-09-30",
+    "oos_start": "2024-10-01",
+    "starts": [
+      "2000-01-01",
+      "2010-01-01",
+      "2015-01-01",
+      "2020-01-01"
+    ],
+    "n_seeds": 10,
+    "embargo": 1,
+    "burn_in": 150,
+    "nota": "robustez a la ventana de calibración (tutor); OOS fijo, sin fuga; ventana completa (2000) = pre-registrada (CLAUDE.md §3), NO se elige por el número (no p-hacking)",
+    "hipotesis_tutor": "acortar la calibración mejora / vuelve direccional al régimen"
+  },
+  "por_activo": {
+    "SPY": [
+      {
+        "start": "2000-01-01",
+        "n_cal": 6204,
+        "medias_regimen": {
+          "Calma": 0.000644,
+          "Estrés": 0.000205,
+          "Crisis": -0.00043
+        },
+        "m10_acc": 0.494,
+        "m10_sharpe": -0.604,
+        "m10_equity": 0.9202,
+        "m5_acc": 0.3665,
+        "m8_acc": 0.4422,
+        "n": 251
+      },
+      {
+        "start": "2010-01-01",
+        "n_cal": 3710,
+        "medias_regimen": {
+          "Calma": 0.000753,
+          "Estrés": 0.000693,
+          "Crisis": -0.000384
+        },
+        "m10_acc": 0.5259,
+        "m10_sharpe": 0.766,
+        "m10_equity": 1.0916,
+        "m5_acc": 0.3665,
+        "m8_acc": 0.4263,
+        "n": 251
+      },
+      {
+        "start": "2015-01-01",
+        "n_cal": 2452,
+        "medias_regimen": {
+          "Calma": 0.000777,
+          "Estrés": 0.000486,
+          "Crisis": -0.001056
+        },
+        "m10_acc": 0.5179,
+        "m10_sharpe": 0.289,
+        "m10_equity": 1.0287,
+        "m5_acc": 0.3665,
+        "m8_acc": 0.4462,
+        "n": 251
+      },
+      {
+        "start": "2020-01-01",
+        "n_cal": 1194,
+        "medias_regimen": {
+          "Calma": 0.000942,
+          "Estrés": 0.000633,
+          "Crisis": -0.000743
+        },
+        "m10_acc": 0.4741,
+        "m10_sharpe": -0.378,
+        "m10_equity": 0.9465,
+        "m5_acc": 0.3665,
+        "m8_acc": 0.4701,
+        "n": 251
+      }
+    ],
+    "QQQ": [
+      {
+        "start": "2000-01-01",
+        "n_cal": 6204,
+        "medias_regimen": {
+          "Calma": 0.000828,
+          "Estrés": 0.000575,
+          "Crisis": -0.001245
+        },
+        "m10_acc": 0.5219,
+        "m10_sharpe": -0.714,
+        "m10_equity": 0.877,
+        "m5_acc": 0.4183,
+        "m8_acc": 0.4861,
+        "n": 251
+      },
+      {
+        "start": "2010-01-01",
+        "n_cal": 3710,
+        "medias_regimen": {
+          "Calma": 0.000958,
+          "Estrés": 0.001035,
+          "Crisis": -0.000253
+        },
+        "m10_acc": 0.5777,
+        "m10_sharpe": 0.505,
+        "m10_equity": 1.0721,
+        "m5_acc": 0.4183,
+        "m8_acc": 0.4622,
+        "n": 251
+      },
+      {
+        "start": "2015-01-01",
+        "n_cal": 2452,
+        "medias_regimen": {
+          "Calma": 0.001035,
+          "Estrés": 0.001125,
+          "Crisis": -0.000111
+        },
+        "m10_acc": 0.5697,
+        "m10_sharpe": 1.403,
+        "m10_equity": 1.2421,
+        "m5_acc": 0.4183,
+        "m8_acc": 0.4542,
+        "n": 251
+      },
+      {
+        "start": "2020-01-01",
+        "n_cal": 1194,
+        "medias_regimen": {
+          "Calma": 0.001552,
+          "Estrés": -0.000263,
+          "Crisis": 0.000666
+        },
+        "m10_acc": 0.5458,
+        "m10_sharpe": 0.31,
+        "m10_equity": 1.0382,
+        "m5_acc": 0.4183,
+        "m8_acc": 0.494,
+        "n": 251
+      }
+    ],
+    "XLE": [
+      {
+        "start": "2000-01-01",
+        "n_cal": 6204,
+        "medias_regimen": {
+          "Calma": 0.000416,
+          "Estrés": 0.000207,
+          "Crisis": 6.8e-05
+        },
+        "m10_acc": 0.5081,
+        "m10_sharpe": 0.235,
+        "m10_equity": 1.027,
+        "m5_acc": 0.4476,
+        "m8_acc": 0.5282,
+        "n": 248
+      },
+      {
+        "start": "2010-01-01",
+        "n_cal": 3710,
+        "medias_regimen": {
+          "Calma": 0.000327,
+          "Estrés": 0.000128,
+          "Crisis": 0.000322
+        },
+        "m10_acc": 0.5161,
+        "m10_sharpe": 0.946,
+        "m10_equity": 1.1841,
+        "m5_acc": 0.4476,
+        "m8_acc": 0.5161,
+        "n": 248
+      },
+      {
+        "start": "2015-01-01",
+        "n_cal": 2452,
+        "medias_regimen": {
+          "Calma": 7e-06,
+          "Estrés": 0.000214,
+          "Crisis": 0.001115
+        },
+        "m10_acc": 0.4718,
+        "m10_sharpe": -0.77,
+        "m10_equity": 0.8398,
+        "m5_acc": 0.4476,
+        "m8_acc": 0.5444,
+        "n": 248
+      },
+      {
+        "start": "2020-01-01",
+        "n_cal": 1194,
+        "medias_regimen": {
+          "Calma": 0.000143,
+          "Estrés": 0.000486,
+          "Crisis": 0.001151
+        },
+        "m10_acc": 0.4919,
+        "m10_sharpe": -0.621,
+        "m10_equity": 0.8651,
+        "m5_acc": 0.4476,
+        "m8_acc": 0.5444,
+        "n": 248
+      }
+    ],
+    "BAC": [
+      {
+        "start": "2000-01-01",
+        "n_cal": 6204,
+        "medias_regimen": {
+          "Calma": 0.000565,
+          "Estrés": -1.4e-05,
+          "Crisis": -0.000585
+        },
+        "m10_acc": 0.4187,
+        "m10_sharpe": -2.727,
+        "m10_equity": 0.558,
+        "m5_acc": 0.4512,
+        "m8_acc": 0.5163,
+        "n": 246
+      },
+      {
+        "start": "2010-01-01",
+        "n_cal": 3710,
+        "medias_regimen": {
+          "Calma": 0.000633,
+          "Estrés": 0.000405,
+          "Crisis": -0.000692
+        },
+        "m10_acc": 0.439,
+        "m10_sharpe": -2.012,
+        "m10_equity": 0.6449,
+        "m5_acc": 0.4512,
+        "m8_acc": 0.5325,
+        "n": 246
+      },
+      {
+        "start": "2015-01-01",
+        "n_cal": 2452,
+        "medias_regimen": {
+          "Calma": 0.000726,
+          "Estrés": -3.1e-05,
+          "Crisis": 0.001181
+        },
+        "m10_acc": 0.4715,
+        "m10_sharpe": -0.621,
+        "m10_equity": 0.8593,
+        "m5_acc": 0.4512,
+        "m8_acc": 0.5244,
+        "n": 246
+      },
+      {
+        "start": "2020-01-01",
+        "n_cal": 1194,
+        "medias_regimen": {
+          "Calma": 0.000118,
+          "Estrés": -9.5e-05,
+          "Crisis": 0.001372
+        },
+        "m10_acc": 0.4797,
+        "m10_sharpe": -0.531,
+        "m10_equity": 0.8756,
+        "m5_acc": 0.4512,
+        "m8_acc": 0.5244,
+        "n": 246
+      }
+    ]
+  }
+}
