@@ -147,7 +147,8 @@ La selección de los 10 es la **cohorte de robustez pre-registrada** del proyect
 + índices añadidos), elegida **ex-ante por naturaleza**, no por resultado bruto ni por significancia per-activo.
 Es honesto subrayar por qué no se usa la significancia individual como criterio: con n≈250 días de OOS el McNemar
 per-activo casi **nunca** alcanza p<0.10 (XLE/MARA/UNG/SMCI del cuerpo tienen todos McNemar vs M5 > 0.12); la
-potencia y, por tanto, la significancia del rescate viven en el **pooled** (§4) y en los **estratos** (§7), no
+potencia y, por tanto, la significancia del rescate viven en el **pooled** (apilar los días de todos los activos
+en una sola muestra para ganar potencia; se define en detalle en §4) y en los **estratos** (§7), no
 activo a activo. Por eso el criterio de selección es **ilustrativo del MECANISMO** (qué canal aplica según
 `crisis_mean` y la dirección del régimen, §5), no de significancia. El apéndice (§8) recoge los 5 restantes:
 donde el agente ya bate a las triviales (MSTR) o donde el rescate no es ni significativo ni añade un caso nuevo
@@ -648,10 +649,22 @@ print(f"La variable que más separa sola es {best} (acc {dv['variables'][best]['
 md(r"""## §4 Generalización — panel de 10 (universalidad y riesgo)
 
 Sobre el M10 canónico: **ablación** (¿cuánto añade STRATA?) y **SHAP** (¿de qué se fía?). Y el resultado duro:
-**rescate de riesgo agregado** (pooled bootstrap). La cifra **canónica** es el **pooled-15** de
-`decision_automl_prep.json` (M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157], n=3751; coincide con RESULTADOS_OBJETIVO
-§1ter); se reporta además el **pooled-10** del cuerpo como sensibilidad consistente (mismo signo, IC también
-excluye 0), e incluyendo AutoML.
+**rescate de riesgo agregado** (pooled bootstrap).
+
+> **¿Qué es el *pooled*?** En lugar de analizar cada activo por separado, **apilamos los retornos diarios de
+> todos los activos en una sola muestra** y hacemos el test sobre ella. Cada activo aporta ~250 días → los 10
+> apilados dan $n\approx2493$; los 15, $n\approx3751$. **Por qué:** por activo, $n\approx250$ es demasiado poco
+> y ningún test del rescate alcanza significancia (McNemar per-activo $p>0.12$ en todo el cuerpo); al agregar,
+> hay **potencia** y el efecto se vuelve detectable. Por eso la frase recurrente *"la significancia vive en el
+> pooled"*: **per-activo no, en agregado sí.** **Límite honesto:** apilar trata cada *día-activo* como
+> independiente, pero el mismo día los índices se mueven juntos (correlación cruzada, sobre todo en crisis) →
+> la **n efectiva es menor que la nominal**; el *block bootstrap* corrige la autocorrelación **dentro** de un
+> activo pero no **entre** activos, así que la precisión del IC está algo sobreestimada. El resultado (IC excluye
+> 0 con holgura) es robusto a este matiz, pero se declara.
+
+La cifra **canónica** es el **pooled-15** de `decision_automl_prep.json` (M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157],
+n=3751; coincide con RESULTADOS_OBJETIVO §1ter); se reporta además el **pooled-10** del cuerpo como sensibilidad
+consistente (mismo signo, IC también excluye 0), e incluyendo AutoML.
 
 Antes, dos lecturas para entrar al panel: la **naturaleza** de cada activo (lo que luego explica el mecanismo,
 §5) y **cuánto rescata** la mejor STRATA al agente, por activo, en accuracy y en Sharpe.
