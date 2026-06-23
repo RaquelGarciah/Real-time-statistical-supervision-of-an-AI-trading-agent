@@ -95,6 +95,39 @@ un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** ba
 
 ---
 
+## §1ter. Caso central SPY con AutoML — cifras canónicas del marco práctico (panel mm25, 2026-06-23)
+
+Caso **central** del notebook definitivo `STRATA_marco_practico.ipynb` (decisión #18). Con la config canónica
+(AutoML-H2O max_models=25, GBM/XGBoost/StackedEnsemble, AUC, Purged K-Fold emb=1, WF N0=150/step=21), en SPY
+**AutoML gana en punto a TODAS** las estrategias. Fuente: `outputs/experiments/automl_runs/panel_mm25_*.json`
+(`por_activo.SPY`), `spy_m10_full_report.json`, `decision_automl_prep.json`.
+
+| Estrategia (SPY OOS desplegable, n=251) | Accuracy | Sharpe | maxDD | Equity | Lectura |
+|---|---|---|---|---|---|
+| M5 (agente) | 0.3665 | −3.07 | −0.302 | 0.699× | agente direccionalmente malo, se arruina |
+| M8 (regla STRATA) | 0.4422 | −0.464 | −0.152 | 0.941× | rescata al agente (riesgo) |
+| M10 (XGBoost canónico) | 0.4940 | −0.604 | −0.161 | 0.920× | meta-learner |
+| **AutoML (H2O)** | **0.5737** | **2.681** | **−0.055** | **1.380×** | **gana en punto a todas (nominal)** |
+| ZeroR (clase mayoritaria) | 0.5657 | 2.206 | −0.098 | 1.303× | baseline trivial (techo) |
+| B&H | 0.5657 | 2.206 | −0.098 | 1.303× | mercado alcista |
+
+- **Honestidad (clave).** "Gana a todo" en **accuracy** es **NOMINAL**: McNemar **AutoML vs ZeroR p=0.902**,
+  M10 vs ZeroR p=0.133 (n=251 → sin potencia; significancia de accuracy = línea futura). No se afirma batir al
+  baseline/mercado.
+- **Rescate del agente — SÍ significativo.** En accuracy: McNemar **AutoML vs M5 p=0.0002**, **M10 vs M5
+  p=0.0074**, **M8 vs M5 p=0.0509**. En riesgo (bootstrap pareado **pooled**, 15 activos, n=3753): **M8 vs M5
+  ΔSharpe +0.66 IC95[0.225,1.157]** y **ΔmaxDD +0.24 IC95[0.017,0.445]** (ambos excluyen 0). A nivel SPY el IC de
+  riesgo aún cruza 0 (poca potencia); la significancia llega en el pooled.
+- **Universalidad.** Cuota STRATA en SHAP: panel media 0.66; SPY 0.565 (mejor árbol) / 0.564 (permutation del
+  ensemble). Top features SPY: garch_sigma, psa_score, ram_score, stress_prob → el ML redescubre STRATA.
+- **STRATA sobre baseline simple (SPY).** Ablación por bloques de semillas: momentum solo acc 0.521 → STRATA7+mom
+  0.582 (Δ +0.061; 3/5 bloques McNemar sig. 0.10). Fuente: `spy_ablation_robustness.json`.
+- **Frase de cierre SPY:** "En SPY, AutoML supera en punto a todas las estrategias (0.574 vs 0.566), de forma
+  nominal; el valor que sí sobrevive a un test es el rescate del agente (accuracy vs M5 y riesgo pooled) y la
+  universalidad (el ML redescubre STRATA)."
+
+---
+
 ## §2. Tabla del proyecto anterior (referencia histórica — NO usar en memoria LaTeX)
 
 Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo proyecto las ha replicado con mejor rigor (K=3 fijo, τ=0.5, walk-forward, accuracy-first). Si en la memoria aparece una cifra, debe venir de §1.

@@ -2121,3 +2121,37 @@ estrategias × accuracy/auc/sharpe/equity/max_dd/calmar), tests (McNemar matrix 
 seed_sensibilidad (acc_by_seed, min/med/max/std, n_seeds_beat_zeror).
 
 **Referencias.** experiments/automl_seed_ensemble.py; reusa experiments/automl_m10.py; commit pendiente.
+
+## [2026-06-23] [Milestone] - Notebook definitivo del marco práctico (único canónico) + caso SPY registrado
+
+**Contexto.** Había dos cuadernos parciales y solapados (`STRATA_SMCI`, `decision_automl`) y ninguno definitivo;
+además el resultado "SPY con AutoML gana a todo" y varias decisiones no estaban bien registrados. Se consolida
+todo en un único notebook canónico del que se alimentará la memoria.
+
+**Detalle.** Nace `notebooks/STRATA_marco_practico.ipynb` (builder `_build_STRATA_marco_practico.py`) con la
+estructura del Cap. 4 (§4.0 objetivos/notación → §4.1 datos+barrera temporal → §4.2 mecánica ex-ante → §4.3
+caso SPY → §4.4 universalidad panel 15 → §4.5 clustering → §4.6 robustez+honestidad → §4.7 conclusiones →
+auto-test). Sustituye/absorbe a los dos anteriores (decisión #18; quedan como fuentes, no se borran). Caso
+central = **SPY** (no SMCI): con la config canónica, **AutoML-H2O gana en punto a todas** (acc 0.5737 > ZeroR/
+B&H 0.5657, M5 0.3665, M8 0.4422, M10 0.4940; Sharpe AutoML 2.68, maxDD −0.055). SMCI pasa a **caso de
+limitación** (§4.6). El cuaderno se cierra con un bucle constructor↔revisora (agente `raquel-quant`) que itera
+hasta APROBADO contra un gate G1–G6.
+
+**Resultado registrado (honesto, anti sobre-afirmación).** "AutoML gana a todo" en **accuracy** es **NOMINAL**:
+McNemar AutoML vs ZeroR p=0.902, M10 vs ZeroR p=0.133 (n=251, sin potencia → significancia de accuracy = línea
+futura). Lo que **sí** sobrevive a un test: (a) **rescate del agente en accuracy** — McNemar AutoML/M10/M8 vs M5
+p=0.0002 / 0.0074 / 0.0509; (b) **rescate del agente en riesgo** — bootstrap pareado **pooled** (15 activos,
+n=3753) M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157] y ΔmaxDD +0.24 IC95[0.017,0.445], ambos excluyen 0 (a nivel SPY
+el IC aún cruza 0); (c) **universalidad** — cuota STRATA en SHAP media 0.66 (SPY 0.565 árbol / 0.564 permutation);
+(d) **patrón** activo→estrategia por clustering (KMeans/Ward/GMM coinciden, Rand=1.0, k=3). STRATA **no genera
+alfa** (no bate a ZeroR/B&H sig.).
+
+**Implicaciones para el TFG.** Es el entregable del marco práctico y la fuente única de cifras para la memoria.
+Fija la narrativa: el valor de STRATA es el **rescate del agente** (sig. en accuracy vs M5 y en riesgo pooled) y
+la **universalidad** (el ML redescubre STRATA), no batir al mercado. Conecta con [accuracy techo ZeroR] y con la
+decisión #16 (límite por leverage débil, ilustrado en SMCI).
+
+**Referencias.** Decisión #18; `notebooks/STRATA_marco_practico.ipynb`; outputs `panel_mm25_*`,
+`decision_automl_prep.json`, `automl_importance.json`, `strategy_clustering15.json`, `spy_m10_full_report.json`,
+`spy_ablation_robustness.json`, `m10_smci_*`; `docs/chats/automl/revision_marco_practico.md`;
+`.claude/agents/raquel-quant.md`.

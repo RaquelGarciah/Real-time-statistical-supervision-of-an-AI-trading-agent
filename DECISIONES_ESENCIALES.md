@@ -315,6 +315,37 @@ que **sustituye a `strata_canonical.ipynb`**; el Sharpe se reporta como **P(Shar
 
 ---
 
+## 18. Notebook definitivo del marco práctico = único canónico; caso central SPY (con AutoML)
+
+**Qué.** El marco práctico (Cap. 4) se consolida en **un único notebook canónico**,
+`notebooks/STRATA_marco_practico.ipynb` (builder `_build_STRATA_marco_practico.py`), del que se alimenta la
+memoria. **Sustituye y absorbe** a `STRATA_SMCI.ipynb` y `decision_automl.ipynb`, que quedan como fuentes/archivo
+(no se borran; ver Lección #9, un único canónico). Estructura fija = la del capítulo: §4.0 portada/objetivos/
+notación → §4.1 datos y protocolo (+ barrera temporal) → §4.2 mecánica ex-ante → §4.3 **caso SPY** → §4.4
+universalidad (panel 15) → §4.5 patrón/clustering → §4.6 robustez y honestidad → §4.7 conclusiones → auto-test.
+
+**Caso central = SPY** (no SMCI). En SPY el **leverage effect** es fuerte (régimen direccional) y, con la
+configuración canónica, **AutoML-H2O gana en punto a TODAS las estrategias** (acc 0.5737 > ZeroR/B&H 0.5657; M5
+0.3665) — resultado real que se **registra**. SMCI pasa a ser el **caso de limitación** (§4.6): leverage débil,
+régimen no direccional (Crisis con media positiva), poco margen de rescate (matiza la decisión #13).
+
+**Encuadre honesto cableado (línea roja).** "AutoML gana a todo" en **accuracy** es **nominal**: McNemar AutoML
+vs ZeroR p≈0.90 (n≈251 → sin potencia; significancia de accuracy = línea futura). Lo que **sí** sobrevive a un
+test: **(a)** rescate del agente en accuracy — McNemar AutoML/M10/M8 vs M5 p≈0.0002 / 0.0074 / 0.051;
+**(b)** rescate del agente en riesgo — bootstrap pareado **pooled** (15 activos) M8 vs M5 ΔSharpe +0.66
+IC95[0.23,1.16] y ΔmaxDD +0.24 IC95[0.02,0.44], ambos excluyen 0; **(c)** universalidad — cuota STRATA en SHAP
+media ≈ 0.66; **(d)** patrón activo→estrategia por clustering. STRATA **no genera alfa** (no bate a ZeroR/B&H sig.).
+
+**Proceso.** El notebook se cierra con un bucle constructor↔revisora (agente `raquel-quant`, quant senior +
+matemática) que itera hasta APROBADO contra un gate G1–G6 (estructura/objetivos, rigor, honestidad, coherencia,
+reproducibilidad, pitch). Ver `docs/chats/automl/revision_marco_practico.md`.
+
+**Dónde está justificada.** `notebooks/STRATA_marco_practico.ipynb`; outputs `panel_mm25_*`,
+`decision_automl_prep.json`, `automl_importance.json`, `strategy_clustering15.json`, `spy_m10_full_report.json`,
+`spy_ablation_robustness.json`, suite `m10_smci_*`. **Estado.** Viva.
+
+---
+
 ## Tabla resumen
 
 | # | Decisión | Categoría | Estado |
@@ -336,6 +367,7 @@ que **sustituye a `strata_canonical.ipynb`**; el Sharpe se reporta como **P(Shar
 | 15 | Embargo = 1 en el WF desplegable (5 solo para CPCV) | Validación | Viva |
 | 16 | Límite: STRATA rescata donde agente discrepa del régimen (SMCI no) | STRATA | Viva |
 | 17 | Robustez a la ventana de calibración: la completa (pre-registrada) es la más robusta; M10 depende de la historia larga | Validación | Viva |
+| 18 | Notebook definitivo del marco práctico = único canónico (`STRATA_marco_practico.ipynb`); caso central SPY (AutoML gana a todo nominal); SMCI → caso de limitación | Entregable | Viva |
 
 ---
 
