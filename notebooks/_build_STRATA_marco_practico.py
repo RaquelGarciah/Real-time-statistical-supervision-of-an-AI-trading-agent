@@ -724,21 +724,38 @@ print(f"\n→ Honesto: la naturaleza NO predice cuándo la regla M8 acierta (tod
       "'crisis_mean<0 → regla' es solo DESCRIPTIVO/ilustrativo, no una ley. La conclusión robusta es la de arriba: "
       "regla=riesgo, aprendiz=accuracy, y el rescate del aprendiz escala con el leverage.")""")
 
-md(r"""### Dos ilustraciones del mecanismo (descriptivas, no una ley)
-**QQQ** (leverage estándar, `crisis_mean<0`): la regla M8 tiene un signo de régimen que explotar y corrige al
-agente (McNemar M8/M10 vs M5 sig). **MARA** (leverage invertido, `crisis_mean>0`): la regla mete ruido (acierta
-<0.5 al intervenir) y solo el **aprendiz** rescata. Son ejemplos del mecanismo, **no** una regla predictiva
-(como muestra la correlación no significativa de arriba).""")
+md(r"""### Dos casos trabajados del mecanismo, uno por canal (descriptivos, no una ley)
+Tomamos un caso de cada **canal de supervisión** y lo abrimos con su `detector_analysis_*.json` (tasa de
+intervención de M8, acierto de M8 en los días intervenidos, atribución de P&L a RAM).
 
-code(r"""# QQQ vs MARA: ilustración del mecanismo (no es una ley, es un ejemplo de cada extremo)
-for tk in ("QQQ", "MARA"):
-    m = MECH[tk]; tests = PAN[tk]["tests"]
-    print(f"--- {tk} · crisis_mean={m['crisis_mean']:+.5f} · M8 interviene {m['intervencion_M8']:.0%}, acierto {m['M8_acierto_en_intervencion']:.3f} ---")
-    print(f"    acc: M5={PAN[tk]['table']['m5']['accuracy']:.3f} M8={PAN[tk]['table']['m8']['accuracy']:.3f} "
+- **XLE** — canal **RÉGIMEN** (`detector_analysis_XLE.json`): leverage presente, la regla M8 tiene un signo de
+  régimen que explotar. M8 interviene mucho y **acierta >0.5** en los días intervenidos → la capa de riesgo
+  corrige al agente.
+- **MARA** — canal **ML** (`detector_analysis_MARA.json`, `crisis_mean>0`, leverage invertido): la regla M8 mete
+  ruido (acierta **<0.5** al intervenir) y solo el **aprendiz** rescata.
+
+Son ejemplos del mecanismo, **no** una regla predictiva (la correlación naturaleza→acierto-de-M8 de arriba no
+es significativa). En ambos, la atribución de P&L del rescate recae en **RAM** (PSA/GSO inertes, decisiones #5/#7).""")
+
+code(r"""# Dos casos trabajados, uno por canal — cada uno con SU detector_analysis_*.json
+# XLE = canal RÉGIMEN (DETXLE) · MARA = canal ML (DETMAR). No es una ley: es un ejemplo de cada extremo.
+for tk, D in (("XLE", DETXLE), ("MARA", DETMAR)):
+    m = MECH[tk]; tests = PAN[tk]["tests"]; iv = D["intervencion"]; ram = D["detectores"]["RAM"]; atr = D["atribucion_pnl"]
+    canal = "RÉGIMEN" if iv["acc_M8_si_interviene"] >= 0.5 else "ML"
+    print(f"--- {tk} · canal {canal} · crisis_mean={m['crisis_mean']:+.5f} · detector_analysis_{tk}.json ---")
+    print(f"    M8 interviene {iv['tasa_intervencion']:.0%} ({iv['n_intervenciones']} días); acierto de M8 al intervenir "
+          f"{iv['acc_M8_si_interviene']:.3f} vs M5 {iv['acc_M5_si_interviene']:.3f}  "
+          f"({'>0.5 → la regla corrige' if iv['acc_M8_si_interviene']>=0.5 else '<0.5 → la regla mete ruido'})")
+    print(f"    disparos RAM={ram['n_disparos']} (tasa {ram['tasa_disparo']:.0%}); P&L de rescate atribuible a RAM = "
+          f"{atr['pnl_dias_RAM_disparado']:+.3f} (PSA {atr['pnl_dias_PSA_disparado']:+.3f}, GSO {atr['pnl_dias_GSO_disparado']:+.3f} inertes)")
+    print(f"    acc tabla: M5={PAN[tk]['table']['m5']['accuracy']:.3f} M8={PAN[tk]['table']['m8']['accuracy']:.3f} "
           f"M10={PAN[tk]['table']['m10_xgb']['accuracy']:.3f} AutoML={PAN[tk]['table']['automl']['accuracy']:.3f} | "
           f"McNemar vs M5: M8 p={tests['m8_vs_m5']['p']:.4f}, M10 p={tests['m10_xgb_vs_m5']['p']:.4f}")
-print("\nQQQ: leverage estándar → la regla del régimen corrige (capa riesgo) y el aprendiz afina (capa accuracy).")
-print("MARA: leverage invertido → la regla no tiene signo fiable; el aprendiz aprende a voltear el sesgo corto del agente.")""")
+# El caso régimen DEBE acertar >0.5 al intervenir y MARA debe quedarse <0.5 (el aprendiz toma el relevo)
+assert DETXLE["intervencion"]["acc_M8_si_interviene"] >= 0.5, "XLE (régimen): M8 debe acertar >0.5 al intervenir"
+assert DETMAR["intervencion"]["acc_M8_si_interviene"] < 0.5, "MARA (ML): la regla M8 debe quedar <0.5 al intervenir"
+print("\nXLE: leverage presente → la regla del régimen corrige (capa riesgo, RAM domina el P&L) y el aprendiz afina.")
+print("MARA: leverage invertido → la regla no tiene signo fiable (acierta <0.5); el aprendiz aprende a voltear el sesgo corto del agente.")""")
 
 code(r"""# Timeline diario M8 vs M10 (SPY): cuándo coinciden/discrepan y quién acierta (la separación de las dos capas)
 d = SPYME["daily"]; dts = pd.to_datetime(d["dates"]); reg = np.array(d["regime"])
@@ -774,8 +791,19 @@ for i, r in ST.iterrows():
     lo, hi = eval(r["IC95"]); ax.plot([lo, hi], [i, i], color="#2c7fb8", lw=2); ax.plot(r["ΔSharpe_M8_vs_M5"], i, "o", color="#c0392b")
 ax.axvline(0, color="k", lw=.8); ax.set_yticks(range(len(ST))); ax.set_yticklabels(ST["estrato"], fontsize=8)
 ax.set_title("Rescate de riesgo M8 vs M5 por estrato (pooled bootstrap, IC95)"); plt.tight_layout(); plt.show()
-print("Estratos PRE-REGISTRADOS por clase de activo (no por resultado): el rescate de riesgo de la regla se "
-      "concentra donde el leverage manda (índices), coherente con la ley del §5 — no es selección a posteriori.")""")
+# Lectura HONESTA: a nivel de estrato (n~1250/estrato) el rescate NO alcanza significancia y los dos efectos son similares
+_ind = ST.iloc[0]; _vol = ST.iloc[1]
+_ic_i = eval(_ind["IC95"]); _ic_v = eval(_vol["IC95"])
+assert (not _ind["sig"] == "SÍ") and (not _vol["sig"] == "SÍ"), "ambos estratos deben salir NO significativos (IC cruza 0)"
+assert _ic_i[0] < 0 < _ic_i[1] and _ic_v[0] < 0 < _ic_v[1], "ambos IC de estrato deben cruzar 0"
+print(f"Estratos PRE-REGISTRADOS por clase de activo (no por resultado), n~{int(_ind['n_dias'])} y ~{int(_vol['n_dias'])} días:")
+print(f"  índices/sectoriales  ΔSharpe={_ind['ΔSharpe_M8_vs_M5']:+.3f} IC95={_ind['IC95']}  → {_ind['sig']}")
+print(f"  volátiles/cripto     ΔSharpe={_vol['ΔSharpe_M8_vs_M5']:+.3f} IC95={_vol['IC95']}  → {_vol['sig']}")
+print("→ A nivel de estrato el rescate de riesgo NO alcanza significancia: AMBOS IC cruzan 0 y el efecto es de "
+      "magnitud similar en los dos (el punto del estrato volátil no es menor que el de índices). La significancia del "
+      "rescate de riesgo vive en el POOLED de los 15 (§4); con n~1250 por estrato no hay potencia para sostener una "
+      "diferencia índices↔volátiles, y NO la afirmamos. La ley del §5 es sobre la accuracy del APRENDIZ vs leverage, "
+      "no sobre el ΔSharpe de la REGLA por estrato; este corte no la confirma ni la contradice.")""")
 
 # ═══════════════════════════  §6 Clustering: naturaleza → resultado  ═══════════════════════════
 md(r"""## §6 Clustering por naturaleza: el eje que importa es el leverage
@@ -1038,11 +1066,16 @@ tab = PAN["SPY"]["table"]
 assert max(("m5", "m8", "m10_xgb", "automl", "zeror", "bh"), key=lambda k: tab[k]["accuracy"]) == "automl", "SPY: AutoML no es el máx"
 assert PAN["SPY"]["tests"]["automl_vs_zeror"]["p"] > 0.5, "SPY AutoML vs ZeroR debería ser nominal"
 assert PAN["SPY"]["tests"]["m10_xgb_vs_m5"]["p"] < 0.10, "SPY M10 vs M5 (rescate) debería ser sig"
-# mecanismo: los casos trabajados coinciden con su canal_ganador del JSON (coherencia G4)
-assert MECH["QQQ"]["canal_ganador"].startswith("régimen") and MECH["QQQ"]["crisis_mean"] < 0 and MECH["QQQ"]["regimen_direccional"], "QQQ debe ser caso RÉGIMEN coherente (crisis_mean<0, canal régimen)"
-assert MECH["QQQ"]["M8_acierto_en_intervencion"] >= 0.5, "QQQ: M8 debe acertar >0.5 al intervenir (régimen direccional)"
+# mecanismo: dos casos trabajados, uno por canal, cada uno cruzado contra SU detector_analysis_*.json (coherencia G4, fix #2)
+# caso RÉGIMEN = XLE (DETXLE): M8 interviene y acierta >0.5 al intervenir; atribución de P&L a RAM
+assert DETXLE["intervencion"]["acc_M8_si_interviene"] >= 0.5, "XLE (caso régimen): M8 debe acertar >0.5 al intervenir, según detector_analysis_XLE.json"
+assert DETXLE["intervencion"]["tasa_intervencion"] > 0.5, "XLE (caso régimen): la tasa de intervención de M8 debe ser alta en su JSON"
+assert DETXLE["atribucion_pnl"]["pnl_dias_RAM_disparado"] == DETXLE["atribucion_pnl"]["pnl_rescate_total"], "XLE: el P&L de rescate debe ser atribuible a RAM (PSA/GSO inertes)"
+# caso ML = MARA (DETMAR): la regla M8 acierta <0.5 al intervenir → el aprendiz toma el relevo
+assert DETMAR["intervencion"]["acc_M8_si_interviene"] < 0.5, "MARA (caso ML): la regla M8 debe quedar <0.5 al intervenir, según detector_analysis_MARA.json"
 assert MECH["MARA"]["canal_ganador"].startswith("ML") and MECH["MARA"]["crisis_mean"] > 0, "MARA debe ser caso ML (leverage invertido)"
-assert PAN["QQQ"]["tests"]["m10_xgb_vs_m5"]["p"] < 0.10, "QQQ: rescate M10 vs M5 debería ser sig"
+# en MARA el aprendiz queda por encima de la regla en accuracy (canal ML), aunque sin significancia McNemar (n corto): se reporta como tal
+assert PAN["MARA"]["table"]["automl"]["accuracy"] >= PAN["MARA"]["table"]["m8"]["accuracy"], "MARA (caso ML): el aprendiz debe quedar por encima de la regla M8 en accuracy"
 # split cuerpo/apéndice reproducible (fix #2): la cohorte mostrada es exactamente la pre-registrada
 assert set(tab10.index) == set(PANEL10) and set(tab5.index) == set(EXCL5), "el split debe ser exactamente PANEL10/EXCL5"
 # pooled canónico = pooled-15 del JSON, n coherente (fix #3)
@@ -1086,8 +1119,8 @@ assert abs(_spy_canon - 0.565) < 0.002, "cuota SPY canónica (automl_importance:
 assert abs(_spy_perm - 0.564) < 0.002, "cuota SPY permutation-ensemble debe ser ≈0.564 (contraste canónico §1ter)"
 assert _spy_canon > 0.5 and _spy_dpa > 0.5, "ambas fuentes de la cuota SPY (IMP-tree y DPA) deben superar 0.5"
 assert abs(_spy_dpa - 0.715) < 0.002, "cuota SPY de decision_automl_prep (otro árbol) es ≈0.715; se reporta como tal, no se confunde con la canónica"
-print("AUTO-TEST OK · panel 10 + apéndice 5 · SPY AutoML gana (nominal) + rescate sig · casos QQQ(régimen)/MARA(ML) "
-      "coherentes con canal_ganador · split=PANEL10/EXCL5 · pooled-15 canónico n=3751 · detectores RAM · "
+print("AUTO-TEST OK · panel 10 + apéndice 5 · SPY AutoML gana (nominal) + rescate sig · casos XLE(régimen, detector_analysis_XLE)/MARA(ML, detector_analysis_MARA) "
+      "cruzados con su JSON · split=PANEL10/EXCL5 · pooled-15 canónico n=3751 · detectores RAM · "
       "clustering consenso 3 métodos (spectral discrepa, declarado) · K=3 held-out · rescate sig en alcista Y bajista · "
       f"ley leverage robusta a leave-one-out (p_max LOO={LAW_LOO_PMAX:.3f}<0.10) · BAC p≈{PAN['BAC']['tests']['m8_vs_m5']['p']:.3f} cruzado vs JSON")""")
 
