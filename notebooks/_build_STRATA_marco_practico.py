@@ -1047,10 +1047,11 @@ print("\nLectura (exploratoria, n=15): los grupos se ordenan por leverage/volati
       "no una predicción del cluster — y eso se dice tal cual.")""")
 
 md(r"""### Comportamiento por grupo: ¿se distinguen patrones de estrategia según la naturaleza?
-Tres vistas por grupo (réplica de `exploracion_estrategias` sobre nuestro caso). El objetivo no es significancia
-(n por grupo es pequeño) sino **patrón**: (1) qué estrategia rinde mejor de media en cada grupo; (2) si cada
-estrategia acierta más **cuando coincide con el drift** (la tendencia) — diagnostica si el acierto es "ir con la
-corriente"; (3) cuánto pesan las features de STRATA en el aprendiz por activo (cuota SHAP).""")
+Cuatro vistas por grupo (réplica de `exploracion_estrategias` sobre nuestro caso). El objetivo no es significancia
+(n por grupo es pequeño) sino **patrón**: (1) qué estrategia rinde mejor de media en **accuracy** y (1b) en
+**Sharpe** —importante porque la regla **M8** casi nunca gana en accuracy pero es la que **rescata el riesgo** del
+agente—; (2) si cada estrategia acierta más **cuando coincide con el drift** (diagnostica si el acierto es "ir con
+la corriente"); (3) cuánto pesan las features de STRATA en el aprendiz por activo (cuota SHAP).""")
 
 code(r"""# (1) Accuracy media por estrategia, por grupo de activos
 prof = CL10["perfiles_k3"]["kmeans"]; groups = list(prof)
@@ -1068,6 +1069,24 @@ axes[0].set_ylabel("accuracy media"); fig.suptitle("Accuracy media por estrategi
 plt.tight_layout(); plt.show()
 for g in groups: print(f"{g} ({', '.join(prof[g]['activos'])}): mejor no-trivial = {prof[g]['mejor_acc_no_trivial']} "
                        f"(acc {prof[g]['acc_media'][prof[g]['mejor_acc_no_trivial']]})")""")
+
+code(r"""# (1b) Sharpe medio por estrategia por grupo + el rescate de RIESGO de M8 sobre el agente (su verdadero papel)
+fig, axes = plt.subplots(1, len(groups), figsize=(14, 3.8), sharey=True)
+for ax, g in zip(axes, groups):
+    sm = prof[g]["sharpe_media"]; vals = [sm[s] for s in ss]
+    ax.bar(ss, vals, color=[COL.get(s, "#888") for s in ss], edgecolor="k", lw=.4); ax.axhline(0, color="k", lw=.8)
+    bs = prof[g]["mejor_sharpe_no_trivial"]; ax.text(ss.index(bs), sm[bs] + 0.04, "★", ha="center", color="#c0392b", fontsize=12)
+    ax.set_title(g, fontsize=9); ax.tick_params(axis="x", rotation=45, labelsize=7)
+axes[0].set_ylabel("Sharpe medio"); fig.suptitle("Sharpe medio por estrategia, por grupo (★ mejor no trivial)", y=1.04)
+plt.tight_layout(); plt.show()
+print("El papel de M8 (regla de régimen) es el RESCATE DE RIESGO del agente, no ganar en accuracy:")
+for g in groups:
+    sm = prof[g]["sharpe_media"]; am = prof[g]["acc_media"]
+    print(f"  {g}: M8 vs M5 → Δacc={am['M8']-am['M5']:+.3f}  ΔSharpe={sm['M8']-sm['M5']:+.2f}  "
+          f"(M5 {sm['M5']:+.2f} → M8 {sm['M8']:+.2f})")
+print("→ En C0 (índices) y C2 (volátiles) M8 levanta un Sharpe catastrófico del agente (ΔSharpe≈+1.3); en C1 "
+      "(leverage invertido: SMCI/UNG) la regla apenas mueve nada (la dirección del régimen 'miente') y ahí el "
+      "rescate lo hace el APRENDIZ M10 — exactamente el mecanismo de las dos capas del §5.")""")
 
 code(r"""# (2) Accuracy de cada estrategia según COINCIDA con el drift, por activo del grupo
 pa = CL10["por_activo"]; mains = ["M5", "M8", "M10", "AutoML"]
@@ -1468,6 +1487,8 @@ assert CL10["concordancia_k3_randajustado"]["kmeans~ward"] == 1.0, "KMeans~Ward 
 assert CL10["concordancia_k3_randajustado"]["kmeans~spectral"] == 1.0, "sobre los 10 los 4 métodos coinciden (Rand=1.0, consenso unánime)"
 assert sorted([a for g in CL10["perfiles_k3"]["kmeans"].values() for a in g["activos"]]) == sorted(PANEL10), "los grupos del clustering-10 deben cubrir exactamente los 10"
 assert all(CL10["por_activo"][a]["shap_cuota_strata"] > 0.5 for a in PANEL10), "la cuota SHAP de STRATA debe superar 0.5 en los 10 (universalidad en todos los grupos)"
+_pf = CL10["perfiles_k3"]["kmeans"]
+assert all(_pf[g]["sharpe_media"]["M8"] > _pf[g]["sharpe_media"]["M5"] for g in _pf), "M8 debe rescatar el Sharpe del agente (M8>M5) en TODOS los grupos — es su papel (riesgo, no accuracy)"
 # AutoML en equity (ganadora SPY) + serie alineada
 assert "automl" in ANR["SPY"] and len(ANR["SPY"]["automl"]) == len(DPA["SPY"]["net_returns"]["m5"]), "serie AutoML SPY"
 # robustez de panel: rodante + bull/bear pooled significativo
