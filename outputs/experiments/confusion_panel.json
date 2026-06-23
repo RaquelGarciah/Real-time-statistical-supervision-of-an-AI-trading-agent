@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "nota": "confusión direccional: predicho (posición ±1) vs real (signo r_{t+1}); pos reconstruida desde correct_by_arm canónico → consistente con la accuracy del panel."
+  },
+  "spy_por_estrategia": {
+    "M5": {
+      "TP": 25,
+      "FP": 42,
+      "FN": 117,
+      "TN": 67,
+      "n": 251,
+      "accuracy": 0.3665,
+      "precision_long": 0.3731,
+      "recall_long": 0.1761,
+      "frac_pred_long": 0.267
+    },
+    "M8": {
+      "TP": 77,
+      "FP": 75,
+      "FN": 65,
+      "TN": 34,
+      "n": 251,
+      "accuracy": 0.4422,
+      "precision_long": 0.5066,
+      "recall_long": 0.5423,
+      "frac_pred_long": 0.606
+    },
+    "M10": {
+      "TP": 69,
+      "FP": 54,
+      "FN": 73,
+      "TN": 55,
+      "n": 251,
+      "accuracy": 0.494,
+      "precision_long": 0.561,
+      "recall_long": 0.4859,
+      "frac_pred_long": 0.49
+    },
+    "AutoML": {
+      "TP": 110,
+      "FP": 75,
+      "FN": 32,
+      "TN": 34,
+      "n": 251,
+      "accuracy": 0.5737,
+      "precision_long": 0.5946,
+      "recall_long": 0.7746,
+      "frac_pred_long": 0.737
+    },
+    "ZeroR": {
+      "TP": 142,
+      "FP": 109,
+      "FN": 0,
+      "TN": 0,
+      "n": 251,
+      "accuracy": 0.5657,
+      "precision_long": 0.5657,
+      "recall_long": 1.0,
+      "frac_pred_long": 1.0
+    },
+    "B&H": {
+      "TP": 142,
+      "FP": 109,
+      "FN": 0,
+      "TN": 0,
+      "n": 251,
+      "accuracy": 0.5657,
+      "precision_long": 0.5657,
+      "recall_long": 1.0,
+      "frac_pred_long": 1.0
+    }
+  },
+  "panel_mejor_strata": {
+    "SPY": {
+      "TP": 110,
+      "FP": 75,
+      "FN": 32,
+      "TN": 34,
+      "n": 251,
+      "accuracy": 0.5737,
+      "precision_long": 0.5946,
+      "recall_long": 0.7746,
+      "frac_pred_long": 0.737,
+      "estrategia": "AutoML"
+    },
+    "QQQ": {
+      "TP": 103,
+      "FP": 72,
+      "FN": 45,
+      "TN": 31,
+      "n": 251,
+      "accuracy": 0.5339,
+      "precision_long": 0.5886,
+      "recall_long": 0.6959,
+      "frac_pred_long": 0.697,
+      "estrategia": "AutoML"
+    },
+    "XLF": {
+      "TP": 96,
+      "FP": 80,
+      "FN": 37,
+      "TN": 34,
+      "n": 247,
+      "accuracy": 0.5263,
+      "precision_long": 0.5455,
+      "recall_long": 0.7218,
+      "frac_pred_long": 0.713,
+      "estrategia": "M10"
+    },
+    "DIA": {
+      "TP": 88,
+      "FP": 69,
+      "FN": 51,
+      "TN": 42,
+      "n": 250,
+      "accuracy": 0.52,
+      "precision_long": 0.5605,
+      "recall_long": 0.6331,
+      "frac_pred_long": 0.628,
+      "estrategia": "AutoML"
+    },
+    "XLK": {
+      "TP": 117,
+      "FP": 59,
+      "FN": 44,
+      "TN": 31,
+      "n": 251,
+      "accuracy": 0.5896,
+      "precision_long": 0.6648,
+      "recall_long": 0.7267,
+      "frac_pred_long": 0.701,
+      "estrategia": "AutoML"
+    },
+    "XLE": {
+      "TP": 104,
+      "FP": 80,
+      "FN": 36,
+      "TN": 28,
+      "n": 248,
+      "accuracy": 0.5323,
+      "precision_long": 0.5652,
+      "recall_long": 0.7429,
+      "frac_pred_long": 0.742,
+      "estrategia": "AutoML"
+    },
+    "ROKU": {
+      "TP": 101,
+      "FP": 78,
+      "FN": 36,
+      "TN": 35,
+      "n": 250,
+      "accuracy": 0.544,
+      "precision_long": 0.5642,
+      "recall_long": 0.7372,
+      "frac_pred_long": 0.716,
+      "estrategia": "AutoML"
+    },
+    "SMCI": {
+      "TP": 71,
+      "FP": 62,
+      "FN": 50,
+      "TN": 67,
+      "n": 250,
+      "accuracy": 0.552,
+      "precision_long": 0.5338,
+      "recall_long": 0.5868,
+      "frac_pred_long": 0.532,
+      "estrategia": "M10"
+    },
+    "MARA": {
+      "TP": 45,
+      "FP": 42,
+      "FN": 71,
+      "TN": 90,
+      "n": 248,
+      "accuracy": 0.5444,
+      "precision_long": 0.5172,
+      "recall_long": 0.3879,
+      "frac_pred_long": 0.351,
+      "estrategia": "AutoML"
+    },
+    "UNG": {
+      "TP": 54,
+      "FP": 53,
+      "FN": 66,
+      "TN": 74,
+      "n": 247,
+      "accuracy": 0.5182,
+      "precision_long": 0.5047,
+      "recall_long": 0.45,
+      "frac_pred_long": 0.433,
+      "estrategia": "M10"
+    }
+  }
+}

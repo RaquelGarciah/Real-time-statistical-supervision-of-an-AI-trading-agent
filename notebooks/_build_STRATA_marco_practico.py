@@ -118,6 +118,7 @@ SPYME = _load("outputs/experiments/spy_mechanism_extras.json")           # SPY: 
 THR = _load("cache/models/strata_thresholds.json")                       # umbrales ex-ante PSA/GSO (calib 2000–2024-09)
 DETXLE = _load("outputs/experiments/detector_analysis_XLE.json"); DETMAR = _load("outputs/experiments/detector_analysis_MARA.json")
 DETABL = _load("outputs/experiments/detector_ablation_panel.json")        # activación detectores (10) + ablación M10 (SPY)
+CONF = _load("outputs/experiments/confusion_panel.json")                  # matrices de confusión SPY (6) + panel (mejor STRATA)
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -390,6 +391,29 @@ print(pd.DataFrame(rows).to_string(index=False))
 print(f"\nRescate del agente SIGNIFICATIVO: AutoML/M10/M8 vs M5 p={tests['automl_vs_m5']['p']:.4f}/{tests['m10_xgb_vs_m5']['p']:.4f}/{tests['m8_vs_m5']['p']:.4f}.")
 print(f"Batir al baseline NOMINAL: AutoML vs ZeroR p={tests['automl_vs_zeror']['p']:.3f} (ventana corta).")""")
 
+md(r"""### Matrices de confusión en SPY (predicho ±1 vs real)
+La dirección **predicha** (posición) frente a la **real** (signo de $r_{t+1}$), por estrategia. Hace visible *qué
+tipo* de acierto/error comete cada una: el agente (M5) falla sobre todo en largos (muchos FN), la regla y el
+aprendiz reequilibran, y las triviales (ZeroR/B&H) **siempre van largas** (toda la columna de cortos vacía).""")
+
+code(r"""# Matrices de confusión SPY (6 estrategias) — fuente: confusion_panel.json
+def _plot_cm(ax, cm, titulo):
+    M = np.array([[cm["TP"], cm["FP"]], [cm["FN"], cm["TN"]]])  # filas: predicho L/S · cols: real U/D
+    im = ax.imshow(M, cmap="Blues"); ax.set_title(f"{titulo}\nacc={cm['accuracy']}", fontsize=9)
+    ax.set_xticks([0, 1]); ax.set_xticklabels(["real ↑", "real ↓"], fontsize=8)
+    ax.set_yticks([0, 1]); ax.set_yticklabels(["pred L", "pred S"], fontsize=8)
+    for i in range(2):
+        for j in range(2):
+            ax.text(j, i, M[i, j], ha="center", va="center", fontsize=11,
+                    color="white" if M[i, j] > M.max() * 0.6 else "black")
+spc = CONF["spy_por_estrategia"]
+fig, axes = plt.subplots(2, 3, figsize=(11, 6)); axes = axes.ravel()
+for ax, s in zip(axes, ["M5", "M8", "M10", "AutoML", "ZeroR", "B&H"]):
+    _plot_cm(ax, spc[s], s)
+fig.suptitle("SPY · matrices de confusión (TP/FP arriba, FN/TN abajo)"); plt.tight_layout(); plt.show()
+print(f"M5: solo {spc['M5']['TP']} aciertos en largo y {spc['M5']['FN']} fallos en largo (apuesta corto y el "
+      "mercado sube). M8/M10/AutoML reducen los FN (capturan más subidas). ZeroR/B&H: FN=TN=0 (siempre largo).")""")
+
 code(r"""# Equity SPY — todas las estrategias, incl. AutoML (ganadora, derivada de STRATA), con assert
 nr = DPA["SPY"]["net_returns"]; serie = {"M5": nr["m5"], "M8": nr["m8"], "M10": nr["m10"], "AutoML": ANR["SPY"]["automl"], "ZeroR": nr["zeror"], "B&H": nr["bh"]}
 eqf = {s: float(np.cumprod(1 + np.nan_to_num(np.array(v, float)))[-1]) for s, v in serie.items()}; win = max(eqf, key=eqf.get)
@@ -609,6 +633,21 @@ for i in range(len(PANEL10)):
 ax.set_title("Accuracy por activo × estrategia (centrado en 0.5)"); fig.colorbar(im, shrink=.8); plt.tight_layout(); plt.show()
 med = {s: round(float(np.mean([PAN[a]["table"][PKEY[s]]["accuracy"] for a in PANEL10])), 3) for s in COL}
 print("Medias (10):", med, "→ ZeroR/B&H siguen arriba en accuracy (techo trivial); el valor es el rescate, no batir el techo.")""")
+
+code(r"""# Matrices de confusión del panel: la MEJOR estrategia STRATA por activo (predicho ±1 vs real)
+pc = CONF["panel_mejor_strata"]
+fig, axes = plt.subplots(2, 5, figsize=(15, 6)); axes = axes.ravel()
+for ax, tk in zip(axes, PANEL10):
+    cm = pc[tk]; M = np.array([[cm["TP"], cm["FP"]], [cm["FN"], cm["TN"]]])
+    ax.imshow(M, cmap="Blues"); ax.set_title(f"{tk} · {cm['estrategia']}\nacc={cm['accuracy']}", fontsize=9)
+    ax.set_xticks([0, 1]); ax.set_xticklabels(["↑", "↓"], fontsize=8); ax.set_yticks([0, 1]); ax.set_yticklabels(["L", "S"], fontsize=8)
+    for i in range(2):
+        for j in range(2):
+            ax.text(j, i, M[i, j], ha="center", va="center", fontsize=10, color="white" if M[i, j] > M.max() * 0.6 else "black")
+fig.suptitle("Panel · matriz de confusión de la mejor estrategia STRATA por activo (filas: pred Long/Short · cols: real ↑/↓)")
+plt.tight_layout(); plt.show()
+print("Cada activo con su mejor derivada de STRATA. Donde el activo cae (MARA/UNG, base bajista) la estrategia "
+      "acumula aciertos en CORTO (TN alto); en los alcistas, en largo (TP alto). La diagonal (TP+TN) es la accuracy.")""")
 
 code(r"""# Pooled bootstrap de RIESGO sobre los 10 (M8/M10 del prep + AutoML fusionado, mismo método)
 from experiments.decision_automl_prep import _boot_paired, _sr, _maxdd
