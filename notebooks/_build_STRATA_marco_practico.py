@@ -94,7 +94,8 @@ def _load(p): return json.load(open(p))
 DP   = _load("outputs/experiments/decision_automl_prep.json")
 PAN  = _load("outputs/experiments/automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21_kfold_seed42.json")["por_activo"]
 IMP  = _load("outputs/experiments/automl_importance.json")["por_activo"]
-CLU  = _load("outputs/experiments/strategy_clustering15.json")
+CLU  = _load("outputs/experiments/strategy_clustering15.json")          # versión de 15 (universo) — conservada como respaldo
+CL10 = _load("outputs/experiments/cluster_panel10.json")                # clustering canónico del cuerpo: los 10 + análisis por grupo
 ANR  = _load("outputs/experiments/automl_net_returns.json")["por_activo"]
 MECH = _load("outputs/experiments/mechanism_panel.json")["por_activo"]
 DET  = _load("outputs/experiments/detector_analysis_SPY.json")
@@ -995,33 +996,33 @@ print("→ A nivel de estrato el rescate de riesgo NO alcanza significancia: AMB
 # ═══════════════════════════  §6 Clustering: naturaleza → resultado  ═══════════════════════════
 md(r"""## §6 Clustering por naturaleza: el eje que importa es el leverage
 
-Agrupamos los 15 activos por su **naturaleza** (leverage, volatilidad, sesgo del agente) y comprobamos qué eje
-de esa naturaleza es el que **porta el efecto medible** del §5. No afirmamos que el cluster *prediga* qué modelo
-gana (no se sostiene, §5); afirmamos algo más fuerte y contrastado: el **eje de leverage** —el que más separa los
-grupos— es exactamente el que **correlaciona con el rescate del aprendiz** (ley del §5). Consenso de
-**KMeans/Ward/GMM** (Rand ajustado = 1.0); **spectral discrepa** (Rand ≈ 0.40) y se declara (n=15 hace inestable
-el clustering de afinidad).""")
+Agrupamos los **10 activos del cuerpo** por su **naturaleza** (leverage, volatilidad, sesgo del agente) y
+comprobamos qué eje de esa naturaleza **porta el efecto medible** del §5. No afirmamos que el cluster *prediga*
+qué modelo gana (no se sostiene, §5); afirmamos algo más fuerte y contrastado: el **eje de leverage** —el que más
+separa los grupos— es exactamente el que **correlaciona con el rescate del aprendiz** (ley del §5). Sobre los 10
+el consenso es **unánime**: KMeans/Ward/GMM **y spectral** coinciden (Rand ajustado = 1.0), con silhouette más
+alta que sobre los 15. **n=10 → exploratorio/descriptivo, no confirmatorio** (la versión de 15 se conserva en
+`strategy_clustering15.json` por si se prefiere la vista de universo).""")
 
-code(r"""# Calidad de la agrupación (silhouette/BIC/Rand) — 15 activos por naturaleza
-clus = CLU["clustering"]
+code(r"""# Calidad de la agrupación (silhouette/BIC/Rand) — 10 activos por naturaleza
+clus = CL10["clustering"]
 sil = pd.DataFrame({k: {mth: clus[k][mth].get("silhouette") for mth in ("kmeans", "ward", "gmm", "spectral")} for k in ("k2", "k3", "k4")})
 print("Silhouette por método y k:\n", sil)
 print("\nGMM BIC:", {k: clus[k]["gmm"].get("bic") for k in ("k2", "k3", "k4")})
-rand = CLU["concordancia_k3_randajustado"]
-print(f"\nConcordancia k=3 (Rand ajustado): KMeans/Ward/GMM = 1.0 (consenso de 3 métodos); spectral discrepa "
-      f"(Rand≈{rand['kmeans~spectral']:.3f}) y se declara — no se oculta el método disidente.")""")
+rand = CL10["concordancia_k3_randajustado"]
+print(f"\nConcordancia k=3 (Rand ajustado): KMeans~Ward={rand['kmeans~ward']}, KMeans~GMM={rand['kmeans~gmm']}, "
+      f"KMeans~Spectral={rand['kmeans~spectral']} → sobre los 10 los CUATRO métodos coinciden (consenso unánime). "
+      f"Silhouette k=3 = {clus['k3']['kmeans']['silhouette']} (estructura clara para n=10).")""")
 
 code(r"""# PCA 2D + el eje PC1 ES el leverage, y el leverage es el que correlaciona con el rescate del aprendiz
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
-Xs = np.array(CLU["meta"]["X_estandarizada"]); ok = CLU["meta"]["panel"]; lab = np.array(clus["k3"]["kmeans"]["labels"])
-feats = CLU["meta"]["cluster_features"] if "cluster_features" in CLU["meta"] else None
-pcaf = PCA(n_components=2); pca = pcaf.fit_transform(Xs)
+ok = CL10["meta"]["panel"]; lab = np.array(clus["k3"]["kmeans"]["labels"]); pca = np.array(CL10["meta"]["pca2d"])
 fig, axes = plt.subplots(1, 2, figsize=(13, 4.2))
 for c in sorted(set(lab)):
-    idx = np.where(lab == c)[0]; axes[0].scatter(pca[idx, 0], pca[idx, 1], s=90, label=f"cluster {c}")
+    idx = np.where(lab == c)[0]; axes[0].scatter(pca[idx, 0], pca[idx, 1], s=90, label=f"C{c}")
 for i, a in enumerate(ok): axes[0].annotate(a, (pca[i, 0], pca[i, 1]), fontsize=7, xytext=(3, 3), textcoords="offset points")
-axes[0].set_title("Naturaleza de los 15 (PCA 2D), KMeans k=3"); axes[0].legend(fontsize=8); axes[0].set_xlabel("PC1"); axes[0].set_ylabel("PC2")
+axes[0].set_title("Naturaleza de los 10 (PCA 2D), KMeans k=3"); axes[0].legend(fontsize=8); axes[0].set_xlabel("PC1"); axes[0].set_ylabel("PC2")
 # PC1 vs leverage_corr: ¿es PC1 el eje de leverage?
 levv = np.array([MECH[a]["leverage_corr"] for a in ok]); rpc, ppc = pearsonr(pca[:, 0], levv)
 axes[1].scatter(pca[:, 0], levv, s=70, color="#2c7fb8", edgecolor="k", lw=.5)
@@ -1034,7 +1035,7 @@ print(f"PC1 (el eje que más separa los activos) correlaciona con el leverage (r
       "naturaleza (leverage) → eje principal del clustering → rescate del aprendiz, todo medido.")""")
 
 code(r"""# Perfil económico de cada cluster (naturaleza media + mejor estrategia) — lectura, no predicción
-prof = CLU["perfiles_k3"].get("kmeans", {})
+prof = CL10["perfiles_k3"].get("kmeans", {})
 for c, d in prof.items():
     nat = d["naturaleza_media"]
     print(f"\nCluster {c}: {d['activos']}")
@@ -1044,6 +1045,63 @@ for c, d in prof.items():
 print("\nLectura (exploratoria, n=15): los grupos se ordenan por leverage/volatilidad; el aprendiz rescata más "
       "donde el leverage es fuerte (ley §5). Qué MODELO concreto se despliega por activo es decisión operativa, "
       "no una predicción del cluster — y eso se dice tal cual.")""")
+
+md(r"""### Comportamiento por grupo: ¿se distinguen patrones de estrategia según la naturaleza?
+Tres vistas por grupo (réplica de `exploracion_estrategias` sobre nuestro caso). El objetivo no es significancia
+(n por grupo es pequeño) sino **patrón**: (1) qué estrategia rinde mejor de media en cada grupo; (2) si cada
+estrategia acierta más **cuando coincide con el drift** (la tendencia) — diagnostica si el acierto es "ir con la
+corriente"; (3) cuánto pesan las features de STRATA en el aprendiz por activo (cuota SHAP).""")
+
+code(r"""# (1) Accuracy media por estrategia, por grupo de activos
+prof = CL10["perfiles_k3"]["kmeans"]; groups = list(prof)
+ss = ["M5", "M8", "M10", "AutoML", "ZeroR", "B&H"]
+fig, axes = plt.subplots(1, len(groups), figsize=(14, 3.8), sharey=True)
+for ax, g in zip(axes, groups):
+    am = prof[g]["acc_media"]; vals = [am[s] for s in ss]
+    cols = [COL.get(s, "#888") for s in ss]
+    ax.bar(ss, vals, color=cols, edgecolor="k", lw=.4); ax.axhline(0.5, color="k", ls="--", lw=.8)
+    ax.set_title(f"{g}: {', '.join(prof[g]['activos'])}\nlev={prof[g]['naturaleza_media']['leverage_corr']:+.3f} "
+                 f"vol={prof[g]['naturaleza_media']['oos_vol']:.2f}", fontsize=8)
+    ax.tick_params(axis="x", rotation=45, labelsize=7)
+    best = prof[g]["mejor_acc_no_trivial"]; ax.text(ss.index(best), am[best] + 0.004, "★", ha="center", color="#c0392b", fontsize=12)
+axes[0].set_ylabel("accuracy media"); fig.suptitle("Accuracy media por estrategia, por grupo (★ mejor no trivial)", y=1.04)
+plt.tight_layout(); plt.show()
+for g in groups: print(f"{g} ({', '.join(prof[g]['activos'])}): mejor no-trivial = {prof[g]['mejor_acc_no_trivial']} "
+                       f"(acc {prof[g]['acc_media'][prof[g]['mejor_acc_no_trivial']]})")""")
+
+code(r"""# (2) Accuracy de cada estrategia según COINCIDA con el drift, por activo del grupo
+pa = CL10["por_activo"]; mains = ["M5", "M8", "M10", "AutoML"]
+fig, axes = plt.subplots(1, len(groups), figsize=(14, 3.8), sharey=True)
+for ax, g in zip(axes, groups):
+    acts = prof[g]["activos"]; x = np.arange(len(acts)); w = 0.2
+    for j, s in enumerate(mains):
+        vals = [pa[a]["drift"][s]["acc_coincide"] or np.nan for a in acts]
+        ax.bar(x + (j - 1.5) * w, vals, w, color=COL.get(s, "#888"), edgecolor="k", lw=.3, label=s)
+    ax.axhline(0.5, color="k", ls="--", lw=.8); ax.set_xticks(x); ax.set_xticklabels(acts, fontsize=8)
+    ax.set_title(g, fontsize=9)
+axes[0].set_ylabel("accuracy cuando coincide con el drift"); axes[0].legend(fontsize=7, ncol=2)
+fig.suptitle("Accuracy de cada estrategia en los días que COINCIDE con el drift (tendencia 21d), por activo", y=1.04)
+plt.tight_layout(); plt.show()
+# contraste coincide vs contra, media por grupo (¿el acierto es solo ir con la corriente?)
+for g in groups:
+    co = np.nanmean([pa[a]["drift"]["AutoML"]["acc_coincide"] for a in prof[g]["activos"] if pa[a]["drift"]["AutoML"]["acc_coincide"]])
+    cn = np.nanmean([pa[a]["drift"]["AutoML"]["acc_contra"] for a in prof[g]["activos"] if pa[a]["drift"]["AutoML"]["acc_contra"]])
+    print(f"{g}: AutoML acc coincide-drift={co:.3f} vs contra-drift={cn:.3f} → "
+          f"{'sobre todo va con la corriente' if co - cn > 0.05 else 'acierta también a contracorriente (no es solo drift)'}")""")
+
+code(r"""# (3) Cuota SHAP de las features de STRATA en el aprendiz, por activo del grupo
+fig, axes = plt.subplots(1, len(groups), figsize=(14, 3.6), sharey=True)
+for ax, g in zip(axes, groups):
+    acts = prof[g]["activos"]; vals = [pa[a]["shap_cuota_strata"] for a in acts]
+    ax.bar(acts, vals, color="#16a085", edgecolor="k", lw=.4); ax.axhline(0.5, color="k", ls="--", lw=.8, label="50%")
+    for i, v in enumerate(vals): ax.text(i, v + 0.01, f"{v:.2f}", ha="center", fontsize=8)
+    ax.set_title(g, fontsize=9); ax.tick_params(axis="x", rotation=45, labelsize=8); ax.set_ylim(0, 1)
+axes[0].set_ylabel("cuota SHAP de features STRATA"); axes[0].legend(fontsize=7)
+fig.suptitle("Cuota SHAP de las features de STRATA en el meta-learner, por activo y grupo", y=1.04)
+plt.tight_layout(); plt.show()
+allc = [pa[a]["shap_cuota_strata"] for a in PANEL10]
+print(f"La cuota SHAP de STRATA supera 0.5 en {sum(c > 0.5 for c in allc)}/10 activos (media {np.mean(allc):.2f}): "
+      "el aprendiz se apoya en las señales de STRATA en TODOS los grupos — la universalidad no depende de la naturaleza.")""")
 
 # ═══════════════════════════  §7 Robustez y honestidad  ═══════════════════════════
 md(r"""## §7 Robustez y honestidad""")
@@ -1405,9 +1463,11 @@ assert IANA["balance_intervenciones"]["intervenciones_acertadas"] > IANA["balanc
 assert abs(GATE["gate_por_activo"]["SPY"]["ram_alto"]["acc_seguir_regimen"] - DET["detectores"]["RAM"]["acc_M8_en_disparo"]) < 0.01, "gate RAM SPY (seguir régimen cuando RAM≥τ) debe coincidir con acc_M8_en_disparo de detector_analysis_SPY"
 assert len(GATE["descriptivo_spy"]["variables"]) == 9 and "ram_score" in GATE["descriptivo_spy"]["variables"], "el descriptivo SPY debe tener 9 variables con su corte univariante"
 assert all(GATE["descriptivo_spy"]["variables"][v]["acc_univar"] < 0.62 for v in GATE["descriptivo_spy"]["variables"]), "ninguna variable sola debe separar bien (la dirección no es univariante)"
-# clustering consenso de 3 métodos; spectral discrepa y se reporta (fix #5)
-assert CLU["concordancia_k3_randajustado"]["kmeans~ward"] == 1.0, "KMeans~Ward deberían coincidir"
-assert CLU["concordancia_k3_randajustado"]["kmeans~spectral"] < 0.5, "spectral debe discrepar (se reporta como tal)"
+# clustering sobre los 10: consenso unánime de los 4 métodos (Rand=1.0)
+assert CL10["concordancia_k3_randajustado"]["kmeans~ward"] == 1.0, "KMeans~Ward deberían coincidir (10)"
+assert CL10["concordancia_k3_randajustado"]["kmeans~spectral"] == 1.0, "sobre los 10 los 4 métodos coinciden (Rand=1.0, consenso unánime)"
+assert sorted([a for g in CL10["perfiles_k3"]["kmeans"].values() for a in g["activos"]]) == sorted(PANEL10), "los grupos del clustering-10 deben cubrir exactamente los 10"
+assert all(CL10["por_activo"][a]["shap_cuota_strata"] > 0.5 for a in PANEL10), "la cuota SHAP de STRATA debe superar 0.5 en los 10 (universalidad en todos los grupos)"
 # AutoML en equity (ganadora SPY) + serie alineada
 assert "automl" in ANR["SPY"] and len(ANR["SPY"]["automl"]) == len(DPA["SPY"]["net_returns"]["m5"]), "serie AutoML SPY"
 # robustez de panel: rodante + bull/bear pooled significativo
@@ -1453,7 +1513,7 @@ assert _spy_canon > 0.5 and _spy_dpa > 0.5, "ambas fuentes de la cuota SPY (IMP-
 assert abs(_spy_dpa - 0.715) < 0.002, "cuota SPY de decision_automl_prep (otro árbol) es ≈0.715; se reporta como tal, no se confunde con la canónica"
 print("AUTO-TEST OK · panel 10 + apéndice 5 · SPY AutoML gana (nominal) + rescate sig · casos XLE(régimen, detector_analysis_XLE)/MARA(ML, detector_analysis_MARA) "
       "cruzados con su JSON · split=PANEL10/EXCL5 · pooled-15 canónico n=3751 · detectores RAM · "
-      "clustering consenso 3 métodos (spectral discrepa, declarado) · K=3 held-out · rescate sig en alcista Y bajista · "
+      "clustering-10 consenso unánime 4 métodos (Rand=1.0) · K=3 held-out · rescate sig en alcista Y bajista · "
       f"ley leverage robusta a leave-one-out (p_max LOO={LAW_LOO_PMAX:.3f}<0.10) · BAC p≈{PAN['BAC']['tests']['m8_vs_m5']['p']:.3f} cruzado vs JSON")""")
 
 
