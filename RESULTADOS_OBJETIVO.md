@@ -115,7 +115,7 @@ Caso **central** del notebook definitivo `STRATA_marco_practico.ipynb` (decisió
   M10 vs ZeroR p=0.133 (n=251 → sin potencia; significancia de accuracy = línea futura). No se afirma batir al
   baseline/mercado.
 - **Rescate del agente — SÍ significativo.** En accuracy: McNemar **AutoML vs M5 p=0.0002**, **M10 vs M5
-  p=0.0074**, **M8 vs M5 p=0.0509**. En riesgo (bootstrap pareado **pooled**, 15 activos, n=3753): **M8 vs M5
+  p=0.0074**, **M8 vs M5 p=0.0509**. En riesgo (bootstrap pareado **pooled**, 15 activos, n=3751): **M8 vs M5
   ΔSharpe +0.66 IC95[0.225,1.157]** y **ΔmaxDD +0.24 IC95[0.017,0.445]** (ambos excluyen 0). A nivel SPY el IC de
   riesgo aún cruza 0 (poca potencia); la significancia llega en el pooled.
 - **Universalidad.** Cuota STRATA en SHAP: panel media 0.66; SPY 0.565 (mejor árbol) / 0.564 (permutation del

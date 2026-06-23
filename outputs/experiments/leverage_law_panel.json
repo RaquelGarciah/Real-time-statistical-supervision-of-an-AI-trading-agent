@@ -27,7 +27,14 @@
   "pearson_p": 0.0341,
   "spearman_rho": -0.5393,
   "spearman_p": 0.038,
-  "loo_p_max": 0.0947
+  "loo_p_max": 0.0947,
+  "perm_test_p": 0.0294,
+  "boot_ci95_r": [
+   -0.8035,
+   -0.1025
+  ],
+  "perm_B": 20000,
+  "boot_B": 10000
  },
  "pc1_leverage": {
   "pearson_r": 0.8396,
