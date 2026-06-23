@@ -120,6 +120,7 @@ THR = _load("cache/models/strata_thresholds.json")                       # umbra
 DETXLE = _load("outputs/experiments/detector_analysis_XLE.json"); DETMAR = _load("outputs/experiments/detector_analysis_MARA.json")
 DETABL = _load("outputs/experiments/detector_ablation_panel.json")        # activación detectores (10) + ablación M10 (SPY)
 CONF = _load("outputs/experiments/confusion_panel.json")                  # matrices de confusión SPY (6) + panel (mejor STRATA)
+IANA = _load("outputs/experiments/spy_intervention_anatomy.json")         # anatomía de un día de intervención (acierto/fallo)
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -255,6 +256,39 @@ axes[2].set_title("RAM score (τ=0.5 marcado) · casi binario")
 plt.tight_layout(); plt.show()
 print(f"Atribución del P&L de rescate: RAM={at['pnl_dias_RAM_disparado']:+.3f}, PSA={at['pnl_dias_PSA_disparado']:+.3f}, "
       f"GSO={at['pnl_dias_GSO_disparado']:+.3f} → todo el rescate es del canal RÉGIMEN (override-C, decisiones #5/#7).")""")
+
+md(r"""### Anatomía de un día de intervención: cuándo RAM corrige bien al agente y cuándo no
+Para hacer tangible la mecánica, dos días reales del OOS con el **mismo patrón** (agente corto en régimen de Calma
+→ RAM lo detecta incoherente y voltea a largo) pero **desenlace opuesto**. No escondemos los fallos: de las
+intervenciones, una parte se equivoca; lo que sostiene a M8 es que **acierta más de las que falla**.""")
+
+code(r"""# Anatomía: un día de intervención ACERTADA y uno FALLIDA (mismo mecanismo, desenlace opuesto) + balance
+ba = IANA["balance_intervenciones"]; ca, cf = IANA["caso_acierto"], IANA["caso_fallo"]
+def _fila(c, tag):
+    vot = "/".join(f"{p.split('_')[0][:4]}{'+' if s>0 else '−' if s<0 else '·'}" for p, s in c["votos_personalidades"].items())
+    return {"caso": tag, "fecha": c["fecha"], "régimen": c["regimen"], "RAM": c["ram_score"],
+            "agente M5": f"{c['agente_M5']:+d}", "votos (5 pers.)": vot, "STRATA M8": f"{c['STRATA_M8']:+d}",
+            "r_next": f"{c['r_next']:+.2%}", "M8": "✓" if c["M8_acierta"] else "✗", "M5": "✓" if c["M5_acierta"] else "✗"}
+print(pd.DataFrame([_fila(ca, "ACIERTO"), _fila(cf, "FALLO")]).to_string(index=False))
+print(f"\nBalance de las {ba['n_intervenciones']} intervenciones: M8 acierta {ba['acc_M8_en_intervencion']:.1%} "
+      f"vs agente {ba['acc_M5_en_intervencion']:.1%} → {ba['intervenciones_acertadas']} aciertan, "
+      f"{ba['intervenciones_fallidas']} fallan; P&L de rescate {ba['pnl_intervenciones']:+.3f}.")
+
+# Timeline: días de intervención coloreados por acierto/fallo, tamaño ∝ |r_next|
+s = IANA["serie"]; x = pd.to_datetime(s["dates"]); iv = np.array(s["intervino"]); hit = np.array(s["m8_hit"])
+rn = np.abs(np.array(s["r_next"])) * 100
+fig, ax = plt.subplots(figsize=(13, 3.2))
+ax.plot(x, np.cumsum(s["r_next"]), color="#bbb", lw=1, label="SPY (retorno acumulado)")
+for msk, col, lab in [(iv & hit, "#27ae60", "intervención acierta"), (iv & ~hit, "#c0392b", "intervención falla")]:
+    ax.scatter(x[msk], np.cumsum(s["r_next"])[msk], s=20 + 8 * rn[msk], color=col, alpha=.75, edgecolor="k", lw=.3, label=lab)
+for c, mk in ((ca, "ACIERTO"), (cf, "FALLO")):
+    xi = x[s["dates"].index(c["fecha"])]; ax.annotate(f"{mk}\n{c['fecha']}", (xi, np.cumsum(s["r_next"])[s["dates"].index(c["fecha"])]),
+        fontsize=7, ha="center", va="bottom" if mk == "ACIERTO" else "top")
+ax.set_title("SPY · días de intervención de M8 (verde acierta, rojo falla; tamaño ∝ |r_next|)"); ax.legend(fontsize=8, loc="upper left")
+plt.tight_layout(); plt.show()
+print("Mismo mecanismo en los dos: agente corto en Calma → RAM (score≈0.99) lo voltea a largo. El "
+      f"{ca['fecha']} el mercado sube {ca['r_next']:+.1%} y M8 acierta; el {cf['fecha']} baja {cf['r_next']:+.1%} "
+      "y M8 falla. La regla no es infalible — es favorable en el agregado (71/121).")""")
 
 md(r"""### ¿Por qué se conservan PSA y GSO si apenas disparan en este OOS?
 Pregunta legítima (y esperable en defensa). La respuesta es que su **inactividad aquí es un diagnóstico honesto
@@ -1252,6 +1286,11 @@ assert set(tab10.index) == set(PANEL10) and set(tab5.index) == set(EXCL5), "el s
 assert DP["pooled"]["n_total"] == 3751 and DP["pooled"]["boot"]["m8_vs_m5"]["dSharpe"]["sig"], "pooled-15 canónico: n=3751 y M8 vs M5 sig"
 # detectores: RAM domina
 assert DET["detectores"]["RAM"]["tasa_disparo"] > DET["detectores"]["PSA"]["tasa_disparo"], "RAM debería dominar"
+# anatomía de la intervención: balance coherente con detector_analysis + casos ilustrativos válidos
+assert abs(IANA["balance_intervenciones"]["acc_M8_en_intervencion"] - DET["intervencion"]["acc_M8_si_interviene"]) < 0.01, "el balance de la anatomía debe coincidir con la acc M8-intervenido de detector_analysis_SPY"
+assert IANA["caso_acierto"]["M8_acierta"] and not IANA["caso_acierto"]["M5_acierta"], "el caso ACIERTO debe ser intervención donde M8 acierta y el agente fallaba"
+assert IANA["caso_fallo"]["M5_acierta"] and not IANA["caso_fallo"]["M8_acierta"], "el caso FALLO debe ser intervención donde el agente tenía razón y M8 falla"
+assert IANA["balance_intervenciones"]["intervenciones_acertadas"] > IANA["balance_intervenciones"]["intervenciones_fallidas"], "M8 debe acertar más intervenciones de las que falla (lo que sostiene la regla)"
 # clustering consenso de 3 métodos; spectral discrepa y se reporta (fix #5)
 assert CLU["concordancia_k3_randajustado"]["kmeans~ward"] == 1.0, "KMeans~Ward deberían coincidir"
 assert CLU["concordancia_k3_randajustado"]["kmeans~spectral"] < 0.5, "spectral debe discrepar (se reporta como tal)"
