@@ -2141,7 +2141,7 @@ hasta APROBADO contra un gate G1–G6.
 McNemar AutoML vs ZeroR p=0.902, M10 vs ZeroR p=0.133 (n=251, sin potencia → significancia de accuracy = línea
 futura). Lo que **sí** sobrevive a un test: (a) **rescate del agente en accuracy** — McNemar AutoML/M10/M8 vs M5
 p=0.0002 / 0.0074 / 0.0509; (b) **rescate del agente en riesgo** — bootstrap pareado **pooled** (15 activos,
-n=3753) M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157] y ΔmaxDD +0.24 IC95[0.017,0.445], ambos excluyen 0 (a nivel SPY
+n=3751) M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157] y ΔmaxDD +0.24 IC95[0.017,0.445], ambos excluyen 0 (a nivel SPY
 el IC aún cruza 0); (c) **universalidad** — cuota STRATA en SHAP media 0.66 (SPY 0.565 árbol / 0.564 permutation);
 (d) **patrón** activo→estrategia por clustering (KMeans/Ward/GMM coinciden, Rand=1.0, k=3). STRATA **no genera
 alfa** (no bate a ZeroR/B&H sig.).
@@ -2155,3 +2155,39 @@ decisión #16 (límite por leverage débil, ilustrado en SMCI).
 `decision_automl_prep.json`, `automl_importance.json`, `strategy_clustering15.json`, `spy_m10_full_report.json`,
 `spy_ablation_robustness.json`, `m10_smci_*`; `docs/chats/automl/revision_marco_practico.md`;
 `.claude/agents/raquel-quant.md`.
+
+## [2026-06-23] [Pre-registro] - Experimento regime_channel_heldout
+
+**Contexto.** El canal régimen (HMM) solo necesita precio. Se evalúa en un universo HELD-OUT
+de 12 activos con precio pero SIN decisiones del agente (AMD, ARKK, COIN, GME, INTC, META,
+NFLX, PLTR, PYPL, RIOT, SHOP, SNOW), nunca usados para construir la ley naturaleza→canal.
+Doble propósito: (a) generalización de la única ley que sobrevive un test (rescate ∝ leverage);
+(b) coste/turnover del régimen-solo (hueco "producción").
+
+**Hipótesis.** El contenido direccional del régimen-solo es CONDICIONAL al leverage effect:
+en el universo held-out, leverage_corr (calibración, ≤2024-09, congelado) correlaciona
+negativamente con la ventaja del régimen (acc y Sharpe), reproduciendo el patrón del panel-15
+(Sharpe medio régimen FUERTE +0.40 vs DÉBIL −0.14).
+
+**H0.** No hay relación leverage_corr ↔ ventaja del régimen en el held-out (el patrón del
+panel-15 era sobreajuste/coincidencia).
+
+**Estadístico.** Pearson y Spearman de leverage_corr vs {acc régimen−ZeroR, Sharpe régimen};
+sign test de medias grupo FUERTE (lev_corr<−0.05) vs DÉBIL en el held-out; y pooled con los 15.
+
+**Criterio de éxito.** Correlación negativa leverage↔ventaja consistente en signo con el panel-15
+(idealmente p<0.10 pooled); Sharpe medio régimen FUERTE > DÉBIL en el held-out.
+
+**Criterio de fracaso (prior-flip).** Si el signo de la relación leverage→ventaja del régimen
+SE INVIERTE en el held-out → el canal NO generaliza → se reporta como límite, no se re-busca.
+
+**Honestidad.** NO se espera ni se busca que régimen-solo bata a ZeroR en accuracy (no lo hizo,
+2/15). El contraste es relacional (canal leverage) + riesgo/coste. No es búsqueda de alfa.
+
+**Datos.** OOS 2024-10-01→hoy, signal_lag=1, prior de signo del régimen congelado en calibración.
+Coste lineal 1bp (core.backtest), + barrido 0/1/5/10bp y coste de break-even. Caveat: COIN/PLTR/
+SNOW tienen calibración corta (inicio 2020-21) → menos transiciones de régimen.
+
+**Output esperado.** `outputs/experiments/regime_channel_heldout.json` con claves: por_activo
+{leverage_corr, regimen/bh/zeror {acc,sharpe,equity,maxDD}, turnover_ann, breakeven_bps,
+net_by_cost}, y resumen {corr_lev_acc, corr_lev_sharpe, grupo_fuerte/debil, pooled_con_15}.

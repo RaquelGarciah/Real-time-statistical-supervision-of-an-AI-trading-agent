@@ -1,0 +1,503 @@
+{
+  "meta": {
+    "universo": [
+      "META",
+      "NFLX",
+      "INTC",
+      "AMD",
+      "COIN",
+      "GME",
+      "RIOT",
+      "PLTR",
+      "SNOW",
+      "SHOP",
+      "PYPL",
+      "ARKK"
+    ],
+    "oos_start": "2024-10-01",
+    "nota": "canal régimen price-only en universo HELD-OUT (sin agente, sin uso previo); prior de signo congelado en calibración; signal_lag=1; coste 1bp salvo barrido",
+    "pre_registro": "BITACORA 2026-06-23"
+  },
+  "por_activo": {
+    "META": {
+      "n": 430,
+      "frac_up": 0.5093,
+      "leverage_corr": -0.0242,
+      "crisis_mean": 0.000458,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.5093,
+        "sharpe": 0.011,
+        "equity": 0.8957,
+        "maxDD": -0.3605,
+        "turnover_ann": 0.0
+      },
+      "bh": {
+        "acc": 0.5093,
+        "sharpe": 0.011,
+        "equity": 0.8957,
+        "maxDD": -0.3605,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5093,
+        "sharpe": 0.011,
+        "equity": 0.8957,
+        "maxDD": -0.3605,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 70.37,
+      "net_acum_by_cost": {
+        "0bp": 0.007,
+        "1bp": 0.0069,
+        "5bp": 0.0065,
+        "10bp": 0.006
+      }
+    },
+    "NFLX": {
+      "n": 430,
+      "frac_up": 0.507,
+      "leverage_corr": 0.014,
+      "crisis_mean": 0.000546,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.507,
+        "sharpe": 0.156,
+        "equity": 0.9912,
+        "maxDD": -0.4563,
+        "turnover_ann": 0.0
+      },
+      "bh": {
+        "acc": 0.507,
+        "sharpe": 0.156,
+        "equity": 0.9912,
+        "maxDD": -0.4563,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.507,
+        "sharpe": 0.156,
+        "equity": 0.9912,
+        "maxDD": -0.4563,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 200.0,
+      "net_acum_by_cost": {
+        "0bp": 0.0915,
+        "1bp": 0.0914,
+        "5bp": 0.091,
+        "10bp": 0.0905
+      }
+    },
+    "INTC": {
+      "n": 427,
+      "frac_up": 0.4918,
+      "leverage_corr": -0.045,
+      "crisis_mean": -0.00219,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.5199,
+        "sharpe": -0.7822,
+        "equity": 0.2689,
+        "maxDD": -0.8342,
+        "turnover_ann": 16.563
+      },
+      "bh": {
+        "acc": 0.4918,
+        "sharpe": 1.5238,
+        "equity": 3.9433,
+        "maxDD": -0.3368,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5082,
+        "sharpe": -1.525,
+        "equity": 0.1142,
+        "maxDD": -0.9019,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 0.0,
+      "net_acum_by_cost": {
+        "0bp": -0.9023,
+        "1bp": -0.9058,
+        "5bp": -0.9198,
+        "10bp": -0.9373
+      }
+    },
+    "AMD": {
+      "n": 430,
+      "frac_up": 0.5326,
+      "leverage_corr": -0.0063,
+      "crisis_mean": -3.6e-05,
+      "clase": "leverage débil/neutro",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.5186,
+        "sharpe": 0.1138,
+        "equity": 0.819,
+        "maxDD": -0.5721,
+        "turnover_ann": 8.224
+      },
+      "bh": {
+        "acc": 0.5326,
+        "sharpe": 1.1586,
+        "equity": 2.4495,
+        "maxDD": -0.5721,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5326,
+        "sharpe": 1.1586,
+        "equity": 2.4495,
+        "maxDD": -0.5721,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 80.64,
+      "net_acum_by_cost": {
+        "0bp": 0.121,
+        "1bp": 0.1195,
+        "5bp": 0.1135,
+        "10bp": 0.106
+      }
+    },
+    "COIN": {
+      "n": 430,
+      "frac_up": 0.4605,
+      "leverage_corr": 0.0003,
+      "crisis_mean": -0.002254,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_corta": true,
+      "regimen": {
+        "acc": 0.4767,
+        "sharpe": -0.837,
+        "equity": 0.1918,
+        "maxDD": -0.8904,
+        "turnover_ann": 16.448
+      },
+      "bh": {
+        "acc": 0.4605,
+        "sharpe": -0.0081,
+        "equity": 0.5908,
+        "maxDD": -0.7064,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5395,
+        "sharpe": 0.0079,
+        "equity": 0.5918,
+        "maxDD": -0.7177,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 0.0,
+      "net_acum_by_cost": {
+        "0bp": -1.1127,
+        "1bp": -1.1156,
+        "5bp": -1.1272,
+        "10bp": -1.1417
+      }
+    },
+    "GME": {
+      "n": 423,
+      "frac_up": 0.487,
+      "leverage_corr": 0.0682,
+      "crisis_mean": 0.00257,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.5177,
+        "sharpe": 0.9574,
+        "equity": 1.8228,
+        "maxDD": -0.3579,
+        "turnover_ann": 13.137
+      },
+      "bh": {
+        "acc": 0.487,
+        "sharpe": 0.3046,
+        "equity": 1.0403,
+        "maxDD": -0.4129,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.513,
+        "sharpe": -0.3081,
+        "equity": 0.6253,
+        "maxDD": -0.5149,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 200.0,
+      "net_acum_by_cost": {
+        "0bp": 0.8108,
+        "1bp": 0.8073,
+        "5bp": 0.7933,
+        "10bp": 0.7758
+      }
+    },
+    "RIOT": {
+      "n": 426,
+      "frac_up": 0.5188,
+      "leverage_corr": 0.0831,
+      "crisis_mean": 0.015085,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.4789,
+        "sharpe": -0.909,
+        "equity": 0.1354,
+        "maxDD": -0.8646,
+        "turnover_ann": 2.372
+      },
+      "bh": {
+        "acc": 0.5188,
+        "sharpe": 0.8472,
+        "equity": 1.8343,
+        "maxDD": -0.6316,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5188,
+        "sharpe": 0.8472,
+        "equity": 1.8343,
+        "maxDD": -0.6316,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 0.0,
+      "net_acum_by_cost": {
+        "0bp": -1.3421,
+        "1bp": -1.3434,
+        "5bp": -1.3486,
+        "10bp": -1.3551
+      }
+    },
+    "PLTR": {
+      "n": 429,
+      "frac_up": 0.5478,
+      "leverage_corr": 0.0165,
+      "crisis_mean": 0.008523,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_corta": true,
+      "regimen": {
+        "acc": 0.5245,
+        "sharpe": 0.7469,
+        "equity": 1.5923,
+        "maxDD": -0.4392,
+        "turnover_ann": 17.664
+      },
+      "bh": {
+        "acc": 0.5478,
+        "sharpe": 1.1322,
+        "equity": 2.4287,
+        "maxDD": -0.4392,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5478,
+        "sharpe": 1.1322,
+        "equity": 2.4287,
+        "maxDD": -0.4392,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 200.0,
+      "net_acum_by_cost": {
+        "0bp": 0.8173,
+        "1bp": 0.814,
+        "5bp": 0.8008,
+        "10bp": 0.7843
+      }
+    },
+    "SNOW": {
+      "n": 430,
+      "frac_up": 0.5442,
+      "leverage_corr": 0.0479,
+      "crisis_mean": -0.002809,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_corta": true,
+      "regimen": {
+        "acc": 0.4651,
+        "sharpe": -0.1171,
+        "equity": 0.6498,
+        "maxDD": -0.5829,
+        "turnover_ann": 21.147
+      },
+      "bh": {
+        "acc": 0.5442,
+        "sharpe": 0.7247,
+        "equity": 1.5679,
+        "maxDD": -0.5929,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5442,
+        "sharpe": 0.7247,
+        "equity": 1.5679,
+        "maxDD": -0.5929,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 0.0,
+      "net_acum_by_cost": {
+        "0bp": -0.1168,
+        "1bp": -0.1205,
+        "5bp": -0.1353,
+        "10bp": -0.1538
+      }
+    },
+    "SHOP": {
+      "n": 430,
+      "frac_up": 0.5047,
+      "leverage_corr": -0.0209,
+      "crisis_mean": 0.00062,
+      "clase": "leverage inverso/ausente (régimen NO direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.5047,
+        "sharpe": 0.3233,
+        "equity": 1.0278,
+        "maxDD": -0.5185,
+        "turnover_ann": 0.0
+      },
+      "bh": {
+        "acc": 0.5047,
+        "sharpe": 0.3233,
+        "equity": 1.0278,
+        "maxDD": -0.5185,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5047,
+        "sharpe": 0.3233,
+        "equity": 1.0278,
+        "maxDD": -0.5185,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 200.0,
+      "net_acum_by_cost": {
+        "0bp": 0.3275,
+        "1bp": 0.3274,
+        "5bp": 0.327,
+        "10bp": 0.3265
+      }
+    },
+    "PYPL": {
+      "n": 430,
+      "frac_up": 0.4977,
+      "leverage_corr": -0.0281,
+      "crisis_mean": -0.00028,
+      "clase": "leverage débil/neutro",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.4581,
+        "sharpe": -0.6681,
+        "equity": 0.5536,
+        "maxDD": -0.542,
+        "turnover_ann": 14.098
+      },
+      "bh": {
+        "acc": 0.4977,
+        "sharpe": -0.8733,
+        "equity": 0.4806,
+        "maxDD": -0.6164,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5023,
+        "sharpe": 0.873,
+        "equity": 1.5864,
+        "maxDD": -0.2801,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 0.0,
+      "net_acum_by_cost": {
+        "0bp": -0.4504,
+        "1bp": -0.4529,
+        "5bp": -0.4629,
+        "10bp": -0.4754
+      }
+    },
+    "ARKK": {
+      "n": 428,
+      "frac_up": 0.5234,
+      "leverage_corr": -0.0581,
+      "crisis_mean": -0.002417,
+      "clase": "leverage fuerte (régimen direccional)",
+      "calib_corta": false,
+      "regimen": {
+        "acc": 0.507,
+        "sharpe": 0.2728,
+        "equity": 1.0448,
+        "maxDD": -0.4524,
+        "turnover_ann": 2.361
+      },
+      "bh": {
+        "acc": 0.5234,
+        "sharpe": 0.7849,
+        "equity": 1.5069,
+        "maxDD": -0.4123,
+        "turnover_ann": 0.0
+      },
+      "zeror": {
+        "acc": 0.5234,
+        "sharpe": 0.7849,
+        "equity": 1.5069,
+        "maxDD": -0.4123,
+        "turnover_ann": 0.0
+      },
+      "breakeven_bps": 200.0,
+      "net_acum_by_cost": {
+        "0bp": 0.1953,
+        "1bp": 0.1944,
+        "5bp": 0.1908,
+        "10bp": 0.1863
+      }
+    }
+  },
+  "resumen": {
+    "held_out_n": 12,
+    "corr_lev_sharpe_heldout": {
+      "pearson_r": 0.1051,
+      "pearson_p": 0.745,
+      "spearman_r": 0.049,
+      "spearman_p": 0.8799,
+      "n": 12
+    },
+    "corr_lev_edge_acc_heldout": {
+      "pearson_r": -0.3141,
+      "pearson_p": 0.32,
+      "spearman_r": -0.2465,
+      "spearman_p": 0.4399,
+      "n": 12
+    },
+    "grupo_fuerte": {
+      "n": 1,
+      "sharpe_medio": 0.2728,
+      "acc_medio": 0.507,
+      "turn_medio": 2.361,
+      "BE_medio": 200.0
+    },
+    "grupo_debil": {
+      "n": 11,
+      "sharpe_medio": -0.0914,
+      "acc_medio": 0.4982,
+      "turn_medio": 9.9685,
+      "BE_medio": 86.4555
+    },
+    "pooled_con_15": {
+      "n": 27,
+      "corr_lev_sharpe": {
+        "pearson_r": -0.2688,
+        "pearson_p": 0.1752,
+        "spearman_r": -0.2784,
+        "spearman_p": 0.1597,
+        "n": 27
+      },
+      "corr_lev_edge_acc": {
+        "pearson_r": -0.1448,
+        "pearson_p": 0.4711,
+        "spearman_r": -0.1661,
+        "spearman_p": 0.4077,
+        "n": 27
+      }
+    }
+  }
+}
