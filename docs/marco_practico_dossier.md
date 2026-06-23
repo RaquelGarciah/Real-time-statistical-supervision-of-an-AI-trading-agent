@@ -29,8 +29,9 @@ en accuracy sobre las triviales (ZeroR/B&H) es **nominal**, no significativa: se
 > falsable de cuándo y cómo la supervisión estadística de un agente LLM aporta valor**: qué canal funciona según
 > la **naturaleza** del activo, en qué **régimen**, con qué **modelo**, y con qué **mecanismo**. Encontrar
 > patrones contrastables NO es el premio de consolación: **es la contribución**. Una técnica de supervisión cuyo
-> dominio de aplicabilidad está caracterizado y falsado es más fiable —y más "llevable a producción"— que un
-> número de accuracy sin teoría detrás. El capítulo debe **liderar con esto**, no esconderlo tras la accuracy.
+> dominio de aplicabilidad está caracterizado y falsado es más fiable —y más sólida para **seguir la línea de
+> investigación**— que un número de accuracy sin teoría detrás. El capítulo debe **liderar con esto**, no
+> esconderlo tras la accuracy.
 
 Las conclusiones de esta fase, con la configuración actual (panel-10, M8/M10/AutoML canónicos, OOS desplegable),
 y **el valor que tienen**:
@@ -81,7 +82,7 @@ leverage invertido, donde la regla no puede y gana M10); la **cuota SHAP de STRA
 Gate RAM: cuando el detector dispara, seguir el **régimen** bate a seguir al agente en **6/10**; y la
 **intervención crece con la discrepancia agente↔régimen** (Pearson **r=0.93, p<0.001**). *Valor:* el sistema hace
 **lo que dice que hace** — interviene donde el agente se aparta del régimen, y cada capa (riesgo/accuracy) cumple
-su función. Mecanismo interpretable = confianza para producción.
+su función. Mecanismo interpretable = se entiende **por qué** actúa (base para confiar en la técnica).
 
 **C7. [MECANISMO] El que las features de STRATA ayuden depende del modelo — y el ganador las usa.**
 *Resultado:* **AutoML** alcanza su máximo con las 22 features (0.574) y **degrada** al quitar PSA+GSO (0.550) → sí
@@ -115,7 +116,7 @@ regla, y se explica por qué). Esta jerarquía es lo que la memoria debe llevar 
 
 **Síntesis del valor.** El trabajo aporta (i) un **resultado duro contrastado** (rescate de riesgo, C1–C3); (ii)
 un **mapa de patrones falsables** sobre dónde y cómo supervisar (C4–C5), que es el corazón científico; (iii) un
-**mecanismo interpretable** que da confianza para producción (C6–C8); y (iv) una **jerarquía de valor honesta y
+**mecanismo interpretable** que hace la técnica entendible y fiable (C6–C8); y (iv) una **jerarquía de valor honesta y
 contrastada peldaño a peldaño** (C9), que es la frase-tesis del capítulo. La accuracy frente a lo trivial es
 nominal y se declara; el valor está en **entender el fenómeno de la supervisión estadística de agentes LLM** —
 cuánto aporta, frente a qué, y por qué—, no en un punto de acierto.
