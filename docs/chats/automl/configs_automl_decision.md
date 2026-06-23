@@ -212,10 +212,37 @@ clustering **PC1≈leverage (r=0.84)**. **[Raquel]** "Prueba todo, sí" → robu
 **[Raquel]** "Guarda la conversación entera." → este registro (consolidado aquí; el duplicado
 `marco_practico_panel10.md` se eliminó para no duplicar).
 
+## 7. Enriquecimiento de robustez, claridad y rigor (más completo)
+**[Raquel]** "Necesito el notebook más robusto y que el modelo parezca más significativo y aporte más valor.
+Mete pruebas de abstención al intervenir en SPY, barridos de umbral, gráficas de naturaleza de los activos y
+mejor-STRATA-vs-agente por activo; luego investiga todos los notebooks y propón ideas (yo valido antes)."
+**[Claude]** Implementado + commiteado:
+- **§3 variantes de intervención (SPY):** override-C eq 0.94 vs **abstención** 0.81 vs reduce 0.76 vs agente 0.70
+  → el valor está en **voltear** al régimen, no en "apagar" al agente. + **sensibilidad** a RAM τ y a p1*
+  (plana en torno a los canónicos → sin grado de libertad oculto; anti p-hacking). `spy_intervention_variants.py`.
+- **§4 intro:** gráficas de **naturaleza** por activo (leverage Black, frac Crisis OOS, sesgo corto, vol) +
+  **rescate mejor-STRATA vs agente** (accuracy y Sharpe).
+- **Investigación profunda** (Explore) → 10 ideas; **[Raquel]** "haz todo menos el 7 (transición HMM)". Implementadas
+  (validadas por ella): #1 contingencia régimen×dirección (§2), #2 confusión M10vsM5 por régimen + #8 SHAP
+  dependency (§3), #9 cuota SHAP rodante (§4, estable 0.63–0.82, no deriva), #3 timeline M8↔M10 + #5 rescate
+  estratificado índices/acciones (§5), #6 calibración M10 (§7). `spy_mechanism_extras.py`. #4 (ley + LOO) ya estaba.
+- **Gap PSA/GSO** (a petición de Raquel, "me lo van a preguntar"): §2 justifica por qué se conservan pese a
+  disparar poco — (1) en calibración (24y, 2008/2020) **sí** disparan (colas reales P99/máx altos); (2) este OOS
+  calmado no cumple sus condiciones (agente sin sobre-exposición y con sesgo persistente → BOCPD/GSO sin nada que
+  detectar); (3) es **predicción pre-registrada cumplida** (RAM domina, CLAUDE.md §2 nivel 2). Quitarlos sería
+  ajustar el marco a los datos. `strata_thresholds.json` + detector_analysis.
+- Cada vuelta cerrada por el bucle constructor↔raquel-quant (APROBADO; la última ronda, a la primera).
+- **[Raquel]** preguntó por la **ventana**: dos ventanas etiquetadas — OOS completo (n=401, M5/M8/ZeroR/B&H, §2
+  mecánica) y desplegable (n≈250 tras burn-in, M10/AutoML, §3+; ej. SPY 2025-05-09→2026-05-11). Nunca se mezclan.
+
 ## ESTADO CANÓNICO AL CIERRE
 - **Notebook único canónico:** `notebooks/STRATA_marco_practico.ipynb` (panel de 10). Decisión #18.
 - **Panel (10):** SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG · **apéndice (5):** MSTR, NVDA, BAC, TSLA, IWM.
 - **Outputs nuevos:** `mechanism_panel.json`, `panel_robustness.json`, `automl_net_returns.json`,
-  `detector_analysis_{SPY,XLE,MARA}.json`, `calib_window_panel.json`. Log de revisión:
+  `detector_analysis_{SPY,XLE,MARA}.json`, `calib_window_panel.json`, `spy_intervention_variants.json`,
+  `spy_mechanism_extras.json`. Scripts: `experiments/{mechanism_panel,panel_robustness,automl_net_returns,
+  detector_analysis,calib_window_panel,spy_intervention_variants,spy_mechanism_extras}.py`. Log de revisión:
   `docs/chats/automl/revision_marco_practico.md`.
+- **Notebook:** 43 celdas de código, 0 errores, auto-test (17 asserts) verde; cerrado por el bucle
+  constructor↔`raquel-quant`. Gap futuro anotado: argumentar conservación de PSA/GSO (ya hecho en §2).
 - **Punto más blando (declarado):** UNG en el cuerpo (el agente no pierde ahí; encuadrado como caso ML).
