@@ -233,8 +233,18 @@ test". (Pre-registrable; no ejecutado aún.)
 ## §4 Generalización — panel de 10 (universalidad y riesgo)
 
 - **[NUEVO] Ablación de features (barra) M10-XGB vs AutoML:** ver §2.
-- **SHAP:** cuota de las features de STRATA en el aprendiz **>0.5 en 10/10 activos, media ≈0.66** → universalidad
-  en todos los grupos (el ML redescubre STRATA, no inventa otra señal).
+- **SHAP:** cuota de las features de STRATA en el aprendiz **>0.5 en 10/10 activos, media ≈0.66** → el ML
+  **redescubre las señales de STRATA**, no inventa otra señal (la parte de universalidad que se sostiene).
+- **[NUEVO] ¿Redescubre o BATE a la regla? Test de equivalencia (TOST, Schuirmann 1987).** La afirmación "no
+  bate" se contrasta con un TOST (no con un test de diferencia no significativo). **Resultado honesto: el TOST NO
+  confirma equivalencia; el aprendiz BATE a la regla M8 en accuracy** — pooled M10 Δacc=+0.021 IC90[+0.001,+0.039]
+  y AutoML +0.034 IC90[+0.010,+0.056] (modesto, 2–3 pp); SPY AutoML bate con fuerza (Δacc +0.132, Sharpe +4.25).
+  En **Sharpe es no concluyente** (regla y aprendiz **indistinguibles en riesgo**). **Reencuadre:** el aprendiz
+  redescubre las señales de STRATA (SHAP) y **extrae algo MÁS de accuracy que la regla fija** porque modela
+  **interacciones no lineales que la regla determinista no puede** (los activos de leverage invertido donde M8
+  falla, §5) — no es "otra señal", es la misma combinada con más flexibilidad. Orden honesto: **rescata al agente
+  (sig) > bate modestamente a la regla en accuracy > empata con la regla en riesgo > no bate a ZeroR (nominal).**
+  Fuente: `equivalence_tost.json`.
 - **[NUEVO] Activación de detectores en el panel:** RAM actúa, PSA/GSO dormidos (gráfica de barras 10 activos).
 - **[NUEVO] Gate RAM por activo:** cuando RAM dispara, seguir el **régimen** (override) bate a seguir al **agente**
   en **6/10** activos → ahí aporta M8; en el resto manda el canal ML. Y la **intervención de M8 crece con la
@@ -340,6 +350,7 @@ los límites (apéndice, leverage débil) se declaran. **STRATA rescata y acota;
 | Gate RAM + descriptivo SPY | **spy_panel_gate_descriptive** | `spy_panel_gate_descriptive.json` | §2, §4 |
 | PARTE B confirmatoria + DSR + régimen | **bullbear_confirmatory** | `bullbear_confirmatory.json` | §7 |
 | Test DiD complementariedad | **regime_did_learners** | `regime_did_learners.json` | §7 |
+| Equivalencia/superioridad aprendiz vs regla (TOST) | **equivalence_tost** | `equivalence_tost.json` | §4 |
 | Variantes de intervención SPY | spy_intervention_variants | `spy_intervention_variants.json` | §3 |
 | Rodante / val-test / bull-bear panel | panel_robustness | `panel_robustness.json` | §7 |
 | Robustez calibración | calib_window_panel | `calib_window_panel.json` | §7 |

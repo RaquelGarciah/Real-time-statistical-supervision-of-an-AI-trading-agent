@@ -2283,3 +2283,45 @@ complementariedad es un **fenómeno de PANEL** que emerge al agregar naturalezas
 resultado cross-asset, no de un activo. Propagado a notebook §7 (celda "(k) DiD"), §9 conclusión 6, y memoria
 [[bullbear-confirmatorio-dsr]]. Línea futura pre-registrable: ensemble enrutado por régimen (M10 alcista / AutoML
 bajista) usando la señal de RAM.
+
+---
+
+## [2026-06-23] [Pre-registro] - Experimento equivalence_tost (¿el aprendiz REDESCUBRE la regla o la BATE?)
+
+**Contexto.** La hipótesis de universalidad (CLAUDE.md §2.3) afirma que el aprendiz "redescubre STRATA, no la bate".
+Hasta ahora se argumentaba con SHAP + ablación; la afirmación "no bate" exige un **contraste de equivalencia**
+(TOST, Schuirmann 1987), no un test de diferencia no significativo (ausencia de evidencia ≠ evidencia de ausencia).
+
+**Hipótesis (H1, equivalencia).** El aprendiz (M10 / AutoML) es **equivalente** a la regla M8 dentro de un margen
+de irrelevancia δ: |Δ| < δ, con Δ = métrica(aprendiz) − métrica(M8), pareado. Métricas: accuracy direccional y
+Sharpe.
+
+**H0 (de la equivalencia).** |Δ| ≥ δ (difieren al menos el margen). TOST = dos contrastes unilaterales.
+
+**Estadístico.** TOST vía IC: equivalencia a α=0.05 si el **IC90% bootstrap-bloque** de Δ ⊂ (−δ, +δ). Además,
+**superioridad** unilateral P_boot(Δ≤0). Cuadro 2×2: REDESCUBRE (equiv, no bate) / BATE (superior, no equiv) /
+no concluyente. Pooled-10 y SPY.
+
+**Margen pre-registrado.** δ_acc = 0.03 (≈ 1 SE de accuracy de un activo, √(0.25/250); económicamente nimio);
+δ_Sharpe = 0.50 anualizado. Sensibilidad reportada (acc {0.01,0.02,0.03,0.05}; SR {0.25,0.5,0.75,1.0}) para no
+elegir el margen que conviene.
+
+**Criterio de éxito / fracaso.** No hay "éxito" pre-asignado: se reporta el veredicto honesto sea cual sea
+(equivalencia, superioridad o no concluyente). Si el aprendiz BATE a la regla, se dice (matiza la universalidad);
+si REDESCUBRE, se confirma. Margen sensibilidad = blindaje anti-cherry-picking.
+
+**Output esperado.** `outputs/experiments/equivalence_tost.json` con {SPY, POOLED10} × {M10_vs_M8, AutoML_vs_M8}
+× {accuracy, sharpe}: punto, IC90, equivalencia(δ)+sensibilidad, p_superioridad.
+
+**Resultado (2026-06-23).** **El TOST NO confirma equivalencia en ningún caso; al contrario, el aprendiz BATE a la
+regla M8 en accuracy.** Pooled: M10 vs M8 Δacc=+0.021 IC90[+0.001,+0.039] y AutoML vs M8 Δacc=+0.034
+IC90[+0.010,+0.056] → ambos superiores (efecto modesto, 2–3 pp). SPY: AutoML vs M8 superior en accuracy
+(Δ=+0.132) y Sharpe (Δ=+4.25); M10 vs M8 no concluyente. En **Sharpe el pooled es no concluyente** (IC cruza 0):
+regla y aprendiz son **indistinguibles en riesgo**. **Implicación (refina la universalidad, no la rompe):** la
+afirmación "redescubre y NO bate" queda **refutada en accuracy** — el aprendiz sí bate a la regla, porque modela
+**interacciones no lineales que la regla determinista no puede** (los activos de leverage invertido donde M8
+falla, §5). Lo que aguanta de la universalidad es el **SHAP** (el aprendiz USA las señales de STRATA, cuota 0.66).
+Reencuadre correcto: *el aprendiz redescubre las señales de STRATA y extrae algo MÁS de accuracy que la regla fija
+por su flexibilidad; en riesgo, regla y aprendiz son equivalentes; ninguno bate a lo trivial (ZeroR nominal).*
+Orden honesto: rescata al agente (sig) > bate modestamente a la regla en accuracy > empata con la regla en riesgo
+> no bate a ZeroR. Propagado a dossier (universalidad) y marco teórico §9 (TOST entra como método usado).

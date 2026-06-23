@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "pares": [
+      "M10_vs_M8",
+      "AutoML_vs_M8"
+    ],
+    "delta_acc_preReg": 0.03,
+    "delta_sharpe_preReg": 0.5,
+    "b_reps": 2000,
+    "metodo": "TOST (Schuirmann 1987) vía IC90 bootstrap-bloque ⊂ (−δ,δ); superioridad = unilateral P_boot(Δ≤0). Δ = aprendiz − M8, pareado.",
+    "margen_just": "δ_acc=0.03 ≈ 1 SE de accuracy de un activo (√(0.25/250)); δ_Sharpe=0.50 anualizado = diferencia de riesgo económicamente irrelevante. Se reporta sensibilidad."
+  },
+  "SPY": {
+    "M10_vs_M8": {
+      "n": 251,
+      "accuracy": {
+        "point": 0.0518,
+        "ci90_low": -0.0239,
+        "ci90_high": 0.1195,
+        "p_superioridad_aprendiz": 0.1395,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.03,
+        "sensibilidad": {
+          "0.01": false,
+          "0.02": false,
+          "0.03": false,
+          "0.05": false
+        }
+      },
+      "sharpe": {
+        "point": 1.1719,
+        "ci90_low": -1.2125,
+        "ci90_high": 3.3627,
+        "p_superioridad_aprendiz": 0.2295,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.5,
+        "sensibilidad": {
+          "0.25": false,
+          "0.5": false,
+          "0.75": false,
+          "1.0": false
+        }
+      },
+      "acc_aprendiz": 0.494,
+      "acc_regla": 0.4422,
+      "sharpe_aprendiz": -0.363,
+      "sharpe_regla": -1.535
+    },
+    "AutoML_vs_M8": {
+      "n": 251,
+      "accuracy": {
+        "point": 0.1315,
+        "ci90_low": 0.0438,
+        "ci90_high": 0.2231,
+        "p_superioridad_aprendiz": 0.0055,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.03,
+        "sensibilidad": {
+          "0.01": false,
+          "0.02": false,
+          "0.03": false,
+          "0.05": false
+        }
+      },
+      "sharpe": {
+        "point": 4.245,
+        "ci90_low": 1.4544,
+        "ci90_high": 7.1521,
+        "p_superioridad_aprendiz": 0.005,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.5,
+        "sensibilidad": {
+          "0.25": false,
+          "0.5": false,
+          "0.75": false,
+          "1.0": false
+        }
+      },
+      "acc_aprendiz": 0.5737,
+      "acc_regla": 0.4422,
+      "sharpe_aprendiz": 2.71,
+      "sharpe_regla": -1.535
+    }
+  },
+  "POOLED10": {
+    "M10_vs_M8": {
+      "n": 2493,
+      "accuracy": {
+        "point": 0.0205,
+        "ci90_low": 0.0012,
+        "ci90_high": 0.0393,
+        "p_superioridad_aprendiz": 0.041,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.03,
+        "sensibilidad": {
+          "0.01": false,
+          "0.02": false,
+          "0.03": false,
+          "0.05": true
+        }
+      },
+      "sharpe": {
+        "point": 0.5201,
+        "ci90_low": -0.1248,
+        "ci90_high": 1.1175,
+        "p_superioridad_aprendiz": 0.0895,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.5,
+        "sensibilidad": {
+          "0.25": false,
+          "0.5": false,
+          "0.75": false,
+          "1.0": false
+        }
+      },
+      "acc_aprendiz": 0.517,
+      "acc_regla": 0.4966,
+      "sharpe_aprendiz": 0.598,
+      "sharpe_regla": 0.078
+    },
+    "AutoML_vs_M8": {
+      "n": 2493,
+      "accuracy": {
+        "point": 0.0337,
+        "ci90_low": 0.0104,
+        "ci90_high": 0.0562,
+        "p_superioridad_aprendiz": 0.005,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.03,
+        "sensibilidad": {
+          "0.01": false,
+          "0.02": false,
+          "0.03": false,
+          "0.05": false
+        }
+      },
+      "sharpe": {
+        "point": 0.486,
+        "ci90_low": -0.043,
+        "ci90_high": 1.0198,
+        "p_superioridad_aprendiz": 0.0655,
+        "equivalente_delta_preReg": false,
+        "delta_preReg": 0.5,
+        "sensibilidad": {
+          "0.25": false,
+          "0.5": false,
+          "0.75": false,
+          "1.0": false
+        }
+      },
+      "acc_aprendiz": 0.5303,
+      "acc_regla": 0.4966,
+      "sharpe_aprendiz": 0.564,
+      "sharpe_regla": 0.078
+    }
+  }
+}
