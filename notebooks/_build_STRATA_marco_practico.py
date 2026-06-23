@@ -606,19 +606,22 @@ cuota_m = float(T["cuota_STRATA_SHAP"].mean())
 # Numerador = Σ|SHAP| de las features STRATA; denominador = Σ|SHAP| de TODAS las features. Es, pues, peso relativo, no accuracy.
 # La COLUMNA del panel (y la media) sale de decision_automl_prep.json (única fuente con SHAP para los 10 activos).
 # RECONCILIACIÓN SPY (dos árboles distintos): el §4 (bar-chart, cell 21) reporta la cuota SPY desde
-# automl_importance.json::shap_tree (mejor árbol GBM_..._model_3, cuota=0.565, top-1 garch_sigma; permutation sobre
-# el ensemble=0.564). La columna de esta tabla sale de decision_automl_prep.json, donde el mejor árbol guardado para
+# automl_importance.json::shap_tree (mejor árbol GBM_..._model_3, cuota=0.5652, top-1 garch_sigma; permutation sobre
+# el ensemble=0.5635). La columna de esta tabla sale de decision_automl_prep.json, donde el mejor árbol guardado para
 # SPY es OTRO (cuota=0.715, top-1 ram_score): mismo método (media|TreeSHAP|) pero sobre un árbol distinto del ensemble,
-# de ahí el salto. La cifra CANÓNICA de SPY es la de RESULTADOS_OBJETIVO §1ter: 0.565 (tree) / 0.564 (permutation).
-sx = IMP["SPY"]["shap_tree"]; sb = sx["bloques"]; cuota_spy_canon = sx["cuota_strata"]  # 0.565 (canónica §1ter)
+# de ahí el salto. La cifra CANÓNICA de SPY es la de RESULTADOS_OBJETIVO §1ter: 0.5652 (tree) / 0.5635 (permutation),
+# que a tres decimales se redondean a 0.565 / 0.564 — uso siempre los cuatro decimales del JSON para no introducir
+# ambigüedad de redondeo (0.5635 → 0.564 es un redondeo al límite, no una cifra distinta).
+sx = IMP["SPY"]["shap_tree"]; sb = sx["bloques"]; cuota_spy_canon = sx["cuota_strata"]  # 0.5652 (canónica §1ter)
 print(f"\nCuota STRATA SHAP media (10) = {cuota_m:.3f} · supera 0.5 en {int((T['cuota_STRATA_SHAP']>0.5).sum())}/10 → el ML se apoya en STRATA.")
 print(f"Definición: cuota = Σ|SHAP|(STRATA) / Σ|SHAP|(total), media de {DPA['SPY']['shap']['metodo']} sobre el mejor árbol.")
 print(f"En SPY (cifra canónica, automl_importance.json::shap_tree, {sx['modelo']}): régimen={sb['régimen']:.3f}, "
-      f"volatilidad={sb['volatilidad']:.3f}, psa={sb['psa']:.3f} vs agente={sb['agente']:.3f} → cuota STRATA={cuota_spy_canon:.3f} "
-      f"(permutation sobre el ensemble: {IMP['SPY']['perm_importance_ensemble']['cuota_strata']:.3f}). Es la misma que en §4 (cell 21).")
-print(f"Aviso de reconciliación: la columna SPY de la tabla ({DPA['SPY']['shap']['cuota_strata']:.3f}) sale de "
+      f"volatilidad={sb['volatilidad']:.4f}, psa={sb['psa']:.4f} vs agente={sb['agente']:.4f} → cuota STRATA={cuota_spy_canon:.4f} "
+      f"(permutation sobre el ensemble: {IMP['SPY']['perm_importance_ensemble']['cuota_strata']:.4f}). Es la misma que en §4 (cell 21).")
+print(f"Aviso de reconciliación: la columna SPY de la tabla ({DPA['SPY']['shap']['cuota_strata']:.4f}) sale de "
       "decision_automl_prep.json, un árbol distinto del ensemble (top-1 ram_score en vez de garch_sigma); mismo método "
-      "pero otro árbol. Ambas >0.5; la canónica del TFG (RESULTADOS_OBJETIVO §1ter) es 0.565 tree / 0.564 permutation.")
+      "pero otro árbol. Ambas >0.5; la canónica del TFG (RESULTADOS_OBJETIVO §1ter) es 0.5652 tree / 0.5635 permutation "
+      "(0.565 / 0.564 a tres decimales).")
 print("Honesto: añadir STRATA al vector del agente no sube la accuracy del meta-learner (Δ≈0, mixto); su valor "
       "es el rescate + interpretabilidad, no más accuracy.")""")
 
@@ -1058,18 +1061,44 @@ print("Diagrama de fiabilidad: relaciona p1 predicho con la frecuencia real de s
 md(r"""## §8 Apéndice — límite de aplicabilidad (los 5 excluidos)
 
 Honestidad: los 5 activos donde STRATA **no** aporta valor diferencial, **con su mecanismo**. Esto delimita el
-dominio de la metodología y *refuerza* la tesis (sabemos cuándo NO usarla).""")
+dominio de la metodología y *refuerza* la tesis (sabemos cuándo NO usarla).
+
+Nota sobre el discriminante en **IWM**: el etiquetado por `crisis_mean` (decisión #18) lo clasificaría como
+*leverage invertido* por un `crisis_mean=+0.00032` que es **ruido de redondeo** (≈0). Pero su `leverage_corr=-0.1022`
+es el **más negativo de la tabla** (leverage estándar fuerte, como un Russell 2000), así que los dos proxies de
+leverage se **contradicen**. No lo etiqueto como "leverage invertido" (sería negar su propio `leverage_corr`): es un
+**caso de borde** donde el discriminante es **ambiguo**. Sale al apéndice por **redundancia** de mecanismo con SPY/QQQ
+(canal régimen) y por **n corto** (≈250, sin significancia per-activo), no por una inversión de leverage que no existe.""")
 
 code(r"""# Los 5 excluidos con su mecanismo (mechanism_panel)
+# El campo "canal" del JSON está derivado, no almacenado: lo recomputo aquí desde canal_ganador/canal_regimen
+# (mechanism_panel.json guarda esos dos, no un "canal" literal) para que la tabla sea autoexplicativa.
+# IWM es un caso de borde del discriminante: leverage_corr=-0.1022 es el MÁS negativo del apéndice (leverage
+# estándar fuerte, como un Russell 2000), pero crisis_mean=+0.00032 es ruido de redondeo (≈0), no una inversión
+# real. La cadena "Leverage INVERTIDO" del JSON nace de un etiquetado que mira SOLO el signo de crisis_mean; con
+# crisis_mean≈0 ese signo no es fiable, así que NO la reproduzco para IWM: en su lugar marco el discriminante como
+# ambiguo y justifico la salida al apéndice por redundancia (RAM ya cubierto por SPY/QQQ) y n corto, no por leverage.
+def _canal(m):
+    return "régimen (M8)" if m["canal_regimen"] else "ML"  # derivado de canal_regimen; coincide con canal_ganador
+def _motivo(a, m):
+    if a == "IWM":
+        return "Discriminante AMBIGUO: leverage_corr=-0.1022 (estándar fuerte) pero crisis_mean≈0 (ruido) → el signo de crisis_mean no es fiable. No es 'leverage invertido'. Sale al apéndice por redundancia con SPY/QQQ y n corto."
+    return m["mecanismo"]
 rows = []
 for a in EXCL5:
     m = MECH[a]; t = PAN[a]["table"]; acc = {s: t[PKEY[s]]["accuracy"] for s in PKEY}; triv = max(acc["ZeroR"], acc["B&H"])
     rows.append({"activo": a, "M5": acc["M5"], "trivial": round(triv, 3), "agente_pierde": "sí" if acc["M5"] < triv else "NO",
-                 "crisis_mean": m["crisis_mean"], "interv_M8": f"{m['intervencion_M8']:.0%}", "motivo": m["mecanismo"][:80]})
+                 "lev_corr": round(m["leverage_corr"], 4), "crisis_mean": m["crisis_mean"],
+                 "canal": _canal(m), "interv_M8": f"{m['intervencion_M8']:.0%}", "motivo": _motivo(a, m)[:90]})
 print(pd.DataFrame(rows).set_index("activo").to_string())
 print("\nMSTR: el agente ya bate a las triviales (M5 0.554 > trivial 0.530) → no hay nada que rescatar (STRATA defiere). "
-      "BAC/NVDA/TSLA/IWM: el agente pierde pero el rescate no alcanza significancia per-activo (n≈250) y/o es "
-      "redundante con casos del cuerpo. Es el límite honesto.")""")
+      "BAC/NVDA/TSLA: el agente pierde pero el rescate no alcanza significancia per-activo (n≈250) y/o es redundante "
+      "con casos del cuerpo. Es el límite honesto.")
+print("IWM: caso de BORDE del discriminante crisis_mean. Su leverage_corr=-0.1022 (el más negativo del apéndice) lo "
+      "haría 'canal régimen' como SPY/QQQ, pero crisis_mean=+0.00032 es indistinguible de cero, así que el régimen NO "
+      "informa el signo de forma fiable y el aprendiz acaba ganando por poco (AutoML 0.482 vs M8 0.470). No lo etiqueto "
+      "como 'leverage invertido' (sería contradecir su propio leverage_corr): el discriminante es ambiguo aquí. Sale al "
+      "apéndice porque su mecanismo de régimen es redundante con SPY/QQQ y porque con n≈250 nada es significativo.")""")
 
 # ═══════════════════════════  §9 Conclusiones + auto-test  ═══════════════════════════
 md(r"""## §9 Conclusiones del marco práctico
@@ -1115,6 +1144,12 @@ assert DETMAR["intervencion"]["acc_M8_si_interviene"] < 0.5, "MARA (caso ML): la
 assert MECH["MARA"]["canal_ganador"].startswith("ML") and MECH["MARA"]["crisis_mean"] > 0, "MARA debe ser caso ML (leverage invertido)"
 # en MARA el aprendiz queda por encima de la regla en accuracy (canal ML), aunque sin significancia McNemar (n corto): se reporta como tal
 assert PAN["MARA"]["table"]["automl"]["accuracy"] >= PAN["MARA"]["table"]["m8"]["accuracy"], "MARA (caso ML): el aprendiz debe quedar por encima de la regla M8 en accuracy"
+# fix #1: IWM es caso de BORDE — leverage_corr el más negativo del apéndice pero crisis_mean≈0; la prosa NO debe
+# etiquetarlo "leverage invertido" (contradiría su leverage_corr). Verifico la incoherencia que motiva el trato especial.
+assert MECH["IWM"]["leverage_corr"] == min(MECH[a]["leverage_corr"] for a in EXCL5), "IWM debe tener el leverage_corr más negativo del apéndice (leverage estándar fuerte)"
+assert abs(MECH["IWM"]["crisis_mean"]) < 1e-3, "IWM: crisis_mean debe ser ≈0 (ruido), lo que hace ambiguo el discriminante por signo"
+_mot_iwm = _motivo("IWM", MECH["IWM"])
+assert "AMBIGUO" in _mot_iwm and "Leverage INVERTIDO" not in _mot_iwm, "el motivo mostrado para IWM debe marcarlo como discriminante AMBIGUO, no como 'Leverage INVERTIDO' (sería incoherente con su leverage_corr negativo)"
 # split cuerpo/apéndice reproducible (fix #2): la cohorte mostrada es exactamente la pre-registrada
 assert set(tab10.index) == set(PANEL10) and set(tab5.index) == set(EXCL5), "el split debe ser exactamente PANEL10/EXCL5"
 # pooled canónico = pooled-15 del JSON, n coherente (fix #3)
@@ -1149,13 +1184,13 @@ assert abs(_acc_m8_251 - PAN["SPY"]["table"]["m8"]["accuracy"]) < 0.001, "M8-SPY
 _sb = DPA["SPY"]["shap"]["bloques"]
 assert abs(sum(v for k, v in _sb.items() if k != "agente") - DPA["SPY"]["shap"]["cuota_strata"]) < 0.001, "cuota STRATA = suma de bloques no-agente"
 # RECONCILIACIÓN cuota SHAP SPY (dos fuentes/árboles distintos, ambas declaradas en §4.5): la canónica del TFG es la de
-# automl_importance.json::shap_tree (0.565, mismo número que el bar-chart §4 cell 21) y su permutation-ensemble (0.564);
+# automl_importance.json::shap_tree (0.5652, mismo número que el bar-chart §4 cell 21) y su permutation-ensemble (0.5635);
 # la columna de la tabla §4.5 sale de decision_automl_prep.json sobre OTRO árbol (0.715). Ambas >0.5. Se exige que el
 # número canónico (IMP) coincida exactamente entre cell 21 y la narrativa de cell 31, y que la diferencia con DPA quede tolerada.
 _spy_canon = IMP["SPY"]["shap_tree"]["cuota_strata"]; _spy_perm = IMP["SPY"]["perm_importance_ensemble"]["cuota_strata"]
 _spy_dpa = DPA["SPY"]["shap"]["cuota_strata"]
-assert abs(_spy_canon - 0.565) < 0.002, "cuota SPY canónica (automl_importance::shap_tree) debe ser ≈0.565 (RESULTADOS_OBJETIVO §1ter)"
-assert abs(_spy_perm - 0.564) < 0.002, "cuota SPY permutation-ensemble debe ser ≈0.564 (contraste canónico §1ter)"
+assert abs(_spy_canon - 0.5652) < 0.001, "cuota SPY canónica (automl_importance::shap_tree) debe ser ≈0.5652 (RESULTADOS_OBJETIVO §1ter; 0.565 a 3 decimales)"
+assert abs(_spy_perm - 0.5635) < 0.001, "cuota SPY permutation-ensemble debe ser ≈0.5635 (contraste canónico §1ter; 0.564 a 3 decimales)"
 assert _spy_canon > 0.5 and _spy_dpa > 0.5, "ambas fuentes de la cuota SPY (IMP-tree y DPA) deben superar 0.5"
 assert abs(_spy_dpa - 0.715) < 0.002, "cuota SPY de decision_automl_prep (otro árbol) es ≈0.715; se reporta como tal, no se confunde con la canónica"
 print("AUTO-TEST OK · panel 10 + apéndice 5 · SPY AutoML gana (nominal) + rescate sig · casos XLE(régimen, detector_analysis_XLE)/MARA(ML, detector_analysis_MARA) "
