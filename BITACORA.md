@@ -2331,3 +2331,31 @@ Reencuadre correcto: *el aprendiz redescubre las señales de STRATA y extrae alg
 por su flexibilidad; en riesgo, regla y aprendiz son equivalentes; ninguno bate a lo trivial (ZeroR nominal).*
 Orden honesto: rescata al agente (sig) > bate modestamente a la regla en accuracy > empata con la regla en riesgo
 > no bate a ZeroR. Propagado a dossier (universalidad) y marco teórico §9 (TOST entra como método usado).
+
+---
+
+## [2026-06-23] [Decisión] - Enfoque final: panel de 10 SIN apéndice; ley y pooled de riesgo sobre 10
+
+**Contexto.** Consolidación del giro de enfoque (SMCI-caso-de-uso → SPY + panel de 10 + patrones). Raquel decide
+eliminar del todo los 5 activos que no están en el panel (MSTR, NVDA, BAC, TSLA, IWM): **ni siquiera como
+apéndice**. El estudio es de 10 activos. SMCI se queda (es uno de los 10).
+
+**Detalle.** Cambios en el notebook canónico `STRATA_marco_practico.ipynb` y docs de esta sesión:
+- Eliminada la sección §8 (apéndice de los 5); §9 conclusiones → §8. §1 reencuadrado a "panel de 10".
+- **Ley del leverage recomputada sobre 10**: Pearson r=−0.56, **p=0.093** (antes 15: r=−0.55, p=0.034). Se reporta
+  como **tendencia significativa al α=0.10** del proyecto, **visible en el panel** (tabla leverage↔rescate por
+  activo: índices fuertes rescatan 0.097 vs 0.059 los de leverage débil; 9/10 la siguen, solo ROKU a
+  contracorriente). **Ya NO se afirma p<0.05 ni robustez a leave-one-out** (sobre 10, quitar UNG → p=0.35).
+  Decisión consciente: la ley se cumple en los 10 (la correlación es igual de fuerte); solo baja la potencia.
+- **Pooled de riesgo → pooled-10** como titular: M8 vs M5 ΔSharpe **+0.64 IC[0.10,1.29]** (sig), M10 +0.93,
+  AutoML +0.97. Retirado el pooled-15 (n=3751) del notebook.
+- Auto-test actualizado (sin asserts de EXCL5/apéndice/IWM/pooled-15/LOO). Notebook 87 celdas, 0 errores, verde.
+
+**Implicaciones para el TFG.** El resultado duro (rescate riesgo + accuracy) y los patrones (clustering Rand=1.0,
+complementariedad DiD p=0.008) se sostienen sobre 10. La ley del leverage baja a marginal (α=0.10), declarado con
+honestidad. Los docs raíz (DECISIONES/RESULTADOS/CONOCIMIENTO/LECCIONES) los actualiza la otra sesión desde
+`conclusiones_notebook_central.md` (reescrito como documento de contexto de la tesis: objetivos, C1–C9, decisiones,
+Cap.4 qué aparece, Cap.3 qué falta, defensa, líneas rojas, figuras).
+
+**Referencias.** `notebooks/_build_STRATA_marco_practico.py`, `conclusiones_notebook_central.md`,
+`docs/marco_practico_dossier.md`, plan en `.claude/plans/`.

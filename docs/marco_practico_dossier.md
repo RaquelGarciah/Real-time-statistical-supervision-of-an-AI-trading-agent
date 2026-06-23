@@ -1,4 +1,9 @@
-# Dossier del marco práctico (Cap. 4) — fuente única para la memoria
+# Dossier del marco práctico (Cap. 4) — desarrollo por secciones
+
+> **ENFOQUE FINAL (2026-06-23): panel de 10, SIN apéndice.** Los 5 (MSTR/NVDA/BAC/TSLA/IWM) quedan fuera del TFG.
+> Cifra de riesgo = **pooled-10** (ΔSharpe M8 +0.64 IC[0.10,1.29]); ley del leverage **sobre 10** (r=−0.56,
+> p=0.093, α=0.10, sin LOO-robusta). El **documento de contexto primario** es `conclusiones_notebook_central.md`;
+> este dossier es el desarrollo por secciones (puede quedar algún detalle de la fase de 15 en prosa de apoyo).
 
 **Qué es esto.** El puente entre el notebook canónico `notebooks/STRATA_marco_practico.ipynb` y el capítulo 4 de
 la memoria (`tesis/chapters/04_marco_practico.tex`). Reúne, en prosa y por secciones, **toda** la mecánica,
@@ -37,7 +42,7 @@ Las conclusiones de esta fase, con la configuración actual (panel-10, M8/M10/Au
 y **el valor que tienen**:
 
 **C1. El rescate de riesgo del agente es real y sobrevive el test más estricto.**
-*Resultado:* pooled, M8 vs M5 ΔSharpe **+0.66 [0.225, 1.157]** (excluye 0); en el confirmatorio con **cota
+*Resultado:* pooled-10, M8 vs M5 ΔSharpe **+0.64 [0.10, 1.29]** (excluye 0); M10 +0.93, AutoML +0.97; en el confirmatorio con **cota
 Bonferroni**, **M10 y AutoML pasan** (SPY +0.02 / +1.91; pooled +0.26 / +0.26) y el **DSR de AutoML-SPY = 0.924**.
 *Valor:* la afirmación "supervisar reduce el riesgo del agente" no es retórica — aguanta bootstrap pareado,
 corrección por multiplicidad y deflación. Es el resultado **duro** que sostiene la tesis.
@@ -70,7 +75,7 @@ exactamente "seguir esta línea de investigación con confianza".
 tres grupos por naturaleza: **índices de leverage fuerte** (canal régimen/riesgo), **leverage invertido** (canal
 aprendiz), **volátiles** (canal aprendiz). El eje principal del clustering **es el leverage** (PC1≈leverage,
 r≈0.84). Y la **única ley que sobrevive un test**: el rescate del aprendiz en accuracy **escala con el leverage
-effect** (Pearson r=−0.55, p=0.034; Spearman −0.54, p=0.038; robusta a leave-one-out, peor caso p≈0.095).
+effect** (Pearson r=−0.56, p=0.093; Spearman −0.59, p=0.074, sobre los 10): tendencia significativa al α=0.10, visible en el panel (no se afirma p<0.05 ni robustez LOO).
 *Valor:* convierte "a veces gana uno y a veces otro" —la duda que te angustiaba— en una **regla mecánica
 falsable**: *donde el régimen es coherente con la dirección (leverage fuerte), funciona la regla; donde el régimen
 miente sobre el signo (leverage invertido), solo el aprendiz rescata*. Eso es **entender el fenómeno**, no solo
@@ -166,8 +171,8 @@ calm/stress/crisis_prob, garch_sigma) = **ALL22**.
 ## NOTA METODOLÓGICA — ¿Se puede hacer *pooled*? (sí, con lectura correcta)
 
 **Qué es.** En lugar de analizar cada activo por separado, se **apilan los retornos diarios de todos los activos
-en una sola muestra** y se hace el test sobre ella. 10 activos × ~250 días ≈ **2 493** (pooled-10); 15 × ~250 ≈
-**3 751** (pooled-15). El bootstrap remuestrea de esa serie combinada.
+en una sola muestra** y se hace el test sobre ella. 10 activos × ~250 días ≈ **2 493** (pooled-10);
+(pooled-10). El bootstrap remuestrea de esa serie combinada.
 
 **¿Es legítimo? SÍ.** Es **estadística de panel** estándar (econometría de panel; backtests multi-instrumento del
 mundo López de Prado). Apilar unidades para ganar potencia es ortodoxo. En este proyecto es además **necesario**:
@@ -184,7 +189,7 @@ bootstrap**, que respeta la dependencia temporal **dentro** de cada activo.
 mismo día los índices se mueven juntos (correlación **cruzada**, sobre todo en crisis) → la **n efectiva es menor
 que la nominal**; el block bootstrap corrige la autocorrelación dentro de un activo, no entre activos, así que la
 precisión del IC está algo **sobreestimada**. Es un matiz de **precisión, no de validez**: el resultado canónico
-(M8 vs M5 ΔSharpe +0.66, IC95 [0.225, 1.157]) excluye 0 **con holgura**, con margen para ese fleco. **Robustez
+(M8 vs M5 ΔSharpe +0.64, IC95 [0.10, 1.29]) excluye 0, con margen para ese fleco. **Robustez
 pendiente/opcional:** un bootstrap **por fechas** (remuestrear días de calendario llevándose todos los activos de
 cada día juntos) preservaría la correlación cruzada y convertiría el caveat de "declarado" a "contestado con un
 test". (Pre-registrable; no ejecutado aún.)
@@ -196,12 +201,11 @@ test". (Pre-registrable; no ejecutado aún.)
 
 ## §1 Datos, universo y protocolo
 
-- **Universo:** 15 activos analizados; **cuerpo = 10** (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG),
-  **apéndice = 5** (MSTR, NVDA, BAC, TSLA, IWM).
+- **Panel:** 10 activos (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegidos ex-ante por naturaleza. **Sin apéndice** (los 5 restantes quedan fuera del TFG).
 - **Decisión (cohorte 10).** La selección de los 10 es **ex-ante por naturaleza** (clases de activo), no por
   resultado. *Honestidad:* se subraya que **no** se usa la significancia per-activo como criterio de selección
   (con n≈250 casi nunca hay p<0.10); el criterio es **ilustrativo del mecanismo**, y la significancia vive en el
-  pooled (§4) y los estratos (§7). Los 5 del apéndice (§8) delimitan dónde STRATA **no** aporta.
+  pooled (§4) y los estratos (§7).
 - **Periodos.** Calibración 2000-01-01 → 2024-09-30 (24 años, HMM/GARCH/BOCPD entrenados una vez). OOS unificado
   2024-10-01 → cierre (inicio posterior al cutoff de DeepSeek V3 → sin contaminación look-ahead del LLM).
 - **Rigor:** `signal_lag=1`; embargo=1 en el walk-forward desplegable (horizonte de etiqueta=1, rolling-origin,
@@ -271,8 +275,8 @@ test". (Pre-registrable; no ejecutado aún.)
 - **[NUEVO] Gate RAM por activo:** cuando RAM dispara, seguir el **régimen** (override) bate a seguir al **agente**
   en **6/10** activos → ahí aporta M8; en el resto manda el canal ML. Y la **intervención de M8 crece con la
   discrepancia agente↔régimen** (Pearson **r=0.93, p<0.001**) → STRATA actúa donde el agente se aparta del régimen.
-- **RESULTADO DURO — rescate de riesgo (pooled bootstrap):** canónico **pooled-15** M8 vs M5 **ΔSharpe +0.66,
-  IC95 [0.225, 1.157]** (excluye 0); ΔmaxDD +0.24, IC95 [0.017, 0.445]. **pooled-10** del cuerpo consistente (mismo
+- **RESULTADO DURO — rescate de riesgo (pooled-10 bootstrap):** M8 vs M5 **ΔSharpe +0.64, IC95 [0.10, 1.29]**
+  (excluye 0); M10 +0.93, AutoML +0.97 (todos sig). Es la cifra de riesgo titular (mismo
   signo, IC también excluye 0), incluyendo AutoML. *(Ver nota metodológica sobre el pooled.)*
 
 ## §5 Mecanismo — dos supervisores con trabajos distintos
@@ -280,7 +284,7 @@ test". (Pre-registrable; no ejecutado aún.)
 - **Encuadre de dos capas:** **M8 = capa de RIESGO** (rescate de Sharpe pooled significativo, interpretable, rota
   poco); **M10/AutoML = capa de ACCURACY** (McNemar vs M5 significativo). No compiten; cada función pasa su test.
 - **La única ley que sobrevive un test:** el rescate del **aprendiz** en accuracy **escala con el leverage effect**
-  — Pearson **r=−0.55 (p=0.034)**, Spearman ρ=−0.54 (p=0.038), **robusta a leave-one-out** (peor caso drop-MSTR
+  — Pearson **r=−0.56 (p=0.093)**, Spearman ρ=−0.59 (p=0.074), sobre los 10: tendencia sig al α=0.10 (sin LOO; antes drop-MSTR
   p≈0.095 < 0.10). Ninguna variable de naturaleza predice el valor de M8 (todas p>0.10): el discriminante
   `crisis_mean` es **descriptivo, no una ley**.
 - **Casos trabajados (uno por canal):** índices (régimen coherente → M8) vs MARA/cripto (leverage invertido: el
@@ -290,9 +294,9 @@ test". (Pre-registrable; no ejecutado aún.)
 
 ## §6 Clustering por naturaleza — el eje que importa es el leverage
 
-- **[NUEVO — CANÓNICO sobre los 10]** Clustering re-ejecutado **sobre los 10** del cuerpo (la versión de 15 se
+- **[NUEVO — CANÓNICO sobre los 10]** Clustering re-ejecutado **sobre los 10** del panel (la versión de 15 se
   conserva en `strategy_clustering15.json` como respaldo). **Consenso unánime** de KMeans/Ward/GMM **y spectral**
-  (Rand ajustado = **1.0**), silhouette **0.55** (más limpio que sobre los 15).
+  (Rand ajustado = **1.0**), silhouette **0.55**.
 - **Tres grupos por naturaleza:**
   - **C0 — índices de leverage fuerte** (SPY, QQQ, XLF, DIA, XLK, XLE): lev −0.097; mejor no-trivial AutoML.
   - **C1 — leverage invertido** (SMCI, UNG): lev +0.018, agente 97% corto; mejor M10.
@@ -337,17 +341,7 @@ test". (Pre-registrable; no ejecutado aún.)
 - **Techo ZeroR:** ninguna señal direccional bate a ZeroR causal en el OOS de forma significativa → la accuracy es
   **nominal** (ventana corta, línea futura); el valor está en **riesgo** y en el **rescate**, no en batir lo trivial.
 
-## §8 Apéndice — límite de aplicabilidad (los 5 excluidos)
-
-- **MSTR:** el agente ya bate a las triviales → no hay nada que rescatar (STRATA defiere).
-- **BAC/NVDA/TSLA:** el agente pierde pero el rescate no alcanza significancia per-activo (n≈250) y/o es redundante
-  con casos del cuerpo.
-- **IWM:** caso de **borde** del discriminante. leverage_corr=−0.1022 (el más negativo del apéndice) lo haría
-  "canal régimen", pero crisis_mean≈0 → el discriminante por signo es **ambiguo** (no se etiqueta como "leverage
-  invertido", sería contradecir su propio leverage). Redundante con SPY/QQQ.
-- **Lectura:** delimitar dónde NO aporta **refuerza** la tesis (sabemos cuándo no usarla).
-
-## §9 Conclusiones (resumen; ver notebook §9 para la lista numerada O1–O7)
+## §8 Conclusiones (resumen; ver notebook §8 para la lista numerada O1–O7)
 
 Supervisar estadísticamente a un agente LLM **aporta valor diferencial medible**, y ese valor se ordena en una
 **jerarquía honesta contrastada peldaño a peldaño** (C9): el aprendiz **rescata al agente** (significativo) >
@@ -355,7 +349,7 @@ Supervisar estadísticamente a un agente LLM **aporta valor diferencial medible*
 **empata con la regla en riesgo** (Sharpe indistinguible) > **no bate a lo trivial** (ZeroR, accuracy nominal).
 A esto se añaden las dos capas complementarias cuyo uso se relaciona con la naturaleza del activo (ley
 leverage→rescate, complementariedad por régimen), la universalidad por SHAP (el ML redescubre las señales de
-STRATA) y un mecanismo interpretable. Los límites (apéndice, leverage débil, accuracy nominal) se declaran.
+STRATA) y un mecanismo interpretable. Los límites (accuracy nominal, leverage débil, ley sobre 10 marginal) se declaran.
 **STRATA rescata, ordena el valor con rigor y acota; no genera alfa.**
 
 ---
@@ -365,7 +359,7 @@ STRATA) y un mecanismo interpretable. Los límites (apéndice, leverage débil, 
 | Resultado | Experimento | JSON | Sección |
 |---|---|---|---|
 | Tabla 6 estrategias + McNemar | panel canónico (automl_m10) | `automl_runs/panel_mm25_*.json` | §3 |
-| Rescate riesgo pooled-15 (canónico) | decision_automl_prep | `decision_automl_prep.json` | §4, §5 |
+| Rescate riesgo pooled-10 | decision_automl_prep (recomputado a 10) | `decision_automl_prep.json` | §4, §5 |
 | Series netas AutoML (reconstruidas) | automl_net_returns | `automl_net_returns.json` | §3, §4, §7 |
 | Ley leverage→rescate + LOO | (en decision_automl_prep/mechanism) | `mechanism_panel.json` | §5 |
 | Clustering 10 + gráficas por grupo | **cluster_panel10** | `cluster_panel10.json` | §6 |
@@ -390,6 +384,6 @@ STRATA) y un mecanismo interpretable. Los límites (apéndice, leverage débil, 
    bootstrap-por-fechas pendiente/opcional.
 3. **Clustering n=10:** exploratorio/descriptivo; qué modelo gana por activo no es predecible por el cluster.
 4. **Complementariedad por régimen:** significativa en pooled, **no** en SPY-solo (fenómeno cross-asset).
-5. **Selección de la cohorte 10:** ex-ante por naturaleza, no por significancia; los 5 del apéndice son el límite.
+5. **Selección del panel de 10:** ex-ante por naturaleza, no por significancia (sin apéndice; los 5 restantes fuera del TFG).
 6. **STRATA no genera alfa:** todos los Sharpe absolutos siguen mayormente negativos; se mide el rescate **relativo**
    al agente, que es la tesis.
