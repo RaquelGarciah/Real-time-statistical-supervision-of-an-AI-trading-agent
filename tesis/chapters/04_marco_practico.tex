@@ -12,7 +12,7 @@ El objetivo de este capítulo es claro: responder a la siguiente pregunta. ¿Un 
 
 El argumento avanza en cuatro pasos. La Sección~\ref{sec:mp-spy} expone el mecanismo en un activo, SPY, con todas las decisiones de calibración justificadas y los tests del rescate. La Sección~\ref{sec:mp-panel} lleva el análisis a un panel para distinguir el efecto de la suerte y probar la robustez. La Sección~\ref{sec:mp-mecanismo} explica por qué funciona, separando las dos capas de supervisión y midiendo la única regularidad que sobrevive a un contraste. La Sección~\ref{sec:mp-limites} cierra con los límites y las líneas futuras.
 
-El límite va por delante. Las estrategias supervisadas baten al agente en acierto direccional con significancia y le recortan el riesgo, y un aprendiz potente se apoya en las señales de STRATA antes que prescindir de ellas. Batir a las referencias triviales (comprar y mantener, clase mayoritaria) en accuracy, en cambio, es nominal con esta muestra. STRATA no promete alfa: rescata al perdedor, disciplina su riesgo y delimita con honestidad dónde funciona.
+El límite va por delante. Las estrategias supervisadas baten al agente en acierto direccional con significancia y le recortan el riesgo, y un aprendiz potente se apoya en las señales de STRATA antes que prescindir de ellas. Batir a las referencias triviales (comprar y mantener, clase mayoritaria) en accuracy, en cambio, es nominal con esta muestra. STRATA no promete alfa: rescata al perdedor, disciplina su riesgo y delimita dónde funciona y dónde no.
 
 \section{Caso de estudio: SPY}
 \label{sec:mp-spy}
@@ -66,27 +66,27 @@ Una precisión sobre el régimen, que gobierna toda la lectura. En la calibraci�
 
 Los tres detectores son ortogonales (Sección~\ref{sec:strata-tecnico}). RAM lee el régimen y comprueba si la dirección de la apuesta concuerda con el estado vigente; dispara cuando $\mathrm{RAM}_t \ge \tau = 0{,}50$ y reorienta la posición al signo del régimen. PSA vigila con BOCPD si el agente cambia de criterio de forma estructural. GSO contrasta el tamaño con la volatilidad del GARCH y lo acota a la banda. Las definiciones formales están en las Secciones~\ref{sec:strata-ram}, \ref{sec:strata-psa} y~\ref{sec:strata-gso}.
 
-Sobre SPY la supervisión que de verdad actúa es una sola (Tabla~\ref{tab:mp-detectores}). RAM dispara el $30{,}2\,\%$ de los días, y cuando lo hace la regla acierta el $58{,}7\,\%$ de las direcciones frente al $41{,}3\,\%$ del agente en esos mismos días. PSA dispara dos días y GSO ninguno, porque el agente mantiene una posición casi constante (corto el $75{,}6\,\%$ de los días) y sus \emph{scores} quedan en la evaluación por debajo de sus umbrales de calibración. La atribución de P\&L lo confirma: el rescate acumulado, $+0{,}312$, procede en su totalidad de los días en que RAM dispara, y las contribuciones de PSA y GSO son nulas. La supervisión efectiva en SPY es el canal de régimen; las otras dos quedan inertes, y así se reporta.
+Sobre SPY la supervisión que de verdad actúa es una sola (Tabla~\ref{tab:mp-detectores}). RAM dispara el $30{,}2\,\%$ de los días, y cuando lo hace la regla acierta el $58{,}7\,\%$ de las direcciones frente al $41{,}3\,\%$ del agente en esos mismos días. PSA dispara dos días y GSO ninguno, porque el agente mantiene una posición casi constante (corto el $75{,}6\,\%$ de los días) y sus \emph{scores} quedan en la evaluación por debajo de sus umbrales de calibración. La atribución de P\&L lo confirma: el rescate acumulado, $+0{,}312$, procede en su totalidad de los días en que RAM dispara, y las contribuciones de PSA y GSO son nulas. La supervisión efectiva en SPY es el canal de régimen; las otras dos quedan inertes.
 
 \begin{table}[htbp]
 \centering
-\caption{Actividad de los tres detectores sobre SPY ($n=251$). Tasa de disparo, acierto de M8 frente a M5 en los días intervenidos, y P\&L de rescate atribuido. Fuente: \texttt{detector\_analysis\_SPY.json}.}
+\caption{Actividad de los tres detectores sobre el OOS completo de SPY ($n=401$ días; el análisis de detectores usa toda la evaluación, no la ventana desplegable de $251$). Tasa de disparo, acierto de M8 frente a M5 en los días intervenidos, y P\&L de rescate atribuido. Fuente: \texttt{detector\_analysis\_SPY.json}.}
 \label{tab:mp-detectores}
 \begin{tabular}{lrrrr}
 \hline
 Detector & Tasa disparo & Acierto M8 & Acierto M5 & P\&L rescate \\
 \hline
 RAM (régimen) & $30{,}2\,\%$ & $0{,}587$ & $0{,}413$ & $+0{,}312$ \\
-PSA (cambio estructural) & $0{,}8\,\%$ & --- & --- & $0{,}000$ \\
+PSA (cambio estructural) & $0{,}5\,\%$ & --- & --- & $0{,}000$ \\
 GSO (volatilidad) & $0{,}0\,\%$ & --- & --- & $0{,}000$ \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{La intervención corrige, no solo evita}
+\subsection{Voltear gana a abstenerse y a reducir}
 \label{sec:mp-spy-variantes}
 
-La capa de intervención podría limitarse a abstenerse los días dudosos o a reducir el tamaño. La variante que adoptamos, override-C, hace algo más fuerte: reorienta la posición al signo del régimen. La Tabla~\ref{tab:mp-variantes} compara las tres sobre los días en mercado ($n=232$). Voltear acierta el $47{,}8\,\%$, frente al $40{,}1\,\%$ de abstenerse y el $39{,}7\,\%$ de reducir, que apenas mejora al agente. El valor está en corregir activamente la dirección cuando choca con el régimen, no en quitarse de en medio.
+La capa de intervención podría limitarse a abstenerse los días dudosos o a reducir el tamaño. La variante que adoptamos, override-C, hace algo más fuerte: reorienta la posición al signo del régimen. La Tabla~\ref{tab:mp-variantes} compara las tres sobre los días en mercado ($n=232$). Voltear acierta el $47{,}8\,\%$, frente al $40{,}1\,\%$ de abstenerse y el $39{,}7\,\%$ de reducir, que apenas mejora al agente. El valor está en corregir activamente la dirección cuando choca con el régimen.
 
 \begin{table}[htbp]
 \centering
@@ -140,7 +140,7 @@ Las características de Shapley sobre el mejor árbol del \emph{leaderboard} y l
 \subsection{Significancia del rescate}
 \label{sec:mp-spy-tests}
 
-La métrica central es el acierto direccional. El McNemar pareado sobre los aciertos día a día (Tabla~\ref{tab:mp-mcnemar}) da $p = 0{,}051$ para M8 frente a M5, $p = 0{,}007$ para M10 y $p = 0{,}0002$ para AutoML: el rescate del agente es significativo. El mismo test de AutoML frente a ZeroR da $p = 0{,}90$, sin potencia para separarlos: la ventaja en accuracy sobre el mercado pasivo es nominal, fruto de una ventana corta, y así la reportamos.
+La métrica central es el acierto direccional. El McNemar pareado sobre los aciertos día a día (Tabla~\ref{tab:mp-mcnemar}) da $p = 0{,}051$ para M8 frente a M5, $p = 0{,}007$ para M10 y $p = 0{,}0002$ para AutoML: el rescate del agente es significativo. El mismo test de AutoML frente a ZeroR da $p = 0{,}90$, sin potencia para separarlos: la ventaja en accuracy sobre el mercado pasivo es nominal, fruto de una ventana corta.
 
 \begin{table}[htbp]
 \centering
@@ -162,7 +162,7 @@ M10 vs ZeroR (techo) & 0,13 & no (nominal) \\
 \subsection{Sin grados de libertad ocultos}
 \label{sec:mp-spy-sensibilidad}
 
-Un revisor podría sospechar que los umbrales se eligieron para que el resultado saliera bien. No es el caso, y se comprueba con el barrido completo. La accuracy de M8 frente al umbral RAM es plana en una meseta: $0{,}466$ en $\tau = 0{,}3$, $0{,}470$ en $0{,}4$ y $0{,}478$ a partir de $0{,}5$, donde se sitúa el valor canónico. La accuracy del meta-learner frente a su umbral de decisión $p_1^\star$ también es plana en torno a $0{,}50$ (entre $0{,}494$ y $0{,}510$). El resultado no depende de un punto afortunado del umbral.
+Un revisor podría sospechar que los umbrales se eligieron para que el resultado saliera bien. El barrido completo disipa esa sospecha. La accuracy de M8 frente al umbral RAM es plana en una meseta: $0{,}466$ en $\tau = 0{,}3$, $0{,}470$ en $0{,}4$ y $0{,}478$ a partir de $0{,}5$, donde se sitúa el valor canónico. La accuracy del meta-learner frente a su umbral de decisión $p_1^\star$ también es plana en torno a $0{,}50$ (entre $0{,}494$ y $0{,}510$). El resultado no depende de un punto afortunado del umbral.
 
 La lectura de SPY es nítida. El agente pierde, STRATA lo rescata con significancia en accuracy, el valor lo lleva el canal de régimen y la ventaja sobre la trivial es nominal. Falta comprobar si el efecto persiste en otros activos o si SPY es un caso afortunado, y a eso responde el panel.
 
@@ -234,7 +234,7 @@ M10 vs M5 & $+0{,}23$ & $[-0{,}016,\ 0{,}455]$ & no \\
 \subsection{Universalidad de la señal}
 \label{sec:mp-panel-universalidad}
 
-Un aprendiz libre de elegir su modelo se apoya en las señales de STRATA en todo el panel. La cuota de Shapley de STRATA promedia $0{,}66$ y supera la mitad en los diez activos (Tabla~\ref{tab:mp-ablacion}). La ablación añade un matiz honesto: sumar las siete señales de STRATA al vector de quince del agente no eleva de media la accuracy del meta-learner, con un efecto que va de $-0{,}05$ en SPY a $+0{,}08$ en SMCI. El valor de STRATA está en el rescate y en la interpretabilidad, y la cuota alta indica que, cuando el modelo decide, mira a los detectores.
+Un aprendiz libre de elegir su modelo se apoya en las señales de STRATA en todo el panel. La cuota de Shapley de STRATA promedia $0{,}66$ y supera la mitad en los diez activos (Tabla~\ref{tab:mp-ablacion}). La ablación matiza ese cuadro: sumar las siete señales de STRATA al vector de quince del agente no eleva de media la accuracy del meta-learner, con un efecto que va de $-0{,}05$ en SPY a $+0{,}08$ en SMCI. El valor de STRATA está en el rescate y en la interpretabilidad, y la cuota alta indica que, cuando el modelo decide, mira a los detectores.
 
 \begin{table}[htbp]
 \centering
@@ -260,7 +260,7 @@ UNG  & 0,462 & 0,518 & 0,70 \\
 \subsection{Robustez I: ventanas y particiones}
 \label{sec:mp-panel-robustez1}
 
-El rescate no es un golpe de suerte de una ventana ni de un corte. Por ventanas rodantes de sesenta y tres días, la mejor derivada de STRATA supera al agente en más de la mitad de las ventanas en ocho de los diez activos (en SPY el $87{,}8\,\%$, en QQQ el $95{,}2\,\%$; solo MARA, con $48{,}4\,\%$, queda por debajo). Por particiones $60/40$, $70/30$ y $80/20$, la ventaja se mantiene en validación y test sin depender del corte. La Figura~\ref{fig:mp-rolling} muestra la accuracy rodante de SPY.
+El rescate persiste en cualquier ventana y en cualquier corte. Por ventanas rodantes de sesenta y tres días, la mejor derivada de STRATA supera al agente en más de la mitad de las ventanas en nueve de los diez activos (en SPY el $87{,}8\,\%$, en QQQ el $95{,}2\,\%$; solo MARA, con $48{,}4\,\%$, queda por debajo). Por particiones $60/40$, $70/30$ y $80/20$, la ventaja se mantiene en validación y test sin depender del corte. La Figura~\ref{fig:mp-rolling} muestra la accuracy rodante de SPY.
 
 % [Figura: accuracy rodante SPY + frac por activo]
 \begin{figure}[htbp]
@@ -294,9 +294,9 @@ AutoML vs M5 & $+0{,}057$ & 0,002 & $+0{,}101$ & 0,0003 \\
 \subsection{Robustez III: calibración y costes}
 \label{sec:mp-panel-robustez3}
 
-La ventana de calibración no explica el resultado. Acortar el periodo de ajuste del HMM y el GARCH (arranque en 2010, 2015 o 2020 en lugar de 2000) no degrada el rescate, e incluso lo mejora ligeramente en los índices; solo las ventanas muy cortas, con 2020 como inicio, lo empeoran. Mantenemos la ventana completa, fijada de antemano, porque cambiarla por la que maximiza la evaluación sería elegir sobre el resultado.
+El resultado resiste a cualquier ventana de calibración. Acortar el periodo de ajuste del HMM y el GARCH (arranque en 2010, 2015 o 2020 en lugar de 2000) no degrada el rescate, e incluso lo mejora ligeramente en los índices; solo las ventanas muy cortas, con 2020 como inicio, lo empeoran. Mantenemos la ventana completa, fijada de antemano, porque cambiarla por la que maximiza la evaluación sería elegir sobre el resultado.
 
-Queda la pregunta de una mesa de trading: ¿el valor sobrevive a los costes, y cuánto rota la estrategia? La Tabla~\ref{tab:mp-costes} responde. La regla M8 rota mucho menos que el agente (rotación anualizada agregada $61$ frente a $105$), de modo que el coste castiga más al agente que a la regla. El aprendiz rota más, pero su Sharpe agregado se mantiene positivo hasta unos diez puntos básicos de coste, mientras el del agente es negativo en todo el rango. El rescate no es un efecto de ignorar la fricción.
+Queda la pregunta de una mesa de trading: ¿el valor sobrevive a los costes, y cuánto rota la estrategia? La Tabla~\ref{tab:mp-costes} responde. La regla M8 rota mucho menos que el agente (rotación anualizada agregada $61$ frente a $105$), de modo que el coste castiga más al agente que a la regla. El aprendiz rota más, pero su Sharpe agregado se mantiene positivo hasta unos diez puntos básicos de coste, mientras el del agente es negativo en todo el rango. El rescate sobrevive a la fricción.
 
 \begin{table}[htbp]
 \centering
@@ -324,7 +324,7 @@ STRATA funciona y es robusto, pero no de forma uniforme. El canal de régimen y 
 \subsection{Dos capas con trabajos distintos}
 \label{sec:mp-mec-capas}
 
-La regla M8 y el aprendiz no compiten. La regla es la capa de riesgo: su rescate del Sharpe es significativo en agregado, pero casi nunca lidera en accuracy, porque su trabajo es contener la caída. El aprendiz es la capa de accuracy: su McNemar frente al agente es significativo, y es quien sube el acierto direccional. Una disciplina el riesgo de forma interpretable; el otro recupera la dirección.
+La regla M8 y el aprendiz tienen trabajos separados. La regla es la capa de riesgo: su rescate del Sharpe es significativo en agregado, pero casi nunca lidera en accuracy, porque su trabajo es contener la caída. El aprendiz es la capa de accuracy: su McNemar frente al agente es significativo, y es quien sube el acierto direccional. Una disciplina el riesgo de forma interpretable; el otro recupera la dirección.
 
 El contraste se ve en dos casos opuestos. En SPY el régimen es direccional: cuando RAM dispara, la regla acierta el $58{,}7\,\%$, por encima del agente. En MARA, el régimen pierde su contenido direccional, porque la media de retorno en Crisis es positiva ($+0{,}0056$): al intervenir, la regla acierta solo el $48{,}5\,\%$ y mete ruido, de modo que únicamente el aprendiz rescata, aprendiendo el sesgo corto persistente del agente ($98{,}7\,\%$ de los días). La regla ayuda donde el régimen tiene signo y estorba donde no lo tiene.
 
@@ -333,7 +333,7 @@ El contraste se ve en dos casos opuestos. En SPY el régimen es direccional: cua
 
 Esa intuición se cuantifica. A más fuerte el \emph{leverage effect} de un activo, más rescata el aprendiz en accuracy. Sobre los quince activos, la correlación entre el \emph{leverage} y la mejora de accuracy del aprendiz sobre el agente es Pearson $r = -0{,}55$ ($p = 0{,}034$) y Spearman $\rho = -0{,}54$ ($p = 0{,}038$). Es robusta a dejar fuera cada activo uno a uno: el peor $p$ de los quince ajustes es $0{,}095$, de modo que ningún punto influyente la sostiene en solitario. Es la única regularidad naturaleza-resultado que sobrevive a un contraste.
 
-La naturaleza del activo no anticipa, sin embargo, cuándo acierta la regla M8 al intervenir: la media de retorno en Crisis, el \emph{leverage} y el sesgo del agente correlacionan con esa tasa de acierto con $p$ muy por encima de $0{,}10$. Un criterio del tipo ``Crisis con media negativa implica usar la regla'' queda como descriptivo e ilustrativo, no como ley contrastada.
+La naturaleza del activo no anticipa, sin embargo, cuándo acierta la regla M8 al intervenir: la media de retorno en Crisis, el \emph{leverage} y el sesgo del agente correlacionan con esa tasa de acierto con $p$ muy por encima de $0{,}10$. Un criterio del tipo ``Crisis con media negativa implica usar la regla'' queda como descriptivo e ilustrativo.
 
 % [Figura: scatter leverage vs Δacc + LOO]
 \begin{figure}[htbp]
@@ -363,7 +363,7 @@ $k$ & Silueta & Pares de métodos ($k=3$) & Rand ajustado \\
 \end{tabular}
 \end{table}
 
-Los tres grupos admiten lectura económica y se ordenan por el mismo eje. La primera componente principal de la naturaleza correlaciona casi perfectamente con el \emph{leverage} ($r = 0{,}84$, $p < 0{,}001$): el eje que separa los activos es el apalancamiento. La Tabla~\ref{tab:mp-cluster-perf} describe los grupos. Los índices y sectoriales de \emph{leverage} fuerte forman el primero, donde el mejor canal no trivial es el régimen; los volátiles de apalancamiento débil forman el segundo, donde el mejor es el aprendiz; tres atípicos completan el tercero. La cadena se cierra: la naturaleza, resumida en el \emph{leverage}, ordena qué canal rescata.
+Los tres grupos admiten lectura económica y se ordenan por el mismo eje. La primera componente principal de la naturaleza correlaciona casi perfectamente con el \emph{leverage} ($r = 0{,}84$, $p < 0{,}001$): el eje que separa los activos es el apalancamiento. La Tabla~\ref{tab:mp-cluster-perf} describe los grupos. Los índices y sectoriales de \emph{leverage} fuerte forman el primer grupo, cuyo mejor canal no trivial es el régimen. Los volátiles de apalancamiento débil forman el segundo, donde el aprendiz toma el relevo. Tres atípicos completan el cuadro. La cadena se cierra: la naturaleza, resumida en el \emph{leverage}, ordena qué canal rescata.
 
 \begin{table}[htbp]
 \centering
@@ -389,17 +389,17 @@ Atípicos & MSTR, SMCI, UNG & $+0{,}02$ & 0,69 & aprendiz \\
 \label{fig:mp-cluster}
 \end{figure}
 
-De aquí salen hipótesis para trabajos futuros, no conclusiones: en los activos de \emph{leverage} fuerte el valor está en el canal de régimen, que rescata y disciplina el riesgo aunque no bata a las triviales; en los volátiles y atípicos el valor está en el aprendiz, que sí las supera en algún caso. La afirmación es exploratoria, a una muestra de quince activos.
+De aquí salen hipótesis para trabajos futuros: en los activos de \emph{leverage} fuerte el valor está en el canal de régimen, que rescata y disciplina el riesgo aunque no bata a las triviales; en los volátiles y atípicos el valor está en el aprendiz, que sí las supera en algún caso. La afirmación es exploratoria, a una muestra de quince activos.
 
 \section{Límites y futuras líneas}
 \label{sec:mp-limites}
 
-Tres límites cierran el capítulo: dónde no hay nada que rescatar, qué no supera un test y qué queda para después.
+El capítulo cierra con tres límites: el perímetro de aplicabilidad, los resultados que no alcanzan significancia y las líneas inmediatas.
 
 \subsection{El límite de aplicabilidad}
 \label{sec:mp-lim-excluidos}
 
-Los cinco activos no incluidos en el cuerpo caracterizan la frontera de la metodología (Tabla~\ref{tab:mp-excluidos}). En MSTR el agente ya bate a las triviales ($0{,}554$ frente a $0{,}530$), de modo que no hay nada que rescatar y la supervisión apenas interviene. En BAC, NVDA, TSLA e IWM el agente pierde, pero el rescate no alcanza significancia por activo con doscientos cincuenta días (en BAC, el McNemar de M8 frente a M5 da $p = 0{,}20$) y no abre un mecanismo distinto de los del cuerpo. Es el límite honesto: STRATA rescata con fuerza cuando el agente discrepa de un régimen que acierta, y estos activos cumplen poco esa condición.
+Los cinco activos no incluidos en el cuerpo caracterizan la frontera de la metodología (Tabla~\ref{tab:mp-excluidos}). En MSTR el agente ya bate a las triviales ($0{,}554$ frente a $0{,}530$), de modo que no hay nada que rescatar y la supervisión apenas interviene. En BAC, NVDA, TSLA e IWM el agente pierde, pero el rescate no alcanza significancia por activo con doscientos cincuenta días (en BAC, el McNemar de M8 frente a M5 da $p = 0{,}20$) y no abre un mecanismo distinto de los del cuerpo. Es el límite del método: STRATA rescata con fuerza cuando el agente discrepa de un régimen que acierta, y estos activos cumplen poco esa condición.
 
 \begin{table}[htbp]
 \centering
@@ -421,11 +421,11 @@ IWM  & 0,450 & 0,574 & rescate no significativo por activo \\
 \subsection{Qué no sobrevive a un test}
 \label{sec:mp-lim-nosobrevive}
 
-Tres límites se dicen sin maquillar. Batir a las referencias triviales en accuracy es nominal: con doscientos cincuenta días no hay potencia para separar al mejor modelo del techo pasivo. El rescate de riesgo es significativo en el agregado de los quince activos, pero no por estrato ni por activo, donde la muestra es corta. Y donde el \emph{leverage} es débil el margen de rescate del canal de régimen se estrecha hasta anularse.
+Batir a las referencias triviales en accuracy es nominal: con doscientos cincuenta días no hay potencia para separar al mejor modelo del techo pasivo. El rescate de riesgo es significativo en el agregado de los quince activos, pero no por estrato ni por activo, donde la muestra es corta. Y donde el \emph{leverage} es débil el margen de rescate del canal de régimen se estrecha hasta anularse.
 
 \subsection{Líneas futuras}
 \label{sec:mp-lim-futuro}
 
 Cada límite marca una línea futura anclada en lo hallado. La significancia plena de la ventaja en accuracy pide una muestra mayor, por horizonte temporal o por número de activos, sin recurrir a réplicas sintéticas que inflarían la potencia de forma artificial. La generalización pide probar el esquema sobre otros agentes y otros universos. Los modos de intervención intermedios quedan por explorar. Y el paso a producción exige un protocolo de despliegue con su monitorización del régimen y del cambio de comportamiento del agente, y su criterio de parada cuando la condición de aplicabilidad no se cumple.
 
-La aportación del capítulo es un protocolo de supervisión estadística interpretable que recupera a un agente perdedor en acierto y en riesgo, que un meta-learner potente confirma al apoyarse en sus señales, y que delimita con honestidad dónde funciona y dónde no. La significancia plena de la ventaja direccional y la generalización a otros agentes quedan como las dos líneas inmediatas.
+La aportación del capítulo es un protocolo de supervisión estadística interpretable que recupera a un agente perdedor en acierto y en riesgo, que un meta-learner potente confirma al apoyarse en sus señales, y que delimita dónde funciona y dónde no. La significancia plena de la ventaja direccional y la generalización a otros agentes quedan como las dos líneas inmediatas.
