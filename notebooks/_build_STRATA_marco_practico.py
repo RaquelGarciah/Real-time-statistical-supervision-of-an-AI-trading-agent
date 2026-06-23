@@ -106,6 +106,7 @@ KSEL = _load("outputs/experiments/k_selection.json")                    # K=3: v
 KABL = _load("outputs/experiments/k_ablation_panel.json")               # K=3 vs K=2 en el panel
 CALW = _load("outputs/experiments/calib_window_panel.json")             # robustez a la ventana de calibración
 BBC  = _load("outputs/experiments/bullbear_confirmatory.json")          # PARTE B confirmatoria (ΔSharpe Bonf+DSR) + régimen
+REGDID = _load("outputs/experiments/regime_did_learners.json")          # test DiD: ¿la complementariedad por régimen es sig?
 SPYR = _load("outputs/experiments/spy_m10_full_report.json")
 SPYA = _load("outputs/experiments/spy_ablation_robustness.json")
 SMV  = _load("outputs/experiments/m10_smci_valtest_robustez.json")
@@ -1333,6 +1334,33 @@ print("\nConclusión: el rescate NO es de un solo régimen (sobrevive un test en
       "son COMPLEMENTARIOS: AutoML —que modela la interacción condicional— protege mejor en el régimen PELIGROSO "
       "(bajista), que es el argumento para desplegarlo como capa de accuracy; M10 brilla en tendencias alcistas.")""")
 
+md(r"""#### ¿Es **significativa** esa complementariedad? Test de diferencia-en-diferencias (pre-registrado)
+El patrón anterior es, de momento, descriptivo. Lo contrastamos con una **diferencia-en-diferencias** de Sharpe,
+$\text{DiD}=[\text{SR}_{M10}^{alc}-\text{SR}_{AutoML}^{alc}]-[\text{SR}_{M10}^{baj}-\text{SR}_{AutoML}^{baj}]$
+(la M5 se cancela): $\text{DiD}>0$ ⇔ M10 es relativamente mejor en alcista y AutoML en bajista. **H0: DiD=0**
+(sin especialización). Bootstrap estacionario pareado (misma convención que arriba); criterio pre-registrado
+(BITACORA): IC95 excluye 0 → complementariedad **confirmada**; si cruza 0 → descriptiva (línea futura).""")
+
+code(r"""# (k) DiD: ¿la complementariedad por régimen (M10 alcista / AutoML bajista) es significativa?
+fig, ax = plt.subplots(figsize=(8.5, 2.6))
+for i, scope in enumerate(("SPY", "POOLED10")):
+    d = REGDID[scope]; col = "#27ae60" if d["ci95_low"] > 0 else "#c0392b"
+    ax.plot([d["ci95_low"], d["ci95_high"]], [i, i], color=col, lw=2.5)
+    ax.plot(d["did_point"], i, "o", color=col, ms=8)
+    ax.text(d["ci95_high"] + 0.2, i, f"DiD={d['did_point']:+.2f}  IC95=[{d['ci95_low']:+.2f},{d['ci95_high']:+.2f}]  p={d['p_one_sided_did_gt_0']:.3f}", va="center", fontsize=8)
+ax.axvline(0, color="k", lw=.8); ax.set_yticks([0, 1]); ax.set_yticklabels(["SPY (n=251)", "POOLED-10 (n=2493)"])
+ax.set_xlabel("DiD de Sharpe (M10−AutoML: alcista − bajista)"); ax.set_xlim(-7, 12)
+ax.set_title("¿M10 se especializa en alcista y AutoML en bajista? (DiD pareado, verde: IC95 excluye 0)")
+plt.tight_layout(); plt.show()
+po = REGDID["POOLED10"]; sp = REGDID["SPY"]
+print(f"POOLED-10: DiD={po['did_point']:+.2f}, IC95=[{po['ci95_low']:+.2f},{po['ci95_high']:+.2f}] EXCLUYE 0 "
+      f"(p={po['p_one_sided_did_gt_0']:.4f}) → la complementariedad es SIGNIFICATIVA: M10−AutoML pasa de "
+      f"{po['m10_minus_aml_alcista']:+.2f} en alcista a {po['m10_minus_aml_bajista']:+.2f} en bajista.")
+print(f"SPY-solo: DiD={sp['did_point']:+.2f}, IC95 cruza 0 (p={sp['p_one_sided_did_gt_0']:.3f}) → NO significativo. "
+      f"En SPY AutoML bate a M10 en AMBOS regímenes (M10−AutoML {sp['m10_minus_aml_alcista']:+.2f}/{sp['m10_minus_aml_bajista']:+.2f}): "
+      "el espejo NO se ve en el activo escaparate — es un fenómeno de PANEL que emerge al agregar naturalezas "
+      "distintas. Honesto: la complementariedad es un resultado cross-asset, no de un activo concreto.")""")
+
 md(r"""### Robustez a la ventana de calibración (sugerencia del tutor)
 Recalibramos HMM+GARCH con inicios de ventana cada vez más cortos (fin fijo en 2024-09 → sin fuga) y recomputamos
 todo sobre el **OOS fijo**. Pregunta del tutor: *¿el pasado lejano (plano) resta, y acortar mejora?* Se reportan
@@ -1445,10 +1473,14 @@ md(r"""## §9 Conclusiones del marco práctico
    **Y el rescate de riesgo (ΔSharpe) sobrevive un test en alcista Y bajista por separado en el pooled** (no es
    de un solo régimen), con un patrón **complementario en espejo**: el aprendiz **M10 rescata más en alcista**
    (ΔSharpe +1.37 vs +0.72) y el buscador **AutoML más en bajista** (+1.52 vs +0.81), mientras la **regla M8 es
-   simétrica** (+0.63 / +0.55). A nivel de SPY-solo, en cambio, el rescate de Sharpe se concentra en alcista y la
+   simétrica** (+0.63 / +0.55). Esa especialización es **estadísticamente significativa** (test de
+   diferencia-en-diferencias pre-registrado: pooled DiD +1.37, IC95[+0.20,+2.60] excluye 0, p=0.008) — pero **es
+   un fenómeno de panel**: en SPY-solo no aparece (AutoML domina ambos regímenes; DiD IC cruza 0), emerge al
+   agregar activos de naturaleza distinta. A nivel de SPY-solo el rescate de Sharpe se concentra en alcista y la
    regla se invierte en bajista (n pequeño): es la **falsación pre-registrada**, y la agregación la resuelve.
    Implicación de despliegue: AutoML, que modela la interacción condicional, es el que protege mejor en el
-   régimen **peligroso** (bajista) — argumento para que sea la capa de accuracy desplegable.
+   régimen **peligroso** (bajista) — argumento para que sea la capa de accuracy desplegable; y queda como línea
+   futura un **ensemble enrutado por régimen** (M10 en alcista / AutoML en bajista), pre-registrable.
 7. **Honestidad y límite (O6).** No se bate a ZeroR/B&H en accuracy de forma significativa (nominal, ventana
    corta); los 5 del apéndice delimitan dónde STRATA no aporta.
 8. **Rigor (O7).** `signal_lag=1`, embargo=1, ex-ante, tests con cita, auto-test que cruza cada cifra con su JSON.
@@ -1521,6 +1553,9 @@ _pa, _pbj = BBC["por_regimen"]["POOLED10"]["alcista"]["contrastes"], BBC["por_re
 assert _pa["M10_vs_M5"]["delta_sharpe"] > _pbj["M10_vs_M5"]["delta_sharpe"], "pooled: M10 debe rescatar más en alcista que en bajista"
 assert _pbj["AutoML_vs_M5"]["delta_sharpe"] > _pa["AutoML_vs_M5"]["delta_sharpe"], "pooled: AutoML debe rescatar más en bajista que en alcista (complementariedad en espejo)"
 assert all(_pbj[k]["mcnemar_p_holm"] < 0.10 for k in _pbj), "pooled-bajista: los 3 contrastes deben ser sig (el rescate no es de un solo régimen)"
+# DiD: la complementariedad por régimen es sig en el pooled (IC excluye 0) y NO en SPY-solo (fenómeno de panel)
+assert REGDID["POOLED10"]["ci95_low"] > 0, "pooled: el DiD de complementariedad debe excluir 0 (M10 alcista / AutoML bajista, significativo)"
+assert REGDID["SPY"]["ci95_low"] < 0 < REGDID["SPY"]["ci95_high"], "SPY-solo: el DiD debe cruzar 0 (la complementariedad es cross-asset, no de un activo)"
 assert KSEL["per_k"]["3"]["heldout_loglik_perobs"] > KSEL["per_k"]["2"]["heldout_loglik_perobs"], "K=3 debe mejorar held-out vs K=2"
 # ley naturaleza→resultado (leverage→rescate ML) significativa Y robusta a leave-one-out (fix #2)
 assert LAW_P < 0.10, "la ley leverage→rescate-ML debe ser significativa"

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "b_reps": 2000,
+    "seed": 42,
+    "estadistico": "DiD = [SR_M10(alc)−SR_AutoML(alc)] − [SR_M10(baj)−SR_AutoML(baj)]; H0: DiD=0; H1 (complementariedad): DiD>0 (M10 mejor en alcista, AutoML en bajista).",
+    "nota": "bootstrap estacionario pareado; el régimen (drift 21d) viaja con cada día remuestreado. Veredicto pre-registrado: IC95 excluye 0 (o p one-sided<0.10) → complementariedad CONFIRMADA; si cruza 0 → descriptiva (línea futura)."
+  },
+  "SPY": {
+    "did_point": -0.2977,
+    "ci95_low": -5.28,
+    "ci95_high": 6.8616,
+    "p_one_sided_did_gt_0": 0.497,
+    "median_boot": 0.0263,
+    "n_obs": 251,
+    "n_alcista": 201,
+    "n_bajista": 50,
+    "m10_minus_aml_alcista": -3.1869,
+    "m10_minus_aml_bajista": -2.8893,
+    "sr_m10_alcista": -0.557,
+    "sr_aml_alcista": 2.63,
+    "sr_m10_bajista": 0.156,
+    "sr_aml_bajista": 3.046,
+    "block_len": 16,
+    "n_reps": 2000
+  },
+  "POOLED10": {
+    "did_point": 1.3703,
+    "ci95_low": 0.2031,
+    "ci95_high": 2.6031,
+    "p_one_sided_did_gt_0": 0.008,
+    "median_boot": 1.3815,
+    "n_obs": 2493,
+    "n_alcista": 1608,
+    "n_bajista": 885,
+    "m10_minus_aml_alcista": 0.5632,
+    "m10_minus_aml_bajista": -0.807,
+    "sr_m10_alcista": 0.936,
+    "sr_aml_alcista": 0.373,
+    "sr_m10_bajista": 0.065,
+    "sr_aml_bajista": 0.872,
+    "block_len": 50,
+    "n_reps": 2000
+  }
+}

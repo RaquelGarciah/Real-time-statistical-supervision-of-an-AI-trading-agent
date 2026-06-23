@@ -2244,3 +2244,42 @@ las dos capas (§5).
 
 **Referencias.** `experiments/bullbear_confirmatory.py`, `outputs/experiments/bullbear_confirmatory.json`,
 notebook §7 (celda "(j) por régimen") y §9 conclusión 6; memoria [[bullbear-confirmatorio-dsr]].
+
+---
+
+## [2026-06-23] [Pre-registro] - Experimento regime_did_learners (¿la complementariedad por régimen es significativa?)
+
+**Contexto.** El hallazgo previo es DESCRIPTIVO: en el pooled-10, M10 rescata más en alcista (ΔSharpe +1.37) y
+AutoML más en bajista (+1.52). Antes de elevarlo a resultado hace falta un contraste de que la **especialización
+por régimen** no es ruido de un OOS. Test de diferencia-en-diferencias (DiD) de Sharpe.
+
+**Hipótesis (H1).** Los dos aprendices se especializan por régimen EN ESPEJO: M10 es relativamente mejor en
+alcista y AutoML en bajista. Operacionalizada como
+`DiD = [SR_M10(alc) − SR_AutoML(alc)] − [SR_M10(baj) − SR_AutoML(baj)] > 0` (la M5 se cancela).
+
+**H0.** DiD = 0: la ventaja relativa M10 vs AutoML es la misma en los dos regímenes (no hay especialización).
+
+**Estadístico.** DiD de Sharpe por **bootstrap estacionario pareado** (Politis-Romano 1994) sobre los retornos
+±1 reconstruidos del acierto canónico; el régimen (drift 21d causal) viaja con cada día remuestreado. block=√n,
+B=2000, seed=42 (idéntica convención a `bullbear_confirmatory`). IC95 y p one-sided P(DiD≤0).
+
+**Criterio de éxito.** En el POOLED-10: IC95 del DiD **excluye 0** (o p one-sided < 0.10) → complementariedad
+**confirmada** (resultado, no solo patrón).
+
+**Criterio de fracaso.** Si el IC95 **cruza 0** → la complementariedad es **descriptiva** (patrón de un único
+OOS); se reporta como hipótesis de línea futura (posible ensemble enrutado por régimen, pre-registrable), NO como
+resultado. Honestidad: SPY-solo (n pequeño) se reporta aunque salga no significativo.
+
+**Datos.** POOLED-10 y SPY, ventana desplegable, ±1, drift 21d. signal_lag=1.
+
+**Output esperado.** `outputs/experiments/regime_did_learners.json` con {SPY, POOLED10}: did_point, ci95,
+p_one_sided, m10_minus_aml por régimen, SR por arm y régimen.
+
+**Resultado (2026-06-23).** **H1 CONFIRMADA en el pooled.** POOLED-10: DiD=+1.37, IC95=[+0.20,+2.60] (excluye 0),
+p one-sided=0.008 → la especialización por régimen es significativa (M10−AutoML pasa de +0.56 en alcista a −0.81
+en bajista). **SPY-solo: NO significativo** (DiD=−0.30, IC95=[−5.28,+6.86] cruza 0, p=0.50): en SPY AutoML bate a
+M10 en AMBOS regímenes (es la estrella del activo), así que el espejo **no se ve en el escaparate** — la
+complementariedad es un **fenómeno de PANEL** que emerge al agregar naturalezas distintas. Matiz honesto: es un
+resultado cross-asset, no de un activo. Propagado a notebook §7 (celda "(k) DiD"), §9 conclusión 6, y memoria
+[[bullbear-confirmatorio-dsr]]. Línea futura pre-registrable: ensemble enrutado por régimen (M10 alcista / AutoML
+bajista) usando la señal de RAM.
