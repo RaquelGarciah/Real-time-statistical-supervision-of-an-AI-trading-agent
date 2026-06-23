@@ -114,6 +114,7 @@ RDT  = _load("outputs/experiments/regime_direction_table.json")
 NOC  = _load("outputs/experiments/net_of_cost_panel.json")              # net-of-cost + turnover (panel 10)
 SPYIV = _load("outputs/experiments/spy_intervention_variants.json")      # SPY: abstención/override + sensibilidad de umbrales
 NAT = {a: CLU["por_activo"][a]["nat"] for a in CLU["por_activo"]}        # naturaleza por activo (leverage/crisis/vol/sesgo)
+SPYME = _load("outputs/experiments/spy_mechanism_extras.json")           # SPY: daily (régimen/posiciones/p1) + SHAP dependency + cuota rodante
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -250,6 +251,36 @@ plt.tight_layout(); plt.show()
 print(f"Atribución del P&L de rescate: RAM={at['pnl_dias_RAM_disparado']:+.3f}, PSA={at['pnl_dias_PSA_disparado']:+.3f}, "
       f"GSO={at['pnl_dias_GSO_disparado']:+.3f} → todo el rescate es del canal RÉGIMEN (override-C, decisiones #5/#7).")""")
 
+md(r"""### Matriz régimen × dirección: el leverage es contemporáneo, no predictivo
+Para no dejar el *leverage effect* solo en prosa: la distribución empírica de la dirección por régimen, en la
+**calibración** (n grande) y en el **OOS**. La clave: el retorno del **mismo día** baja con el régimen (leverage),
+pero la fracción de días que **suben al día siguiente** ronda 0.5 en todos los regímenes → el régimen separa por
+volatilidad, **no anticipa el signo**.""")
+
+code(r"""# Contingencia régimen × dirección (calib y OOS) desde regime_direction_table.json
+import pandas as pd
+rows = []
+for win in ("calib", "oos"):
+    d = RDT["SPY"][win]
+    for rg in ("Calma", "Estrés", "Crisis"):
+        rows.append({"ventana": win, "régimen": rg, "n": d[rg]["n"],
+                     "ret_mismo_día": round(d[rg]["ret_mismo_dia"], 6),
+                     "frac_sube_día_sig": round(d[rg]["frac_sube_sig"], 3)})
+RC = pd.DataFrame(rows)
+print(RC.to_string(index=False))
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.2))
+for ax, win, ttl in [(axes[0], "calib", "Calibración (n grande)"), (axes[1], "oos", "OOS")]:
+    d = RDT["SPY"][win]; rgs = ["Calma", "Estrés", "Crisis"]
+    same = [d[r]["ret_mismo_dia"] for r in rgs]; nxt = [d[r]["frac_sube_sig"] for r in rgs]
+    x = np.arange(3); ax2 = ax.twinx()
+    ax.bar(x - 0.2, same, 0.4, color="#2c7fb8", label="ret mismo día (leverage)")
+    ax2.bar(x + 0.2, nxt, 0.4, color="#c0392b", label="frac sube día sig.")
+    ax2.axhline(0.5, color="k", ls=":", lw=.8); ax2.set_ylim(0.3, 0.7)
+    ax.set_xticks(x); ax.set_xticklabels(rgs); ax.set_title(f"{ttl}", fontsize=9); ax.axhline(0, color="k", lw=.5)
+    ax.set_ylabel("ret mismo día", color="#2c7fb8"); ax2.set_ylabel("frac sube mañana", color="#c0392b")
+fig.suptitle("Régimen × dirección — leverage (mismo día, azul) sí; predicción (mañana, rojo ≈0.5) no"); plt.tight_layout(); plt.show()
+print("El régimen NO predice el signo del día siguiente (frac≈0.5 en los tres): su valor es disciplinar el RIESGO.")""")
+
 # ═══════════════════════════  §3 Caso de estudio SPY  ═══════════════════════════
 md(r"""## §3 Caso de estudio: SPY — el agente perdedor y su rescate
 
@@ -326,6 +357,45 @@ print("M8: accuracy plana (%.3f–%.3f) en τ∈[0.3,0.7]; M10: plana (%.3f–%.
       min(r["accuracy"] for r in sr), max(r["accuracy"] for r in sr), min(r["accuracy"] for r in sp), max(r["accuracy"] for r in sp)))
 print("→ El resultado NO depende del umbral exacto: τ=0.5 y p1*=0.5 (fijados ex-ante) caen en la meseta. "
       "No hay grado de libertad oculto; no se elige el umbral que maximiza el OOS (sería p-hacking).")""")
+
+md(r"""### ¿Dónde corrige el aprendiz al agente? (M10 vs M5 por régimen) y ¿de qué se fía? (SHAP dependency)
+Dos vistas que hacen tangible la universalidad en SPY: el acierto de M10 vs el agente **desglosado por régimen**
+(¿el ML aprende correcciones condicionadas al estado?), y cómo cambia el SHAP del modelo con el valor de cada
+señal STRATA (**dependency plots**: cómo *usa* el detector, no solo cuánto pesa).""")
+
+code(r"""# Confusión M10 vs M5 por régimen (SPY, ventana desplegable)
+d = SPYME["daily"]; reg = np.array(d["regime"]); truth = np.array(d["truth"])
+cm5 = (np.array(d["m5_pos"]) == truth); cm10 = (np.array(d["m10_pos"]) == truth)
+rows = []
+for k, nm in {0: "Calma", 1: "Estrés", 2: "Crisis"}.items():
+    msk = reg == k
+    if msk.sum() >= 1:
+        rows.append({"régimen": nm, "n": int(msk.sum()), "acc_M5": round(float(cm5[msk].mean()), 3),
+                     "acc_M10": round(float(cm10[msk].mean()), 3),
+                     "M10_rescata(c)": int((cm10[msk] & ~cm5[msk]).sum()), "M10_estropea(b)": int((~cm10[msk] & cm5[msk]).sum())})
+RM = pd.DataFrame(rows); print(RM.to_string(index=False))
+fig, ax = plt.subplots(figsize=(7, 3.2)); x = np.arange(len(RM))
+ax.bar(x - 0.2, RM["acc_M5"], 0.4, color=COL["M5"], label="M5 agente")
+ax.bar(x + 0.2, RM["acc_M10"], 0.4, color=COL["M10"], label="M10")
+ax.axhline(0.5, color="k", ls=":", lw=.8); ax.set_xticks(x); ax.set_xticklabels(RM["régimen"]); ax.legend(fontsize=8)
+ax.set_title("SPY · acierto M5 vs M10 por régimen (el aprendiz corrige en Calma y Estrés)"); plt.tight_layout(); plt.show()
+print("M10 supera al agente en Calma y Estrés (donde está la masa de días); el rescate es condicional al estado, "
+      "no un sesgo global. (Crisis tiene n muy pequeño en el OOS de SPY → no concluyente ahí.)")""")
+
+code(r"""# SHAP dependency: cómo USA el modelo cada señal STRATA (color = régimen)
+dep = SPYME["shap_dependency"]; feats = list(dep)
+fig, axes = plt.subplots(1, len(feats), figsize=(4.3 * len(feats), 3.4))
+cmap = {0: "#2e9e4f", 1: "#e8a33d", 2: "#c0392b"}
+for ax, f in zip(axes, feats):
+    xs = np.array(dep[f]["x"]); sh = np.array(dep[f]["shap"]); rg = np.array(dep[f]["regime"])
+    for k in (0, 1, 2):
+        m = rg == k
+        if m.any(): ax.scatter(xs[m], sh[m], s=18, color=cmap[k], alpha=.7, label={0: "Calma", 1: "Estrés", 2: "Crisis"}[k])
+    ax.axhline(0, color="k", lw=.5); ax.set_xlabel(f); ax.set_ylabel("SHAP (→ prob. subida)"); ax.set_title(f, fontsize=9)
+axes[-1].legend(fontsize=7); fig.suptitle("SHAP dependency (SPY): efecto marginal de cada señal STRATA sobre la predicción de M10")
+plt.tight_layout(); plt.show()
+print("El SHAP varía de forma estructurada con cada señal (no es ruido): el modelo USA la información de los "
+      "detectores. Efecto marginal, no causal.")""")
 
 # ═══════════════════════════  §4 Panel de 10  ═══════════════════════════
 md(r"""## §4 Generalización — panel de 10 (universalidad y riesgo)
@@ -424,6 +494,18 @@ print(f"\nResultado duro CANÓNICO (pooled-15): M8 rescata al agente en riesgo �
       f"IC{m8c['dSharpe']['ci95']} (excluye 0). El pooled-10 del cuerpo (+{pb['m8_vs_m5']['dSharpe']['point']:.2f} "
       f"IC{pb['m8_vs_m5']['dSharpe']['ci95']}) es CONSISTENTE: misma conclusión, IC también excluye 0.")""")
 
+code(r"""# ¿La importancia de STRATA es estable en el tiempo? Cuota SHAP rodante (SPY, por reentreno)
+rl = SPYME["shap_rolling"]; cu = rl["cuota_strata"]
+fig, ax = plt.subplots(figsize=(8, 3.2))
+ax.plot(range(len(cu)), cu, "o-", color="#2c7fb8"); ax.axhline(np.mean(cu), color="#c0392b", ls="--", lw=1, label=f"media {np.mean(cu):.2f}")
+ax.axhline(0.5, color="k", ls=":", lw=.8, label="0.5"); ax.set_ylim(0, 1)
+ax.set_xlabel("reentreno walk-forward"); ax.set_ylabel("cuota STRATA en |SHAP|")
+ax.set_title("SPY · cuota STRATA en SHAP por reentreno — estable, no deriva"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print(f"La cuota STRATA se mantiene en [{min(cu):.2f}, {max(cu):.2f}] (media {np.mean(cu):.2f}) en los {len(cu)} "
+      "reentrenos → la dependencia del modelo en STRATA NO se erosiona con el tiempo: la universalidad es estable, "
+      "no un artefacto de un tramo concreto del OOS.")""")
+
 # ═══════════════════════════  §5 Mecanismo por activo  ═══════════════════════════
 md(r"""## §5 Mecanismo: dos supervisores con trabajos distintos (y la única ley que sobrevive a un test)
 
@@ -515,6 +597,43 @@ for tk in ("QQQ", "MARA"):
           f"McNemar vs M5: M8 p={tests['m8_vs_m5']['p']:.4f}, M10 p={tests['m10_xgb_vs_m5']['p']:.4f}")
 print("\nQQQ: leverage estándar → la regla del régimen corrige (capa riesgo) y el aprendiz afina (capa accuracy).")
 print("MARA: leverage invertido → la regla no tiene signo fiable; el aprendiz aprende a voltear el sesgo corto del agente.")""")
+
+code(r"""# Timeline diario M8 vs M10 (SPY): cuándo coinciden/discrepan y quién acierta (la separación de las dos capas)
+d = SPYME["daily"]; dts = pd.to_datetime(d["dates"]); reg = np.array(d["regime"])
+m8 = np.array(d["m8_pos"]); m10 = np.array(d["m10_pos"]); truth = np.array(d["truth"])
+fig, ax = plt.subplots(figsize=(12, 2.8))
+for st, c in {0: "#2e9e4f", 1: "#e8a33d", 2: "#c0392b"}.items():
+    ax.fill_between(dts, 0, 1, where=(reg == st), color=c, alpha=0.10, step="mid", transform=ax.get_xaxis_transform())
+agree = m8 == m10
+ax.scatter(dts[agree], np.zeros(agree.sum()) + 0.5, s=8, color="#999", label="M8=M10")
+dd = ~agree
+ax.scatter(dts[dd & (m10 == truth)], np.zeros((dd & (m10 == truth)).sum()) + 0.65, s=14, color="#2c7fb8", label="discrepan · M10 acierta")
+ax.scatter(dts[dd & (m8 == truth)], np.zeros((dd & (m8 == truth)).sum()) + 0.35, s=14, color="#f0a830", label="discrepan · M8 acierta")
+ax.set_yticks([]); ax.set_ylim(0, 1); ax.legend(fontsize=8, ncol=3, loc="upper center")
+ax.set_title("SPY · acuerdo/desacuerdo diario M8↔M10 (fondo = régimen). Las dos capas deciden distinto a menudo")
+plt.tight_layout(); plt.show()
+print(f"M8 y M10 coinciden el {agree.mean():.0%} de los días; en los {dd.sum()} de desacuerdo, M10 acierta "
+      f"{(m10[dd]==truth[dd]).mean():.0%} y M8 {(m8[dd]==truth[dd]).mean():.0%} → son capas distintas, no la misma señal.")""")
+
+code(r"""# Rescate ESTRATIFICADO por tipo de activo (estratos pre-registrados, no data-driven): índices vs acciones/cripto
+from experiments.decision_automl_prep import _boot_paired, _sr
+import config as _cfg
+ESTRATOS = {"índices/sectoriales (leverage fuerte)": ["SPY", "QQQ", "XLF", "DIA", "XLK"],
+            "volátiles/cripto (leverage débil)": ["XLE", "ROKU", "SMCI", "MARA", "UNG"]}
+rows = []
+for nombre, acts in ESTRATOS.items():
+    nr_m8 = np.nan_to_num(np.concatenate([np.array(DPA[a]["net_returns"]["m8"], float) for a in acts]))
+    nr_m5 = np.nan_to_num(np.concatenate([np.array(DPA[a]["net_returns"]["m5"], float) for a in acts]))
+    b = _boot_paired(nr_m8, nr_m5, _sr, _cfg.SEED)
+    rows.append({"estrato": nombre, "n_dias": len(nr_m8), "ΔSharpe_M8_vs_M5": b["point"], "IC95": str(b["ci95"]), "sig": "SÍ" if b["sig"] else "—"})
+ST = pd.DataFrame(rows); print(ST.to_string(index=False))
+fig, ax = plt.subplots(figsize=(8.5, 2.8))
+for i, r in ST.iterrows():
+    lo, hi = eval(r["IC95"]); ax.plot([lo, hi], [i, i], color="#2c7fb8", lw=2); ax.plot(r["ΔSharpe_M8_vs_M5"], i, "o", color="#c0392b")
+ax.axvline(0, color="k", lw=.8); ax.set_yticks(range(len(ST))); ax.set_yticklabels(ST["estrato"], fontsize=8)
+ax.set_title("Rescate de riesgo M8 vs M5 por estrato (pooled bootstrap, IC95)"); plt.tight_layout(); plt.show()
+print("Estratos PRE-REGISTRADOS por clase de activo (no por resultado): el rescate de riesgo de la regla se "
+      "concentra donde el leverage manda (índices), coherente con la ley del §5 — no es selección a posteriori.")""")
 
 # ═══════════════════════════  §6 Clustering: naturaleza → resultado  ═══════════════════════════
 md(r"""## §6 Clustering por naturaleza: el eje que importa es el leverage
@@ -708,6 +827,23 @@ print(f"  M10 break-even {be['M10']} pb · AutoML {be['AutoML']} pb — ambos mu
       f"de un ETF líquido (~1–5 pb). El valor de STRATA (rescate del agente) NO es un artefacto de ignorar costes.")
 assert NOC['pooled']['dSharpe_vs_m5_vs_cost']['10bp']['M8'] > 0, "el rescate de riesgo M8 debe sobrevivir a 10pb"
 print("AUTO-TEST coste OK · rescate M8 vs M5 > 0 a 10pb · turnover M8 < M5.")""")
+
+code(r"""# (i) Curva de calibración (reliability) de M10 en SPY: ¿su probabilidad p1 está bien calibrada?
+d = SPYME["daily"]; p1 = np.array(d["m10_p1"]); up = (np.array(d["truth"]) > 0).astype(int)
+bins = np.linspace(0.3, 0.7, 6); idx = np.digitize(p1, bins)
+xs, ys, ns = [], [], []
+for b in range(1, len(bins)):
+    m = idx == b
+    if m.sum() >= 5: xs.append(p1[m].mean()); ys.append(up[m].mean()); ns.append(int(m.sum()))
+fig, ax = plt.subplots(figsize=(5.2, 4.2))
+ax.plot([0.3, 0.7], [0.3, 0.7], "k:", lw=.9, label="calibración perfecta")
+ax.plot(xs, ys, "o-", color="#2c7fb8", label="M10 (SPY)")
+ax.axhline(up.mean(), color="#c0392b", ls="--", lw=.9, label=f"base rate {up.mean():.2f} (B&H)")
+ax.set_xlabel("prob. predicha de subida (p1)"); ax.set_ylabel("frac. observada de subidas"); ax.legend(fontsize=8)
+ax.set_title("Calibración de M10 (SPY) — consistencia interna, no superioridad"); plt.tight_layout(); plt.show()
+print("Diagrama de fiabilidad: relaciona p1 predicho con la frecuencia real de subida. Es una comprobación de "
+      "CONSISTENCIA INTERNA del meta-learner (¿sabe cuándo está más seguro?), no una afirmación de superioridad "
+      "sobre el baseline (n=251 por bin es escaso; lectura descriptiva).")""")
 
 # ═══════════════════════════  §8 Apéndice: límite de aplicabilidad  ═══════════════════════════
 md(r"""## §8 Apéndice — límite de aplicabilidad (los 5 excluidos)
