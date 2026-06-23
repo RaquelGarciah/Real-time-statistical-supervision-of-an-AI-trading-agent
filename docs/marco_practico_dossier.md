@@ -20,6 +20,87 @@ en accuracy sobre las triviales (ZeroR/B&H) es **nominal**, no significativa: se
 
 ---
 
+## EL APORTE REAL — las conclusiones reveladoras y su valor
+
+> **Reencuadre del objetivo (importante para la memoria).** El objetivo inicial era **vencer en accuracy**. El
+> resultado honesto es que, en este OOS corto, **ninguna estrategia bate a las triviales en accuracy de forma
+> significativa** (techo ZeroR). Pero forzar ese marco sería medir el trabajo por lo que NO es. Lo que esta
+> investigación SÍ produce —y es **más valioso y más científico** que un punto de accuracy— es un **mapa
+> falsable de cuándo y cómo la supervisión estadística de un agente LLM aporta valor**: qué canal funciona según
+> la **naturaleza** del activo, en qué **régimen**, con qué **modelo**, y con qué **mecanismo**. Encontrar
+> patrones contrastables NO es el premio de consolación: **es la contribución**. Una técnica de supervisión cuyo
+> dominio de aplicabilidad está caracterizado y falsado es más fiable —y más "llevable a producción"— que un
+> número de accuracy sin teoría detrás. El capítulo debe **liderar con esto**, no esconderlo tras la accuracy.
+
+Las conclusiones de esta fase, con la configuración actual (panel-10, M8/M10/AutoML canónicos, OOS desplegable),
+y **el valor que tienen**:
+
+**C1. El rescate de riesgo del agente es real y sobrevive el test más estricto.**
+*Resultado:* pooled, M8 vs M5 ΔSharpe **+0.66 [0.225, 1.157]** (excluye 0); en el confirmatorio con **cota
+Bonferroni**, **M10 y AutoML pasan** (SPY +0.02 / +1.91; pooled +0.26 / +0.26) y el **DSR de AutoML-SPY = 0.924**.
+*Valor:* la afirmación "supervisar reduce el riesgo del agente" no es retórica — aguanta bootstrap pareado,
+corrección por multiplicidad y deflación. Es el resultado **duro** que sostiene la tesis.
+
+**C2. La regla pura (M8) NO sobrevive el confirmatorio en Sharpe — y eso es un resultado, no un fracaso.**
+*Resultado:* M8 sola no pasa la cota Bonferroni (SPY −0.66; pooled −0.05); el meta-learner sí.
+*Valor:* es una **falsación pre-registrada cumplida**, escrita por honestidad antes de mirar. Delimita
+exactamente qué parte de STRATA es robusta (el aprendiz) y cuál es un rescate de riesgo estable pero no
+"confirmatorio" (la regla). Un tribunal premia esto: sabes dónde está el límite de tu propia técnica.
+
+**C3. El valor de la supervisión NO es de un solo régimen de mercado.**
+*Resultado:* el rescate (accuracy y Sharpe) es significativo en **alcista Y bajista** en el pooled (McNemar
+p_Holm<0.10 en los 6 contrastes; block-perm<0.07). A nivel SPY-solo se concentraba en alcista y la regla se
+invertía en bajista (n=50) — falsación que la **agregación resuelve**.
+*Valor:* responde de frente la objeción nº1 ("solo funciona en el mercado alcista que muestreaste"). La
+supervisión aporta también cuando el mercado cae, que es cuando más importa.
+
+**C4. [PATRÓN] Los dos aprendices son complementarios por régimen — y es significativo.**
+*Resultado:* **M10 rescata más en alcista** (ΔSharpe +1.37 vs +0.72), **AutoML más en bajista** (+1.52 vs +0.81),
+**M8 simétrica**. Test DiD pre-registrado: **significativo en el pooled** (DiD +1.37 [0.20, 2.60], p=0.008), **no
+en SPY-solo** → es un **fenómeno cross-asset**. *Valor:* es de los hallazgos más reveladores. (a) Explica una
+**estructura interna** de la capa de accuracy que nadie había nombrado. (b) Tiene **implicación de despliegue
+directa**: AutoML —que modela la interacción condicional— protege mejor en el régimen **peligroso** (bajista), así
+que es el candidato a capa de accuracy desplegable. (c) Abre una **línea futura concreta y pre-registrable**: un
+**ensemble enrutado por régimen** (M10 en tendencia alcista / AutoML en bajista) usando la señal de RAM. Esto es
+exactamente "seguir esta línea de investigación con confianza".
+
+**C5. [PATRÓN] La naturaleza del activo gobierna qué canal funciona — y se mide.**
+*Resultado:* clustering de los 10 con **consenso unánime** (KMeans/Ward/GMM/Spectral, Rand=1.0, silhouette 0.55) →
+tres grupos por naturaleza: **índices de leverage fuerte** (canal régimen/riesgo), **leverage invertido** (canal
+aprendiz), **volátiles** (canal aprendiz). El eje principal del clustering **es el leverage** (PC1≈leverage,
+r≈0.84). Y la **única ley que sobrevive un test**: el rescate del aprendiz en accuracy **escala con el leverage
+effect** (Pearson r=−0.55, p=0.034; Spearman −0.54, p=0.038; robusta a leave-one-out, peor caso p≈0.095).
+*Valor:* convierte "a veces gana uno y a veces otro" —la duda que te angustiaba— en una **regla mecánica
+falsable**: *donde el régimen es coherente con la dirección (leverage fuerte), funciona la regla; donde el régimen
+miente sobre el signo (leverage invertido), solo el aprendiz rescata*. Eso es **entender el fenómeno**, no solo
+medirlo.
+
+**C6. [MECANISMO] Las dos capas tienen trabajos distintos y visibles.**
+*Resultado:* por grupo, **M8 levanta el Sharpe del agente** (ΔSharpe ≈ +1.3 en índices y volátiles; ≈0 en
+leverage invertido, donde la regla no puede y gana M10); la **cuota SHAP de STRATA es >0.5 en 10/10** (universal).
+Gate RAM: cuando el detector dispara, seguir el **régimen** bate a seguir al agente en **6/10**; y la
+**intervención crece con la discrepancia agente↔régimen** (Pearson **r=0.93, p<0.001**). *Valor:* el sistema hace
+**lo que dice que hace** — interviene donde el agente se aparta del régimen, y cada capa (riesgo/accuracy) cumple
+su función. Mecanismo interpretable = confianza para producción.
+
+**C7. [MECANISMO] El que las features de STRATA ayuden depende del modelo — y el ganador las usa.**
+*Resultado:* **AutoML** alcanza su máximo con las 22 features (0.574) y **degrada** al quitar PSA+GSO (0.550) → sí
+extrae su señal; **M10-XGBoost (params fijos) se sobreajusta** con 22 (0.494 < agente-15 0.542). *Valor:* zanja el
+*gap* de "PSA/GSO no disparan": como **reglas** casi no actúan, pero como **features continuas** informan a un
+aprendiz capaz. Justifica conservarlos sin inflar su papel.
+
+**C8. La intervención, hecha tangible y honesta.**
+*Resultado:* de **121 intervenciones** en SPY, M8 acierta 58.7% vs 41.3% del agente (**71 aciertan, 50 fallan**,
+P&L +0.312); dos días reales con el mismo mecanismo y desenlace opuesto. *Valor:* baja la mecánica a un caso
+concreto y **no esconde los fallos** — la regla es favorable en el agregado, no infalible. Credibilidad.
+
+**Síntesis del valor.** El trabajo aporta (i) un **resultado duro contrastado** (rescate de riesgo, C1–C3); (ii)
+un **mapa de patrones falsables** sobre dónde y cómo supervisar (C4–C5), que es el corazón científico; (iii) un
+**mecanismo interpretable** que da confianza para producción (C6–C8). La accuracy es nominal y se declara; el
+valor está en **entender el fenómeno de la supervisión estadística de agentes LLM**, no en un punto de acierto.
+
+---
+
 ## 0. Glosario (la jerga, en una línea cada una)
 
 **Estrategias** (todas devuelven una posición diaria $w_t=\pm1$):
