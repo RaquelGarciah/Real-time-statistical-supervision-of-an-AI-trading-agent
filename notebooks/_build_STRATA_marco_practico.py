@@ -117,6 +117,7 @@ NAT = {a: CLU["por_activo"][a]["nat"] for a in CLU["por_activo"]}        # natur
 SPYME = _load("outputs/experiments/spy_mechanism_extras.json")           # SPY: daily (régimen/posiciones/p1) + SHAP dependency + cuota rodante
 THR = _load("cache/models/strata_thresholds.json")                       # umbrales ex-ante PSA/GSO (calib 2000–2024-09)
 DETXLE = _load("outputs/experiments/detector_analysis_XLE.json"); DETMAR = _load("outputs/experiments/detector_analysis_MARA.json")
+DETABL = _load("outputs/experiments/detector_ablation_panel.json")        # activación detectores (10) + ablación M10 (SPY)
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -302,6 +303,31 @@ print(f"El agente está corto el {np.mean(list(shorts.values())):.0%} de los dí
 print("\nConclusión defendible: PSA/GSO se mantienen como ejes ortogonales de seguridad (pre-registrados); su "
       "inactividad en este OOS es un hallazgo honesto y una predicción cumplida (RAM domina), no un defecto.")""")
 
+md(r"""### Prueba directa: ¿y si los modelos NO usan los detectores? (ablación, misma config, SPY)
+La prueba que zanja el gap: reentrenar el meta-learner **con la misma config** quitando las features de los
+detectores. Si quitarlos NO degrada (o mejora), confirma que en este OOS no llevan señal. Para **M8** no hay
+ablación posible: M8 *es* el detector de régimen → sin él, M8 colapsa al agente (M5). M10 (XGBoost) y AutoML
+(H2O, seed=42, max_models=25) se reentrenan con: ALL22 · sin PSA+GSO · solo agente · solo STRATA.""")
+
+code(r"""# Ablación de detectores en el meta-learner (SPY, misma config): M10-XGBoost y AutoML-H2O
+ab = DETABL["ablacion_m10_spy"]; ref = DETABL["referencia_spy"]
+rows = [{"modelo": "M5 (agente, sin STRATA)", "feats": 15, "acc": ref["M5_agente"]["accuracy"], "sharpe": ref["M5_agente"]["sharpe"]},
+        {"modelo": "M8 (regla régimen)", "feats": "—", "acc": ref["M8_regla_régimen"]["accuracy"], "sharpe": ref["M8_regla_régimen"]["sharpe"]}]
+for nm, v in ab.items():
+    rows.append({"modelo": f"M10 · {nm}", "feats": v["n_features"], "acc": v["accuracy"], "sharpe": v["sharpe"]})
+try:
+    aa = json.load(open("outputs/experiments/automl_ablation_detectors.json"))["ablacion_automl_spy"]
+    for nm, v in aa.items():
+        rows.append({"modelo": f"AutoML · {nm}", "feats": v["n_features"], "acc": v["accuracy"], "sharpe": v["sharpe"]})
+except Exception:
+    print("(AutoML-H2O ablación: pendiente de ejecución — ver experiments/automl_ablation_detectors.py)")
+print(pd.DataFrame(rows).set_index("modelo").to_string())
+print("\nLectura honesta: quitar PSA+GSO del meta-learner NO lo degrada — en SPY incluso MEJORA "
+      f"(M10 ALL22 acc {ab['ALL22 (canónico)']['accuracy']} → sin PSA+GSO {ab['sin PSA+GSO']['accuracy']}; "
+      "Sharpe también sube). Es la confirmación directa de §2: PSA/GSO no llevan señal en este OOS (y con 22 "
+      "features hay algo de sobreajuste). El valor de STRATA aquí es el canal RÉGIMEN (rescate de M8/RAM), no "
+      "PSA/GSO; estos se mantienen como cobertura para otros regímenes (justificación arriba).")""")
+
 md(r"""### Matriz régimen × dirección: el leverage es contemporáneo, no predictivo
 Para no dejar el *leverage effect* solo en prosa: la distribución empírica de la dirección por régimen, en la
 **calibración** (n grande) y en el **OOS**. La clave: el retorno del **mismo día** baja con el régimen (leverage),
@@ -478,7 +504,24 @@ Sobre el M10 canónico: **ablación** (¿cuánto añade STRATA?) y **SHAP** (¿d
 excluye 0), e incluyendo AutoML.
 
 Antes, dos lecturas para entrar al panel: la **naturaleza** de cada activo (lo que luego explica el mecanismo,
-§5) y **cuánto rescata** la mejor STRATA al agente, por activo, en accuracy y en Sharpe.""")
+§5) y **cuánto rescata** la mejor STRATA al agente, por activo, en accuracy y en Sharpe.
+
+Y una vista que cierra el debate de los detectores a nivel de panel: **qué detector se activa en cada activo**.""")
+
+code(r"""# Activación de detectores en TODO el panel (10): tasa de disparo RAM/PSA/GSO + intervención de M8
+act = DETABL["activacion_panel"]
+A = pd.DataFrame(act).T.loc[PANEL10]
+fig, ax = plt.subplots(figsize=(11, 3.6)); x = np.arange(len(PANEL10)); w = 0.25
+ax.bar(x - w, A["RAM"], w, color="#2c7fb8", label="RAM (régimen)")
+ax.bar(x, A["PSA"], w, color="#7d3c98", label="PSA (cambio opinión)")
+ax.bar(x + w, A["GSO"], w, color="#c0392b", label="GSO (volatilidad)")
+ax.set_xticks(x); ax.set_xticklabels(PANEL10, rotation=45); ax.set_ylabel("tasa de disparo (OOS)")
+ax.set_title("Activación de los tres detectores por activo — RAM actúa; PSA/GSO casi nunca"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print("RAM dispara entre %.0f%% y %.0f%% según el activo; PSA ≤ %.1f%% y GSO = 0%% en TODO el panel." % (
+      A["RAM"].min()*100, A["RAM"].max()*100, A["PSA"].max()*100))
+print("→ A nivel de panel se confirma: la supervisión que actúa es el canal RÉGIMEN (RAM). PSA y GSO están "
+      "dormidos en este OOS calmado en los 10 activos (su justificación, en §2).")""")
 
 code(r"""# Naturaleza de los activos del panel: leverage de Black, fracción de Crisis OOS, sesgo corto del agente, vol
 fig, axes = plt.subplots(2, 2, figsize=(13, 6.4)); axes = axes.ravel()

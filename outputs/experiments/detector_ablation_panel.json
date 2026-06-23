@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "umbrales": {
+      "RAM_tau": 0.5,
+      "PSA_p95": 0.02293,
+      "GSO_p95": 2.37063
+    },
+    "ablacion_ticker": "SPY",
+    "nota": "M10 = ensemble 10 XGBoost WF emb=1 (determinista); M8 sin detector de régimen = el agente M5 (la regla ES el detector)."
+  },
+  "activacion_panel": {
+    "SPY": {
+      "RAM": 0.3017,
+      "PSA": 0.005,
+      "GSO": 0.0,
+      "intervencion_M8": 0.3017
+    },
+    "QQQ": {
+      "RAM": 0.197,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.197
+    },
+    "XLF": {
+      "RAM": 0.5491,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.5491
+    },
+    "DIA": {
+      "RAM": 0.3425,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.3425
+    },
+    "XLK": {
+      "RAM": 0.0948,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.0948
+    },
+    "XLE": {
+      "RAM": 0.5955,
+      "PSA": 0.0251,
+      "GSO": 0.0,
+      "intervencion_M8": 0.5955
+    },
+    "ROKU": {
+      "RAM": 0.71,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.71
+    },
+    "SMCI": {
+      "RAM": 0.0175,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.0175
+    },
+    "MARA": {
+      "RAM": 0.4146,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.4146
+    },
+    "UNG": {
+      "RAM": 0.0781,
+      "PSA": 0.0,
+      "GSO": 0.0,
+      "intervencion_M8": 0.0781
+    }
+  },
+  "ablacion_m10_spy": {
+    "ALL22 (canónico)": {
+      "n_features": 22,
+      "accuracy": 0.494,
+      "sharpe": -0.604
+    },
+    "sin PSA+GSO": {
+      "n_features": 20,
+      "accuracy": 0.5139,
+      "sharpe": 0.193
+    },
+    "sin GSO": {
+      "n_features": 21,
+      "accuracy": 0.494,
+      "sharpe": -0.727
+    },
+    "sin PSA": {
+      "n_features": 21,
+      "accuracy": 0.5139,
+      "sharpe": 0.38
+    },
+    "solo agente (15)": {
+      "n_features": 15,
+      "accuracy": 0.5418,
+      "sharpe": 1.055
+    },
+    "solo STRATA (7)": {
+      "n_features": 7,
+      "accuracy": 0.5458,
+      "sharpe": 1.957
+    }
+  },
+  "referencia_spy": {
+    "M5_agente": {
+      "accuracy": 0.3665,
+      "sharpe": -3.07
+    },
+    "M8_regla_régimen": {
+      "accuracy": 0.4422,
+      "sharpe": -0.464
+    }
+  }
+}
