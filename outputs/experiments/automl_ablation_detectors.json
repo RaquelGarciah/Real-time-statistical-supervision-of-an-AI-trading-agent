@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "max_models": 25,
+    "seed": 42,
+    "config": "AutoML-H2O canónico: GBM/XGBoost/StackedEnsemble, AUC, Purged K-Fold, WF emb=1; determinista por max_models+seed",
+    "ventana": "desplegable (tras burn-in 150)"
+  },
+  "ablacion_automl_spy": {
+    "ALL22 (canónico)": {
+      "n_features": 22,
+      "n": 251,
+      "accuracy": 0.5737,
+      "sharpe": 2.681,
+      "familias_leader": [
+        "GBM"
+      ]
+    },
+    "sin PSA+GSO": {
+      "n_features": 20,
+      "n": 251,
+      "accuracy": 0.5498,
+      "sharpe": 1.716,
+      "familias_leader": [
+        "GBM"
+      ]
+    },
+    "solo agente (15)": {
+      "n_features": 15,
+      "n": 251,
+      "accuracy": 0.5657,
+      "sharpe": 1.703,
+      "familias_leader": [
+        "GBM",
+        "StackedEnsemble"
+      ]
+    },
+    "solo STRATA (7)": {
+      "n_features": 7,
+      "n": 251,
+      "accuracy": 0.5378,
+      "sharpe": 1.437,
+      "familias_leader": [
+        "GBM"
+      ]
+    }
+  }
+}

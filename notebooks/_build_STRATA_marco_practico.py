@@ -305,9 +305,10 @@ print("\nConclusión defendible: PSA/GSO se mantienen como ejes ortogonales de s
 
 md(r"""### Prueba directa: ¿y si los modelos NO usan los detectores? (ablación, misma config, SPY)
 La prueba que zanja el gap: reentrenar el meta-learner **con la misma config** quitando las features de los
-detectores. Si quitarlos NO degrada (o mejora), confirma que en este OOS no llevan señal. Para **M8** no hay
-ablación posible: M8 *es* el detector de régimen → sin él, M8 colapsa al agente (M5). M10 (XGBoost) y AutoML
-(H2O, seed=42, max_models=25) se reentrenan con: ALL22 · sin PSA+GSO · solo agente · solo STRATA.""")
+detectores y **medir el cambio**. Para **M8** no hay ablación: M8 *es* el detector de régimen → sin él, M8
+colapsa al agente (M5). M10 (XGBoost) y AutoML (H2O, **seed=42, max_models=25 → determinista**) se reentrenan con:
+ALL22 · sin PSA+GSO · solo agente · solo STRATA. **Distinción clave:** que PSA/GSO casi no **disparen** como
+reglas (§2 arriba) no implica que sus **scores continuos** no sirvan como *features* — esto lo separa la ablación.""")
 
 code(r"""# Ablación de detectores en el meta-learner (SPY, misma config): M10-XGBoost y AutoML-H2O
 ab = DETABL["ablacion_m10_spy"]; ref = DETABL["referencia_spy"]
@@ -322,11 +323,20 @@ try:
 except Exception:
     print("(AutoML-H2O ablación: pendiente de ejecución — ver experiments/automl_ablation_detectors.py)")
 print(pd.DataFrame(rows).set_index("modelo").to_string())
-print("\nLectura honesta: quitar PSA+GSO del meta-learner NO lo degrada — en SPY incluso MEJORA "
-      f"(M10 ALL22 acc {ab['ALL22 (canónico)']['accuracy']} → sin PSA+GSO {ab['sin PSA+GSO']['accuracy']}; "
-      "Sharpe también sube). Es la confirmación directa de §2: PSA/GSO no llevan señal en este OOS (y con 22 "
-      "features hay algo de sobreajuste). El valor de STRATA aquí es el canal RÉGIMEN (rescate de M8/RAM), no "
-      "PSA/GSO; estos se mantienen como cobertura para otros regímenes (justificación arriba).")""")
+print(f"\nM10-XGBoost: quitar PSA+GSO NO degrada — incluso MEJORA (acc {ab['ALL22 (canónico)']['accuracy']} → "
+      f"{ab['sin PSA+GSO']['accuracy']}): con 22 features hay algo de sobreajuste y esos dos no le aportan.")
+try:
+    a0, a1 = aa["ALL22 (canónico)"], aa["sin PSA+GSO"]
+    print(f"AutoML-H2O (el GANADOR): quitar PSA+GSO SÍ DEGRADA (acc {a0['accuracy']} → {a1['accuracy']}, "
+          f"Sharpe {a0['sharpe']:+.2f} → {a1['sharpe']:+.2f}) → el buscador SÍ extrae información de los scores "
+          "continuos de PSA/GSO, aunque como REGLAS casi no disparen.")
+    print("\nConclusión (zanja el gap): PSA/GSO rara vez intervienen como reglas (RAM domina las intervenciones, §2), "
+          "PERO sus scores continuos llevan información que un aprendiz capaz (AutoML, el modelo ganador) aprovecha "
+          "— quitarlas le cuesta accuracy y Sharpe. Conservarlas se justifica por DOBLE motivo: (1) el mejor modelo "
+          "las usa AQUÍ; (2) son ejes ortogonales de seguridad para regímenes que este OOS no contiene (§2). "
+          "Que ayuden o no como features depende del modelo (AutoML sí; el XGBoost de params fijos se sobreajusta).")
+except Exception:
+    pass""")
 
 md(r"""### Matriz régimen × dirección: el leverage es contemporáneo, no predictivo
 Para no dejar el *leverage effect* solo en prosa: la distribución empírica de la dirección por régimen, en la
