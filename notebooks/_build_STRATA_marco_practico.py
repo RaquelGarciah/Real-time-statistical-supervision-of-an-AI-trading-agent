@@ -1050,8 +1050,9 @@ md(r"""### Comportamiento por grupo: ¿se distinguen patrones de estrategia seg�
 Cuatro vistas por grupo (réplica de `exploracion_estrategias` sobre nuestro caso). El objetivo no es significancia
 (n por grupo es pequeño) sino **patrón**: (1) qué estrategia rinde mejor de media en **accuracy** y (1b) en
 **Sharpe** —importante porque la regla **M8** casi nunca gana en accuracy pero es la que **rescata el riesgo** del
-agente—; (2) si cada estrategia acierta más **cuando coincide con el drift** (diagnostica si el acierto es "ir con
-la corriente"); (3) cuánto pesan las features de STRATA en el aprendiz por activo (cuota SHAP).""")
+agente—; (2) si cada estrategia acierta más **cuando coincide con el drift** y (2b) su **Sharpe** en esos días
+(diagnostica si el acierto/rentabilidad es "ir con la corriente"); (3) cuánto pesan las features de STRATA en el
+aprendiz por activo (cuota SHAP).""")
 
 code(r"""# (1) Accuracy media por estrategia, por grupo de activos
 prof = CL10["perfiles_k3"]["kmeans"]; groups = list(prof)
@@ -1107,6 +1108,23 @@ for g in groups:
     cn = np.nanmean([pa[a]["drift"]["AutoML"]["acc_contra"] for a in prof[g]["activos"] if pa[a]["drift"]["AutoML"]["acc_contra"]])
     print(f"{g}: AutoML acc coincide-drift={co:.3f} vs contra-drift={cn:.3f} → "
           f"{'sobre todo va con la corriente' if co - cn > 0.05 else 'acierta también a contracorriente (no es solo drift)'}")""")
+
+code(r"""# (2b) Sharpe de cada estrategia según COINCIDA con el drift, por activo del grupo
+fig, axes = plt.subplots(1, len(groups), figsize=(14, 3.8), sharey=True)
+for ax, g in zip(axes, groups):
+    acts = prof[g]["activos"]; x = np.arange(len(acts)); w = 0.2
+    for j, s in enumerate(mains):
+        vals = [pa[a]["drift"][s]["sharpe_coincide"] if pa[a]["drift"][s]["sharpe_coincide"] is not None else np.nan for a in acts]
+        ax.bar(x + (j - 1.5) * w, vals, w, color=COL.get(s, "#888"), edgecolor="k", lw=.3, label=s)
+    ax.axhline(0, color="k", lw=.8); ax.set_xticks(x); ax.set_xticklabels(acts, fontsize=8); ax.set_title(g, fontsize=9)
+axes[0].set_ylabel("Sharpe cuando coincide con el drift"); axes[0].legend(fontsize=7, ncol=2)
+fig.suptitle("Sharpe de cada estrategia en los días que COINCIDE con el drift (tendencia 21d), por activo", y=1.04)
+plt.tight_layout(); plt.show()
+print("Sharpe coincide-drift vs contra-drift (media por grupo, M8 = la regla de régimen):")
+for g in groups:
+    co = np.nanmean([pa[a]["drift"]["M8"]["sharpe_coincide"] for a in prof[g]["activos"] if pa[a]["drift"]["M8"]["sharpe_coincide"] is not None])
+    cn = np.nanmean([pa[a]["drift"]["M8"]["sharpe_contra"] for a in prof[g]["activos"] if pa[a]["drift"]["M8"]["sharpe_contra"] is not None])
+    print(f"  {g}: M8 Sharpe coincide={co:+.2f} vs contra={cn:+.2f} → ir CON el régimen/tendencia es mucho menos arriesgado")""")
 
 code(r"""# (3) Cuota SHAP de las features de STRATA en el aprendiz, por activo del grupo
 fig, axes = plt.subplots(1, len(groups), figsize=(14, 3.6), sharey=True)

@@ -39,7 +39,14 @@ NAME = {"m5": "M5", "m8": "M8", "m10_xgb": "M10", "automl": "AutoML", "zeror": "
 MAIN = ["m5", "m8", "m10_xgb", "automl"]
 PANEL_FILE = ("outputs/experiments/automl_runs/"
               "panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21_kfold_seed42.json")
+ANN = np.sqrt(252.0)
 OUT = Path("outputs/experiments/cluster_panel10.json")
+
+
+def _sr(a) -> float:
+    a = np.asarray(a, float); a = a[~np.isnan(a)]
+    s = a.std(ddof=1) if len(a) > 1 else 0.0
+    return float(a.mean() / s * ANN) if s > 0 else 0.0
 
 
 def _trend_sign(tk: str, dates: list) -> np.ndarray:
@@ -100,9 +107,12 @@ def main() -> None:
         drift = {}
         for a in MAIN:
             c = np.asarray(cba[a], float); pos = np.sign(rnext * (2 * c - 1))
+            ret = (2 * c - 1) * absr  # retorno diario ±1 del brazo
             coin = valid & ~np.isnan(dr) & (pos == dr); cont = valid & ~np.isnan(dr) & (pos == -dr)
             drift[NAME[a]] = {"acc_coincide": round(float(c[coin].mean()), 4) if coin.sum() else None,
                               "acc_contra": round(float(c[cont].mean()), 4) if cont.sum() else None,
+                              "sharpe_coincide": round(_sr(ret[coin]), 3) if coin.sum() else None,
+                              "sharpe_contra": round(_sr(ret[cont]), 3) if cont.sum() else None,
                               "n_coincide": int(coin.sum()), "n_contra": int(cont.sum())}
         per_asset[tk] = {"acc": acc, "sharpe": shp, "drift": drift,
                          "shap_cuota_strata": round(float(dp[tk]["shap"]["cuota_strata"]), 4)}
