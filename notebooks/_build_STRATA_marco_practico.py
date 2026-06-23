@@ -104,6 +104,7 @@ PANROB = _load("outputs/experiments/panel_robustness.json")             # rodant
 KSEL = _load("outputs/experiments/k_selection.json")                    # K=3: verosimilitud held-out (SPY)
 KABL = _load("outputs/experiments/k_ablation_panel.json")               # K=3 vs K=2 en el panel
 CALW = _load("outputs/experiments/calib_window_panel.json")             # robustez a la ventana de calibración
+BBC  = _load("outputs/experiments/bullbear_confirmatory.json")          # PARTE B confirmatoria (ΔSharpe Bonf+DSR) + régimen
 SPYR = _load("outputs/experiments/spy_m10_full_report.json")
 SPYA = _load("outputs/experiments/spy_ablation_robustness.json")
 SMV  = _load("outputs/experiments/m10_smci_valtest_robustez.json")
@@ -929,6 +930,9 @@ print(f"SMCI (límite, leverage débil): M10 acc {p['m10']['acc']:.3f} bate a to
 print(f"   calib-window: acortar NO vuelve direccional al régimen (Crisis media {SMC['por_ventana'][0]['medias_regimen']['Crisis']:+.4f}); la ventaja vive en la historia larga.")
 filas = [("Rescate agente (accuracy)", "McNemar M10/AutoML vs M5 SPY", f"p={PAN['SPY']['tests']['m10_xgb_vs_m5']['p']:.4f}/{PAN['SPY']['tests']['automl_vs_m5']['p']:.4f}", "SÍ sig"),
          ("Rescate agente (riesgo)", "bootstrap M8 vs M5 pooled-15 (canónico)", f"ΔSharpe {DP['pooled']['boot']['m8_vs_m5']['dSharpe']['point']:+.2f} IC excluye 0", "SÍ sig"),
+         ("Rescate riesgo (confirmatorio)", "ΔSharpe cota Bonferroni M10/AutoML vs M5 pooled", f"cota +{BBC['confirmatorio']['POOLED10']['pairs']['M10_vs_M5']['ci_bonf_low']:.2f}/+{BBC['confirmatorio']['POOLED10']['pairs']['AutoML_vs_M5']['ci_bonf_low']:.2f}>0", "SÍ (meta-learner)"),
+         ("Regla M8 sola (confirmatorio)", "ΔSharpe cota Bonferroni M8 vs M5", f"SPY {BBC['confirmatorio']['SPY']['pairs']['M8_vs_M5']['ci_bonf_low']:+.2f} / pooled {BBC['confirmatorio']['POOLED10']['pairs']['M8_vs_M5']['ci_bonf_low']:+.2f}", "NO (falsación regla)"),
+         ("Skill absoluta (deflación)", "Deflated Sharpe AutoML SPY (n_trials=6)", f"DSR={BBC['confirmatorio']['SPY']['dsr']['AutoML']['dsr']:.3f}", "SÍ (AutoML)"),
          ("Universalidad (ML usa STRATA)", "cuota SHAP media", f"{DP['medias']['cuota_strata_shap']:.2f}", "sí (descr.)"),
          ("Batir ZeroR (accuracy)", "McNemar AutoML vs ZeroR SPY", f"p={PAN['SPY']['tests']['automl_vs_zeror']['p']:.2f}", "NO (nominal)")]
 print("\n=== Qué sobrevive a un test ==="); print(pd.DataFrame(filas, columns=["afirmación", "test", "evidencia", "veredicto"]).to_string(index=False))""")
@@ -978,6 +982,98 @@ plt.tight_layout(); plt.show()
 nsig = sum(v["sig_0.10"] for v in pt.values())
 print(f"\n{nsig}/6 contrastes significativos: el rescate del agente sobrevive a un test TANTO en alcista COMO en "
       "bajista (M10/AutoML p<0.02 en ambos; M8 también). No es un artefacto de un único régimen de mercado.")""")
+
+md(r"""### Confirmatorio del rescate en riesgo: ΔSharpe con cota Bonferroni y Deflated Sharpe
+El McNemar anterior prueba el rescate en **accuracy**. Aquí cerramos el plano **riesgo** con el contraste
+**confirmatorio pre-registrado** (estilo `walkforward_robustez`): la mediana de ΔSharpe(sup−M5) por **bootstrap
+estacionario pareado** (Politis-Romano 1994), pero el veredicto **no usa el IC95** sino la **cota inferior
+Bonferroni** (IC al $1-\alpha/m$, $m=3$ confirmatorios M8/M10/AutoML vs M5), que controla el FWER del *o lógico*.
+Y añadimos el **Deflated Sharpe** (Bailey & López de Prado 2014): $P(\text{Sharpe}_{\text{verdadero}}>0)$ tras
+descontar la esperanza del máximo de $n_{\text{trials}}=6$ Sharpes bajo $H_0$ — el haircut por haber explorado
+varias configuraciones. Esto es **deliberadamente exigente**: en el estudio SPY-solo previo ningún brazo
+sobrevivía (un DSR indistinguible de azar) y por eso se retiró el DSR; lo reintroducimos porque con el
+meta-learner sobre el panel la situación **ya no es la misma**, y se aplica **por igual a los cuatro brazos**
+(tres reprueban). El *pooled* de este contraste es sobre los **10** activos con posiciones $\pm1$ (no es el
+*pooled* del titular de riesgo, que es sobre 15 con retorno neto causal): mismo **método** de bootstrap, distinto
+universo. Fuente: `bullbear_confirmatory.json`.""")
+
+code(r"""# (i) CONFIRMATORIO — mediana ΔSharpe con cota Bonferroni + Deflated Sharpe (SPY y POOLED-10)
+def _conf_rows(scope):
+    c = BBC["confirmatorio"][scope]; rows = []
+    for k, v in c["pairs"].items():
+        rows.append({"contraste": k.replace("_", " "), "mediana ΔSharpe": v["median_delta_sharpe"],
+                     "IC95": f"[{v['ci95_low']:+.2f},{v['ci95_high']:+.2f}]", "cota Bonferroni": v["ci_bonf_low"],
+                     "H1_b (cota>0)": "SÍ" if v["ci_bonf_low"] > 0 else "no"})
+    return pd.DataFrame(rows)
+qb = BBC["meta"]["q_bonf"]
+for scope in ("SPY", "POOLED10"):
+    print(f"=== {scope} · confirmatorio del rescate en Sharpe (cota Bonferroni cuantil {qb}, m={BBC['meta']['m_bonferroni']}) ===")
+    print(_conf_rows(scope).to_string(index=False))
+    dsr = BBC["confirmatorio"][scope]["dsr"]
+    print("  Deflated Sharpe P(SR>0): " + "  ".join(f"{a}={dsr[a]['dsr']:.3f}" for a in ("M5","M8","M10","AutoML")) + "\n")
+
+fig, axes = plt.subplots(1, 2, figsize=(13, 3.8))
+for ax, scope in zip(axes, ("SPY", "POOLED10")):
+    c = BBC["confirmatorio"][scope]["pairs"]; labs = list(c); x = np.arange(len(labs))
+    med = [c[k]["median_delta_sharpe"] for k in labs]
+    lo = [c[k]["median_delta_sharpe"] - c[k]["ci95_low"] for k in labs]
+    hi = [c[k]["ci95_high"] - c[k]["median_delta_sharpe"] for k in labs]
+    cols = ["#27ae60" if c[k]["ci_bonf_low"] > 0 else "#c0392b" for k in labs]
+    ax.bar(x, med, color=cols, alpha=.85, yerr=[lo, hi], capsize=4, ecolor="#555")
+    ax.scatter(x, [c[k]["ci_bonf_low"] for k in labs], marker="_", s=320, color="k", zorder=5, label="cota Bonferroni")
+    ax.axhline(0, color="k", lw=.8); ax.set_xticks(x); ax.set_xticklabels([l.replace("_vs_", "\nvs ") for l in labs], fontsize=8)
+    ax.set_title(f"{scope} · mediana ΔSharpe vs M5 (IC95 + cota Bonferroni)"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+_m10s = BBC["confirmatorio"]["SPY"]["dsr"]["M10"]
+print("Verde = la cota Bonferroni excluye 0 (rescate en Sharpe confirmado pese al haircut por familia). M8 SOLO "
+      "no la pasa (SPY cota {:+.2f}, pooled {:+.2f}): la REGLA pura rescata en accuracy pero no sobrevive el "
+      "confirmatorio en Sharpe. El meta-learner sí — AutoML alcanza DSR={:.3f} en SPY.".format(
+      BBC["confirmatorio"]["SPY"]["pairs"]["M8_vs_M5"]["ci_bonf_low"],
+      BBC["confirmatorio"]["POOLED10"]["pairs"]["M8_vs_M5"]["ci_bonf_low"],
+      BBC["confirmatorio"]["SPY"]["dsr"]["AutoML"]["dsr"]))
+print("Matiz clave: M10-SPY PASA la cota Bonferroni (rescate vs M5) pero su DSR={:.3f} y su Sharpe anualizado "
+      "={:+.2f} → el confirmatorio mide RESCATE (mejora sobre un agente pésimo), NO skill absoluta ni alfa. Solo "
+      "AutoML-SPY (DSR={:.3f}) tiene skill que sobrevive la deflación.".format(
+      _m10s["dsr"], _m10s["sharpe_ann"], BBC["confirmatorio"]["SPY"]["dsr"]["AutoML"]["dsr"]))""")
+
+md(r"""### Rescate en Sharpe **desglosado por régimen** (alcista vs bajista)
+La falsación pre-registrada del proyecto avisaba de que el rescate de **riesgo** podía concentrarse en alcista e
+**invertirse en bajista** (efecto leverage). Lo medimos por régimen con tres lentes (McNemar $p_{\text{Holm}}$
+sobre la familia régimen×contraste, block-permutation y ΔSharpe puntual). Hallazgo honesto: en **SPY-bajista** la
+**regla M8 sí se invierte** ($\Delta$Sharpe negativa, $n$ pequeño), tal como predecía la falsación; pero el
+**meta-learner sobre el panel** rescata con significancia **en los dos regímenes** — superando el resultado
+SPY-solo del estudio previo.""")
+
+code(r"""# (j) ΔSharpe + McNemar(Holm) + block-perm POR RÉGIMEN (SPY y POOLED-10)
+def _reg_rows(scope):
+    r = BBC["por_regimen"][scope]; rows = []
+    for reg in ("alcista", "bajista"):
+        for k, v in r[reg]["contrastes"].items():
+            rows.append({"régimen": f"{reg} (n={r[reg]['n']})", "contraste": k.replace("_vs_", " vs "),
+                         "ΔSharpe": v["delta_sharpe"], "McNemar p_Holm": v["mcnemar_p_holm"],
+                         "block-perm p": v["blockperm_p"], "sig_0.10": "SÍ" if v["mcnemar_p_holm"] < 0.10 else "no"})
+    return pd.DataFrame(rows)
+for scope in ("SPY", "POOLED10"):
+    print(f"=== {scope} · rescate por régimen (ΔSharpe + McNemar Holm + block-perm) ==="); print(_reg_rows(scope).to_string(index=False), "\n")
+
+fig, axes = plt.subplots(1, 2, figsize=(13, 3.8))
+pares = list(BBC["por_regimen"]["SPY"]["alcista"]["contrastes"]); x = np.arange(len(pares)); w = .38
+for ax, scope in zip(axes, ("SPY", "POOLED10")):
+    r = BBC["por_regimen"][scope]
+    for off, reg, hatch in [(-w/2, "alcista", None), (w/2, "bajista", "//")]:
+        cc = r[reg]["contrastes"]
+        vals = [cc[p]["delta_sharpe"] for p in pares]
+        cols = ["#27ae60" if cc[p]["mcnemar_p_holm"] < 0.10 else "#c0392b" for p in pares]
+        ax.bar(x + off, vals, w, color=cols, hatch=hatch, edgecolor="k", lw=.5, label=f"{reg} (n={r[reg]['n']})")
+    ax.axhline(0, color="k", lw=.8); ax.set_xticks(x); ax.set_xticklabels([p.replace("_vs_", "\nvs ") for p in pares], fontsize=8)
+    ax.set_title(f"{scope} · ΔSharpe por régimen (verde: McNemar p_Holm<0.10)"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+sb = BBC["por_regimen"]["SPY"]["bajista"]["contrastes"]; pb = BBC["por_regimen"]["POOLED10"]["bajista"]["contrastes"]
+print("SPY-bajista: M8 ΔSharpe={:+.2f} (la regla se invierte, como predecía la falsación), pero AutoML={:+.2f}. "
+      "POOLED bajista: M10/AutoML McNemar p_Holm={:.4f}/{:.4f} con ΔSharpe {:+.2f}/{:+.2f} → el rescate sobrevive "
+      "EN BAJISTA al agregar el panel.".format(sb["M8_vs_M5"]["delta_sharpe"], sb["AutoML_vs_M5"]["delta_sharpe"],
+      pb["M10_vs_M5"]["mcnemar_p_holm"], pb["AutoML_vs_M5"]["mcnemar_p_holm"],
+      pb["M10_vs_M5"]["delta_sharpe"], pb["AutoML_vs_M5"]["delta_sharpe"]))""")
 
 md(r"""### Robustez a la ventana de calibración (sugerencia del tutor)
 Recalibramos HMM+GARCH con inicios de ventana cada vez más cortos (fin fijo en 2024-09 → sin fuga) y recomputamos
@@ -1165,6 +1261,15 @@ assert "automl" in ANR["SPY"] and len(ANR["SPY"]["automl"]) == len(DPA["SPY"]["n
 assert "SPY" in PANROB["por_activo"] and len(PANROB["por_activo"]) == 10, "panel_robustness incompleto"
 _pt = PANROB["pooled_bullbear"]["tests"]
 assert _pt["m10_xgb_vs_m5_alcista"]["sig_0.10"] and _pt["m10_xgb_vs_m5_bajista"]["sig_0.10"], "M10 rescate debe ser sig en alcista Y bajista"
+# confirmatorio en Sharpe (cota Bonferroni) + DSR: el meta-learner pasa, la regla M8 sola no
+_bc = BBC["confirmatorio"]
+assert _bc["SPY"]["pairs"]["M10_vs_M5"]["ci_bonf_low"] > 0 and _bc["SPY"]["pairs"]["AutoML_vs_M5"]["ci_bonf_low"] > 0, "SPY: M10/AutoML deben pasar la cota Bonferroni en ΔSharpe"
+assert _bc["SPY"]["pairs"]["M8_vs_M5"]["ci_bonf_low"] <= 0, "SPY: la regla M8 SOLA no debe pasar la cota Bonferroni (falsación honesta de la regla en el plano riesgo)"
+assert _bc["POOLED10"]["pairs"]["M10_vs_M5"]["ci_bonf_low"] > 0 and _bc["POOLED10"]["pairs"]["AutoML_vs_M5"]["ci_bonf_low"] > 0, "pooled: M10/AutoML deben pasar la cota Bonferroni"
+assert _bc["SPY"]["dsr"]["AutoML"]["dsr"] > 0.90 > _bc["SPY"]["dsr"]["M5"]["dsr"], "DSR: AutoML-SPY debe sobrevivir la deflación (>0.90) y el agente M5 no"
+_brb = BBC["por_regimen"]["POOLED10"]["bajista"]["contrastes"]
+assert _brb["M10_vs_M5"]["mcnemar_p_holm"] < 0.10 and _brb["M10_vs_M5"]["delta_sharpe"] > 0, "pooled-bajista: el rescate del meta-learner debe ser sig y con ΔSharpe>0 (supera al SPY-solo previo)"
+assert BBC["por_regimen"]["SPY"]["bajista"]["contrastes"]["M8_vs_M5"]["delta_sharpe"] < 0, "SPY-bajista: la regla M8 debe invertirse en Sharpe (falsación pre-registrada)"
 assert KSEL["per_k"]["3"]["heldout_loglik_perobs"] > KSEL["per_k"]["2"]["heldout_loglik_perobs"], "K=3 debe mejorar held-out vs K=2"
 # ley naturaleza→resultado (leverage→rescate ML) significativa Y robusta a leave-one-out (fix #2)
 assert LAW_P < 0.10, "la ley leverage→rescate-ML debe ser significativa"

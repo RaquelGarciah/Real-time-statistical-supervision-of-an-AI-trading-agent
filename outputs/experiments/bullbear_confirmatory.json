@@ -1,0 +1,268 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "pares": [
+      "M8_vs_M5",
+      "M10_vs_M5",
+      "AutoML_vs_M5"
+    ],
+    "alpha": 0.05,
+    "m_bonferroni": 3,
+    "q_bonf": 0.00833,
+    "n_trials_dsr": 6,
+    "b_reps": 2000,
+    "seed": 42,
+    "nota": "PARTE B confirmatoria (mediana ΔSharpe + cota Bonferroni + DSR) y rescate por régimen (McNemar Holm + block-perm + ΔSharpe). Retornos ±1 reconstruidos del acierto canónico; pooled = concatenación de los 10 con posiciones ±1 (mismo método de bootstrap que el pooled de riesgo de 15, pero distinto universo y serie → no cruzar numéricamente con el pooled-15 net-causal)."
+  },
+  "confirmatorio": {
+    "SPY": {
+      "_label": "SPY",
+      "pairs": {
+        "M8_vs_M5": {
+          "median_delta_sharpe": 2.4901,
+          "ci95_low": -0.1662,
+          "ci95_high": 5.538,
+          "ci_bonf_low": -0.6566,
+          "point": 2.4421,
+          "block_len": 16,
+          "n_obs": 251
+        },
+        "M10_vs_M5": {
+          "median_delta_sharpe": 3.615,
+          "ci95_low": 0.7825,
+          "ci95_high": 6.4543,
+          "ci_bonf_low": 0.0209,
+          "point": 3.614,
+          "block_len": 16,
+          "n_obs": 251
+        },
+        "AutoML_vs_M5": {
+          "median_delta_sharpe": 6.7,
+          "ci95_low": 2.7375,
+          "ci95_high": 10.8555,
+          "ci_bonf_low": 1.9098,
+          "point": 6.687,
+          "block_len": 16,
+          "n_obs": 251
+        }
+      },
+      "dsr": {
+        "M5": {
+          "sr_daily": -0.2506,
+          "sharpe_ann": -3.977,
+          "dsr": 0.0,
+          "n": 251
+        },
+        "M8": {
+          "sr_daily": -0.0967,
+          "sharpe_ann": -1.535,
+          "dsr": 0.0019,
+          "n": 251
+        },
+        "M10": {
+          "sr_daily": -0.0229,
+          "sharpe_ann": -0.363,
+          "dsr": 0.048,
+          "n": 251
+        },
+        "AutoML": {
+          "sr_daily": 0.1707,
+          "sharpe_ann": 2.71,
+          "dsr": 0.9238,
+          "n": 251
+        }
+      }
+    },
+    "POOLED10": {
+      "_label": "POOLED10",
+      "pairs": {
+        "M8_vs_M5": {
+          "median_delta_sharpe": 0.61,
+          "ci95_low": 0.0494,
+          "ci95_high": 1.2242,
+          "ci_bonf_low": -0.0468,
+          "point": 0.5968,
+          "block_len": 50,
+          "n_obs": 2493
+        },
+        "M10_vs_M5": {
+          "median_delta_sharpe": 1.112,
+          "ci95_low": 0.387,
+          "ci95_high": 1.8379,
+          "ci_bonf_low": 0.2578,
+          "point": 1.1169,
+          "block_len": 50,
+          "n_obs": 2493
+        },
+        "AutoML_vs_M5": {
+          "median_delta_sharpe": 1.1012,
+          "ci95_low": 0.396,
+          "ci95_high": 1.8456,
+          "ci_bonf_low": 0.2607,
+          "point": 1.0827,
+          "block_len": 50,
+          "n_obs": 2493
+        }
+      },
+      "dsr": {
+        "M5": {
+          "sr_daily": -0.0327,
+          "sharpe_ann": -0.519,
+          "dsr": 0.0021,
+          "n": 2493
+        },
+        "M8": {
+          "sr_daily": 0.0049,
+          "sharpe_ann": 0.078,
+          "dsr": 0.1452,
+          "n": 2493
+        },
+        "M10": {
+          "sr_daily": 0.0377,
+          "sharpe_ann": 0.598,
+          "dsr": 0.725,
+          "n": 2493
+        },
+        "AutoML": {
+          "sr_daily": 0.0355,
+          "sharpe_ann": 0.564,
+          "dsr": 0.6847,
+          "n": 2493
+        }
+      }
+    }
+  },
+  "por_regimen": {
+    "SPY": {
+      "alcista": {
+        "n": 201,
+        "contrastes": {
+          "M8_vs_M5": {
+            "mcnemar_p": 0.0327,
+            "blockperm_p": 0.0232,
+            "delta_sharpe": 3.9463,
+            "b": 45,
+            "c": 26,
+            "mcnemar_p_holm": 0.1307
+          },
+          "M10_vs_M5": {
+            "mcnemar_p": 0.0087,
+            "blockperm_p": 0.0086,
+            "delta_sharpe": 4.3453,
+            "b": 67,
+            "c": 39,
+            "mcnemar_p_holm": 0.0436
+          },
+          "AutoML_vs_M5": {
+            "mcnemar_p": 0.0009,
+            "blockperm_p": 0.0022,
+            "delta_sharpe": 7.5322,
+            "b": 97,
+            "c": 55,
+            "mcnemar_p_holm": 0.0053
+          }
+        }
+      },
+      "bajista": {
+        "n": 50,
+        "contrastes": {
+          "M8_vs_M5": {
+            "mcnemar_p": 1.0,
+            "blockperm_p": 1.0,
+            "delta_sharpe": -1.4949,
+            "b": 7,
+            "c": 7,
+            "mcnemar_p_holm": 1.0
+          },
+          "M10_vs_M5": {
+            "mcnemar_p": 0.5708,
+            "blockperm_p": 0.4968,
+            "delta_sharpe": 1.9015,
+            "b": 16,
+            "c": 12,
+            "mcnemar_p_holm": 1.0
+          },
+          "AutoML_vs_M5": {
+            "mcnemar_p": 0.1443,
+            "blockperm_p": 0.381,
+            "delta_sharpe": 4.7908,
+            "b": 24,
+            "c": 14,
+            "mcnemar_p_holm": 0.4329
+          }
+        }
+      }
+    },
+    "POOLED10": {
+      "alcista": {
+        "n": 1608,
+        "contrastes": {
+          "M8_vs_M5": {
+            "mcnemar_p": 0.0992,
+            "blockperm_p": 0.0627,
+            "delta_sharpe": 0.6285,
+            "b": 346,
+            "c": 303,
+            "mcnemar_p_holm": 0.0992
+          },
+          "M10_vs_M5": {
+            "mcnemar_p": 0.0015,
+            "blockperm_p": 0.0001,
+            "delta_sharpe": 1.372,
+            "b": 448,
+            "c": 357,
+            "mcnemar_p_holm": 0.0076
+          },
+          "AutoML_vs_M5": {
+            "mcnemar_p": 0.0023,
+            "blockperm_p": 0.0006,
+            "delta_sharpe": 0.8088,
+            "b": 492,
+            "c": 400,
+            "mcnemar_p_holm": 0.0092
+          }
+        }
+      },
+      "bajista": {
+        "n": 885,
+        "contrastes": {
+          "M8_vs_M5": {
+            "mcnemar_p": 0.0026,
+            "blockperm_p": 0.0165,
+            "delta_sharpe": 0.5493,
+            "b": 182,
+            "c": 128,
+            "mcnemar_p_holm": 0.0092
+          },
+          "M10_vs_M5": {
+            "mcnemar_p": 0.0134,
+            "blockperm_p": 0.025,
+            "delta_sharpe": 0.7177,
+            "b": 285,
+            "c": 228,
+            "mcnemar_p_holm": 0.0268
+          },
+          "AutoML_vs_M5": {
+            "mcnemar_p": 0.0003,
+            "blockperm_p": 0.001,
+            "delta_sharpe": 1.5247,
+            "b": 339,
+            "c": 250,
+            "mcnemar_p_holm": 0.0017
+          }
+        }
+      }
+    }
+  }
+}
