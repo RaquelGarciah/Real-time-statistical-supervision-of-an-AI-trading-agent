@@ -1,0 +1,435 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "apendice": [
+      "MSTR",
+      "NVDA",
+      "BAC",
+      "TSLA",
+      "IWM"
+    ],
+    "oos_start": "2024-10-01",
+    "nota": "dry-run del kill-switch (gate identificable + leverage + prior-flip + drift); sin agente; ex-ante donde aplica. NO es backtest de P&L."
+  },
+  "por_activo": {
+    "SPY": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.535,
+        "frac_disparo": 0.59,
+        "slope": 0.136,
+        "frac_identified_robusto": 0.392
+      },
+      "leverage": {
+        "crisis_mean": -0.00036,
+        "leverage_corr": -0.1099
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.504,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.16,
+        "oos": 0.067,
+        "ratio": 0.42
+      }
+    },
+    "QQQ": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.542,
+        "frac_disparo": 0.675,
+        "slope": 0.121,
+        "frac_identified_robusto": 0.116
+      },
+      "leverage": {
+        "crisis_mean": -0.001245,
+        "leverage_corr": -0.0921
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.55,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.22,
+        "oos": 0.065,
+        "ratio": 0.3
+      }
+    },
+    "XLF": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.524,
+        "frac_disparo": 0.637,
+        "slope": 0.153,
+        "frac_identified_robusto": 0.843
+      },
+      "leverage": {
+        "crisis_mean": -6e-05,
+        "leverage_corr": -0.0909
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.521,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.132,
+        "oos": 0.053,
+        "ratio": 0.4
+      }
+    },
+    "DIA": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.543,
+        "frac_disparo": 0.636,
+        "slope": 0.224,
+        "frac_identified_robusto": 0.858
+      },
+      "leverage": {
+        "crisis_mean": -0.000255,
+        "leverage_corr": -0.1117
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.525,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.127,
+        "oos": 0.06,
+        "ratio": 0.48
+      }
+    },
+    "XLK": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "prior-flip (dirección disparada invertida en OOS)"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.534,
+        "frac_disparo": 0.663,
+        "slope": 0.2,
+        "frac_identified_robusto": 0.888
+      },
+      "leverage": {
+        "crisis_mean": -0.000865,
+        "leverage_corr": -0.0863
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.429,
+        "flip": true
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.315,
+        "oos": 0.34,
+        "ratio": 1.08
+      }
+    },
+    "XLE": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.511,
+        "frac_disparo": 0.598,
+        "slope": 0.091,
+        "frac_identified_robusto": 0.767
+      },
+      "leverage": {
+        "crisis_mean": 6.8e-05,
+        "leverage_corr": -0.0891
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.544,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.119,
+        "oos": 0.06,
+        "ratio": 0.51
+      }
+    },
+    "ROKU": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "régimen no informativo ex-ante (subconjunto disparado no bate 0.5)"
+      ],
+      "gate": {
+        "identifiable": false,
+        "acc_calib_disparado": 0.503,
+        "frac_disparo": 0.699,
+        "slope": -0.085,
+        "frac_identified_robusto": 0.105
+      },
+      "leverage": {
+        "crisis_mean": 0.003179,
+        "leverage_corr": 0.0028
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.533,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.215,
+        "oos": 0.049,
+        "ratio": 0.23
+      }
+    },
+    "SMCI": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "régimen no informativo ex-ante (subconjunto disparado no bate 0.5)"
+      ],
+      "gate": {
+        "identifiable": false,
+        "acc_calib_disparado": 0.499,
+        "frac_disparo": 0.65,
+        "slope": -0.068,
+        "frac_identified_robusto": 0.038
+      },
+      "leverage": {
+        "crisis_mean": 0.001613,
+        "leverage_corr": -0.0042
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.546,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.182,
+        "oos": 0.719,
+        "ratio": 3.94
+      }
+    },
+    "MARA": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "régimen no informativo ex-ante (subconjunto disparado no bate 0.5)"
+      ],
+      "gate": {
+        "identifiable": false,
+        "acc_calib_disparado": 0.474,
+        "frac_disparo": 0.501,
+        "slope": -0.322,
+        "frac_identified_robusto": 0.0
+      },
+      "leverage": {
+        "crisis_mean": 0.005577,
+        "leverage_corr": -0.0595
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.497,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.222,
+        "oos": 0.035,
+        "ratio": 0.16
+      }
+    },
+    "UNG": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "régimen no informativo ex-ante (subconjunto disparado no bate 0.5)"
+      ],
+      "gate": {
+        "identifiable": false,
+        "acc_calib_disparado": 0.498,
+        "frac_disparo": 0.702,
+        "slope": -0.045,
+        "frac_identified_robusto": 0.107
+      },
+      "leverage": {
+        "crisis_mean": -0.001983,
+        "leverage_corr": 0.0409
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.477,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.262,
+        "oos": 0.479,
+        "ratio": 1.83
+      }
+    },
+    "MSTR": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.522,
+        "frac_disparo": 0.633,
+        "slope": 0.087,
+        "frac_identified_robusto": 0.508
+      },
+      "leverage": {
+        "crisis_mean": -0.001011,
+        "leverage_corr": 0.0172
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.5,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.252,
+        "oos": 0.391,
+        "ratio": 1.55
+      }
+    },
+    "NVDA": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.526,
+        "frac_disparo": 0.672,
+        "slope": 0.213,
+        "frac_identified_robusto": 0.993
+      },
+      "leverage": {
+        "crisis_mean": 0.001725,
+        "leverage_corr": 0.0015
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.516,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.198,
+        "oos": 0.105,
+        "ratio": 0.53
+      }
+    },
+    "BAC": {
+      "verdict": "GO",
+      "motivo": [
+        "régimen informativo ex-ante · sin prior-flip"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.517,
+        "frac_disparo": 0.528,
+        "slope": 0.04,
+        "frac_identified_robusto": 0.218
+      },
+      "leverage": {
+        "crisis_mean": -0.000585,
+        "leverage_corr": -0.0662
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.522,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.105,
+        "oos": 0.051,
+        "ratio": 0.49
+      }
+    },
+    "TSLA": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "régimen no informativo ex-ante (subconjunto disparado no bate 0.5)"
+      ],
+      "gate": {
+        "identifiable": false,
+        "acc_calib_disparado": 0.495,
+        "frac_disparo": 0.612,
+        "slope": 0.057,
+        "frac_identified_robusto": 0.261
+      },
+      "leverage": {
+        "crisis_mean": 0.003993,
+        "leverage_corr": -0.0212
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.485,
+        "flip": false
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.274,
+        "oos": 0.288,
+        "ratio": 1.05
+      }
+    },
+    "IWM": {
+      "verdict": "ABSTAIN",
+      "motivo": [
+        "prior-flip (dirección disparada invertida en OOS)"
+      ],
+      "gate": {
+        "identifiable": true,
+        "acc_calib_disparado": 0.512,
+        "frac_disparo": 0.569,
+        "slope": 0.087,
+        "frac_identified_robusto": 0.734
+      },
+      "leverage": {
+        "crisis_mean": 0.000318,
+        "leverage_corr": -0.1022
+      },
+      "monitor_prior_flip": {
+        "acc_oos_disparado": 0.493,
+        "flip": true
+      },
+      "monitor_drift_crisis": {
+        "calib": 0.169,
+        "oos": 0.063,
+        "ratio": 0.37
+      }
+    }
+  },
+  "resumen": {
+    "cuerpo_GO": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLE"
+    ],
+    "cuerpo_ABSTAIN": [
+      "XLK",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "n_GO": 5,
+    "n_ABSTAIN": 5
+  }
+}
