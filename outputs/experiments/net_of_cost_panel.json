@@ -1,0 +1,1830 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "ventana": "desplegable [150:] (~250d)",
+    "costs_bps": [
+      0.0,
+      1.0,
+      2.0,
+      5.0,
+      10.0,
+      20.0
+    ],
+    "metodo": "pos = signo(r_{t+1})·(2·acierto−1) desde panel canónico; sin reentrenar; coste lineal core.backtest; signal_lag=1",
+    "pre_registro": "BITACORA 2026-06-23"
+  },
+  "por_activo": {
+    "SPY": {
+      "n": 251,
+      "turnover_ann": {
+        "M5": 191.52,
+        "M8": 106.85,
+        "M10": 211.68,
+        "AutoML": 135.07,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -3.884,
+            "equity": 0.6196
+          },
+          "1bp": {
+            "sharpe": -4.039,
+            "equity": 0.6078
+          },
+          "2bp": {
+            "sharpe": -4.193,
+            "equity": 0.5963
+          },
+          "5bp": {
+            "sharpe": -4.649,
+            "equity": 0.563
+          },
+          "10bp": {
+            "sharpe": -5.385,
+            "equity": 0.5115
+          },
+          "20bp": {
+            "sharpe": -6.744,
+            "equity": 0.4222
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": -1.443,
+            "equity": 0.8293
+          },
+          "1bp": {
+            "sharpe": -1.528,
+            "equity": 0.8204
+          },
+          "2bp": {
+            "sharpe": -1.613,
+            "equity": 0.8117
+          },
+          "5bp": {
+            "sharpe": -1.865,
+            "equity": 0.786
+          },
+          "10bp": {
+            "sharpe": -2.276,
+            "equity": 0.7449
+          },
+          "20bp": {
+            "sharpe": -3.059,
+            "equity": 0.669
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": -0.435,
+            "equity": 0.9398
+          },
+          "1bp": {
+            "sharpe": -0.604,
+            "equity": 0.9202
+          },
+          "2bp": {
+            "sharpe": -0.773,
+            "equity": 0.901
+          },
+          "5bp": {
+            "sharpe": -1.279,
+            "equity": 0.8456
+          },
+          "10bp": {
+            "sharpe": -2.112,
+            "equity": 0.7608
+          },
+          "20bp": {
+            "sharpe": -3.71,
+            "equity": 0.6157
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 2.79,
+            "equity": 1.3983
+          },
+          "1bp": {
+            "sharpe": 2.681,
+            "equity": 1.3798
+          },
+          "2bp": {
+            "sharpe": 2.572,
+            "equity": 1.3616
+          },
+          "5bp": {
+            "sharpe": 2.243,
+            "equity": 1.3084
+          },
+          "10bp": {
+            "sharpe": 1.693,
+            "equity": 1.2241
+          },
+          "20bp": {
+            "sharpe": 0.608,
+            "equity": 1.0714
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 2.206,
+            "equity": 1.3034
+          },
+          "1bp": {
+            "sharpe": 2.206,
+            "equity": 1.3032
+          },
+          "2bp": {
+            "sharpe": 2.205,
+            "equity": 1.3031
+          },
+          "5bp": {
+            "sharpe": 2.204,
+            "equity": 1.3027
+          },
+          "10bp": {
+            "sharpe": 2.202,
+            "equity": 1.3021
+          },
+          "20bp": {
+            "sharpe": 2.199,
+            "equity": 1.3008
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 2.206,
+            "equity": 1.3034
+          },
+          "1bp": {
+            "sharpe": 2.206,
+            "equity": 1.3032
+          },
+          "2bp": {
+            "sharpe": 2.205,
+            "equity": 1.3031
+          },
+          "5bp": {
+            "sharpe": 2.204,
+            "equity": 1.3027
+          },
+          "10bp": {
+            "sharpe": 2.202,
+            "equity": 1.3021
+          },
+          "20bp": {
+            "sharpe": 2.199,
+            "equity": 1.3008
+          }
+        }
+      }
+    },
+    "QQQ": {
+      "n": 251,
+      "turnover_ann": {
+        "M5": 185.47,
+        "M8": 102.82,
+        "M10": 195.55,
+        "AutoML": 151.2,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -2.082,
+            "equity": 0.7019
+          },
+          "1bp": {
+            "sharpe": -2.192,
+            "equity": 0.6892
+          },
+          "2bp": {
+            "sharpe": -2.302,
+            "equity": 0.6766
+          },
+          "5bp": {
+            "sharpe": -2.63,
+            "equity": 0.6404
+          },
+          "10bp": {
+            "sharpe": -3.168,
+            "equity": 0.5842
+          },
+          "20bp": {
+            "sharpe": -4.198,
+            "equity": 0.486
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": -0.801,
+            "equity": 0.8645
+          },
+          "1bp": {
+            "sharpe": -0.864,
+            "equity": 0.8556
+          },
+          "2bp": {
+            "sharpe": -0.926,
+            "equity": 0.8468
+          },
+          "5bp": {
+            "sharpe": -1.111,
+            "equity": 0.821
+          },
+          "10bp": {
+            "sharpe": -1.416,
+            "equity": 0.7797
+          },
+          "20bp": {
+            "sharpe": -2.011,
+            "equity": 0.703
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": -0.597,
+            "equity": 0.8941
+          },
+          "1bp": {
+            "sharpe": -0.714,
+            "equity": 0.877
+          },
+          "2bp": {
+            "sharpe": -0.831,
+            "equity": 0.8602
+          },
+          "5bp": {
+            "sharpe": -1.18,
+            "equity": 0.8117
+          },
+          "10bp": {
+            "sharpe": -1.756,
+            "equity": 0.7369
+          },
+          "20bp": {
+            "sharpe": -2.874,
+            "equity": 0.6071
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 0.419,
+            "equity": 1.057
+          },
+          "1bp": {
+            "sharpe": 0.329,
+            "equity": 1.0414
+          },
+          "2bp": {
+            "sharpe": 0.239,
+            "equity": 1.026
+          },
+          "5bp": {
+            "sharpe": -0.034,
+            "equity": 0.9813
+          },
+          "10bp": {
+            "sharpe": -0.49,
+            "equity": 0.9109
+          },
+          "20bp": {
+            "sharpe": -1.407,
+            "equity": 0.7848
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 2.275,
+            "equity": 1.4299
+          },
+          "1bp": {
+            "sharpe": 2.274,
+            "equity": 1.4298
+          },
+          "2bp": {
+            "sharpe": 2.274,
+            "equity": 1.4297
+          },
+          "5bp": {
+            "sharpe": 2.273,
+            "equity": 1.4293
+          },
+          "10bp": {
+            "sharpe": 2.272,
+            "equity": 1.4286
+          },
+          "20bp": {
+            "sharpe": 2.269,
+            "equity": 1.4272
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 2.275,
+            "equity": 1.4299
+          },
+          "1bp": {
+            "sharpe": 2.274,
+            "equity": 1.4298
+          },
+          "2bp": {
+            "sharpe": 2.274,
+            "equity": 1.4297
+          },
+          "5bp": {
+            "sharpe": 2.273,
+            "equity": 1.4293
+          },
+          "10bp": {
+            "sharpe": 2.272,
+            "equity": 1.4286
+          },
+          "20bp": {
+            "sharpe": 2.269,
+            "equity": 1.4272
+          }
+        }
+      }
+    },
+    "XLF": {
+      "n": 247,
+      "turnover_ann": {
+        "M5": 108.59,
+        "M8": 24.59,
+        "M10": 151.61,
+        "AutoML": 122.93,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -0.851,
+            "equity": 0.8771
+          },
+          "1bp": {
+            "sharpe": -0.93,
+            "equity": 0.8672
+          },
+          "2bp": {
+            "sharpe": -1.01,
+            "equity": 0.8575
+          },
+          "5bp": {
+            "sharpe": -1.249,
+            "equity": 0.8289
+          },
+          "10bp": {
+            "sharpe": -1.643,
+            "equity": 0.7833
+          },
+          "20bp": {
+            "sharpe": -2.414,
+            "equity": 0.6993
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": -0.513,
+            "equity": 0.9201
+          },
+          "1bp": {
+            "sharpe": -0.534,
+            "equity": 0.9173
+          },
+          "2bp": {
+            "sharpe": -0.555,
+            "equity": 0.9144
+          },
+          "5bp": {
+            "sharpe": -0.619,
+            "equity": 0.9059
+          },
+          "10bp": {
+            "sharpe": -0.725,
+            "equity": 0.8919
+          },
+          "20bp": {
+            "sharpe": -0.932,
+            "equity": 0.8645
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": -0.384,
+            "equity": 0.9372
+          },
+          "1bp": {
+            "sharpe": -0.489,
+            "equity": 0.9233
+          },
+          "2bp": {
+            "sharpe": -0.594,
+            "equity": 0.9096
+          },
+          "5bp": {
+            "sharpe": -0.909,
+            "equity": 0.8699
+          },
+          "10bp": {
+            "sharpe": -1.431,
+            "equity": 0.8074
+          },
+          "20bp": {
+            "sharpe": -2.455,
+            "equity": 0.6953
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": -0.677,
+            "equity": 0.8989
+          },
+          "1bp": {
+            "sharpe": -0.765,
+            "equity": 0.8877
+          },
+          "2bp": {
+            "sharpe": -0.852,
+            "equity": 0.8767
+          },
+          "5bp": {
+            "sharpe": -1.113,
+            "equity": 0.8444
+          },
+          "10bp": {
+            "sharpe": -1.542,
+            "equity": 0.7931
+          },
+          "20bp": {
+            "sharpe": -2.371,
+            "equity": 0.6995
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 0.066,
+            "equity": 0.999
+          },
+          "1bp": {
+            "sharpe": 0.061,
+            "equity": 0.9983
+          },
+          "2bp": {
+            "sharpe": 0.056,
+            "equity": 0.9976
+          },
+          "5bp": {
+            "sharpe": 0.041,
+            "equity": 0.9955
+          },
+          "10bp": {
+            "sharpe": 0.016,
+            "equity": 0.992
+          },
+          "20bp": {
+            "sharpe": -0.033,
+            "equity": 0.9851
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 0.066,
+            "equity": 0.999
+          },
+          "1bp": {
+            "sharpe": 0.061,
+            "equity": 0.9983
+          },
+          "2bp": {
+            "sharpe": 0.056,
+            "equity": 0.9976
+          },
+          "5bp": {
+            "sharpe": 0.041,
+            "equity": 0.9955
+          },
+          "10bp": {
+            "sharpe": 0.016,
+            "equity": 0.992
+          },
+          "20bp": {
+            "sharpe": -0.033,
+            "equity": 0.9851
+          }
+        }
+      }
+    },
+    "DIA": {
+      "n": 250,
+      "turnover_ann": {
+        "M5": 214.55,
+        "M8": 111.33,
+        "M10": 228.72,
+        "AutoML": 184.19,
+        "ZeroR": 4.05,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -3.185,
+            "equity": 0.6711
+          },
+          "1bp": {
+            "sharpe": -3.354,
+            "equity": 0.657
+          },
+          "2bp": {
+            "sharpe": -3.522,
+            "equity": 0.6433
+          },
+          "5bp": {
+            "sharpe": -4.02,
+            "equity": 0.6037
+          },
+          "10bp": {
+            "sharpe": -4.827,
+            "equity": 0.5431
+          },
+          "20bp": {
+            "sharpe": -6.326,
+            "equity": 0.4393
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": -2.018,
+            "equity": 0.7721
+          },
+          "1bp": {
+            "sharpe": -2.104,
+            "equity": 0.7636
+          },
+          "2bp": {
+            "sharpe": -2.189,
+            "equity": 0.7551
+          },
+          "5bp": {
+            "sharpe": -2.44,
+            "equity": 0.7303
+          },
+          "10bp": {
+            "sharpe": -2.846,
+            "equity": 0.6907
+          },
+          "20bp": {
+            "sharpe": -3.604,
+            "equity": 0.6177
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": -0.9,
+            "equity": 0.8866
+          },
+          "1bp": {
+            "sharpe": -1.083,
+            "equity": 0.8665
+          },
+          "2bp": {
+            "sharpe": -1.265,
+            "equity": 0.8469
+          },
+          "5bp": {
+            "sharpe": -1.809,
+            "equity": 0.7906
+          },
+          "10bp": {
+            "sharpe": -2.701,
+            "equity": 0.7049
+          },
+          "20bp": {
+            "sharpe": -4.397,
+            "equity": 0.5601
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 0.389,
+            "equity": 1.0417
+          },
+          "1bp": {
+            "sharpe": 0.243,
+            "equity": 1.0228
+          },
+          "2bp": {
+            "sharpe": 0.097,
+            "equity": 1.0043
+          },
+          "5bp": {
+            "sharpe": -0.342,
+            "equity": 0.9506
+          },
+          "10bp": {
+            "sharpe": -1.067,
+            "equity": 0.8674
+          },
+          "20bp": {
+            "sharpe": -2.473,
+            "equity": 0.722
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 1.43,
+            "equity": 1.1859
+          },
+          "1bp": {
+            "sharpe": 1.425,
+            "equity": 1.1851
+          },
+          "2bp": {
+            "sharpe": 1.419,
+            "equity": 1.1842
+          },
+          "5bp": {
+            "sharpe": 1.403,
+            "equity": 1.1817
+          },
+          "10bp": {
+            "sharpe": 1.375,
+            "equity": 1.1776
+          },
+          "20bp": {
+            "sharpe": 1.319,
+            "equity": 1.1694
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 1.542,
+            "equity": 1.2025
+          },
+          "1bp": {
+            "sharpe": 1.54,
+            "equity": 1.2021
+          },
+          "2bp": {
+            "sharpe": 1.538,
+            "equity": 1.2017
+          },
+          "5bp": {
+            "sharpe": 1.531,
+            "equity": 1.2007
+          },
+          "10bp": {
+            "sharpe": 1.52,
+            "equity": 1.1989
+          },
+          "20bp": {
+            "sharpe": 1.497,
+            "equity": 1.1953
+          }
+        }
+      }
+    },
+    "XLK": {
+      "n": 251,
+      "turnover_ann": {
+        "M5": 139.1,
+        "M8": 94.75,
+        "M10": 169.34,
+        "AutoML": 149.18,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": 0.381,
+            "equity": 1.0594
+          },
+          "1bp": {
+            "sharpe": 0.314,
+            "equity": 1.0448
+          },
+          "2bp": {
+            "sharpe": 0.248,
+            "equity": 1.0303
+          },
+          "5bp": {
+            "sharpe": 0.048,
+            "equity": 0.9881
+          },
+          "10bp": {
+            "sharpe": -0.282,
+            "equity": 0.9216
+          },
+          "20bp": {
+            "sharpe": -0.93,
+            "equity": 0.8015
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": -0.453,
+            "equity": 0.8899
+          },
+          "1bp": {
+            "sharpe": -0.498,
+            "equity": 0.8815
+          },
+          "2bp": {
+            "sharpe": -0.543,
+            "equity": 0.8732
+          },
+          "5bp": {
+            "sharpe": -0.679,
+            "equity": 0.8486
+          },
+          "10bp": {
+            "sharpe": -0.905,
+            "equity": 0.8091
+          },
+          "20bp": {
+            "sharpe": -1.352,
+            "equity": 0.7356
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": 0.312,
+            "equity": 1.0442
+          },
+          "1bp": {
+            "sharpe": 0.231,
+            "equity": 1.0267
+          },
+          "2bp": {
+            "sharpe": 0.15,
+            "equity": 1.0095
+          },
+          "5bp": {
+            "sharpe": -0.092,
+            "equity": 0.9596
+          },
+          "10bp": {
+            "sharpe": -0.496,
+            "equity": 0.8818
+          },
+          "20bp": {
+            "sharpe": -1.295,
+            "equity": 0.7444
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 1.24,
+            "equity": 1.267
+          },
+          "1bp": {
+            "sharpe": 1.169,
+            "equity": 1.2485
+          },
+          "2bp": {
+            "sharpe": 1.098,
+            "equity": 1.2303
+          },
+          "5bp": {
+            "sharpe": 0.886,
+            "equity": 1.1772
+          },
+          "10bp": {
+            "sharpe": 0.532,
+            "equity": 1.0937
+          },
+          "20bp": {
+            "sharpe": -0.167,
+            "equity": 0.9437
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 2.316,
+            "equity": 1.5803
+          },
+          "1bp": {
+            "sharpe": 2.316,
+            "equity": 1.5802
+          },
+          "2bp": {
+            "sharpe": 2.316,
+            "equity": 1.58
+          },
+          "5bp": {
+            "sharpe": 2.315,
+            "equity": 1.5796
+          },
+          "10bp": {
+            "sharpe": 2.313,
+            "equity": 1.5788
+          },
+          "20bp": {
+            "sharpe": 2.311,
+            "equity": 1.5773
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 2.316,
+            "equity": 1.5803
+          },
+          "1bp": {
+            "sharpe": 2.316,
+            "equity": 1.5802
+          },
+          "2bp": {
+            "sharpe": 2.316,
+            "equity": 1.58
+          },
+          "5bp": {
+            "sharpe": 2.315,
+            "equity": 1.5796
+          },
+          "10bp": {
+            "sharpe": 2.313,
+            "equity": 1.5788
+          },
+          "20bp": {
+            "sharpe": 2.311,
+            "equity": 1.5773
+          }
+        }
+      }
+    },
+    "XLE": {
+      "n": 248,
+      "turnover_ann": {
+        "M5": 106.11,
+        "M8": 48.97,
+        "M10": 173.44,
+        "AutoML": 169.36,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -2.469,
+            "equity": 0.6007
+          },
+          "1bp": {
+            "sharpe": -2.526,
+            "equity": 0.594
+          },
+          "2bp": {
+            "sharpe": -2.583,
+            "equity": 0.5875
+          },
+          "5bp": {
+            "sharpe": -2.753,
+            "equity": 0.5682
+          },
+          "10bp": {
+            "sharpe": -3.035,
+            "equity": 0.5375
+          },
+          "20bp": {
+            "sharpe": -3.588,
+            "equity": 0.4808
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": 0.662,
+            "equity": 1.1189
+          },
+          "1bp": {
+            "sharpe": 0.635,
+            "equity": 1.1128
+          },
+          "2bp": {
+            "sharpe": 0.607,
+            "equity": 1.1067
+          },
+          "5bp": {
+            "sharpe": 0.524,
+            "equity": 1.0885
+          },
+          "10bp": {
+            "sharpe": 0.386,
+            "equity": 1.0589
+          },
+          "20bp": {
+            "sharpe": 0.112,
+            "equity": 1.0019
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": 0.319,
+            "equity": 1.0445
+          },
+          "1bp": {
+            "sharpe": 0.234,
+            "equity": 1.0268
+          },
+          "2bp": {
+            "sharpe": 0.148,
+            "equity": 1.0094
+          },
+          "5bp": {
+            "sharpe": -0.108,
+            "equity": 0.9589
+          },
+          "10bp": {
+            "sharpe": -0.535,
+            "equity": 0.8803
+          },
+          "20bp": {
+            "sharpe": -1.383,
+            "equity": 0.7417
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 1.432,
+            "equity": 1.3042
+          },
+          "1bp": {
+            "sharpe": 1.347,
+            "equity": 1.2826
+          },
+          "2bp": {
+            "sharpe": 1.263,
+            "equity": 1.2614
+          },
+          "5bp": {
+            "sharpe": 1.01,
+            "equity": 1.1997
+          },
+          "10bp": {
+            "sharpe": 0.591,
+            "equity": 1.1034
+          },
+          "20bp": {
+            "sharpe": -0.236,
+            "equity": 0.9332
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 1.957,
+            "equity": 1.4465
+          },
+          "1bp": {
+            "sharpe": 1.953,
+            "equity": 1.4455
+          },
+          "2bp": {
+            "sharpe": 1.95,
+            "equity": 1.4445
+          },
+          "5bp": {
+            "sharpe": 1.939,
+            "equity": 1.4414
+          },
+          "10bp": {
+            "sharpe": 1.922,
+            "equity": 1.4364
+          },
+          "20bp": {
+            "sharpe": 1.887,
+            "equity": 1.4264
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 1.957,
+            "equity": 1.4465
+          },
+          "1bp": {
+            "sharpe": 1.953,
+            "equity": 1.4455
+          },
+          "2bp": {
+            "sharpe": 1.95,
+            "equity": 1.4445
+          },
+          "5bp": {
+            "sharpe": 1.939,
+            "equity": 1.4414
+          },
+          "10bp": {
+            "sharpe": 1.922,
+            "equity": 1.4364
+          },
+          "20bp": {
+            "sharpe": 1.887,
+            "equity": 1.4264
+          }
+        }
+      }
+    },
+    "ROKU": {
+      "n": 250,
+      "turnover_ann": {
+        "M5": 32.39,
+        "M8": 10.12,
+        "M10": 196.34,
+        "AutoML": 145.73,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -1.622,
+            "equity": 0.4392
+          },
+          "1bp": {
+            "sharpe": -1.629,
+            "equity": 0.4378
+          },
+          "2bp": {
+            "sharpe": -1.636,
+            "equity": 0.4365
+          },
+          "5bp": {
+            "sharpe": -1.657,
+            "equity": 0.4324
+          },
+          "10bp": {
+            "sharpe": -1.693,
+            "equity": 0.4258
+          },
+          "20bp": {
+            "sharpe": -1.764,
+            "equity": 0.4128
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": 0.376,
+            "equity": 1.0686
+          },
+          "1bp": {
+            "sharpe": 0.374,
+            "equity": 1.0674
+          },
+          "2bp": {
+            "sharpe": 0.371,
+            "equity": 1.0662
+          },
+          "5bp": {
+            "sharpe": 0.364,
+            "equity": 1.0627
+          },
+          "10bp": {
+            "sharpe": 0.351,
+            "equity": 1.0568
+          },
+          "20bp": {
+            "sharpe": 0.327,
+            "equity": 1.045
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": 0.193,
+            "equity": 0.9869
+          },
+          "1bp": {
+            "sharpe": 0.15,
+            "equity": 0.968
+          },
+          "2bp": {
+            "sharpe": 0.107,
+            "equity": 0.9495
+          },
+          "5bp": {
+            "sharpe": -0.023,
+            "equity": 0.8959
+          },
+          "10bp": {
+            "sharpe": -0.237,
+            "equity": 0.8131
+          },
+          "20bp": {
+            "sharpe": -0.665,
+            "equity": 0.6697
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 1.142,
+            "equity": 1.5088
+          },
+          "1bp": {
+            "sharpe": 1.11,
+            "equity": 1.4873
+          },
+          "2bp": {
+            "sharpe": 1.078,
+            "equity": 1.4661
+          },
+          "5bp": {
+            "sharpe": 0.981,
+            "equity": 1.4044
+          },
+          "10bp": {
+            "sharpe": 0.82,
+            "equity": 1.3071
+          },
+          "20bp": {
+            "sharpe": 0.499,
+            "equity": 1.1321
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 1.402,
+            "equity": 1.6886
+          },
+          "1bp": {
+            "sharpe": 1.402,
+            "equity": 1.6884
+          },
+          "2bp": {
+            "sharpe": 1.402,
+            "equity": 1.6883
+          },
+          "5bp": {
+            "sharpe": 1.401,
+            "equity": 1.6878
+          },
+          "10bp": {
+            "sharpe": 1.4,
+            "equity": 1.687
+          },
+          "20bp": {
+            "sharpe": 1.398,
+            "equity": 1.6853
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 1.402,
+            "equity": 1.6886
+          },
+          "1bp": {
+            "sharpe": 1.402,
+            "equity": 1.6884
+          },
+          "2bp": {
+            "sharpe": 1.402,
+            "equity": 1.6883
+          },
+          "5bp": {
+            "sharpe": 1.401,
+            "equity": 1.6878
+          },
+          "10bp": {
+            "sharpe": 1.4,
+            "equity": 1.687
+          },
+          "20bp": {
+            "sharpe": 1.398,
+            "equity": 1.6853
+          }
+        }
+      }
+    },
+    "SMCI": {
+      "n": 250,
+      "turnover_ann": {
+        "M5": 36.43,
+        "M8": 36.43,
+        "M10": 153.83,
+        "AutoML": 184.19,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": -0.474,
+            "equity": 0.4896
+          },
+          "1bp": {
+            "sharpe": -0.479,
+            "equity": 0.4876
+          },
+          "2bp": {
+            "sharpe": -0.484,
+            "equity": 0.4857
+          },
+          "5bp": {
+            "sharpe": -0.498,
+            "equity": 0.4799
+          },
+          "10bp": {
+            "sharpe": -0.522,
+            "equity": 0.4705
+          },
+          "20bp": {
+            "sharpe": -0.569,
+            "equity": 0.4522
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": -0.105,
+            "equity": 0.6628
+          },
+          "1bp": {
+            "sharpe": -0.11,
+            "equity": 0.6601
+          },
+          "2bp": {
+            "sharpe": -0.115,
+            "equity": 0.6575
+          },
+          "5bp": {
+            "sharpe": -0.129,
+            "equity": 0.6498
+          },
+          "10bp": {
+            "sharpe": -0.153,
+            "equity": 0.6371
+          },
+          "20bp": {
+            "sharpe": -0.2,
+            "equity": 0.6123
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": 1.855,
+            "equity": 3.2872
+          },
+          "1bp": {
+            "sharpe": 1.836,
+            "equity": 3.2375
+          },
+          "2bp": {
+            "sharpe": 1.817,
+            "equity": 3.1885
+          },
+          "5bp": {
+            "sharpe": 1.761,
+            "equity": 3.046
+          },
+          "10bp": {
+            "sharpe": 1.667,
+            "equity": 2.8223
+          },
+          "20bp": {
+            "sharpe": 1.478,
+            "equity": 2.4223
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 0.351,
+            "equity": 0.9675
+          },
+          "1bp": {
+            "sharpe": 0.328,
+            "equity": 0.9501
+          },
+          "2bp": {
+            "sharpe": 0.306,
+            "equity": 0.9331
+          },
+          "5bp": {
+            "sharpe": 0.24,
+            "equity": 0.8838
+          },
+          "10bp": {
+            "sharpe": 0.13,
+            "equity": 0.8073
+          },
+          "20bp": {
+            "sharpe": -0.092,
+            "equity": 0.6734
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": -0.038,
+            "equity": 0.6998
+          },
+          "1bp": {
+            "sharpe": -0.039,
+            "equity": 0.6996
+          },
+          "2bp": {
+            "sharpe": -0.039,
+            "equity": 0.6994
+          },
+          "5bp": {
+            "sharpe": -0.04,
+            "equity": 0.6988
+          },
+          "10bp": {
+            "sharpe": -0.042,
+            "equity": 0.6977
+          },
+          "20bp": {
+            "sharpe": -0.046,
+            "equity": 0.6956
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": 0.038,
+            "equity": 0.715
+          },
+          "1bp": {
+            "sharpe": 0.038,
+            "equity": 0.7148
+          },
+          "2bp": {
+            "sharpe": 0.038,
+            "equity": 0.7146
+          },
+          "5bp": {
+            "sharpe": 0.037,
+            "equity": 0.714
+          },
+          "10bp": {
+            "sharpe": 0.035,
+            "equity": 0.7129
+          },
+          "20bp": {
+            "sharpe": 0.031,
+            "equity": 0.7108
+          }
+        }
+      }
+    },
+    "MARA": {
+      "n": 248,
+      "turnover_ann": {
+        "M5": 20.4,
+        "M8": 55.09,
+        "M10": 185.68,
+        "AutoML": 118.35,
+        "ZeroR": 0.0,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": 0.152,
+            "equity": 0.8308
+          },
+          "1bp": {
+            "sharpe": 0.149,
+            "equity": 0.8291
+          },
+          "2bp": {
+            "sharpe": 0.146,
+            "equity": 0.8273
+          },
+          "5bp": {
+            "sharpe": 0.138,
+            "equity": 0.8221
+          },
+          "10bp": {
+            "sharpe": 0.125,
+            "equity": 0.8135
+          },
+          "20bp": {
+            "sharpe": 0.097,
+            "equity": 0.7965
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": 0.815,
+            "equity": 1.3826
+          },
+          "1bp": {
+            "sharpe": 0.808,
+            "equity": 1.3747
+          },
+          "2bp": {
+            "sharpe": 0.801,
+            "equity": 1.3668
+          },
+          "5bp": {
+            "sharpe": 0.778,
+            "equity": 1.3436
+          },
+          "10bp": {
+            "sharpe": 0.741,
+            "equity": 1.3057
+          },
+          "20bp": {
+            "sharpe": 0.667,
+            "equity": 1.233
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": 1.378,
+            "equity": 2.1315
+          },
+          "1bp": {
+            "sharpe": 1.354,
+            "equity": 2.0925
+          },
+          "2bp": {
+            "sharpe": 1.33,
+            "equity": 2.0542
+          },
+          "5bp": {
+            "sharpe": 1.258,
+            "equity": 1.9436
+          },
+          "10bp": {
+            "sharpe": 1.137,
+            "equity": 1.7721
+          },
+          "20bp": {
+            "sharpe": 0.896,
+            "equity": 1.4729
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 1.222,
+            "equity": 1.8949
+          },
+          "1bp": {
+            "sharpe": 1.206,
+            "equity": 1.8726
+          },
+          "2bp": {
+            "sharpe": 1.191,
+            "equity": 1.8506
+          },
+          "5bp": {
+            "sharpe": 1.145,
+            "equity": 1.786
+          },
+          "10bp": {
+            "sharpe": 1.067,
+            "equity": 1.6833
+          },
+          "20bp": {
+            "sharpe": 0.913,
+            "equity": 1.4949
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": 0.28,
+            "equity": 0.9166
+          },
+          "1bp": {
+            "sharpe": 0.279,
+            "equity": 0.9162
+          },
+          "2bp": {
+            "sharpe": 0.278,
+            "equity": 0.9157
+          },
+          "5bp": {
+            "sharpe": 0.276,
+            "equity": 0.9144
+          },
+          "10bp": {
+            "sharpe": 0.273,
+            "equity": 0.9121
+          },
+          "20bp": {
+            "sharpe": 0.267,
+            "equity": 0.9077
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": -0.28,
+            "equity": 0.5969
+          },
+          "1bp": {
+            "sharpe": -0.28,
+            "equity": 0.5966
+          },
+          "2bp": {
+            "sharpe": -0.281,
+            "equity": 0.5963
+          },
+          "5bp": {
+            "sharpe": -0.283,
+            "equity": 0.5954
+          },
+          "10bp": {
+            "sharpe": -0.286,
+            "equity": 0.5939
+          },
+          "20bp": {
+            "sharpe": -0.292,
+            "equity": 0.5908
+          }
+        }
+      }
+    },
+    "UNG": {
+      "n": 247,
+      "turnover_ann": {
+        "M5": 12.29,
+        "M8": 14.34,
+        "M10": 198.73,
+        "AutoML": 127.02,
+        "ZeroR": 36.88,
+        "B&H": 0.0
+      },
+      "net_by_cost": {
+        "M5": {
+          "0bp": {
+            "sharpe": 0.589,
+            "equity": 1.1897
+          },
+          "1bp": {
+            "sharpe": 0.586,
+            "equity": 1.1876
+          },
+          "2bp": {
+            "sharpe": 0.583,
+            "equity": 1.1856
+          },
+          "5bp": {
+            "sharpe": 0.575,
+            "equity": 1.1795
+          },
+          "10bp": {
+            "sharpe": 0.561,
+            "equity": 1.1694
+          },
+          "20bp": {
+            "sharpe": 0.533,
+            "equity": 1.1494
+          }
+        },
+        "M8": {
+          "0bp": {
+            "sharpe": 0.541,
+            "equity": 1.1556
+          },
+          "1bp": {
+            "sharpe": 0.539,
+            "equity": 1.1536
+          },
+          "2bp": {
+            "sharpe": 0.536,
+            "equity": 1.1516
+          },
+          "5bp": {
+            "sharpe": 0.527,
+            "equity": 1.1457
+          },
+          "10bp": {
+            "sharpe": 0.513,
+            "equity": 1.1358
+          },
+          "20bp": {
+            "sharpe": 0.486,
+            "equity": 1.1164
+          }
+        },
+        "M10": {
+          "0bp": {
+            "sharpe": 0.208,
+            "equity": 0.9435
+          },
+          "1bp": {
+            "sharpe": 0.176,
+            "equity": 0.9252
+          },
+          "2bp": {
+            "sharpe": 0.145,
+            "equity": 0.9072
+          },
+          "5bp": {
+            "sharpe": 0.05,
+            "equity": 0.8554
+          },
+          "10bp": {
+            "sharpe": -0.108,
+            "equity": 0.7755
+          },
+          "20bp": {
+            "sharpe": -0.423,
+            "equity": 0.6371
+          }
+        },
+        "AutoML": {
+          "0bp": {
+            "sharpe": 0.095,
+            "equity": 0.8679
+          },
+          "1bp": {
+            "sharpe": 0.075,
+            "equity": 0.857
+          },
+          "2bp": {
+            "sharpe": 0.055,
+            "equity": 0.8463
+          },
+          "5bp": {
+            "sharpe": -0.006,
+            "equity": 0.8149
+          },
+          "10bp": {
+            "sharpe": -0.107,
+            "equity": 0.765
+          },
+          "20bp": {
+            "sharpe": -0.309,
+            "equity": 0.6742
+          }
+        },
+        "ZeroR": {
+          "0bp": {
+            "sharpe": -1.045,
+            "equity": 0.4298
+          },
+          "1bp": {
+            "sharpe": -1.052,
+            "equity": 0.428
+          },
+          "2bp": {
+            "sharpe": -1.059,
+            "equity": 0.4261
+          },
+          "5bp": {
+            "sharpe": -1.081,
+            "equity": 0.4207
+          },
+          "10bp": {
+            "sharpe": -1.116,
+            "equity": 0.4118
+          },
+          "20bp": {
+            "sharpe": -1.187,
+            "equity": 0.3945
+          }
+        },
+        "B&H": {
+          "0bp": {
+            "sharpe": -0.696,
+            "equity": 0.5326
+          },
+          "1bp": {
+            "sharpe": -0.697,
+            "equity": 0.5322
+          },
+          "2bp": {
+            "sharpe": -0.698,
+            "equity": 0.5318
+          },
+          "5bp": {
+            "sharpe": -0.702,
+            "equity": 0.5307
+          },
+          "10bp": {
+            "sharpe": -0.707,
+            "equity": 0.5289
+          },
+          "20bp": {
+            "sharpe": -0.719,
+            "equity": 0.5252
+          }
+        }
+      }
+    }
+  },
+  "pooled": {
+    "sharpe_vs_cost": {
+      "0bp": {
+        "M5": -0.529,
+        "M8": 0.1,
+        "M10": 0.579,
+        "AutoML": 0.604,
+        "ZeroR": 0.417,
+        "B&H": 0.386
+      },
+      "1bp": {
+        "M5": -0.552,
+        "M8": 0.086,
+        "M10": 0.538,
+        "AutoML": 0.571,
+        "ZeroR": 0.416,
+        "B&H": 0.385
+      },
+      "2bp": {
+        "M5": -0.576,
+        "M8": 0.072,
+        "M10": 0.496,
+        "AutoML": 0.538,
+        "ZeroR": 0.414,
+        "B&H": 0.385
+      },
+      "5bp": {
+        "M5": -0.646,
+        "M8": 0.03,
+        "M10": 0.372,
+        "AutoML": 0.44,
+        "ZeroR": 0.409,
+        "B&H": 0.382
+      },
+      "10bp": {
+        "M5": -0.764,
+        "M8": -0.04,
+        "M10": 0.166,
+        "AutoML": 0.275,
+        "ZeroR": 0.4,
+        "B&H": 0.378
+      },
+      "20bp": {
+        "M5": -0.998,
+        "M8": -0.18,
+        "M10": -0.247,
+        "AutoML": -0.054,
+        "ZeroR": 0.384,
+        "B&H": 0.37
+      }
+    },
+    "dSharpe_vs_m5_vs_cost": {
+      "0bp": {
+        "M8": 0.628,
+        "M10": 1.108,
+        "AutoML": 1.133,
+        "ZeroR": 0.946,
+        "B&H": 0.915
+      },
+      "1bp": {
+        "M8": 0.638,
+        "M10": 1.09,
+        "AutoML": 1.123,
+        "ZeroR": 0.968,
+        "B&H": 0.938
+      },
+      "2bp": {
+        "M8": 0.647,
+        "M10": 1.072,
+        "AutoML": 1.114,
+        "ZeroR": 0.99,
+        "B&H": 0.96
+      },
+      "5bp": {
+        "M8": 0.676,
+        "M10": 1.019,
+        "AutoML": 1.086,
+        "ZeroR": 1.055,
+        "B&H": 1.029
+      },
+      "10bp": {
+        "M8": 0.724,
+        "M10": 0.93,
+        "AutoML": 1.039,
+        "ZeroR": 1.164,
+        "B&H": 1.142
+      },
+      "20bp": {
+        "M8": 0.818,
+        "M10": 0.751,
+        "AutoML": 0.944,
+        "ZeroR": 1.382,
+        "B&H": 1.368
+      }
+    },
+    "turnover_ann_medio": {
+      "M5": 104.68,
+      "M8": 60.53,
+      "M10": 186.49,
+      "AutoML": 148.72,
+      "ZeroR": 4.09,
+      "B&H": 0.0
+    },
+    "breakeven_rescate_bps": {
+      "M8": Infinity,
+      "M10": 63.1,
+      "AutoML": 125.6,
+      "ZeroR": Infinity,
+      "B&H": Infinity
+    }
+  }
+}

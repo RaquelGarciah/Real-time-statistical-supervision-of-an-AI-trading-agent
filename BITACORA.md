@@ -2191,3 +2191,29 @@ SNOW tienen calibración corta (inicio 2020-21) → menos transiciones de régim
 **Output esperado.** `outputs/experiments/regime_channel_heldout.json` con claves: por_activo
 {leverage_corr, regimen/bh/zeror {acc,sharpe,equity,maxDD}, turnover_ann, breakeven_bps,
 net_by_cost}, y resumen {corr_lev_acc, corr_lev_sharpe, grupo_fuerte/debil, pooled_con_15}.
+
+## [2026-06-23] [Pre-registro] - Experimento net_of_cost_panel (hueco "producción" #2: costes/turnover)
+
+**Contexto.** El notebook canónico no reporta coste ni turnover (crítica de despliegue: con margen de
+accuracy de 1 punto los costes pueden borrar la ventaja). Las posiciones de las 6 estrategias se
+reconstruyen EXACTAS desde el panel canónico (`pos = signo(r_{t+1})·(2·acierto−1)`, sin reentrenar).
+
+**Hipótesis.** La capa de RIESGO (M8/régimen) rota poco (por estado, no a diario) y su rescate
+(ΔSharpe vs M5) sobrevive a costes realistas; el aprendiz diario (M10/AutoML) rota mucho más y es el
+candidato a perder ventaja con el coste.
+
+**H0.** El turnover es indistinguible entre capas y el rescate de riesgo no sobrevive a 1bp.
+
+**Estadístico.** Turnover anualizado por estrategia (panel-10); ΔSharpe pooled (arm vs M5) vs coste en
+{0,1,2,5,10,20}bp; coste de break-even donde el rescate pooled ΔSharpe cruza 0 (bisección).
+
+**Criterio de éxito.** M8 turnover < M10/AutoML; el rescate de riesgo M8 vs M5 sigue >0 a 10bp.
+
+**Criterio de fracaso.** Si el rescate ΔSharpe M8 vs M5 muere por debajo de 1bp → la ventaja es ilusoria
+por coste → se reporta como límite, no se maquilla.
+
+**Datos.** Panel-10 (SPY,QQQ,XLF,DIA,XLK,XLE,ROKU,SMCI,MARA,UNG), ventana desplegable [150:] (~250d),
+signal_lag=1, coste lineal `core.backtest`. Validación: accuracy reconstruida == canónica (identidad).
+
+**Output esperado.** `outputs/experiments/net_of_cost_panel.json` con por_activo {turnover_ann por arm,
+net_by_cost {sharpe,equity} por arm}, y pooled {sharpe_vs_cost, dSharpe_vs_m5_vs_cost, breakeven_rescate}.

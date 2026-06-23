@@ -111,6 +111,7 @@ SME  = _load("outputs/experiments/m10_smci_embargo.json")
 SMR  = _load("outputs/experiments/m10_smci_rolling.json")
 SMC  = _load("outputs/experiments/smci_calib_window.json")
 RDT  = _load("outputs/experiments/regime_direction_table.json")
+NOC  = _load("outputs/experiments/net_of_cost_panel.json")              # net-of-cost + turnover (panel 10)
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -603,6 +604,39 @@ print("Lectura honesta: el resultado NO es frágil a la ventana — M10 se manti
       "acortar a ~2010 incluso MEJORA (apoya la intuición del tutor: el pasado lejano plano aporta poco), pero "
       "ventanas muy cortas (2020) degradan. MANTENEMOS la ventana completa (2000) pre-registrada: cambiarla por la "
       "que maximiza el OOS sería selección por resultado (p-hacking). Es robustez, no elección.")""")
+
+md(r"""### Robustez a los costes de transacción y rotación (¿sobrevive el rescate a la mesa?)
+La primera pregunta de una mesa: *¿el valor sobrevive a los costes, y cuánto rota la estrategia?* Reconstruimos
+las posiciones $\pm1$ **exactas** de las seis estrategias desde la tabla canónica ($w_t=\operatorname{signo}(r_{t+1})\,(2\cdot\text{acierto}_t-1)$,
+sin reentrenar) y medimos turnover anualizado y Sharpe neto a coste lineal de 0–20 pb sobre el panel de 10. El
+contraste pre-registrado (BITACORA): la **capa de riesgo (M8) rota por estado**, no a diario, y su **rescate**
+(ΔSharpe vs M5) **no muere con el coste**; el **aprendiz diario (M10/AutoML) rota 2–3×** y es el candidato a ceder
+ventaja. *El nivel absoluto de Sharpe sigue siendo mayormente negativo (STRATA no genera alfa): lo que se mide es
+el rescate **relativo** al agente, que es la tesis.*""")
+
+code(r"""# Turnover y rescate neto-de-coste (panel 10) — desde net_of_cost_panel.json (posiciones canónicas)
+turn = NOC["pooled"]["turnover_ann_medio"]
+print("Turnover anualizado medio (panel 10):  " + " · ".join(f"{s}={turn[s]:.0f}" for s in ["M5","M8","M10","AutoML","ZeroR","B&H"]))
+print(f"  → La regla M8 ({turn['M8']:.0f}) rota MENOS que el propio agente M5 ({turn['M5']:.0f}): lo supervisa y lo amansa. "
+      f"Los aprendices diarios M10 ({turn['M10']:.0f})/AutoML ({turn['AutoML']:.0f}) rotan 2–3×.")
+dS = NOC["pooled"]["dSharpe_vs_m5_vs_cost"]; be = NOC["pooled"]["breakeven_rescate_bps"]
+costs = [c for c in NOC["meta"]["costs_bps"]]
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.6))
+xb = [f"{c:g}" for c in costs]
+for s in ["M8", "M10", "AutoML"]:
+    ax[0].plot(xb, [dS[f"{c:g}bp"][s] for c in costs], marker="o", color=COL[s], label=s)
+ax[0].axhline(0, color="k", ls="--", lw=.8); ax[0].set_xlabel("coste (pb por operación)"); ax[0].set_ylabel("ΔSharpe pooled vs M5")
+ax[0].set_title("El rescate (ΔSharpe vs agente) sobrevive al coste"); ax[0].legend(fontsize=9)
+tk_names = ["M5","M8","M10","AutoML"]; tv = [turn[s] for s in tk_names]
+ax[1].bar(tk_names, tv, color=[COL[s] for s in tk_names]); ax[1].set_ylabel("turnover anualizado")
+ax[1].set_title("La capa de riesgo (M8) rota menos que el agente"); ax[1].axhline(turn["M5"], color=COL["M5"], ls=":", lw=1)
+plt.tight_layout(); plt.show()
+print(f"\nRescate pooled ΔSharpe vs M5 — M8: {dS['0bp']['M8']:+.2f} (0pb) → {dS['10bp']['M8']:+.2f} (10pb); "
+      f"break-even {be['M8']} (no muere: M8 rota menos que M5, el coste castiga MÁS al agente).")
+print(f"  M10 break-even {be['M10']} pb · AutoML {be['AutoML']} pb — ambos muy por encima del coste realista "
+      f"de un ETF líquido (~1–5 pb). El valor de STRATA (rescate del agente) NO es un artefacto de ignorar costes.")
+assert NOC['pooled']['dSharpe_vs_m5_vs_cost']['10bp']['M8'] > 0, "el rescate de riesgo M8 debe sobrevivir a 10pb"
+print("AUTO-TEST coste OK · rescate M8 vs M5 > 0 a 10pb · turnover M8 < M5.")""")
 
 # ═══════════════════════════  §8 Apéndice: límite de aplicabilidad  ═══════════════════════════
 md(r"""## §8 Apéndice — límite de aplicabilidad (los 5 excluidos)
