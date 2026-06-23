@@ -376,21 +376,41 @@ for ax, dat, ttl in [(axes[0], sx, "SHAP (mejor árbol)"), (axes[1], pe, "Permut
     bl = dat.get("bloques")
     if bl: ax.bar(list(bl), list(bl.values()), color=["#9e9e9e", "#2c7fb8", "#c0392b", "#7d3c98"]); ax.set_title(f"{ttl} · cuota STRATA={dat.get('cuota_strata')}"); ax.tick_params(axis="x", rotation=20)
 plt.tight_layout(); plt.show()
-print(f"En SPY la cuota STRATA ≈ {sx.get('cuota_strata')} (las features STRATA pesan más que las del agente).")""")
+print(f"En SPY la cuota STRATA ≈ {sx.get('cuota_strata')} tree / {pe.get('cuota_strata')} permutation "
+      "(cifra canónica RESULTADOS_OBJETIVO §1ter; las features STRATA pesan más que las del agente). "
+      "Es el MISMO número que reporta la tabla de §4.5 para SPY.")""")
 
 md(r"""### ¿De dónde viene el valor? Override vs abstención + sensibilidad a umbrales (SPY)
 Dos pruebas de robustez sobre el caso SPY (ventana desplegable, n=251). **(a)** ¿El valor viene de *voltear* al
 régimen (override-C) o bastaría con *abstenerse* (posición 0) o *reducir* el tamaño en los días de intervención?
 **(b)** ¿Es el resultado un artefacto de los umbrales elegidos? Se barre el gate RAM τ y el umbral del
 meta-learner p1*. **Se reporta el barrido completo** (no se elige el mejor): si es plano alrededor del valor
-canónico, los umbrales ex-ante no son un grado de libertad oculto.""")
+canónico, los umbrales ex-ante no son un grado de libertad oculto.
+
+*Nota de denominador.* La accuracy de esta sección se mide **sobre los días en-mercado** (n=232 con posición ≠ 0,
+porque las variantes cambian cuántos días se está dentro), mientras que la tabla §3 usa **los 251 días** del OOS.
+Por eso M8-SPY aparece como 0.478 aquí y 0.442 en §3: mismo recuento de aciertos (M5=92, M8=111) e idéntico
+Sharpe/equity/maxDD, solo cambia el divisor. La celda reconcilia ambas cifras explícitamente.""")
 
 code(r"""# (a) Variantes de intervención en SPY: override (canónico) vs abstención vs reduce
+# NOTA de denominador: la accuracy de esta tabla se calcula SOBRE LOS DÍAS EN-MERCADO (n=232, frac=0.924),
+# no sobre los 251 días del OOS. Por eso M5=0.3966 y M8=0.4784 aquí difieren de la tabla §3 (M5=0.3665,
+# M8=0.4422, denominador n=251 todos los días). MISMO recuento de aciertos (M5=92, M8=111) y MISMO
+# Sharpe/equity/maxDD: solo cambia el divisor (251 vs 232). No es contradicción ni altera ninguna conclusión
+# (ambas accuracy < 0.5). Aquí interesa el divisor en-mercado porque comparamos variantes que cambian cuántos
+# días se está dentro (abstención reduce n_pos a 147), y la accuracy debe medirse sobre los días con posición.
 V = SPYIV["variantes_intervencion"]
-rows = [{"estrategia": k, "accuracy": v["accuracy"], "Sharpe": v["sharpe"], "maxDD": v["max_dd"],
-         "equity": v["equity_final"], "en_mercado": f"{v['frac_en_mercado']:.0%}"} for k, v in V.items()]
+rows = [{"estrategia": k, "accuracy (en-mercado)": v["accuracy"], "Sharpe": v["sharpe"], "maxDD": v["max_dd"],
+         "equity": v["equity_final"], "n_pos": v["n_pos"], "en_mercado": f"{v['frac_en_mercado']:.0%}"} for k, v in V.items()]
 print(pd.DataFrame(rows).set_index("estrategia").to_string())
 ov = V["M8_override_C (canónico)"]; ab = V["M8_abstencion"]; ag = V["M5_agente"]
+# Reconciliación con la tabla §3: re-expresar la accuracy de M5/M8 (override-C) sobre los 251 días del OOS.
+# Días flat (no en-mercado) cuentan como NO-acierto, igual que en la convención de la tabla panel.
+N_OOS = SPYIV["meta"]["n_sub"]  # 251
+ac_251 = {nm: round(v["accuracy"] * v["n_pos"] / N_OOS, 4) for nm, v in [("M5", ag), ("M8_override_C", ov)]}
+print(f"\nReconciliación con §3 (denominador n={N_OOS}, días flat = no-acierto): "
+      f"M5={ac_251['M5']} · M8={ac_251['M8_override_C']} — coinciden con la tabla §3 (M5={PAN['SPY']['table']['m5']['accuracy']:.4f}, "
+      f"M8={PAN['SPY']['table']['m8']['accuracy']:.4f}). Misma estrategia, mismos aciertos; arriba el divisor son los días en-mercado.")
 print(f"\nLectura: el agente se hunde (eq {ag['equity_final']}). Abstenerse en los días de intervención lo mejora "
       f"(eq {ab['equity_final']}) — evita malas apuestas — pero el VALOR REAL está en VOLTEAR al régimen: "
       f"override-C llega a eq {ov['equity_final']} (Sharpe {ov['sharpe']:+.2f} vs {ab['sharpe']:+.2f} de abstención). "
@@ -503,7 +523,25 @@ for a in PANEL10:
 T = pd.DataFrame(rows).set_index("activo")
 with pd.option_context("display.float_format", lambda v: f"{v:.3f}"): print(T)
 cuota_m = float(T["cuota_STRATA_SHAP"].mean())
+# DEFINICIÓN OPERATIVA de cuota_STRATA_SHAP: fracción del |SHAP| total (media de |TreeSHAP| sobre el mejor árbol)
+# atribuible a los bloques STRATA — régimen (RAM: ram_score, crisis/stress/calm_prob), volatilidad (GARCH: garch_sigma)
+# y PSA (psa_score) —, frente al bloque "agente" (las confianzas/señales de las 5 personalidades del LLM).
+# Numerador = Σ|SHAP| de las features STRATA; denominador = Σ|SHAP| de TODAS las features. Es, pues, peso relativo, no accuracy.
+# La COLUMNA del panel (y la media) sale de decision_automl_prep.json (única fuente con SHAP para los 10 activos).
+# RECONCILIACIÓN SPY (dos árboles distintos): el §4 (bar-chart, cell 21) reporta la cuota SPY desde
+# automl_importance.json::shap_tree (mejor árbol GBM_..._model_3, cuota=0.565, top-1 garch_sigma; permutation sobre
+# el ensemble=0.564). La columna de esta tabla sale de decision_automl_prep.json, donde el mejor árbol guardado para
+# SPY es OTRO (cuota=0.715, top-1 ram_score): mismo método (media|TreeSHAP|) pero sobre un árbol distinto del ensemble,
+# de ahí el salto. La cifra CANÓNICA de SPY es la de RESULTADOS_OBJETIVO §1ter: 0.565 (tree) / 0.564 (permutation).
+sx = IMP["SPY"]["shap_tree"]; sb = sx["bloques"]; cuota_spy_canon = sx["cuota_strata"]  # 0.565 (canónica §1ter)
 print(f"\nCuota STRATA SHAP media (10) = {cuota_m:.3f} · supera 0.5 en {int((T['cuota_STRATA_SHAP']>0.5).sum())}/10 → el ML se apoya en STRATA.")
+print(f"Definición: cuota = Σ|SHAP|(STRATA) / Σ|SHAP|(total), media de {DPA['SPY']['shap']['metodo']} sobre el mejor árbol.")
+print(f"En SPY (cifra canónica, automl_importance.json::shap_tree, {sx['modelo']}): régimen={sb['régimen']:.3f}, "
+      f"volatilidad={sb['volatilidad']:.3f}, psa={sb['psa']:.3f} vs agente={sb['agente']:.3f} → cuota STRATA={cuota_spy_canon:.3f} "
+      f"(permutation sobre el ensemble: {IMP['SPY']['perm_importance_ensemble']['cuota_strata']:.3f}). Es la misma que en §4 (cell 21).")
+print(f"Aviso de reconciliación: la columna SPY de la tabla ({DPA['SPY']['shap']['cuota_strata']:.3f}) sale de "
+      "decision_automl_prep.json, un árbol distinto del ensemble (top-1 ram_score en vez de garch_sigma); mismo método "
+      "pero otro árbol. Ambas >0.5; la canónica del TFG (RESULTADOS_OBJETIVO §1ter) es 0.565 tree / 0.564 permutation.")
 print("Honesto: añadir STRATA al vector del agente no sube la accuracy del meta-learner (Δ≈0, mixto); su valor "
       "es el rescate + interpretabilidad, no más accuracy.")""")
 
@@ -974,6 +1012,27 @@ assert LAW_LOO_PMAX < 0.10, "la ley leverage→rescate debe aguantar los 15 leav
 assert "SPY" in CALW["por_activo"] and len([w for w in CALW["por_activo"]["SPY"] if "m10_acc" in w]) >= 3, "robustez de calibración incompleta"
 # fix #1: el p de BAC citado en prosa (§1) se cruza contra el JSON (≈0.198, no significativo, redundante con SPY/QQQ)
 assert abs(PAN["BAC"]["tests"]["m8_vs_m5"]["p"] - 0.198) < 0.005, "BAC McNemar M8 vs M5 debe ser ≈0.198 (no sig) en el JSON"
+# COHERENCIA DE DENOMINADOR SPY (reconciliación §3 celda 18 ↔ celda 23): la accuracy en-mercado (n=232) de las
+# variantes, re-expresada sobre los 251 días del OOS, debe COINCIDIR con la tabla panel §3 (M5=0.3665, M8=0.4422).
+_iv = SPYIV["variantes_intervencion"]; _n251 = SPYIV["meta"]["n_sub"]
+assert _n251 == 251, "el OOS de las variantes SPY debe tener n=251"
+_acc_m5_251 = _iv["M5_agente"]["accuracy"] * _iv["M5_agente"]["n_pos"] / _n251
+_acc_m8_251 = _iv["M8_override_C (canónico)"]["accuracy"] * _iv["M8_override_C (canónico)"]["n_pos"] / _n251
+assert abs(_acc_m5_251 - PAN["SPY"]["table"]["m5"]["accuracy"]) < 0.001, "M5-SPY: accuracy en-mercado/251 debe coincidir con la tabla §3"
+assert abs(_acc_m8_251 - PAN["SPY"]["table"]["m8"]["accuracy"]) < 0.001, "M8-SPY: accuracy en-mercado/251 debe coincidir con la tabla §3"
+# fix cuota SHAP: la cuota STRATA es Σ|SHAP|(no-agente)/Σ|SHAP|(total); definición operativa declarada en §4
+_sb = DPA["SPY"]["shap"]["bloques"]
+assert abs(sum(v for k, v in _sb.items() if k != "agente") - DPA["SPY"]["shap"]["cuota_strata"]) < 0.001, "cuota STRATA = suma de bloques no-agente"
+# RECONCILIACIÓN cuota SHAP SPY (dos fuentes/árboles distintos, ambas declaradas en §4.5): la canónica del TFG es la de
+# automl_importance.json::shap_tree (0.565, mismo número que el bar-chart §4 cell 21) y su permutation-ensemble (0.564);
+# la columna de la tabla §4.5 sale de decision_automl_prep.json sobre OTRO árbol (0.715). Ambas >0.5. Se exige que el
+# número canónico (IMP) coincida exactamente entre cell 21 y la narrativa de cell 31, y que la diferencia con DPA quede tolerada.
+_spy_canon = IMP["SPY"]["shap_tree"]["cuota_strata"]; _spy_perm = IMP["SPY"]["perm_importance_ensemble"]["cuota_strata"]
+_spy_dpa = DPA["SPY"]["shap"]["cuota_strata"]
+assert abs(_spy_canon - 0.565) < 0.002, "cuota SPY canónica (automl_importance::shap_tree) debe ser ≈0.565 (RESULTADOS_OBJETIVO §1ter)"
+assert abs(_spy_perm - 0.564) < 0.002, "cuota SPY permutation-ensemble debe ser ≈0.564 (contraste canónico §1ter)"
+assert _spy_canon > 0.5 and _spy_dpa > 0.5, "ambas fuentes de la cuota SPY (IMP-tree y DPA) deben superar 0.5"
+assert abs(_spy_dpa - 0.715) < 0.002, "cuota SPY de decision_automl_prep (otro árbol) es ≈0.715; se reporta como tal, no se confunde con la canónica"
 print("AUTO-TEST OK · panel 10 + apéndice 5 · SPY AutoML gana (nominal) + rescate sig · casos QQQ(régimen)/MARA(ML) "
       "coherentes con canal_ganador · split=PANEL10/EXCL5 · pooled-15 canónico n=3751 · detectores RAM · "
       "clustering consenso 3 métodos (spectral discrepa, declarado) · K=3 held-out · rescate sig en alcista Y bajista · "
