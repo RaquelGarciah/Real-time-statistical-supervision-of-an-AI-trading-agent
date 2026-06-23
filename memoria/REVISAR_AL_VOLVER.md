@@ -84,3 +84,46 @@
     probaste?». Eso era por el caso único SMCI. Con **SPY central + panel de 15 con criterio de inclusión
     mecanístico ex-ante**, esa objeción se responde por el diseño (no por el título). Quizá el título ya no necesite
     el nombre del activo; lo dejo a tu criterio, no es bloqueante para el cap. 4.
+
+---
+
+# ACTUALIZACIÓN 2026-06-23 — el cap. 4 YA ESTÁ ESCRITO
+
+El notebook `STRATA_marco_practico.ipynb` apareció, el disparador funcionó y he reescrito el cap. 4 entero
+sin esperarte, siguiendo el SPEC. Resumen de lo que tienes que mirar:
+
+**Qué he escrito.** `tesis/chapters/04_marco_practico.tex` completo, estructura del notebook (§4.1 datos ·
+§4.2 mecánica · §4.3 SPY · §4.4 panel+universalidad · §4.5 clustering · §4.6 robustez · §4.7 conclusiones).
+Caso central SPY, panel de 15. **Todas las cifras trazadas a los JSON canónicos** (`decision_automl_prep.json`,
+`panel_mm25_…_seed42.json`, `automl_importance.json`, `strategy_clustering15.json`, `spy_ablation_robustness.json`,
+`m10_smci_valtest_robustez.json`). **Compila limpio** (latexmk exit 0, PDF regenerado, sin refs/cites rotas).
+El cap. 4 viejo (SMCI) está guardado en `memoria/historico_redacciones/cap4/cap4_SMCI_pre-pivot_2026-06-23.tex`.
+
+**Gates pasados (los he corrido como pediste):**
+- `rigor-matematico`: **APROBADO CON CONDICIONES**. Todas las cifras cuadran con los JSON, sin look-ahead. Apliqué
+  sus condiciones: nota al pie de que n varía por activo (246–259), nomenclatura unificada del bootstrap
+  (estacionario pareado por bloques), «silueta máxima en k=3 para los tres métodos concordantes», y aviso de que
+  la figura SHAP §4.4 usa la media del panel (no SPY) al exportarla.
+- `detector-ia`: **PASS** (22%, umbral 30%).
+- `estilo-raquel`: BLOQUEÓ por molde tripartito repetido, dos «no es X sino Y» y cross-refs de pasada. **Lo
+  corregí todo** (disolví los «La primera/La segunda/La tercera», quité las negaciones, los «por tanto/por último»
+  y la pregunta retórica, y saqué cifras encadenadas de la prosa).
+
+**Lo que SÍ necesito que revises:**
+- 🔴 **Figuras por exportar.** El .tex tiene 4 cajas-placeholder donde van las figuras (régimen HMM sobre SPY,
+  equity curves, heatmap+SHAP, PCA clustering). Hay que **exportarlas del notebook a `tesis/figures/`** y
+  sustituir las cajas por `\includegraphics`. No lo hago yo sin tus PNG; te lo dejo señalado en el .tex con
+  comentarios `% [Figura por exportar — …]` y la celda de origen.
+- 🟡 **El §6.1 (criterio de los 10 activos) quedó resuelto solo:** el notebook **muestra los 15**, no una
+  selección de 10. Mejor así (responde el cherry-pick por diseño). El cap. 4 es honesto con los 15: en índices
+  ganan las triviales (alcista), y donde una derivada de STRATA bate a las dos triviales es en MSTR (M8), SMCI y
+  UNG (M10) y MARA (AutoML). Si tú querías la curación a 10, dímelo y la aplico.
+- 🟡 **Encuadre del claim:** el notebook (y por tanto el cap. 4) lidera con «rescate del agente (SÍ significativo,
+  accuracy y riesgo) + universalidad (el ML redescubre STRATA) + patrón», y deja como **nominal** el batir a las
+  triviales. Esto es coherente con tu SPEC. Si quieres más peso en el canal de riesgo (drawdown/vol-targeting) que
+  vi en los docs exploratorios, lo reforzamos.
+- 🟡 La tabla maestra del panel y la pooled están en el cuerpo; revisa que el nivel de detalle te encaja para una
+  memoria (vs. llevar algo a apéndice).
+
+**Pendiente que NO toqué (sigue como en los puntos 6–8 de arriba):** `estructura_cap4.md` (SMCI, superado por el
+SPEC), `DECISIONES_ESENCIALES` y `RESULTADOS_OBJETIVO §1bis`. Dime si propago el pivot a esos tres.
