@@ -94,10 +94,31 @@ aprendiz capaz. Justifica conservarlos sin inflar su papel.
 P&L +0.312); dos días reales con el mismo mecanismo y desenlace opuesto. *Valor:* baja la mecánica a un caso
 concreto y **no esconde los fallos** — la regla es favorable en el agregado, no infalible. Credibilidad.
 
+**C9. [JERARQUÍA HONESTA] El aprendiz redescubre la regla y la supera con flexibilidad — contrastado con un test
+de equivalencia.**
+*Resultado:* el SHAP confirma que el aprendiz **usa las señales de STRATA** (cuota 0.66, parte de universalidad
+que aguanta). Y un **test de equivalencia (TOST, Schuirmann 1987)** —no un test de diferencia no significativo—
+zanja el "¿redescubre o bate?": **NO hay equivalencia; el aprendiz BATE a la regla M8 en accuracy** (pooled M10
+Δacc=+0.021 IC90[+0.001,+0.039], AutoML +0.034 [+0.010,+0.056]; SPY AutoML fuerte, +0.132). En **Sharpe es no
+concluyente** → regla y aprendiz **indistinguibles en riesgo**. El batir a la regla **se explica por el mecanismo
+(C5)**: el aprendiz modela **interacciones no lineales que la regla determinista no puede** (leverage invertido,
+donde M8 falla). De aquí sale el **orden honesto y nítido** que estructura todo el capítulo:
+
+> **El aprendiz RESCATA al agente (significativo) > BATE modestamente a la regla en accuracy (TOST: superior, no
+> equivalente, por flexibilidad no lineal) > EMPATA con la regla en riesgo (Sharpe indistinguible) > NO BATE a lo
+> trivial (ZeroR, accuracy nominal).**
+
+*Valor:* es la **escala de valor de STRATA escrita con rigor** — cada peldaño con su test (McNemar/bootstrap →
+rescate; TOST → vs regla; ceiling ZeroR → vs trivial). Responde de una sola frase, falsable, "¿cuánto y frente a
+qué aporta supervisar?". Y es **honesta hasta el final**: no infla (no bate a lo trivial) ni esconde (sí bate a la
+regla, y se explica por qué). Esta jerarquía es lo que la memoria debe llevar como tesis del marco práctico.
+
 **Síntesis del valor.** El trabajo aporta (i) un **resultado duro contrastado** (rescate de riesgo, C1–C3); (ii)
 un **mapa de patrones falsables** sobre dónde y cómo supervisar (C4–C5), que es el corazón científico; (iii) un
-**mecanismo interpretable** que da confianza para producción (C6–C8). La accuracy es nominal y se declara; el
-valor está en **entender el fenómeno de la supervisión estadística de agentes LLM**, no en un punto de acierto.
+**mecanismo interpretable** que da confianza para producción (C6–C8); y (iv) una **jerarquía de valor honesta y
+contrastada peldaño a peldaño** (C9), que es la frase-tesis del capítulo. La accuracy frente a lo trivial es
+nominal y se declara; el valor está en **entender el fenómeno de la supervisión estadística de agentes LLM** —
+cuánto aporta, frente a qué, y por qué—, no en un punto de acierto.
 
 ---
 
@@ -327,10 +348,14 @@ test". (Pre-registrable; no ejecutado aún.)
 
 ## §9 Conclusiones (resumen; ver notebook §9 para la lista numerada O1–O7)
 
-Supervisar estadísticamente a un agente LLM **aporta valor diferencial medible**: rescate significativo (accuracy
-+ riesgo), dos capas complementarias cuyo uso se relaciona con la naturaleza del activo (ley leverage→rescate),
-universalidad (el ML redescubre STRATA) y un mecanismo interpretable. La accuracy sobre las triviales es nominal;
-los límites (apéndice, leverage débil) se declaran. **STRATA rescata y acota; no genera alfa.**
+Supervisar estadísticamente a un agente LLM **aporta valor diferencial medible**, y ese valor se ordena en una
+**jerarquía honesta contrastada peldaño a peldaño** (C9): el aprendiz **rescata al agente** (significativo) >
+**bate modestamente a la regla en accuracy** (TOST: superior, no equivalente, por flexibilidad no lineal) >
+**empata con la regla en riesgo** (Sharpe indistinguible) > **no bate a lo trivial** (ZeroR, accuracy nominal).
+A esto se añaden las dos capas complementarias cuyo uso se relaciona con la naturaleza del activo (ley
+leverage→rescate, complementariedad por régimen), la universalidad por SHAP (el ML redescubre las señales de
+STRATA) y un mecanismo interpretable. Los límites (apéndice, leverage débil, accuracy nominal) se declaran.
+**STRATA rescata, ordena el valor con rigor y acota; no genera alfa.**
 
 ---
 
