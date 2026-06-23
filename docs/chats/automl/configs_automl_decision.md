@@ -4,6 +4,10 @@
 > en qué orden, por qué, con qué resultado, y la decisión final de config. Escrito para no volver a
 > liarnos y para defender ante el tribunal. **Resumen → decisiones en orden → configs y resultados →
 > lecciones metodológicas → comparación final → conclusión → pendientes.**
+>
+> **La conversación continúa** (2ª mitad) en la sección **«CONTINUACIÓN — Notebook DEFINITIVO del marco práctico
+> (panel de 10)»** al final de este documento: construcción del notebook definitivo, selección 10/15, mecanismo
+> de dos supervisores, ley del leverage y robustez (rodante/val-test/bull-bear/calibración).
 
 ---
 
@@ -144,3 +148,74 @@ sobreajuste. **Ninguna bate a ZeroR** (todas las medias de acc ≈ 0.51 < ZeroR 
 - [ ] Commitear el bloque AutoML (script + wrapper + JSON elegido + este doc + `docs/automl_m10_EXPLORATORIO.md`).
 - [ ] NO hacer: elegir config/semilla/ventana/embargo por resultado; data augmentation para significancia;
   mezclar números de Mac y nube.
+
+---
+---
+
+# CONTINUACIÓN — Notebook DEFINITIVO del marco práctico (panel de 10)
+
+> Esta es la 2ª mitad de la misma conversación: de "config de AutoML" pasamos a **construir el notebook
+> definitivo del TFG** con dos agentes (constructor ↔ revisora `raquel-quant`). Registro cronológico fiel:
+> **[Raquel]** lo que pidió · **[Claude]** qué hice/decidí + cifras.
+
+## RESUMEN DE LA CONTINUACIÓN (una frase)
+Se construyó `notebooks/STRATA_marco_practico.ipynb` (**único canónico, panel de 10 de los 15**), cerrado por el
+bucle constructor↔`raquel-quant` (APROBADO). Tesis final: **dos supervisores complementarios** — regla M8 = capa
+de **riesgo** (pooled ΔSharpe +0.66 sig), aprendiz M10/AutoML = capa de **accuracy** (McNemar vs M5 sig); la
+**única ley naturaleza→resultado que sobrevive un test** es *rescate del aprendiz ∝ leverage* (Pearson r=−0.55,
+p=0.034); rescate **robusto** (rodante, val/test, alcista+bajista pooled, ventana de calibración). AutoML "gana a
+todo" en SPY es **nominal**; STRATA no genera alfa.
+
+## 1. Encargo: notebook definitivo + agente revisor
+**[Raquel]** "Notebook definitivo del que se alimenta la memoria; demuestra el valor a nivel de activo y de panel,
+identifica un patrón real y la estrategia que lo define. Crea un agente que actúe como yo (quant senior JPMorgan +
+matemática) que revise iterando con el constructor hasta declararlo definitivo."
+**[Claude]** Creé `.claude/agents/raquel-quant.md` (gate G1–G6) + bucle Workflow constructor↔revisora. 1er
+notebook (panel 15) → APROBADO en 2 rondas (cazó un error de signo en el leverage effect). Registré decisión #18.
+
+## 2. Queja AutoML/gráficas → serie de AutoML reconstruida + 4 gráficas
+**[Raquel]** "AutoML no sale en la equity ni en más de una gráfica; faltan experimentos. Muy mal. Asegúrate de la
+config canónica."
+**[Claude]** AutoML faltaba en equity y bootstrap porque **no existía su serie diaria**. Como GBM gana 15/15 (no
+XGBoost) y reentrenar en mac no reproduce, **reconstruí la serie desde el acierto día a día canónico**
+(`automl_net_returns.py`, validada exacta, sin H2O). Añadí `detector_analysis.py` (SPY: RAM 30% / PSA 0.5% / GSO
+0% → P&L de rescate 100% RAM). AutoML fusionado en el pooled bootstrap dentro del notebook (sin recomputar).
+
+## 3. Selección de los 10/15
+**[Raquel]** "Quiero 10 de los 15 (los que van mejor); ayúdame a elegir bien. I forbid you to block me."
+**[Claude]** (SPEC §6.1 lo autoriza.) Iteramos con todas las métricas/significancia: excluí MSTR/UNG-like donde
+**el agente ya bate a las triviales**; justifiqué la no-significancia de McNemar (pares discordantes c−b pequeños)
+y por qué en BAC solo funciona M8 (M10 sobreajusta: 32% en días grandes, rota 36% → Sharpe −2.7). **[Raquel]**
+eligió "vitrina máxima" (5 bate-a-todo) y pidió argumentarlo; stress-test → MSTR la gana el agente (interviene
+0.2%) → **MSTR→XLE**. **Panel final (10): SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG** · apéndice (5):
+MSTR, NVDA, BAC, TSLA, IWM.
+
+## 4. Este pasa a ser EL definitivo + más completo
+**[Raquel]** "Que sustituya al de 15, réplica pero mucho más completo y justificado; lo llevan mis agentes con
+todo el contexto."
+**[Claude]** Builder reescrito a panel-10 + §5 mecanismo por activo (`mechanism_panel.py`) + §6 clustering
+naturaleza→canal + §8 apéndice de los 5. **[Raquel]** "Faltan accuracy rodante, val/test, significancia
+bajista/alcista." → `panel_robustness.py` (sin re-entrenar): rodante (mejor STRATA > agente en >50% ventanas en
+8/10), val/test (3 particiones), y **rescate sig en alcista Y bajista pooled** (McNemar M10 0.0015/0.013, AutoML
+0.0023/0.0003). + K=3 justificado (held-out −1.30 > −1.69).
+
+## 5. "Regla vs aprendiz poco concluyente" → reframe robusto + calibración
+**[Raquel]** "El aprendiz–regla queda poco concluyente; necesito algo más robusto. ¿Por qué en MARA AutoML > M8?"
+**[Claude]** **Medí** y fui honesto: el split por `crisis_mean` **NO se sostiene** (ninguna variable predice el
+valor de la regla, p>0.14). Reescribí §5/§6: **dos capas complementarias** (riesgo/accuracy, cada una con su
+test) + **ley leverage→rescate-ML** (r=−0.55, p=0.034) + honestidad ("qué modelo lidera no es predecible") +
+clustering **PC1≈leverage (r=0.84)**. **[Raquel]** "Prueba todo, sí" → robustez a la ventana de calibración
+(`calib_window_panel.py`): no es frágil; acortar a 2010 incluso mejora en índices (SPY 0.494→0.526, QQQ
+0.522→0.578) — apoya al tutor; se mantiene la ventana completa pre-registrada (sin p-hacking).
+
+## 6. Guardado
+**[Raquel]** "Guarda la conversación entera." → este registro (consolidado aquí; el duplicado
+`marco_practico_panel10.md` se eliminó para no duplicar).
+
+## ESTADO CANÓNICO AL CIERRE
+- **Notebook único canónico:** `notebooks/STRATA_marco_practico.ipynb` (panel de 10). Decisión #18.
+- **Panel (10):** SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG · **apéndice (5):** MSTR, NVDA, BAC, TSLA, IWM.
+- **Outputs nuevos:** `mechanism_panel.json`, `panel_robustness.json`, `automl_net_returns.json`,
+  `detector_analysis_{SPY,XLE,MARA}.json`, `calib_window_panel.json`. Log de revisión:
+  `docs/chats/automl/revision_marco_practico.md`.
+- **Punto más blando (declarado):** UNG en el cuerpo (el agente no pierde ahí; encuadrado como caso ML).
