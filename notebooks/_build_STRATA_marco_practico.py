@@ -112,6 +112,8 @@ SMR  = _load("outputs/experiments/m10_smci_rolling.json")
 SMC  = _load("outputs/experiments/smci_calib_window.json")
 RDT  = _load("outputs/experiments/regime_direction_table.json")
 NOC  = _load("outputs/experiments/net_of_cost_panel.json")              # net-of-cost + turnover (panel 10)
+SPYIV = _load("outputs/experiments/spy_intervention_variants.json")      # SPY: abstención/override + sensibilidad de umbrales
+NAT = {a: CLU["por_activo"][a]["nat"] for a in CLU["por_activo"]}        # naturaleza por activo (leverage/crisis/vol/sesgo)
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -294,6 +296,37 @@ for ax, dat, ttl in [(axes[0], sx, "SHAP (mejor árbol)"), (axes[1], pe, "Permut
 plt.tight_layout(); plt.show()
 print(f"En SPY la cuota STRATA ≈ {sx.get('cuota_strata')} (las features STRATA pesan más que las del agente).")""")
 
+md(r"""### ¿De dónde viene el valor? Override vs abstención + sensibilidad a umbrales (SPY)
+Dos pruebas de robustez sobre el caso SPY (ventana desplegable, n=251). **(a)** ¿El valor viene de *voltear* al
+régimen (override-C) o bastaría con *abstenerse* (posición 0) o *reducir* el tamaño en los días de intervención?
+**(b)** ¿Es el resultado un artefacto de los umbrales elegidos? Se barre el gate RAM τ y el umbral del
+meta-learner p1*. **Se reporta el barrido completo** (no se elige el mejor): si es plano alrededor del valor
+canónico, los umbrales ex-ante no son un grado de libertad oculto.""")
+
+code(r"""# (a) Variantes de intervención en SPY: override (canónico) vs abstención vs reduce
+V = SPYIV["variantes_intervencion"]
+rows = [{"estrategia": k, "accuracy": v["accuracy"], "Sharpe": v["sharpe"], "maxDD": v["max_dd"],
+         "equity": v["equity_final"], "en_mercado": f"{v['frac_en_mercado']:.0%}"} for k, v in V.items()]
+print(pd.DataFrame(rows).set_index("estrategia").to_string())
+ov = V["M8_override_C (canónico)"]; ab = V["M8_abstencion"]; ag = V["M5_agente"]
+print(f"\nLectura: el agente se hunde (eq {ag['equity_final']}). Abstenerse en los días de intervención lo mejora "
+      f"(eq {ab['equity_final']}) — evita malas apuestas — pero el VALOR REAL está en VOLTEAR al régimen: "
+      f"override-C llega a eq {ov['equity_final']} (Sharpe {ov['sharpe']:+.2f} vs {ab['sharpe']:+.2f} de abstención). "
+      "STRATA no solo 'apaga' al agente: lo corrige activamente, y eso es lo que rescata.")""")
+
+code(r"""# (b) Sensibilidad a umbrales — robustez, NO tuning (se muestra el barrido entero; canónicos τ=0.5, p1*=0.5)
+sr, sp = SPYIV["sweep_ram_tau"], SPYIV["sweep_m10_p1"]
+fig, axes = plt.subplots(1, 2, figsize=(12, 3.4))
+axes[0].plot([r["tau"] for r in sr], [r["accuracy"] for r in sr], "o-", color="#f0a830", label="accuracy M8")
+axes[0].axvline(0.5, color="k", ls="--", lw=.8, label="τ canónico=0.5"); axes[0].set_xlabel("gate RAM τ"); axes[0].set_ylabel("accuracy"); axes[0].set_title("Sensibilidad de M8 al gate RAM τ"); axes[0].legend(fontsize=8)
+axes[1].plot([r["p1_thr"] for r in sp], [r["accuracy"] for r in sp], "o-", color="#2c7fb8", label="accuracy M10")
+axes[1].axvline(0.5, color="k", ls="--", lw=.8, label="p1* canónico=0.5"); axes[1].set_xlabel("umbral meta-learner p1*"); axes[1].set_title("Sensibilidad de M10 al umbral p1*"); axes[1].legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print("M8: accuracy plana (%.3f–%.3f) en τ∈[0.3,0.7]; M10: plana (%.3f–%.3f) en p1*∈[0.45,0.55]. " % (
+      min(r["accuracy"] for r in sr), max(r["accuracy"] for r in sr), min(r["accuracy"] for r in sp), max(r["accuracy"] for r in sp)))
+print("→ El resultado NO depende del umbral exacto: τ=0.5 y p1*=0.5 (fijados ex-ante) caen en la meseta. "
+      "No hay grado de libertad oculto; no se elige el umbral que maximiza el OOS (sería p-hacking).")""")
+
 # ═══════════════════════════  §4 Panel de 10  ═══════════════════════════
 md(r"""## §4 Generalización — panel de 10 (universalidad y riesgo)
 
@@ -301,7 +334,45 @@ Sobre el M10 canónico: **ablación** (¿cuánto añade STRATA?) y **SHAP** (¿d
 **rescate de riesgo agregado** (pooled bootstrap). La cifra **canónica** es el **pooled-15** de
 `decision_automl_prep.json` (M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157], n=3751; coincide con RESULTADOS_OBJETIVO
 §1ter); se reporta además el **pooled-10** del cuerpo como sensibilidad consistente (mismo signo, IC también
-excluye 0), e incluyendo AutoML.""")
+excluye 0), e incluyendo AutoML.
+
+Antes, dos lecturas para entrar al panel: la **naturaleza** de cada activo (lo que luego explica el mecanismo,
+§5) y **cuánto rescata** la mejor STRATA al agente, por activo, en accuracy y en Sharpe.""")
+
+code(r"""# Naturaleza de los activos del panel: leverage de Black, fracción de Crisis OOS, sesgo corto del agente, vol
+fig, axes = plt.subplots(2, 2, figsize=(13, 6.4)); axes = axes.ravel()
+specs = [("leverage_corr", "Leverage de Black (corr. retorno–vol; <0 = estándar)", "#2c7fb8"),
+         ("oos_crisis_frac", "Fracción de días en Crisis (OOS)", "#c0392b"),
+         ("agent_short_frac", "Sesgo corto del agente (frac. días corto)", "#9e9e9e"),
+         ("oos_vol", "Volatilidad media OOS (σ GARCH anualizada)", "#7d3c98")]
+order = sorted(PANEL10, key=lambda a: NAT[a]["leverage_corr"])
+for ax, (key, ttl, c) in zip(axes, specs):
+    ax.bar(order, [NAT[a][key] for a in order], color=c); ax.set_title(ttl, fontsize=9.5); ax.tick_params(axis="x", rotation=45, labelsize=8)
+    if key == "leverage_corr": ax.axhline(0, color="k", lw=.6)
+fig.suptitle("Naturaleza de los 10 activos del panel (ordenados por leverage)"); plt.tight_layout(); plt.show()
+print("Los índices amplios (SPY/QQQ/DIA/XLF/XLK) tienen leverage fuerte (corr muy negativa); los volátiles/cripto "
+      "(MARA/ROKU/SMCI) tienen leverage débil/invertido y alta vol. El agente está mayoritariamente corto en casi "
+      "todos. Esta naturaleza es la que gobierna qué canal de STRATA rescata (§5) y estructura el clustering (§6).")""")
+
+code(r"""# Mejor STRATA vs agente por activo: cuánto RESCATA en accuracy y en Sharpe
+best_acc, best_shp = {}, {}
+for a in PANEL10:
+    t = PAN[a]["table"]; accs = {s: t[s]["accuracy"] for s in ("m8", "m10_xgb", "automl")}
+    bs = max(accs, key=accs.get)
+    best_acc[a] = t[bs]["accuracy"] - t["m5"]["accuracy"]
+    bshp = max(("m8", "m10_xgb", "automl"), key=lambda s: t[s]["sharpe"])
+    best_shp[a] = t[bshp]["sharpe"] - t["m5"]["sharpe"]
+oa = sorted(PANEL10, key=lambda a: best_acc[a])
+fig, axes = plt.subplots(1, 2, figsize=(13, 3.8))
+axes[0].barh(oa, [best_acc[a] for a in oa], color=["#27ae60" if best_acc[a] > 0 else "#c0392b" for a in oa])
+axes[0].axvline(0, color="k", lw=.6); axes[0].set_title("Rescate en ACCURACY: mejor STRATA − agente (M5)")
+os_ = sorted(PANEL10, key=lambda a: best_shp[a])
+axes[1].barh(os_, [best_shp[a] for a in os_], color=["#27ae60" if best_shp[a] > 0 else "#c0392b" for a in os_])
+axes[1].axvline(0, color="k", lw=.6); axes[1].set_title("Rescate en SHARPE: mejor STRATA − agente (M5)")
+plt.tight_layout(); plt.show()
+print(f"La mejor STRATA mejora al agente en accuracy en {sum(v>0 for v in best_acc.values())}/10 activos "
+      f"(media +{np.mean(list(best_acc.values())):.3f}) y en Sharpe en {sum(v>0 for v in best_shp.values())}/10 "
+      f"(media +{np.mean(list(best_shp.values())):.2f}). El rescate del agente es transversal al panel.")""")
 
 code(r"""# Ablación + cuota SHAP por activo (10) + medias
 rows = []

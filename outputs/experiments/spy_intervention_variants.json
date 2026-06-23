@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "n_sub": 251,
+    "ventana": "desplegable (tras burn-in 150)",
+    "nota": "robustez/sensibilidad, NO selección por resultado; umbrales canónicos τ=0.5, p1*=0.5 fijados ex-ante; se reporta el barrido completo (anti p-hacking)"
+  },
+  "variantes_intervencion": {
+    "M5_agente": {
+      "accuracy": 0.3966,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -3.07,
+      "max_dd": -0.3025,
+      "equity_final": 0.699
+    },
+    "M8_override_C (canónico)": {
+      "accuracy": 0.4784,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -0.464,
+      "max_dd": -0.152,
+      "equity_final": 0.941
+    },
+    "M8_abstencion": {
+      "accuracy": 0.4014,
+      "n_pos": 147,
+      "frac_en_mercado": 0.586,
+      "sharpe": -2.101,
+      "max_dd": -0.1977,
+      "equity_final": 0.8141
+    },
+    "M8_reduce_0.5": {
+      "accuracy": 0.3966,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -2.75,
+      "max_dd": -0.2468,
+      "equity_final": 0.7548
+    }
+  },
+  "sweep_ram_tau": [
+    {
+      "accuracy": 0.4655,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -0.981,
+      "max_dd": -0.1971,
+      "equity_final": 0.8862,
+      "tau": 0.3,
+      "frac_interv": 0.367
+    },
+    {
+      "accuracy": 0.4698,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -0.655,
+      "max_dd": -0.1706,
+      "equity_final": 0.9204,
+      "tau": 0.4,
+      "frac_interv": 0.347
+    },
+    {
+      "accuracy": 0.4784,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -0.464,
+      "max_dd": -0.152,
+      "equity_final": 0.941,
+      "tau": 0.5,
+      "frac_interv": 0.339
+    },
+    {
+      "accuracy": 0.4784,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -0.63,
+      "max_dd": -0.1683,
+      "equity_final": 0.923,
+      "tau": 0.6,
+      "frac_interv": 0.307
+    },
+    {
+      "accuracy": 0.4784,
+      "n_pos": 232,
+      "frac_en_mercado": 0.924,
+      "sharpe": -0.391,
+      "max_dd": -0.1448,
+      "equity_final": 0.949,
+      "tau": 0.7,
+      "frac_interv": 0.291
+    }
+  ],
+  "sweep_m10_p1": [
+    {
+      "accuracy": 0.51,
+      "n_pos": 251,
+      "frac_en_mercado": 1.0,
+      "sharpe": 0.069,
+      "max_dd": -0.1142,
+      "equity_final": 1.0008,
+      "p1_thr": 0.45
+    },
+    {
+      "accuracy": 0.506,
+      "n_pos": 251,
+      "frac_en_mercado": 1.0,
+      "sharpe": -0.352,
+      "max_dd": -0.1476,
+      "equity_final": 0.9496,
+      "p1_thr": 0.475
+    },
+    {
+      "accuracy": 0.494,
+      "n_pos": 251,
+      "frac_en_mercado": 1.0,
+      "sharpe": -0.604,
+      "max_dd": -0.1609,
+      "equity_final": 0.9202,
+      "p1_thr": 0.5
+    },
+    {
+      "accuracy": 0.498,
+      "n_pos": 251,
+      "frac_en_mercado": 1.0,
+      "sharpe": -0.555,
+      "max_dd": -0.1557,
+      "equity_final": 0.9259,
+      "p1_thr": 0.525
+    },
+    {
+      "accuracy": 0.498,
+      "n_pos": 251,
+      "frac_en_mercado": 1.0,
+      "sharpe": -1.025,
+      "max_dd": -0.1883,
+      "equity_final": 0.8733,
+      "p1_thr": 0.55
+    }
+  ]
+}
