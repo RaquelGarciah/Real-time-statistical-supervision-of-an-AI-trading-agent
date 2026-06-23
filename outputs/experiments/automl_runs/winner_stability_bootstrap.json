@@ -1,0 +1,836 @@
+{
+ "meta": {
+  "B": 2000,
+  "seed": 42,
+  "source": "outputs/experiments/automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21_kfold_seed42.json",
+  "block": "sqrt(n)",
+  "stable_threshold": 0.6
+ },
+ "por_activo": {
+  "SPY": {
+   "nontrivial": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.3665,
+     "m8": 0.4422,
+     "m10_xgb": 0.494,
+     "automl": 0.5737
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.9925,
+    "winner_dist": {
+     "m5": 0.0,
+     "m8": 0.0055,
+     "m10_xgb": 0.002,
+     "automl": 0.9925
+    },
+    "gap_to_2nd_point": 0.0797,
+    "gap_ci95": [
+     0.0159,
+     0.1394
+    ]
+   },
+   "all6": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.3665,
+     "m8": 0.4422,
+     "m10_xgb": 0.494,
+     "automl": 0.5737,
+     "zeror": 0.5657,
+     "bh": 0.5657
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.6555,
+    "winner_dist": {
+     "m5": 0.0,
+     "m8": 0.001,
+     "m10_xgb": 0.0025,
+     "automl": 0.6555,
+     "zeror": 0.341,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.008,
+    "gap_ci95": [
+     0.0,
+     0.0637
+    ]
+   }
+  },
+  "NVDA": {
+   "nontrivial": {
+    "n": 259,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4672,
+     "m8": 0.5212,
+     "m10_xgb": 0.4826,
+     "automl": 0.5174
+    },
+    "winner_point": "m8",
+    "winner_stability": 0.541,
+    "winner_dist": {
+     "m5": 0.0705,
+     "m8": 0.541,
+     "m10_xgb": 0.011,
+     "automl": 0.3775
+    },
+    "gap_to_2nd_point": 0.0039,
+    "gap_ci95": [
+     0.0,
+     0.0656
+    ]
+   },
+   "all6": {
+    "n": 259,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4672,
+     "m8": 0.5212,
+     "m10_xgb": 0.4826,
+     "automl": 0.5174,
+     "zeror": 0.5521,
+     "bh": 0.5521
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.862,
+    "winner_dist": {
+     "m5": 0.0335,
+     "m8": 0.029,
+     "m10_xgb": 0.005,
+     "automl": 0.0705,
+     "zeror": 0.862,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.0154
+    ]
+   }
+  },
+  "BAC": {
+   "nontrivial": {
+    "n": 246,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4512,
+     "m8": 0.5163,
+     "m10_xgb": 0.4187,
+     "automl": 0.4878
+    },
+    "winner_point": "m8",
+    "winner_stability": 0.7815,
+    "winner_dist": {
+     "m5": 0.0245,
+     "m8": 0.7815,
+     "m10_xgb": 0.0,
+     "automl": 0.194
+    },
+    "gap_to_2nd_point": 0.0285,
+    "gap_ci95": [
+     0.0,
+     0.0894
+    ]
+   },
+   "all6": {
+    "n": 246,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4512,
+     "m8": 0.5163,
+     "m10_xgb": 0.4187,
+     "automl": 0.4878,
+     "zeror": 0.561,
+     "bh": 0.561
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.9025,
+    "winner_dist": {
+     "m5": 0.0045,
+     "m8": 0.078,
+     "m10_xgb": 0.0,
+     "automl": 0.015,
+     "zeror": 0.9025,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.0122
+    ]
+   }
+  },
+  "TSLA": {
+   "nontrivial": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4741,
+     "m8": 0.4781,
+     "m10_xgb": 0.5219,
+     "automl": 0.4542
+    },
+    "winner_point": "m10_xgb",
+    "winner_stability": 0.7865,
+    "winner_dist": {
+     "m5": 0.0815,
+     "m8": 0.1315,
+     "m10_xgb": 0.7865,
+     "automl": 0.0005
+    },
+    "gap_to_2nd_point": 0.0438,
+    "gap_ci95": [
+     0.0,
+     0.0916
+    ]
+   },
+   "all6": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4741,
+     "m8": 0.4781,
+     "m10_xgb": 0.5219,
+     "automl": 0.4542,
+     "zeror": 0.4582,
+     "bh": 0.5299
+    },
+    "winner_point": "bh",
+    "winner_stability": 0.532,
+    "winner_dist": {
+     "m5": 0.0605,
+     "m8": 0.022,
+     "m10_xgb": 0.3815,
+     "automl": 0.0,
+     "zeror": 0.004,
+     "bh": 0.532
+    },
+    "gap_to_2nd_point": 0.008,
+    "gap_ci95": [
+     0.0,
+     0.0677
+    ]
+   }
+  },
+  "XLE": {
+   "nontrivial": {
+    "n": 248,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4476,
+     "m8": 0.5282,
+     "m10_xgb": 0.5081,
+     "automl": 0.5323
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.4835,
+    "winner_dist": {
+     "m5": 0.001,
+     "m8": 0.4215,
+     "m10_xgb": 0.094,
+     "automl": 0.4835
+    },
+    "gap_to_2nd_point": 0.004,
+    "gap_ci95": [
+     0.0,
+     0.0645
+    ]
+   },
+   "all6": {
+    "n": 248,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4476,
+     "m8": 0.5282,
+     "m10_xgb": 0.5081,
+     "automl": 0.5323,
+     "zeror": 0.5645,
+     "bh": 0.5645
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.716,
+    "winner_dist": {
+     "m5": 0.0005,
+     "m8": 0.0535,
+     "m10_xgb": 0.0055,
+     "automl": 0.2245,
+     "zeror": 0.716,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.0444
+    ]
+   }
+  },
+  "UNG": {
+   "nontrivial": {
+    "n": 247,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.5101,
+     "m8": 0.502,
+     "m10_xgb": 0.5182,
+     "automl": 0.4818
+    },
+    "winner_point": "m10_xgb",
+    "winner_stability": 0.4975,
+    "winner_dist": {
+     "m5": 0.341,
+     "m8": 0.066,
+     "m10_xgb": 0.4975,
+     "automl": 0.0955
+    },
+    "gap_to_2nd_point": 0.0081,
+    "gap_ci95": [
+     0.0,
+     0.0567
+    ]
+   },
+   "all6": {
+    "n": 247,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.5101,
+     "m8": 0.502,
+     "m10_xgb": 0.5182,
+     "automl": 0.4818,
+     "zeror": 0.4494,
+     "bh": 0.4858
+    },
+    "winner_point": "m10_xgb",
+    "winner_stability": 0.432,
+    "winner_dist": {
+     "m5": 0.3175,
+     "m8": 0.0535,
+     "m10_xgb": 0.432,
+     "automl": 0.0655,
+     "zeror": 0.0015,
+     "bh": 0.13
+    },
+    "gap_to_2nd_point": 0.0081,
+    "gap_ci95": [
+     0.0,
+     0.0487
+    ]
+   }
+  },
+  "MSTR": {
+   "nontrivial": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.5538,
+     "m8": 0.5578,
+     "m10_xgb": 0.5339,
+     "automl": 0.498
+    },
+    "winner_point": "m8",
+    "winner_stability": 0.5,
+    "winner_dist": {
+     "m5": 0.2965,
+     "m8": 0.5,
+     "m10_xgb": 0.166,
+     "automl": 0.0375
+    },
+    "gap_to_2nd_point": 0.004,
+    "gap_ci95": [
+     0.0,
+     0.0319
+    ]
+   },
+   "all6": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.5538,
+     "m8": 0.5578,
+     "m10_xgb": 0.5339,
+     "automl": 0.498,
+     "zeror": 0.5299,
+     "bh": 0.4502
+    },
+    "winner_point": "m8",
+    "winner_stability": 0.4935,
+    "winner_dist": {
+     "m5": 0.2845,
+     "m8": 0.4935,
+     "m10_xgb": 0.1635,
+     "automl": 0.033,
+     "zeror": 0.025,
+     "bh": 0.0005
+    },
+    "gap_to_2nd_point": 0.004,
+    "gap_ci95": [
+     0.0,
+     0.0279
+    ]
+   }
+  },
+  "SMCI": {
+   "nontrivial": {
+    "n": 250,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.484,
+     "m8": 0.496,
+     "m10_xgb": 0.552,
+     "automl": 0.472
+    },
+    "winner_point": "m10_xgb",
+    "winner_stability": 0.9015,
+    "winner_dist": {
+     "m5": 0.0285,
+     "m8": 0.069,
+     "m10_xgb": 0.9015,
+     "automl": 0.001
+    },
+    "gap_to_2nd_point": 0.056,
+    "gap_ci95": [
+     0.0,
+     0.108
+    ]
+   },
+   "all6": {
+    "n": 250,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.484,
+     "m8": 0.496,
+     "m10_xgb": 0.552,
+     "automl": 0.472,
+     "zeror": 0.516,
+     "bh": 0.484
+    },
+    "winner_point": "m10_xgb",
+    "winner_stability": 0.81,
+    "winner_dist": {
+     "m5": 0.001,
+     "m8": 0.0085,
+     "m10_xgb": 0.81,
+     "automl": 0.0005,
+     "zeror": 0.155,
+     "bh": 0.025
+    },
+    "gap_to_2nd_point": 0.036,
+    "gap_ci95": [
+     0.0,
+     0.088
+    ]
+   }
+  },
+  "ROKU": {
+   "nontrivial": {
+    "n": 250,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.444,
+     "m8": 0.528,
+     "m10_xgb": 0.508,
+     "automl": 0.544
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.5815,
+    "winner_dist": {
+     "m5": 0.035,
+     "m8": 0.2395,
+     "m10_xgb": 0.144,
+     "automl": 0.5815
+    },
+    "gap_to_2nd_point": 0.016,
+    "gap_ci95": [
+     0.0,
+     0.068
+    ]
+   },
+   "all6": {
+    "n": 250,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.444,
+     "m8": 0.528,
+     "m10_xgb": 0.508,
+     "automl": 0.544,
+     "zeror": 0.548,
+     "bh": 0.548
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.436,
+    "winner_dist": {
+     "m5": 0.025,
+     "m8": 0.0175,
+     "m10_xgb": 0.1205,
+     "automl": 0.401,
+     "zeror": 0.436,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.052
+    ]
+   }
+  },
+  "MARA": {
+   "nontrivial": {
+    "n": 248,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.5282,
+     "m8": 0.5282,
+     "m10_xgb": 0.5323,
+     "automl": 0.5444
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.3045,
+    "winner_dist": {
+     "m5": 0.203,
+     "m8": 0.221,
+     "m10_xgb": 0.2715,
+     "automl": 0.3045
+    },
+    "gap_to_2nd_point": 0.0121,
+    "gap_ci95": [
+     0.0,
+     0.0565
+    ]
+   },
+   "all6": {
+    "n": 248,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.5282,
+     "m8": 0.5282,
+     "m10_xgb": 0.5323,
+     "automl": 0.5444,
+     "zeror": 0.5323,
+     "bh": 0.4677
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.2785,
+    "winner_dist": {
+     "m5": 0.0835,
+     "m8": 0.2145,
+     "m10_xgb": 0.24,
+     "automl": 0.2785,
+     "zeror": 0.158,
+     "bh": 0.0255
+    },
+    "gap_to_2nd_point": 0.0121,
+    "gap_ci95": [
+     0.0,
+     0.0484
+    ]
+   }
+  },
+  "QQQ": {
+   "nontrivial": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4183,
+     "m8": 0.4861,
+     "m10_xgb": 0.5219,
+     "automl": 0.5339
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.5845,
+    "winner_dist": {
+     "m5": 0.0005,
+     "m8": 0.118,
+     "m10_xgb": 0.297,
+     "automl": 0.5845
+    },
+    "gap_to_2nd_point": 0.012,
+    "gap_ci95": [
+     0.0,
+     0.0677
+    ]
+   },
+   "all6": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4183,
+     "m8": 0.4861,
+     "m10_xgb": 0.5219,
+     "automl": 0.5339,
+     "zeror": 0.5896,
+     "bh": 0.5896
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.9645,
+    "winner_dist": {
+     "m5": 0.0,
+     "m8": 0.0,
+     "m10_xgb": 0.0045,
+     "automl": 0.031,
+     "zeror": 0.9645,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.0001
+    ]
+   }
+  },
+  "DIA": {
+   "nontrivial": {
+    "n": 250,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.44,
+     "m8": 0.484,
+     "m10_xgb": 0.468,
+     "automl": 0.52
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.8405,
+    "winner_dist": {
+     "m5": 0.0045,
+     "m8": 0.1375,
+     "m10_xgb": 0.0175,
+     "automl": 0.8405
+    },
+    "gap_to_2nd_point": 0.036,
+    "gap_ci95": [
+     0.0,
+     0.084
+    ]
+   },
+   "all6": {
+    "n": 250,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.44,
+     "m8": 0.484,
+     "m10_xgb": 0.468,
+     "automl": 0.52,
+     "zeror": 0.552,
+     "bh": 0.556
+    },
+    "winner_point": "bh",
+    "winner_stability": 0.5905,
+    "winner_dist": {
+     "m5": 0.0005,
+     "m8": 0.002,
+     "m10_xgb": 0.001,
+     "automl": 0.137,
+     "zeror": 0.269,
+     "bh": 0.5905
+    },
+    "gap_to_2nd_point": 0.004,
+    "gap_ci95": [
+     0.0,
+     0.02
+    ]
+   }
+  },
+  "IWM": {
+   "nontrivial": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4502,
+     "m8": 0.4701,
+     "m10_xgb": 0.4582,
+     "automl": 0.4821
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.492,
+    "winner_dist": {
+     "m5": 0.0855,
+     "m8": 0.344,
+     "m10_xgb": 0.0785,
+     "automl": 0.492
+    },
+    "gap_to_2nd_point": 0.012,
+    "gap_ci95": [
+     0.0,
+     0.0677
+    ]
+   },
+   "all6": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4502,
+     "m8": 0.4701,
+     "m10_xgb": 0.4582,
+     "automl": 0.4821,
+     "zeror": 0.5538,
+     "bh": 0.5737
+    },
+    "winner_point": "bh",
+    "winner_stability": 0.855,
+    "winner_dist": {
+     "m5": 0.002,
+     "m8": 0.0,
+     "m10_xgb": 0.0,
+     "automl": 0.0015,
+     "zeror": 0.1415,
+     "bh": 0.855
+    },
+    "gap_to_2nd_point": 0.0199,
+    "gap_ci95": [
+     0.0,
+     0.0518
+    ]
+   }
+  },
+  "XLF": {
+   "nontrivial": {
+    "n": 247,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4291,
+     "m8": 0.502,
+     "m10_xgb": 0.5263,
+     "automl": 0.5101
+    },
+    "winner_point": "m10_xgb",
+    "winner_stability": 0.604,
+    "winner_dist": {
+     "m5": 0.006,
+     "m8": 0.1515,
+     "m10_xgb": 0.604,
+     "automl": 0.2385
+    },
+    "gap_to_2nd_point": 0.0162,
+    "gap_ci95": [
+     0.0,
+     0.0567
+    ]
+   },
+   "all6": {
+    "n": 247,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.4291,
+     "m8": 0.502,
+     "m10_xgb": 0.5263,
+     "automl": 0.5101,
+     "zeror": 0.5385,
+     "bh": 0.5385
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.58,
+    "winner_dist": {
+     "m5": 0.0035,
+     "m8": 0.0215,
+     "m10_xgb": 0.307,
+     "automl": 0.088,
+     "zeror": 0.58,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.0364
+    ]
+   }
+  },
+  "XLK": {
+   "nontrivial": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.51,
+     "m8": 0.4701,
+     "m10_xgb": 0.5418,
+     "automl": 0.5896
+    },
+    "winner_point": "automl",
+    "winner_stability": 0.9675,
+    "winner_dist": {
+     "m5": 0.0165,
+     "m8": 0.0025,
+     "m10_xgb": 0.0135,
+     "automl": 0.9675
+    },
+    "gap_to_2nd_point": 0.0478,
+    "gap_ci95": [
+     0.004,
+     0.0837
+    ]
+   },
+   "all6": {
+    "n": 251,
+    "block": 16,
+    "acc_point": {
+     "m5": 0.51,
+     "m8": 0.4701,
+     "m10_xgb": 0.5418,
+     "automl": 0.5896,
+     "zeror": 0.6414,
+     "bh": 0.6414
+    },
+    "winner_point": "zeror",
+    "winner_stability": 0.957,
+    "winner_dist": {
+     "m5": 0.0,
+     "m8": 0.0,
+     "m10_xgb": 0.003,
+     "automl": 0.04,
+     "zeror": 0.957,
+     "bh": 0.0
+    },
+    "gap_to_2nd_point": 0.0,
+    "gap_ci95": [
+     0.0,
+     0.004
+    ]
+   }
+  }
+ },
+ "resumen": {
+  "nontrivial": {
+   "n_activos": 15,
+   "n_estable": 7,
+   "frac_estable": 0.4667,
+   "activos_estables": [
+    "SPY",
+    "BAC",
+    "TSLA",
+    "SMCI",
+    "DIA",
+    "XLF",
+    "XLK"
+   ],
+   "ganadores_puntuales": {
+    "automl": 8,
+    "m8": 3,
+    "m10_xgb": 4
+   },
+   "stability_media": 0.6572
+  },
+  "all6": {
+   "n_activos": 15,
+   "n_estable": 8,
+   "frac_estable": 0.5333,
+   "activos_estables": [
+    "SPY",
+    "NVDA",
+    "BAC",
+    "XLE",
+    "SMCI",
+    "QQQ",
+    "IWM",
+    "XLK"
+   ],
+   "ganadores_puntuales": {
+    "automl": 2,
+    "zeror": 7,
+    "bh": 3,
+    "m10_xgb": 2,
+    "m8": 1
+   },
+   "stability_media": 0.671
+  }
+ }
+}
