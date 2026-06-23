@@ -1280,7 +1280,19 @@ La falsación pre-registrada del proyecto avisaba de que el rescate de **riesgo*
 sobre la familia régimen×contraste, block-permutation y ΔSharpe puntual). Hallazgo honesto: en **SPY-bajista** la
 **regla M8 sí se invierte** ($\Delta$Sharpe negativa, $n$ pequeño), tal como predecía la falsación; pero el
 **meta-learner sobre el panel** rescata con significancia **en los dos regímenes** — superando el resultado
-SPY-solo del estudio previo.""")
+SPY-solo del estudio previo.
+
+Y aparece un patrón **más fino y, a primera vista, contraintuitivo** al pasar de SPY al pooled. A nivel de SPY el
+rescate vive casi todo en **alcista** (y la regla M8 se invierte en bajista). Pero al **agregar los 10**, los dos
+aprendices **se reparten los regímenes en espejo**: **M10 rescata más en alcista** ($\Delta$Sharpe $+1.37$ vs
+$+0.72$ en bajista) y **AutoML más en bajista** ($+1.52$ vs $+0.81$ en alcista), mientras la **regla M8** queda
+**simétrica** ($+0.63$ / $+0.55$). Los seis contrastes son significativos en **ambos** regímenes (block-perm
+$p<0.07$; McNemar $p_{\text{Holm}}<0.10$ salvo M8-alcista en el borde, $0.099$). Lectura: el valor de la
+supervisión **no es un artefacto de un único régimen** —sobrevive a un test tanto en mercado alcista como
+bajista—, y los dos aprendices son **complementarios**: el buscador (AutoML), que modela la interacción
+condicional, es el que protege mejor en el régimen **peligroso** (bajista), justo el argumento para desplegarlo a
+él como capa de accuracy. La regla M8, en cambio, aporta un rescate de riesgo **estable y parejo** en los dos
+regímenes a nivel agregado.""")
 
 code(r"""# (j) ΔSharpe + McNemar(Holm) + block-perm POR RÉGIMEN (SPY y POOLED-10)
 def _reg_rows(scope):
@@ -1306,12 +1318,20 @@ for ax, scope in zip(axes, ("SPY", "POOLED10")):
     ax.axhline(0, color="k", lw=.8); ax.set_xticks(x); ax.set_xticklabels([p.replace("_vs_", "\nvs ") for p in pares], fontsize=8)
     ax.set_title(f"{scope} · ΔSharpe por régimen (verde: McNemar p_Holm<0.10)"); ax.legend(fontsize=8)
 plt.tight_layout(); plt.show()
-sb = BBC["por_regimen"]["SPY"]["bajista"]["contrastes"]; pb = BBC["por_regimen"]["POOLED10"]["bajista"]["contrastes"]
-print("SPY-bajista: M8 ΔSharpe={:+.2f} (la regla se invierte, como predecía la falsación), pero AutoML={:+.2f}. "
-      "POOLED bajista: M10/AutoML McNemar p_Holm={:.4f}/{:.4f} con ΔSharpe {:+.2f}/{:+.2f} → el rescate sobrevive "
-      "EN BAJISTA al agregar el panel.".format(sb["M8_vs_M5"]["delta_sharpe"], sb["AutoML_vs_M5"]["delta_sharpe"],
-      pb["M10_vs_M5"]["mcnemar_p_holm"], pb["AutoML_vs_M5"]["mcnemar_p_holm"],
-      pb["M10_vs_M5"]["delta_sharpe"], pb["AutoML_vs_M5"]["delta_sharpe"]))""")
+sb = BBC["por_regimen"]["SPY"]["bajista"]["contrastes"]
+pa_, pb = BBC["por_regimen"]["POOLED10"]["alcista"]["contrastes"], BBC["por_regimen"]["POOLED10"]["bajista"]["contrastes"]
+print("SPY-bajista: M8 ΔSharpe={:+.2f} (la regla se invierte, como predecía la falsación), pero AutoML={:+.2f} "
+      "(sin potencia, n=50).".format(sb["M8_vs_M5"]["delta_sharpe"], sb["AutoML_vs_M5"]["delta_sharpe"]))
+print("\nPOOLED-10 — los dos aprendices se reparten los regímenes EN ESPEJO (todos sig en ambos, p_Holm<0.10):")
+print(f"  M10   : alcista ΔSharpe={pa_['M10_vs_M5']['delta_sharpe']:+.2f} (p={pa_['M10_vs_M5']['mcnemar_p_holm']:.3f})  >  "
+      f"bajista {pb['M10_vs_M5']['delta_sharpe']:+.2f} (p={pb['M10_vs_M5']['mcnemar_p_holm']:.3f})  → rescata MÁS en ALCISTA")
+print(f"  AutoML: alcista ΔSharpe={pa_['AutoML_vs_M5']['delta_sharpe']:+.2f} (p={pa_['AutoML_vs_M5']['mcnemar_p_holm']:.3f})  <  "
+      f"bajista {pb['AutoML_vs_M5']['delta_sharpe']:+.2f} (p={pb['AutoML_vs_M5']['mcnemar_p_holm']:.3f})  → rescata MÁS en BAJISTA")
+print(f"  M8    : alcista ΔSharpe={pa_['M8_vs_M5']['delta_sharpe']:+.2f}  ≈  bajista {pb['M8_vs_M5']['delta_sharpe']:+.2f}  → "
+      "la REGLA es simétrica (rescate de riesgo parejo en los dos regímenes)")
+print("\nConclusión: el rescate NO es de un solo régimen (sobrevive un test en alcista Y bajista). Y los aprendices "
+      "son COMPLEMENTARIOS: AutoML —que modela la interacción condicional— protege mejor en el régimen PELIGROSO "
+      "(bajista), que es el argumento para desplegarlo como capa de accuracy; M10 brilla en tendencias alcistas.")""")
 
 md(r"""### Robustez a la ventana de calibración (sugerencia del tutor)
 Recalibramos HMM+GARCH con inicios de ventana cada vez más cortos (fin fijo en 2024-09 → sin fuga) y recomputamos
@@ -1421,6 +1441,14 @@ md(r"""## §9 Conclusiones del marco práctico
    McNemar pooled sup vs M5 significativo en **alcista Y bajista** (M10/AutoML p<0.02 en los dos). Además es
    **robusto a la ventana de calibración**: acortar a 2010 no daña (incluso mejora en índices), manteniendo la
    ventana completa pre-registrada (sin elegir calibración por OOS).
+   ventana completa pre-registrada (sin elegir calibración por OOS).
+   **Y el rescate de riesgo (ΔSharpe) sobrevive un test en alcista Y bajista por separado en el pooled** (no es
+   de un solo régimen), con un patrón **complementario en espejo**: el aprendiz **M10 rescata más en alcista**
+   (ΔSharpe +1.37 vs +0.72) y el buscador **AutoML más en bajista** (+1.52 vs +0.81), mientras la **regla M8 es
+   simétrica** (+0.63 / +0.55). A nivel de SPY-solo, en cambio, el rescate de Sharpe se concentra en alcista y la
+   regla se invierte en bajista (n pequeño): es la **falsación pre-registrada**, y la agregación la resuelve.
+   Implicación de despliegue: AutoML, que modela la interacción condicional, es el que protege mejor en el
+   régimen **peligroso** (bajista) — argumento para que sea la capa de accuracy desplegable.
 7. **Honestidad y límite (O6).** No se bate a ZeroR/B&H en accuracy de forma significativa (nominal, ventana
    corta); los 5 del apéndice delimitan dónde STRATA no aporta.
 8. **Rigor (O7).** `signal_lag=1`, embargo=1, ex-ante, tests con cita, auto-test que cruza cada cifra con su JSON.
@@ -1488,6 +1516,11 @@ assert _bc["SPY"]["dsr"]["AutoML"]["dsr"] > 0.90 > _bc["SPY"]["dsr"]["M5"]["dsr"
 _brb = BBC["por_regimen"]["POOLED10"]["bajista"]["contrastes"]
 assert _brb["M10_vs_M5"]["mcnemar_p_holm"] < 0.10 and _brb["M10_vs_M5"]["delta_sharpe"] > 0, "pooled-bajista: el rescate del meta-learner debe ser sig y con ΔSharpe>0 (supera al SPY-solo previo)"
 assert BBC["por_regimen"]["SPY"]["bajista"]["contrastes"]["M8_vs_M5"]["delta_sharpe"] < 0, "SPY-bajista: la regla M8 debe invertirse en Sharpe (falsación pre-registrada)"
+# complementariedad por régimen en el pooled: M10 rescata más en alcista, AutoML más en bajista (espejo)
+_pa, _pbj = BBC["por_regimen"]["POOLED10"]["alcista"]["contrastes"], BBC["por_regimen"]["POOLED10"]["bajista"]["contrastes"]
+assert _pa["M10_vs_M5"]["delta_sharpe"] > _pbj["M10_vs_M5"]["delta_sharpe"], "pooled: M10 debe rescatar más en alcista que en bajista"
+assert _pbj["AutoML_vs_M5"]["delta_sharpe"] > _pa["AutoML_vs_M5"]["delta_sharpe"], "pooled: AutoML debe rescatar más en bajista que en alcista (complementariedad en espejo)"
+assert all(_pbj[k]["mcnemar_p_holm"] < 0.10 for k in _pbj), "pooled-bajista: los 3 contrastes deben ser sig (el rescate no es de un solo régimen)"
 assert KSEL["per_k"]["3"]["heldout_loglik_perobs"] > KSEL["per_k"]["2"]["heldout_loglik_perobs"], "K=3 debe mejorar held-out vs K=2"
 # ley naturaleza→resultado (leverage→rescate ML) significativa Y robusta a leave-one-out (fix #2)
 assert LAW_P < 0.10, "la ley leverage→rescate-ML debe ser significativa"

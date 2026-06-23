@@ -2217,3 +2217,30 @@ signal_lag=1, coste lineal `core.backtest`. Validación: accuracy reconstruida =
 
 **Output esperado.** `outputs/experiments/net_of_cost_panel.json` con por_activo {turnover_ann por arm,
 net_by_cost {sharpe,equity} por arm}, y pooled {sharpe_vs_cost, dSharpe_vs_m5_vs_cost, breakeven_rescate}.
+
+---
+
+## [2026-06-23] [Hallazgo] - Complementariedad por régimen del rescate de riesgo (M10 alcista / AutoML bajista)
+
+**Contexto.** Confirmatorio del rescate en Sharpe desglosado por régimen de mercado (tendencia 21d causal),
+SPY y POOLED-10. Experimento `bullbear_confirmatory.py` → `bullbear_confirmatory.json` (§7 del marco práctico).
+
+**Detalle.** A nivel de **SPY-solo** el rescate de Sharpe se concentra en **alcista** (M8 +3.95, M10 +4.35,
+AutoML +7.53) y la **regla M8 se invierte en bajista** (ΔSharpe −1.49, n=50, sin potencia) — es la **falsación
+pre-registrada** ("plano Sharpe: rescate no robusto en bajista") cumplida al nivel de un solo activo. Pero al
+**agregar los 10 (pooled)** aparece un patrón **complementario en espejo**, con los 6 contrastes significativos
+en AMBOS regímenes (block-perm p<0.07; McNemar p_Holm<0.10 salvo M8-alcista en el borde 0.099):
+- **M10** rescata MÁS en **alcista** (ΔSharpe +1.37) que en bajista (+0.72).
+- **AutoML** rescata MÁS en **bajista** (+1.52) que en alcista (+0.81).
+- **M8** (la regla) queda **simétrica** (+0.63 / +0.55).
+
+**Implicaciones para el TFG.** (1) El rescate de riesgo **NO es un artefacto de un único régimen** — sobrevive a
+un test en alcista y en bajista por separado cuando se agrega el panel; la agregación resuelve la falsación que
+sí ocurre a nivel SPY-solo. (2) Los dos aprendices son **complementarios**: el buscador **AutoML**, que modela
+la interacción condicional, protege mejor en el régimen **peligroso** (bajista) — argumento de despliegue para
+que sea la capa de accuracy; **M10** brilla en tendencias alcistas; la **regla M8** aporta un rescate de riesgo
+**parejo** en ambos regímenes. Va a la memoria como matiz del §7 (rescate por régimen) y refuerza el encuadre de
+las dos capas (§5).
+
+**Referencias.** `experiments/bullbear_confirmatory.py`, `outputs/experiments/bullbear_confirmatory.json`,
+notebook §7 (celda "(j) por régimen") y §9 conclusión 6; memoria [[bullbear-confirmatorio-dsr]].
