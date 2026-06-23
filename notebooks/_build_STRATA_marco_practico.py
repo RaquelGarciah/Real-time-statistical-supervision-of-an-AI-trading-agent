@@ -121,6 +121,7 @@ DETXLE = _load("outputs/experiments/detector_analysis_XLE.json"); DETMAR = _load
 DETABL = _load("outputs/experiments/detector_ablation_panel.json")        # activación detectores (10) + ablación M10 (SPY)
 CONF = _load("outputs/experiments/confusion_panel.json")                  # matrices de confusión SPY (6) + panel (mejor STRATA)
 IANA = _load("outputs/experiments/spy_intervention_anatomy.json")         # anatomía de un día de intervención (acierto/fallo)
+GATE = _load("outputs/experiments/spy_panel_gate_descriptive.json")       # gate RAM por activo (10) + descriptivo de features SPY
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -286,6 +287,36 @@ for c, mk in ((ca, "ACIERTO"), (cf, "FALLO")):
         fontsize=7, ha="center", va="bottom" if mk == "ACIERTO" else "top")
 ax.set_title("SPY · días de intervención de M8 (verde acierta, rojo falla; tamaño ∝ |r_next|)"); ax.legend(fontsize=8, loc="upper left")
 plt.tight_layout(); plt.show()
+# Diagrama de flujo de la decisión (muy visual): agente → STRATA → resultado, para los dos casos
+def _flow(ax, c, tag):
+    ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
+    up = lambda s: "LARGO ▲" if s > 0 else ("CORTO ▼" if s < 0 else "NEUTRAL")
+    cl = lambda s: "#27ae60" if s > 0 else "#c0392b"
+    ax.text(5, 9.4, f"{tag} · {c['fecha']} · régimen {c['regimen']} · RAM={c['ram_score']:.2f}",
+            ha="center", fontsize=10, fontweight="bold")
+    # 1) agente + votos de las 5 personalidades
+    ax.text(1.6, 7.6, "AGENTE (M5)", ha="center", fontsize=8, color="#555")
+    ax.text(1.6, 6.7, up(c["agente_M5"]), ha="center", fontsize=12, fontweight="bold",
+            color="white", bbox=dict(boxstyle="round", fc=cl(c["agente_M5"]), ec="k"))
+    pv = c["votos_personalidades"]
+    for i, (p, s) in enumerate(pv.items()):
+        ax.scatter(0.5 + i * 0.55, 5.4, s=90, color=cl(s) if s != 0 else "#bbb", edgecolor="k", lw=.4)
+    ax.text(1.6, 4.7, "votos 5 pers.", ha="center", fontsize=6.5, color="#888")
+    # 2) STRATA voltea
+    ax.annotate("", xy=(4.6, 6.7), xytext=(2.9, 6.7), arrowprops=dict(arrowstyle="-|>", lw=2, color="#2c3e50"))
+    ax.text(3.75, 7.2, "RAM voltea", ha="center", fontsize=7, color="#2c3e50")
+    ax.text(6.1, 7.6, "STRATA (M8)", ha="center", fontsize=8, color="#555")
+    ax.text(6.1, 6.7, up(c["STRATA_M8"]), ha="center", fontsize=12, fontweight="bold",
+            color="white", bbox=dict(boxstyle="round", fc=cl(c["STRATA_M8"]), ec="k"))
+    # 3) resultado al día siguiente
+    ax.annotate("", xy=(8.4, 6.7), xytext=(7.3, 6.7), arrowprops=dict(arrowstyle="-|>", lw=2, color="#2c3e50"))
+    mk, mkc = ("✓", "#27ae60") if c["M8_acierta"] else ("✗", "#c0392b")
+    ax.text(9.2, 6.7, mk, ha="center", va="center", fontsize=26, color=mkc, fontweight="bold")
+    ax.bar(9.2, c["r_next"] * 30, width=0.7, bottom=3.0, color=cl(c["verdad"]), edgecolor="k")
+    ax.text(9.2, 2.3, f"r_next\n{c['r_next']:+.1%}", ha="center", fontsize=8)
+fig, axes = plt.subplots(1, 2, figsize=(13, 3.6))
+_flow(axes[0], ca, "ACIERTO"); _flow(axes[1], cf, "FALLO")
+plt.tight_layout(); plt.show()
 print("Mismo mecanismo en los dos: agente corto en Calma → RAM (score≈0.99) lo voltea a largo. El "
       f"{ca['fecha']} el mercado sube {ca['r_next']:+.1%} y M8 acierta; el {cf['fecha']} baja {cf['r_next']:+.1%} "
       "y M8 falla. La regla no es infalible — es favorable en el agregado (71/121).")""")
@@ -373,6 +404,31 @@ try:
           "Que ayuden o no como features depende del modelo (AutoML sí; el XGBoost de params fijos se sobreajusta).")
 except Exception:
     pass""")
+
+code(r"""# Ablación de features (barra): agente-15 vs STRATA-7 vs 22, en el ensemble M10-XGBoost Y en AutoML (el ganador)
+ab = DETABL["ablacion_m10_spy"]
+aa = json.load(open("outputs/experiments/automl_ablation_detectors.json"))["ablacion_automl_spy"]
+zeror = PAN["SPY"]["table"]["zeror"]["accuracy"]
+sets = ["solo agente (15)", "solo STRATA (7)", "ALL22 (canónico)"]
+fig, ax = plt.subplots(figsize=(8.5, 4)); x = np.arange(len(sets)); w = 0.38
+m10v = [ab[s]["accuracy"] for s in sets]; amlv = [aa[s]["accuracy"] for s in sets]
+ax.bar(x - w/2, m10v, w, color="#1a5276", edgecolor="k", lw=.8, label="M10 (XGBoost, params fijos)")
+ax.bar(x + w/2, amlv, w, color="#16a085", edgecolor="k", lw=.8, label="AutoML (H2O, el ganador)")
+ax.axhline(0.5, color="k", ls="--", lw=.8, label="azar"); ax.axhline(zeror, color="#e67e22", ls=":", lw=1.4, label=f"ZeroR={zeror:.3f}")
+for i in range(len(sets)):
+    ax.text(i - w/2, m10v[i] + 0.003, f"{m10v[i]:.3f}", ha="center", fontsize=8)
+    ax.text(i + w/2, amlv[i] + 0.003, f"{amlv[i]:.3f}", ha="center", fontsize=8)
+ax.set_xticks(x); ax.set_xticklabels([s.replace(" (15)", "").replace(" (7)", "").replace(" (canónico)", "") for s in sets])
+ax.set_ylim(0.40, 0.62); ax.set_ylabel("accuracy (OOS desplegable)")
+ax.set_title("Ablación de features · mismo walk-forward (SPY): M10-XGBoost vs AutoML"); ax.legend(fontsize=7.5, ncol=2)
+plt.tight_layout(); plt.show()
+print(f"AutoML (el modelo que usamos): agente-15={aa['solo agente (15)']['accuracy']} → 22={aa['ALL22 (canónico)']['accuracy']} "
+      f"({aa['ALL22 (canónico)']['accuracy']-aa['solo agente (15)']['accuracy']:+.3f}) → alcanza su MÁXIMO con las 22: "
+      "SÍ extrae valor de las features de STRATA.")
+print(f"M10-XGBoost (params fijos): 22={ab['ALL22 (canónico)']['accuracy']} < agente-15={ab['solo agente (15)']['accuracy']} "
+      "→ se SOBREAJUSTA con 22 features (por eso en §2 quitarle PSA+GSO le mejoraba). El que las features de STRATA "
+      "ayuden o no depende del modelo: el buscador con selección (AutoML) sí las aprovecha; el XGBoost de params "
+      "fijos no. Conclusión consistente con la ablación de detectores de §2.")""")
 
 md(r"""### Matriz régimen × dirección: el leverage es contemporáneo, no predictivo
 Para no dejar el *leverage effect* solo en prosa: la distribución empírica de la dirección por régimen, en la
@@ -563,6 +619,30 @@ plt.tight_layout(); plt.show()
 print("El SHAP varía de forma estructurada con cada señal (no es ruido): el modelo USA la información de los "
       "detectores. Efecto marginal, no causal.")""")
 
+md(r"""### Descriptivo: cada variable frente al signo del retorno (corte de árbol depth-1, SPY)
+El "deber" clásico antes de modelar: ¿separa cada *feature* los días que suben de los que bajan? Para cada
+variable, su distribución condicionada al signo de $r_{t+1}$ y el **corte de un árbol de profundidad 1** (la
+mejor partición univariante) con su accuracy. Ninguna variable sola separa bien (todas rondan el azar) — por eso
+hace falta el meta-learner que combina las 22; pero las señales de STRATA (crisis_prob, garch_sigma) cortan algo
+mejor que las del agente.""")
+
+code(r"""# Descriptivo 3×3: cada variable vs el signo de r_{t+1} con corte de árbol depth-1 (SPY)
+dv = GATE["descriptivo_spy"]; yb = np.array(dv["yb"]); vars_ = list(dv["variables"])
+fig, axes = plt.subplots(3, 3, figsize=(12, 8))
+for ax, col in zip(axes.ravel(), vars_):
+    x = np.array(dv["variables"][col]["x"]); thr = dv["variables"][col]["thr"]
+    bins = np.histogram_bin_edges(x, bins=18)
+    ax.hist([x[yb == 0], x[yb == 1]], bins=bins, stacked=True, color=["#c0392b", "#27ae60"], label=["baja", "sube"])
+    if thr is not None: ax.axvline(thr, color="blue", lw=1.5)
+    ax.set_title(f"{col}  (acc univar. {dv['variables'][col]['acc_univar']:.2f})", fontsize=8)
+axes[0, 0].legend(fontsize=7)
+fig.suptitle("SPY · descriptivo: cada variable vs signo de r_{t+1} (corte de árbol depth-1)", y=1.0)
+plt.tight_layout(); plt.show()
+best = max(dv["variables"], key=lambda c: dv["variables"][c]["acc_univar"])
+print(f"La variable que más separa sola es {best} (acc {dv['variables'][best]['acc_univar']:.3f}), pero ninguna "
+      "llega lejos del azar: la dirección no es univariante — el valor está en COMBINAR las 22 (meta-learner) y en "
+      "el plano riesgo, no en una regla de una sola feature.")""")
+
 # ═══════════════════════════  §4 Panel de 10  ═══════════════════════════
 md(r"""## §4 Generalización — panel de 10 (universalidad y riesgo)
 
@@ -591,6 +671,36 @@ print("RAM dispara entre %.0f%% y %.0f%% según el activo; PSA ≤ %.1f%% y GSO 
       A["RAM"].min()*100, A["RAM"].max()*100, A["PSA"].max()*100))
 print("→ A nivel de panel se confirma: la supervisión que actúa es el canal RÉGIMEN (RAM). PSA y GSO están "
       "dormidos en este OOS calmado en los 10 activos (su justificación, en §2).")""")
+
+md(r"""### Mecánica del gate RAM en cada activo y "donde el agente discrepa, STRATA interviene"
+RAM solo es útil si, **cuando dispara**, el régimen acierta más que el agente. Lo medimos en los 10: cuando
+RAM≥τ, ¿gana seguir al AGENTE o seguir al RÉGIMEN (override)? Y la relación clave del mecanismo: la **intervención
+de STRATA crece con la discrepancia agente↔régimen** — STRATA actúa justo donde el agente se aparta del régimen.""")
+
+code(r"""# Gate RAM por activo (10): seguir agente vs seguir régimen cuando RAM dispara + discrepancia→intervención
+gp = GATE["gate_por_activo"]
+fig, axes = plt.subplots(1, 2, figsize=(13.5, 4))
+x = np.arange(len(PANEL10)); w = 0.38
+ag = [gp[t]["ram_alto"]["acc_seguir_agente"] or 0 for t in PANEL10]
+rg = [gp[t]["ram_alto"]["acc_seguir_regimen"] or 0 for t in PANEL10]
+axes[0].bar(x - w/2, ag, w, color="#c0392b", edgecolor="k", lw=.4, label="seguir AGENTE (M5)")
+axes[0].bar(x + w/2, rg, w, color="#27ae60", edgecolor="k", lw=.4, label="seguir RÉGIMEN (override)")
+axes[0].axhline(0.5, color="k", ls="--", lw=.8); axes[0].set_xticks(x); axes[0].set_xticklabels(PANEL10, rotation=45, fontsize=8)
+axes[0].set_ylabel("accuracy cuando RAM≥τ"); axes[0].set_title("Gate RAM: ¿agente o régimen? (cuando RAM dispara)"); axes[0].legend(fontsize=8)
+disc = [gp[t]["discrepancia_agente_regimen"] for t in PANEL10]; interv = [gp[t]["tasa_intervencion"] for t in PANEL10]
+order = sorted(range(len(PANEL10)), key=lambda i: disc[i])
+axes[1].bar(np.arange(len(PANEL10)) - w/2, [disc[i] for i in order], w, color="#9ecae1", edgecolor="k", lw=.4, label="discrepancia agente↔régimen")
+axes[1].bar(np.arange(len(PANEL10)) + w/2, [interv[i] for i in order], w, color="#2c3e50", edgecolor="k", lw=.4, label="intervención de M8")
+axes[1].set_xticks(np.arange(len(PANEL10))); axes[1].set_xticklabels([PANEL10[i] for i in order], rotation=45, fontsize=8)
+axes[1].set_title("Donde el agente discrepa, STRATA interviene"); axes[1].legend(fontsize=8)
+plt.tight_layout(); plt.show()
+nreg = sum(rg[i] > ag[i] for i in range(len(PANEL10)))
+from scipy.stats import pearsonr
+r_di, p_di = pearsonr(disc, interv)
+print(f"Seguir el régimen (override) bate a seguir al agente cuando RAM dispara en {nreg}/10 activos → ahí es donde "
+      "el canal RÉGIMEN (M8) aporta; en el resto manda el canal ML (el régimen miente sobre la dirección, §5).")
+print(f"Discrepancia agente↔régimen vs intervención de M8: Pearson r={r_di:.2f} (p={p_di:.3f}) → STRATA interviene "
+      "precisamente donde el agente se aparta del régimen, como se diseñó.")""")
 
 code(r"""# Naturaleza de los activos del panel: leverage de Black, fracción de Crisis OOS, sesgo corto del agente, vol
 fig, axes = plt.subplots(2, 2, figsize=(13, 6.4)); axes = axes.ravel()
@@ -1291,6 +1401,10 @@ assert abs(IANA["balance_intervenciones"]["acc_M8_en_intervencion"] - DET["inter
 assert IANA["caso_acierto"]["M8_acierta"] and not IANA["caso_acierto"]["M5_acierta"], "el caso ACIERTO debe ser intervención donde M8 acierta y el agente fallaba"
 assert IANA["caso_fallo"]["M5_acierta"] and not IANA["caso_fallo"]["M8_acierta"], "el caso FALLO debe ser intervención donde el agente tenía razón y M8 falla"
 assert IANA["balance_intervenciones"]["intervenciones_acertadas"] > IANA["balance_intervenciones"]["intervenciones_fallidas"], "M8 debe acertar más intervenciones de las que falla (lo que sostiene la regla)"
+# gate RAM por activo + descriptivo SPY (gráficas de mecánica)
+assert abs(GATE["gate_por_activo"]["SPY"]["ram_alto"]["acc_seguir_regimen"] - DET["detectores"]["RAM"]["acc_M8_en_disparo"]) < 0.01, "gate RAM SPY (seguir régimen cuando RAM≥τ) debe coincidir con acc_M8_en_disparo de detector_analysis_SPY"
+assert len(GATE["descriptivo_spy"]["variables"]) == 9 and "ram_score" in GATE["descriptivo_spy"]["variables"], "el descriptivo SPY debe tener 9 variables con su corte univariante"
+assert all(GATE["descriptivo_spy"]["variables"][v]["acc_univar"] < 0.62 for v in GATE["descriptivo_spy"]["variables"]), "ninguna variable sola debe separar bien (la dirección no es univariante)"
 # clustering consenso de 3 métodos; spectral discrepa y se reporta (fix #5)
 assert CLU["concordancia_k3_randajustado"]["kmeans~ward"] == 1.0, "KMeans~Ward deberían coincidir"
 assert CLU["concordancia_k3_randajustado"]["kmeans~spectral"] < 0.5, "spectral debe discrepar (se reporta como tal)"
