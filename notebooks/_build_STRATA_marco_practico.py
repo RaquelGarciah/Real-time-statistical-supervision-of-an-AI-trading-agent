@@ -115,6 +115,8 @@ NOC  = _load("outputs/experiments/net_of_cost_panel.json")              # net-of
 SPYIV = _load("outputs/experiments/spy_intervention_variants.json")      # SPY: abstención/override + sensibilidad de umbrales
 NAT = {a: CLU["por_activo"][a]["nat"] for a in CLU["por_activo"]}        # naturaleza por activo (leverage/crisis/vol/sesgo)
 SPYME = _load("outputs/experiments/spy_mechanism_extras.json")           # SPY: daily (régimen/posiciones/p1) + SHAP dependency + cuota rodante
+THR = _load("cache/models/strata_thresholds.json")                       # umbrales ex-ante PSA/GSO (calib 2000–2024-09)
+DETXLE = _load("outputs/experiments/detector_analysis_XLE.json"); DETMAR = _load("outputs/experiments/detector_analysis_MARA.json")
 
 # --- Panel de 10 (cuerpo) + 5 en apéndice de límite ---
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
@@ -250,6 +252,55 @@ axes[2].set_title("RAM score (τ=0.5 marcado) · casi binario")
 plt.tight_layout(); plt.show()
 print(f"Atribución del P&L de rescate: RAM={at['pnl_dias_RAM_disparado']:+.3f}, PSA={at['pnl_dias_PSA_disparado']:+.3f}, "
       f"GSO={at['pnl_dias_GSO_disparado']:+.3f} → todo el rescate es del canal RÉGIMEN (override-C, decisiones #5/#7).")""")
+
+md(r"""### ¿Por qué se conservan PSA y GSO si apenas disparan en este OOS?
+Pregunta legítima (y esperable en defensa). La respuesta es que su **inactividad aquí es un diagnóstico honesto
+de este OOS**, no un fallo — y se sostiene con tres evidencias:
+1. **No son código muerto: en la calibración (24 años, con 2008 y 2020) sí disparan.** Los umbrales son P95/P99
+   ex-ante y las distribuciones de score tienen **cola real** (PSA P99 ≫ P95; GSO P99/máx altos) → hubo días que
+   los superaron. Este OOS, calmado y corto, simplemente no llega a esa cola.
+2. **Sus condiciones de disparo no ocurren en este OOS.** GSO mide **sobre-exposición** frente a la banda GARCH;
+   PSA mide **cambios estructurales** de opinión (BOCPD). En un único régimen alcista, con el agente de **sesgo
+   persistente** (rara vez voltea) y **tamaño contenido**, ni hay sobre-exposición ni cambios estructurales.
+3. **Es una predicción pre-registrada cumplida** (CLAUDE.md §2, nivel 2: *"RAM domina la atribución de P&L"*).
+   Quitar PSA/GSO a posteriori porque "no disparan aquí" sería **ajustar el marco a los datos** — lo contrario del
+   rigor. Se conservan como los **ejes ortogonales de seguridad** del diseño, activos bajo sus condiciones
+   (shocks de volatilidad / giros de opinión) que este OOS no presenta.""")
+
+code(r"""# Evidencia 1+2: disparo en CALIBRACIÓN vs OOS, y dónde caen los scores OOS frente al umbral ex-ante
+fire_oos = {tk: {d: D["detectores"][d]["tasa_disparo"] for d in ("RAM", "PSA", "GSO")}
+            for tk, D in (("SPY", DET), ("XLE", DETXLE), ("MARA", DETMAR))}
+print("Tasa de disparo OOS por detector (3 activos):")
+print(pd.DataFrame(fire_oos).T.to_string())
+print(f"\nEn CALIBRACIÓN (2000–2024-09) PSA y GSO disparan ~{THR['psa']['activation_pct_at_p95']:.0%} a P95 (por "
+      "construcción del umbral) — y NO es trivial: las colas son reales:")
+for k in ("psa", "gso"):
+    dd = THR[k]["score_distribution"]
+    print(f"   {k.upper()}: P50={dd['p50']:.3f}  P95={dd['p95']:.3f}  P99={dd['p99']:.3f}  máx={dd['max']:.3f}")
+# scores OOS de SPY: ¿dónde caen frente a P95/P99?
+sc = DET["scores"]; thr = sc["umbrales"]
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.2))
+for ax, key, name, p95, p99 in [(axes[0], "psa_score", "PSA", thr["PSA_p95"], thr["PSA_p99"]),
+                                 (axes[1], "gso_score", "GSO", thr["GSO_p95"], thr["GSO_p99"])]:
+    ax.hist(sc[key], bins=30, color="#7d3c98", alpha=.7)
+    ax.axvline(p95, color="k", ls="--", lw=1, label=f"P95={p95:.2f}"); ax.axvline(p99, color="k", ls=":", lw=1, label=f"P99={p99:.2f}")
+    ax.set_title(f"{name} score (OOS SPY) vs umbral ex-ante"); ax.legend(fontsize=8); ax.set_yscale("log")
+plt.tight_layout(); plt.show()
+print("Los scores OOS de PSA/GSO se acumulan MUY por debajo del umbral ex-ante (calibrado con crisis) → el OOS "
+      "no alcanza el régimen que los activaría. No están rotos: están dormidos porque no toca.")""")
+
+code(r"""# Evidencia 2 (mecánica): el agente tiene sesgo PERSISTENTE → PSA (cambio estructural) no tiene qué detectar
+shorts = {a: MECH[a]["agente_frac_corto"] for a in PANEL10}
+fig, ax = plt.subplots(figsize=(8, 3.0))
+order = sorted(PANEL10, key=lambda a: shorts[a])
+ax.bar(order, [shorts[a] for a in order], color="#9e9e9e"); ax.axhline(0.5, color="k", ls="--", lw=.8, label="0.5 (sin sesgo)")
+ax.set_ylim(0, 1); ax.set_ylabel("fracción de días CORTO"); ax.set_title("Sesgo del agente: muy lejos de 0.5 → posición casi constante → PSA sin cambios que detectar")
+ax.tick_params(axis="x", rotation=45); ax.legend(fontsize=8); plt.tight_layout(); plt.show()
+print(f"El agente está corto el {np.mean(list(shorts.values())):.0%} de los días de media (rango "
+      f"{min(shorts.values()):.0%}–{max(shorts.values()):.0%}): una postura casi constante. BOCPD (PSA) detecta "
+      "CAMBIOS estructurales; sin cambios, no dispara. Y GSO necesita sobre-exposición que el agente no genera.")
+print("\nConclusión defendible: PSA/GSO se mantienen como ejes ortogonales de seguridad (pre-registrados); su "
+      "inactividad en este OOS es un hallazgo honesto y una predicción cumplida (RAM domina), no un defecto.")""")
 
 md(r"""### Matriz régimen × dirección: el leverage es contemporáneo, no predictivo
 Para no dejar el *leverage effect* solo en prosa: la distribución empírica de la dirección por régimen, en la
