@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "fuente_accuracy": "outputs/experiments/automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21_kfold_seed42.json",
+    "tesis": "dos supervisores (regla M8 = canal régimen; aprendiz M10/AutoML = canal ML); el canal que rescata depende de la fiabilidad direccional del régimen OOS, medida por crisis_mean (signo) y la tasa de acierto de M8 en intervención.",
+    "variable_clave": "crisis_mean<0 → régimen direccional → regla; crisis_mean>0 (leverage invertido) → régimen no direccional → aprendiz."
+  },
+  "por_activo": {
+    "SPY": {
+      "leverage_corr": -0.1099,
+      "crisis_mean": -0.00036,
+      "regimen_direccional": true,
+      "intervencion_M8": 0.3017,
+      "M8_acierto_en_intervencion": 0.5868,
+      "agente_frac_corto": 0.756,
+      "acc": {
+        "M5": 0.3665,
+        "M8": 0.4422,
+        "M10": 0.494,
+        "AutoML": 0.5737
+      },
+      "acc_M5_intervenido": 0.4132,
+      "canal_ganador": "régimen (M8)",
+      "M8_ayuda": true,
+      "canal_regimen": true,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 59% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    },
+    "QQQ": {
+      "leverage_corr": -0.0921,
+      "crisis_mean": -0.00125,
+      "regimen_direccional": true,
+      "intervencion_M8": 0.197,
+      "M8_acierto_en_intervencion": 0.6203,
+      "agente_frac_corto": 0.611,
+      "acc": {
+        "M5": 0.4183,
+        "M8": 0.4861,
+        "M10": 0.5219,
+        "AutoML": 0.5339
+      },
+      "acc_M5_intervenido": 0.3797,
+      "canal_ganador": "régimen (M8)",
+      "M8_ayuda": true,
+      "canal_regimen": true,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 62% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    },
+    "DIA": {
+      "leverage_corr": -0.1117,
+      "crisis_mean": -0.00026,
+      "regimen_direccional": true,
+      "intervencion_M8": 0.3425,
+      "M8_acierto_en_intervencion": 0.4891,
+      "agente_frac_corto": 0.698,
+      "acc": {
+        "M5": 0.44,
+        "M8": 0.484,
+        "M10": 0.468,
+        "AutoML": 0.52
+      },
+      "acc_M5_intervenido": 0.5109,
+      "canal_ganador": "régimen (M8)",
+      "M8_ayuda": true,
+      "canal_regimen": true,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 49% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    },
+    "IWM": {
+      "leverage_corr": -0.1022,
+      "crisis_mean": 0.00032,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.2145,
+      "M8_acierto_en_intervencion": 0.5116,
+      "agente_frac_corto": 0.736,
+      "acc": {
+        "M5": 0.4502,
+        "M8": 0.4701,
+        "M10": 0.4582,
+        "AutoML": 0.4821
+      },
+      "acc_M5_intervenido": 0.4884,
+      "canal_ganador": "ML (AutoML)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "Leverage INVERTIDO (crisis_mean>0): el régimen no informa el signo → la regla M8 es ruido; el aprendiz (M10/AutoML) explota la condición (sesgo del agente × régimen) y rescata."
+    },
+    "XLE": {
+      "leverage_corr": -0.0891,
+      "crisis_mean": 7e-05,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.5955,
+      "M8_acierto_en_intervencion": 0.5696,
+      "agente_frac_corto": 0.859,
+      "acc": {
+        "M5": 0.4476,
+        "M8": 0.5282,
+        "M10": 0.5081,
+        "AutoML": 0.5323
+      },
+      "acc_M5_intervenido": 0.4304,
+      "canal_ganador": "ML (AutoML)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "Leverage INVERTIDO (crisis_mean>0): el régimen no informa el signo → la regla M8 es ruido; el aprendiz (M10/AutoML) explota la condición (sesgo del agente × régimen) y rescata."
+    },
+    "XLF": {
+      "leverage_corr": -0.0909,
+      "crisis_mean": -6e-05,
+      "regimen_direccional": true,
+      "intervencion_M8": 0.5491,
+      "M8_acierto_en_intervencion": 0.5413,
+      "agente_frac_corto": 0.738,
+      "acc": {
+        "M5": 0.4291,
+        "M8": 0.502,
+        "M10": 0.5263,
+        "AutoML": 0.5101
+      },
+      "acc_M5_intervenido": 0.4587,
+      "canal_ganador": "régimen (M8)",
+      "M8_ayuda": true,
+      "canal_regimen": true,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 54% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    },
+    "XLK": {
+      "leverage_corr": -0.0863,
+      "crisis_mean": -0.00086,
+      "regimen_direccional": true,
+      "intervencion_M8": 0.0948,
+      "M8_acierto_en_intervencion": 0.3684,
+      "agente_frac_corto": 0.426,
+      "acc": {
+        "M5": 0.51,
+        "M8": 0.4701,
+        "M10": 0.5418,
+        "AutoML": 0.5896
+      },
+      "acc_M5_intervenido": 0.6316,
+      "canal_ganador": "régimen (M8)",
+      "M8_ayuda": false,
+      "canal_regimen": true,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 37% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    },
+    "NVDA": {
+      "leverage_corr": 0.0015,
+      "crisis_mean": 0.00172,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.6039,
+      "M8_acierto_en_intervencion": 0.5263,
+      "agente_frac_corto": 0.809,
+      "acc": {
+        "M5": 0.4672,
+        "M8": 0.5212,
+        "M10": 0.4826,
+        "AutoML": 0.5174
+      },
+      "acc_M5_intervenido": 0.4737,
+      "canal_ganador": "ML (AutoML)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "Leverage INVERTIDO (crisis_mean>0): el régimen no informa el signo → la regla M8 es ruido; el aprendiz (M10/AutoML) explota la condición (sesgo del agente × régimen) y rescata."
+    },
+    "BAC": {
+      "leverage_corr": -0.0662,
+      "crisis_mean": -0.00059,
+      "regimen_direccional": true,
+      "intervencion_M8": 0.4773,
+      "M8_acierto_en_intervencion": 0.5503,
+      "agente_frac_corto": 0.78,
+      "acc": {
+        "M5": 0.4512,
+        "M8": 0.5163,
+        "M10": 0.4187,
+        "AutoML": 0.4878
+      },
+      "acc_M5_intervenido": 0.4497,
+      "canal_ganador": "régimen (M8)",
+      "M8_ayuda": true,
+      "canal_regimen": true,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 55% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    },
+    "TSLA": {
+      "leverage_corr": -0.0212,
+      "crisis_mean": 0.00399,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.2469,
+      "M8_acierto_en_intervencion": 0.5051,
+      "agente_frac_corto": 0.998,
+      "acc": {
+        "M5": 0.4741,
+        "M8": 0.4781,
+        "M10": 0.5219,
+        "AutoML": 0.4542
+      },
+      "acc_M5_intervenido": 0.4949,
+      "canal_ganador": "ML (M10)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "Leverage INVERTIDO (crisis_mean>0): el régimen no informa el signo → la regla M8 es ruido; el aprendiz (M10/AutoML) explota la condición (sesgo del agente × régimen) y rescata."
+    },
+    "MSTR": {
+      "leverage_corr": 0.0172,
+      "crisis_mean": -0.00101,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.0025,
+      "M8_acierto_en_intervencion": 1.0,
+      "agente_frac_corto": 0.998,
+      "acc": {
+        "M5": 0.5538,
+        "M8": 0.5578,
+        "M10": 0.5339,
+        "AutoML": 0.498
+      },
+      "acc_M5_intervenido": 0.0,
+      "canal_ganador": "ML (M10)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "STRATA defiere: el agente ya alineado; M8≈M5, sin margen de rescate."
+    },
+    "SMCI": {
+      "leverage_corr": -0.0042,
+      "crisis_mean": 0.00161,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.0175,
+      "M8_acierto_en_intervencion": 0.7143,
+      "agente_frac_corto": 0.968,
+      "acc": {
+        "M5": 0.484,
+        "M8": 0.496,
+        "M10": 0.552,
+        "AutoML": 0.472
+      },
+      "acc_M5_intervenido": 0.2857,
+      "canal_ganador": "ML (M10)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "STRATA defiere: el agente ya está alineado con un régimen correcto (intervención ≈0); M8≈M5. Si gana una STRATA es el ML (ML (M10))."
+    },
+    "ROKU": {
+      "leverage_corr": 0.0028,
+      "crisis_mean": 0.00318,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.71,
+      "M8_acierto_en_intervencion": 0.5387,
+      "agente_frac_corto": 0.973,
+      "acc": {
+        "M5": 0.444,
+        "M8": 0.528,
+        "M10": 0.508,
+        "AutoML": 0.544
+      },
+      "acc_M5_intervenido": 0.4613,
+      "canal_ganador": "ML (AutoML)",
+      "M8_ayuda": true,
+      "canal_regimen": false,
+      "mecanismo": "Leverage INVERTIDO (crisis_mean>0): el régimen no informa el signo → la regla M8 es ruido; el aprendiz (M10/AutoML) explota la condición (sesgo del agente × régimen) y rescata."
+    },
+    "MARA": {
+      "leverage_corr": -0.0595,
+      "crisis_mean": 0.00558,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.4146,
+      "M8_acierto_en_intervencion": 0.4848,
+      "agente_frac_corto": 0.987,
+      "acc": {
+        "M5": 0.5282,
+        "M8": 0.5282,
+        "M10": 0.5323,
+        "AutoML": 0.5444
+      },
+      "acc_M5_intervenido": 0.5152,
+      "canal_ganador": "ML (AutoML)",
+      "M8_ayuda": false,
+      "canal_regimen": false,
+      "mecanismo": "Leverage INVERTIDO (crisis_mean>0): el régimen no informa el signo → la regla M8 es ruido; el aprendiz (M10/AutoML) explota la condición (sesgo del agente × régimen) y rescata."
+    },
+    "UNG": {
+      "leverage_corr": 0.0409,
+      "crisis_mean": -0.00198,
+      "regimen_direccional": false,
+      "intervencion_M8": 0.0781,
+      "M8_acierto_en_intervencion": 0.4516,
+      "agente_frac_corto": 0.99,
+      "acc": {
+        "M5": 0.5101,
+        "M8": 0.502,
+        "M10": 0.5182,
+        "AutoML": 0.4818
+      },
+      "acc_M5_intervenido": 0.5484,
+      "canal_ganador": "ML (M10)",
+      "M8_ayuda": false,
+      "canal_regimen": false,
+      "mecanismo": "Canal RÉGIMEN: leverage estándar (crisis_mean<0, régimen direccional) → la regla M8 tiene un signo que explotar; acierta 45% al intervenir y rescata el RIESGO del agente. El ML puede afinar la accuracy, pero la regla ya disciplina el riesgo (decisión #18)."
+    }
+  }
+}

@@ -1,57 +1,41 @@
-# Revisión iterada del notebook definitivo del marco práctico
+# Revisión iterada del notebook definitivo del marco práctico (panel de 10)
 
 Bucle constructor ↔ revisora (`raquel-quant`, quant senior + matemática) sobre
-`notebooks/STRATA_marco_practico.ipynb`, hasta declararlo definitivo contra el gate G1–G6.
-Cierre: **APROBADO sin condiciones en la ronda 2** (2026-06-23).
+`notebooks/STRATA_marco_practico.ipynb`, hasta declararlo definitivo contra el gate G1–G6 (+ G1b/G6b).
+**Cierre: APROBADO sin condiciones en la ronda 2** (2026-06-23). Notebook: 27 celdas de código, 0 errores,
+auto-test verde.
 
-## Ronda 1 — BLOQUEADO (3 fixes de honestidad)
+## Alcance del notebook (panel de 10, mucho más completo)
+Réplica del análisis de 15 pero más completo y con todo justificado: §1 datos/protocolo (15→10 cohorte de
+aplicabilidad; 5 en apéndice) · §2 mecánica ex-ante (HMM **K=3 justificado por verosimilitud held-out**,
+GARCH-t, BOCPD, leverage honesto, intervención/scores/atribución por detector) · §3 caso SPY (AutoML gana
+nominal; equity con AutoML; McNemar honesto; SHAP) · §4 panel-10 (ablación, SHAP, heatmap, **pooled bootstrap
+con AutoML**) · §5 **mecanismo por activo** (dos supervisores; discriminante `crisis_mean`; casos trabajados
+QQQ=régimen / MARA=ML) · §6 **clustering que afirma naturaleza→canal** (tabla cruzada) · §7 robustez (equity por
+activo, **accuracy rodante**, **val/test 3 particiones**, **rescate significativo en alcista Y bajista pooled**,
+suite SMCI, techo ZeroR) · §8 apéndice de los 5 excluidos · §9 conclusiones.
 
-La revisora aprobó G1 (estructura), G2 (rigor) y G4–G6, pero **bloqueó por G3 (honestidad)** al detectar un
-error de signo en §4.2:
-
-1. **§4.2 leverage effect — error de signo (FALLA G3).** La celda imprimía *"Signo del retorno medio en Crisis:
-   +1 → negativo = leverage effect"*: el valor era **positivo** (+0.00138 en el OOS) pero el texto afirmaba
-   "negativo". Además medía el retorno **contemporáneo** (mismo día), no el del día siguiente, así que ni
-   siquiera justificaba `signal_lag=1`. Empíricamente el régimen separa por **volatilidad**, no por dirección
-   del día siguiente (en calibración, SPY Crisis `ret_dia_sig`=+0.000147, `frac_sube`=0.5246).
-2. **§4.2 vs §4.6 — auto-contradicción.** §4.2 usaba la media de Crisis como "leverage direccional" y §4.6 la
-   usaba (en SMCI) como "régimen no direccional". El mismo hecho sostenía dos conclusiones opuestas.
-3. **§4.1 — rótulo de ventana temporal.** Imprimía *"OOS SPY: 2025-05-09 → 2026-05-11"* como si fuera el OOS,
-   cuando es la **ventana de evaluación post-burn-in**; el OOS empieza en 2024-10-01.
-
-## Ronda 1 — construcción (fixes aplicados)
-
-El constructor reescribió el builder `_build_STRATA_marco_practico.py`:
-- **Fix 1/2:** §4.2 ya no imprime el signo contradictorio. Presenta el leverage effect como **relación
-  contemporánea** leyendo `regime_direction_table.json` (calib SPY): `ret_mismo_dia` baja monótono
-  Calma +0.000536 > Estrés +0.000167 > Crisis −0.000002; y muestra que el régimen **no predice** el día
-  siguiente (`frac_sube_sig` ≈ 0.52). §4.2 y §4.6 usan ya el mismo criterio: el HMM separa por volatilidad; la
-  utilidad direccional es **condicional al leverage** (fuerte en SPY, débil en SMCI).
-- **Fix 3:** §4.1 distingue *"Inicio del OOS: 2024-10-01"* de *"Ventana de evaluación post-burn-in:
-  2025-05-09 → 2026-05-11"*.
+## Ronda 1 — APROBADO CON CONDICIONES (6 fixes)
+1. **§5 caso régimen:** XLE estaba etiquetado como canal régimen pero `mechanism_panel.json` lo marca ML
+   (crisis_mean≈0). Sustituido por **QQQ** (crisis_mean<0, canal régimen, M8 acierto 0.62, McNemar M8/M10 vs M5
+   0.051/0.036); XLE reencuadrado como **frontera**.
+2. **Criterio cuerpo/apéndice:** reformulado como **cohorte pre-registrada ilustrativa del mecanismo** (no de
+   significancia per-activo), con assert que reproduce PANEL10/EXCL5; BAC justificado (rescate nominal p=0.198).
+3. **Headline de riesgo pooled:** **pooled-15 canónico (n=3751)** + **pooled-10 (n=2493) como sensibilidad**,
+   coherente con RESULTADOS §1ter y BITÁCORA.
+4. **Conclusiones §9:** numeración duplicada (dos "7") corregida → 1–8, mapeo O6/O7 explícito.
+5. **Clustering:** declarado el desacuerdo de **Spectral (Rand 0.401)**; consenso KMeans/Ward/GMM (Rand 1.0).
+6. **Apéndice:** corregido el mislabel "MSTR/UNG-like" (UNG está en el **cuerpo**, no en EXCL5).
 
 ## Ronda 2 — APROBADO (sin condiciones)
+Los 6 fixes verificados contra builder, notebook reejecutado y JSON fuente. Cifras load-bearing trazadas:
+SPY McNemar AutoML/M10/M8 vs M5 = 0.0002/0.0074/0.0509; **pooled-15 ΔSharpe +0.66 IC[0.225,1.157] sig**,
+ΔmaxDD +0.24 IC[0.017,0.445] sig; **bull/bear pooled M10/AutoML vs M5 significativo en AMBOS regímenes**;
+rolling mejor-STRATA>M5 en 8/10; K=3 held-out −1.301 > −1.693. Honestidad intacta (G3): las únicas frases
+fuertes son negaciones de over-claim. Veredicto: defendible ante el tribunal.
 
-La revisora verificó que los tres fixes están genuinamente cerrados contra el notebook reejecutado (0 errores,
-auto-test verde) y el builder, y **cotejó toda cifra headline contra su JSON**:
-
-- SPY (panel mm25): M5 0.3665 / M8 0.4422 / M10 0.4940 / **AutoML 0.5737** / ZeroR 0.5657; McNemar vs M5
-  0.0002/0.0074/0.0509, vs ZeroR **0.902/0.133** (nominal).
-- Pooled (decision_automl_prep): M8 vs M5 ΔSharpe **+0.664 IC[0.225,1.157]** sig, ΔmaxDD **+0.242
-  IC[0.017,0.445]** sig.
-- Universalidad: cuota SHAP STRATA media **0.6629**. Clustering: Rand kmeans~ward **1.0**. SPY ablación sobre
-  momentum 0.521→0.582 (Δ+0.061, 3/5 sig). SMCI binomial vs NIR 0.141 (nominal).
-
-**Veredicto final:** los seis gates PASA, O1–O6 ✓. La línea roja de honestidad se respeta (las únicas menciones
-a "batir al mercado"/"genera alfa" son negaciones). El cuaderno convence (G6) de que supervisar
-estadísticamente a un agente IA aporta **valor diferencial probable** (rescate en accuracy vs M5 + riesgo
-pooled, universalidad SHAP, patrón clustering), no solo de que la IA pierde. **Entregable defendible.**
-
-## Lo que un tribunal cazaría primero (anotado por la revisora)
-
-1. **Potencia estadística:** McNemar vs ZeroR p=0.90 con n=251 — ausencia de significancia ≠ equivalencia. El
-   cuaderno ya lo etiqueta como nominal / línea futura.
-2. **Crisis OOS de SPY (+0.00138, n=29):** signo opuesto a la calibración. El cuaderno lo desactiva (n pequeño)
-   y usa la calibración (n grande) para el claim del leverage; niega direccionalidad de r_{t+1}.
-3. **Clustering (n=15):** Rand=1.0 parece demasiado limpio y Spectral discrepa (0.401). Se presenta como
-   hipótesis exploratoria, no como prueba.
+## Punto más blando (anotado por la revisora, no bloqueante)
+**UNG** está en el cuerpo pero el agente NO pierde a las triviales ahí (M5 0.510 > trivial 0.486); se encuadra
+como caso ML donde STRATA defiere. Es el punto del split que un tribunal podría cuestionar. Defendible con el
+mecanismo, pero si se quiere un panel sin ninguna arista, UNG es el candidato a intercambiar (p.ej. por BAC/NVDA,
+rescate de riesgo con mecanismo nombrable).

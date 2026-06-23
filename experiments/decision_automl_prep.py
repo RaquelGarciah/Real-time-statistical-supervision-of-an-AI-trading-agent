@@ -48,6 +48,13 @@ BLOQUES = {"agente": AGENT15,
            "volatilidad": ["garch_sigma", "gso_score"],
            "psa": ["psa_score"]}
 OUT = Path("outputs/experiments/decision_automl_prep.json")
+# AutoML canónico (familia GBM): serie diaria reconstruida desde el panel mm25 (experiments/automl_net_returns.py),
+# idéntica a la corrida canónica (validada activo a activo). Permite incluir AutoML en el bootstrap de riesgo y
+# en las curvas de equity SIN re-ejecutar H2O. Su accuracy vive en el panel mm25 (aquí solo entra en riesgo).
+try:
+    _ANR = json.load(open("outputs/experiments/automl_net_returns.json"))["por_activo"]
+except Exception:  # noqa: BLE001
+    _ANR = {}
 
 
 def _sr(r: np.ndarray) -> float:
@@ -124,6 +131,15 @@ def run_ticker(tk: str) -> dict:
     cal = {k: round(_calmar(nr[k]), 3) for k in ARMS}
     eqf = {k: round(float(np.cumprod(1.0 + np.nan_to_num(nr[k]))[-1]), 4) for k in ARMS}
 
+    # AutoML: serie reconstruida alineada por fecha al mismo tramo desplegable (solo métricas de riesgo).
+    anr = _ANR.get(tk, {})
+    if "automl" in anr:
+        s_aut = pd.Series(anr["automl"], index=pd.to_datetime(anr["dates"]))
+        nr["automl"] = np.nan_to_num(s_aut.reindex(sub).to_numpy())
+        shp["automl"] = round(_sr(nr["automl"]), 3); mdd["automl"] = round(_maxdd(nr["automl"]), 4)
+        cal["automl"] = round(_calmar(nr["automl"]), 3)
+        eqf["automl"] = round(float(np.cumprod(1.0 + np.nan_to_num(nr["automl"]))[-1]), 4)
+
     # --- Ablación agente15 / strata7 / all22 (mismo WF ensemble) ---
     abl_acc, abl_shp = {}, {}
     for nm, cols in (("agente15", AGENT15), ("strata7", STRATA7), ("all22", ALL22)):
@@ -153,17 +169,19 @@ def run_ticker(tk: str) -> dict:
                 "cuota_strata": round(float(sum(shares[f] for f in STRATA7)), 4),
                 "top10": [(f, round(s, 4)) for f, s in top]}
 
-    # --- Bootstrap de riesgo: ΔSharpe y ΔmaxDD de M8/M10 vs M5/B&H/ZeroR ---
+    # --- Bootstrap de riesgo: ΔSharpe y ΔmaxDD de M8/M10/AutoML vs M5/B&H/ZeroR ---
+    sup_arms = SUP + (["automl"] if "automl" in nr else [])
     boot = {}
-    for s in SUP:
+    for s in sup_arms:
         for b in BASE:
             boot[f"{s}_vs_{b}"] = {"dSharpe": _boot_paired(nr[s], nr[b], _sr, config.SEED),
                                    "dMaxDD": _boot_paired(nr[s], nr[b], _maxdd, config.SEED)}
 
+    arms_out = ARMS + (["automl"] if "automl" in nr else [])
     return {"clase": _CLASE.get(tk, "?"), "n": int(len(sub)), "frac_up": round(frac_up, 4),
             "accuracy": acc, "sharpe": shp, "max_dd": mdd, "calmar": cal, "equity_final": eqf,
             "ablation": ablation, "shap": shap_out, "boot": boot,
-            "net_returns": {k: [round(float(x), 6) for x in np.nan_to_num(nr[k])] for k in ARMS}}
+            "net_returns": {k: [round(float(x), 6) for x in np.nan_to_num(nr[k])] for k in arms_out}}
 
 
 _CLASE = {"SPY": "índice", "QQQ": "índice", "DIA": "índice", "IWM": "índice", "XLE": "ETF sect.",
@@ -196,17 +214,21 @@ def main() -> None:
 
     # --- POOLED: bootstrap de riesgo sobre retornos netos concatenados de todos los activos ---
     ok = [t for t in PANEL if "error" not in res["por_activo"][t]]
-    pooled_nr = {k: np.concatenate([np.array(res["por_activo"][t]["net_returns"][k]) for t in ok]) for k in ARMS}
+    risk_arms = ARMS + (["automl"] if all("automl" in res["por_activo"][t]["net_returns"] for t in ok) else [])
+    pooled_nr = {k: np.concatenate([np.array(res["por_activo"][t]["net_returns"][k]) for t in ok]) for k in risk_arms}
     pooled_boot = {}
-    for s in SUP:
+    for s in SUP + (["automl"] if "automl" in risk_arms else []):
         for b in BASE:
             pooled_boot[f"{s}_vs_{b}"] = {"dSharpe": _boot_paired(pooled_nr[s], pooled_nr[b], _sr, config.SEED),
                                           "dMaxDD": _boot_paired(pooled_nr[s], pooled_nr[b], _maxdd, config.SEED)}
     res["pooled"] = {"n_total": int(len(pooled_nr["m5"])), "n_activos": len(ok), "boot": pooled_boot}
 
-    # medias de panel (sin retornos crudos)
-    res["medias"] = {m: {k: round(float(np.mean([res["por_activo"][t][m][k] for t in ok])), 4)
-                         for k in ARMS} for m in ("accuracy", "sharpe", "max_dd", "calmar")}
+    # medias de panel (sin retornos crudos). accuracy solo para los 5 deterministas; riesgo incluye AutoML.
+    def _media(metric: str, arms: list) -> dict:
+        return {k: round(float(np.mean([res["por_activo"][t][metric][k] for t in ok if k in res["por_activo"][t][metric]])), 4)
+                for k in arms}
+    res["medias"] = {"accuracy": _media("accuracy", ARMS), "sharpe": _media("sharpe", risk_arms),
+                     "max_dd": _media("max_dd", risk_arms), "calmar": _media("calmar", risk_arms)}
     res["medias"]["d_acc_strata"] = round(float(np.mean([res["por_activo"][t]["ablation"]["d_acc_strata"] for t in ok])), 4)
     res["medias"]["cuota_strata_shap"] = round(float(np.mean([res["por_activo"][t]["shap"]["cuota_strata"] for t in ok])), 4)
 

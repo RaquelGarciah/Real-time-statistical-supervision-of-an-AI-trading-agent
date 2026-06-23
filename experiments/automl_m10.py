@@ -231,6 +231,11 @@ def run_ticker(ticker: str, max_models: int) -> dict:
     full_oos = {"n": len(mv), "test_span": [str(idxf.min().date()), str(idxf.max().date())],
                 "table": table_f, "tests": tests_f}
 
+    # Serie diaria de retornos netos por brazo (incl. AutoML) → equity y bootstrap de riesgo en el notebook.
+    def _jsafe(a) -> list:
+        return [None if (x is None or (isinstance(x, float) and np.isnan(x))) else round(float(x), 6) for x in a]
+    net_returns = {"dates": [str(d.date()) for d in td], **{k: _jsafe(net_arm(pos[k])) for k in pos}}
+
     dS = _paired_boot_dsharpe(net_arm(pos["automl"]), net_arm(pos["m5"]))
     acc = {k: table[k]["accuracy"] for k in table}
     fams = sorted({l["family"] for l in leaders})
@@ -248,6 +253,7 @@ def run_ticker(ticker: str, max_models: int) -> dict:
         "table": table, "tests": tests, "mcnemar_matrix": mcnemar_matrix,
         "full_oos_no_learners": full_oos,
         "correct_by_arm": correct_by_arm, "delta_sharpe_automl_vs_m5": dS,
+        "net_returns": net_returns,
         "familias_ganadoras": fams, "leaders_por_reentreno": leaders, "verdict": verdict,
     }
 

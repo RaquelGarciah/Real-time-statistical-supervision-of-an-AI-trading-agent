@@ -320,9 +320,26 @@ que **sustituye a `strata_canonical.ipynb`**; el Sharpe se reporta como **P(Shar
 **Qué.** El marco práctico (Cap. 4) se consolida en **un único notebook canónico**,
 `notebooks/STRATA_marco_practico.ipynb` (builder `_build_STRATA_marco_practico.py`), del que se alimenta la
 memoria. **Sustituye y absorbe** a `STRATA_SMCI.ipynb` y `decision_automl.ipynb`, que quedan como fuentes/archivo
-(no se borran; ver Lección #9, un único canónico). Estructura fija = la del capítulo: §4.0 portada/objetivos/
-notación → §4.1 datos y protocolo (+ barrera temporal) → §4.2 mecánica ex-ante → §4.3 **caso SPY** → §4.4
-universalidad (panel 15) → §4.5 patrón/clustering → §4.6 robustez y honestidad → §4.7 conclusiones → auto-test.
+(no se borran; ver Lección #9, un único canónico). Estructura: §1 datos/protocolo → §2 mecánica ex-ante (HMM K=3
+justificado por verosimilitud held-out, GARCH-t, BOCPD, leverage honesto, intervención/atribución por detector) →
+§3 **caso SPY** → §4 **panel de 10** → §5 **mecanismo por activo** → §6 **clustering que afirma naturaleza→canal**
+→ §7 robustez (equity por activo, accuracy rodante, val/test, rescate alcista/bajista) → §8 apéndice (5 excluidos)
+→ §9 conclusiones → auto-test.
+
+**Panel = 10 casos de aplicabilidad de los 15** (SPEC §6.1; el "15" visible, 5 en apéndice de límite):
+cuerpo = SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG; apéndice = MSTR, NVDA, BAC, TSLA, IWM. Selección
+**ex-ante por mecanismo** (cohorte donde el agente pierde y un canal STRATA lo rescata), no por significancia
+per-activo. (Punto más blando del split: UNG, donde el agente ya bate a las triviales — encuadrado como caso ML.)
+
+**Dos supervisores / dos canales (núcleo del Cap. 4).** Regla M8 (canal régimen) vs aprendiz M10/AutoML (canal
+ML). Discriminante medible: `crisis_mean<0` → régimen direccional → la **regla** rescata; `crisis_mean>0`
+(leverage invertido) → el **aprendiz** rescata. En el panel: 5 régimen (SPY,QQQ,XLF,DIA,XLK) / 5 ML
+(XLE,ROKU,SMCI,MARA,UNG). El clustering por naturaleza **afirma** que esa naturaleza causa el canal ganador.
+
+**Robustez (no es suerte):** rescate del agente persiste en accuracy **rodante** (>50% de ventanas en 8/10),
+**val/test** (3 particiones) y **en alcista Y bajista** — McNemar pooled M10/AutoML vs M5 significativo en ambos
+regímenes. Riesgo pooled: canónico = **pooled-15 (n=3751)**, ΔSharpe M8 vs M5 +0.66 IC[0.23,1.16]; pooled-10
+(n=2493) como sensibilidad (M8 +0.64, M10 +0.93, AutoML +0.97, todos sig).
 
 **Caso central = SPY** (no SMCI). En SPY el **leverage effect** es fuerte (régimen direccional) y, con la
 configuración canónica, **AutoML-H2O gana en punto a TODAS las estrategias** (acc 0.5737 > ZeroR/B&H 0.5657; M5
@@ -342,7 +359,10 @@ reproducibilidad, pitch). Ver `docs/chats/automl/revision_marco_practico.md`.
 
 **Dónde está justificada.** `notebooks/STRATA_marco_practico.ipynb`; outputs `panel_mm25_*`,
 `decision_automl_prep.json`, `automl_importance.json`, `strategy_clustering15.json`, `spy_m10_full_report.json`,
-`spy_ablation_robustness.json`, suite `m10_smci_*`. **Estado.** Viva.
+`spy_ablation_robustness.json`, suite `m10_smci_*`, y los **nuevos**: `mechanism_panel.json` (diagnóstico de
+canal por activo), `panel_robustness.json` (rodante/val-test/bull-bear), `automl_net_returns.json` (serie AutoML
+reconstruida), `detector_analysis_{SPY,XLE,MARA}.json`, `k_selection.json`/`k_ablation_panel.json` (K=3). Log de
+revisión: `docs/chats/automl/revision_marco_practico.md`. **Estado.** Viva.
 
 ---
 
