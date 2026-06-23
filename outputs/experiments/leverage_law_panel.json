@@ -1,0 +1,98 @@
+{
+ "meta": {
+  "n_activos": 15,
+  "panel": [
+   "SPY",
+   "QQQ",
+   "DIA",
+   "IWM",
+   "XLE",
+   "XLF",
+   "XLK",
+   "NVDA",
+   "BAC",
+   "TSLA",
+   "MSTR",
+   "SMCI",
+   "ROKU",
+   "MARA",
+   "UNG"
+  ],
+  "metrica": "Pearson/Spearman entre leverage_corr y Δaccuracy del mejor aprendiz (max(M10,AutoML)-M5); leave-one-out; PC1 de la naturaleza vs leverage",
+  "fuente": "mechanism_panel.json + strategy_clustering15.json",
+  "nota": "exploratorio, n=15"
+ },
+ "ley_leverage": {
+  "pearson_r": -0.5489,
+  "pearson_p": 0.0341,
+  "spearman_rho": -0.5393,
+  "spearman_p": 0.038,
+  "loo_p_max": 0.0947
+ },
+ "pc1_leverage": {
+  "pearson_r": 0.8396,
+  "pearson_p": 9e-05
+ },
+ "por_activo": {
+  "SPY": {
+   "leverage_corr": -0.1099,
+   "dacc_aprendiz": 0.2072
+  },
+  "QQQ": {
+   "leverage_corr": -0.0921,
+   "dacc_aprendiz": 0.1156
+  },
+  "DIA": {
+   "leverage_corr": -0.1117,
+   "dacc_aprendiz": 0.08
+  },
+  "IWM": {
+   "leverage_corr": -0.1022,
+   "dacc_aprendiz": 0.0319
+  },
+  "XLE": {
+   "leverage_corr": -0.0891,
+   "dacc_aprendiz": 0.0847
+  },
+  "XLF": {
+   "leverage_corr": -0.0909,
+   "dacc_aprendiz": 0.0972
+  },
+  "XLK": {
+   "leverage_corr": -0.0863,
+   "dacc_aprendiz": 0.0796
+  },
+  "NVDA": {
+   "leverage_corr": 0.0015,
+   "dacc_aprendiz": 0.0502
+  },
+  "BAC": {
+   "leverage_corr": -0.0662,
+   "dacc_aprendiz": 0.0366
+  },
+  "TSLA": {
+   "leverage_corr": -0.0212,
+   "dacc_aprendiz": 0.0478
+  },
+  "MSTR": {
+   "leverage_corr": 0.0172,
+   "dacc_aprendiz": -0.0199
+  },
+  "SMCI": {
+   "leverage_corr": -0.0042,
+   "dacc_aprendiz": 0.068
+  },
+  "ROKU": {
+   "leverage_corr": 0.0028,
+   "dacc_aprendiz": 0.1
+  },
+  "MARA": {
+   "leverage_corr": -0.0595,
+   "dacc_aprendiz": 0.0162
+  },
+  "UNG": {
+   "leverage_corr": 0.0409,
+   "dacc_aprendiz": 0.0081
+  }
+ }
+}
