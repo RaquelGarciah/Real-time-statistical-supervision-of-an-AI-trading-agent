@@ -48,6 +48,16 @@ Tras la crítica de Raquel ("regla vs aprendiz poco concluyente"), se **midió**
 Ronda 1 (2 fixes): (1) ningún p-valor hardcodeado en prosa (BAC se lee del JSON, "p>0.14" derivado); (2) la ley
 con su leave-one-out + assert. Ronda 2: APROBADO sin condiciones (29 celdas, 0 errores, auto-test verde).
 
+## Ronda de enriquecimiento (variantes intervención + 7 gráficas) — APROBADO a la 1ª (2026-06-23)
+Añadido y aprobado sin condiciones (41 celdas, 0 errores, 17 asserts del auto-test ALL PASS, cada cifra
+verificada contra JSON): §3 variantes de intervención (override eq 0.94 vs abstención 0.81 vs reduce vs agente
+0.70 → el valor es voltear, no apagar) + sensibilidad a RAM τ y p1* (plana, sin grado de libertad oculto);
+§4 intro naturaleza por activo + rescate mejor-STRATA vs agente; §2 contingencia régimen×dirección;
+§3 confusión M10 vs M5 por régimen + SHAP dependency; §4 cuota SHAP rodante (0.63–0.82, no deriva);
+§5 timeline M8↔M10 + rescate estratificado índices/acciones (estratos pre-registrados); §7 calibración M10.
+**Gap futuro no bloqueante (de la revisora):** argumentar por qué se conservan PSA/GSO pese a su inactividad
+empírica en este OOS (RAM dispara 30%, PSA 0.5%, GSO 0%).
+
 ## Punto más blando (anotado por la revisora, no bloqueante)
 **UNG** está en el cuerpo pero el agente NO pierde a las triviales ahí (M5 0.510 > trivial 0.486); se encuadra
 como caso ML donde STRATA defiere. Es el punto del split que un tribunal podría cuestionar. Defendible con el
