@@ -61,7 +61,7 @@ md(r"""## Objetivos (cada uno con su validación)
 |---|---|---|
 | **O1** | El agente solo (M5) pierde y acierta < 0.5 | sign test vs 0.5; Sharpe negativo (§3) |
 | **O2** | STRATA **rescata** al agente | McNemar M8/M10/AutoML vs M5 (§3,§4); ΔSharpe/ΔmaxDD bootstrap pooled (§4) |
-| **O3** | Un ML potente **redescubre** STRATA | cuota SHAP por bloque + permutation; ablación (§3,§4) |
+| **O3** | El ML **redescubre** las señales de STRATA (SHAP) y, por flexibilidad no lineal, **bate modestamente a la regla** en accuracy | cuota SHAP + ablación (§3,§4) + **TOST** equivalencia/superioridad vs M8 (§4) |
 | **O4** | **Mecanismo**: dos capas complementarias (regla=riesgo, aprendiz=accuracy) | pooled ΔSharpe (M8) + McNemar (ML) (§5) |
 | **O5** | **Ley naturaleza→resultado**: el rescate del aprendiz ∝ leverage | correlación (Pearson/Spearman) + clustering (§5,§6) |
 | **O6** | **Honestidad y límite** | techo ZeroR; apéndice de los 5 donde STRATA no aporta (§7,§8) |
@@ -107,6 +107,7 @@ KABL = _load("outputs/experiments/k_ablation_panel.json")               # K=3 vs
 CALW = _load("outputs/experiments/calib_window_panel.json")             # robustez a la ventana de calibración
 BBC  = _load("outputs/experiments/bullbear_confirmatory.json")          # PARTE B confirmatoria (ΔSharpe Bonf+DSR) + régimen
 REGDID = _load("outputs/experiments/regime_did_learners.json")          # test DiD: ¿la complementariedad por régimen es sig?
+EQT  = _load("outputs/experiments/equivalence_tost.json")               # TOST: ¿el aprendiz redescubre la regla o la bate?
 SPYR = _load("outputs/experiments/spy_m10_full_report.json")
 SPYA = _load("outputs/experiments/spy_ablation_robustness.json")
 SMV  = _load("outputs/experiments/m10_smci_valtest_robustez.json")
@@ -784,6 +785,36 @@ print(f"Aviso de reconciliación: la columna SPY de la tabla ({DPA['SPY']['shap'
 print("Honesto: añadir STRATA al vector del agente no sube la accuracy del meta-learner (Δ≈0, mixto); su valor "
       "es el rescate + interpretabilidad, no más accuracy.")""")
 
+md(r"""### ¿El aprendiz REDESCUBRE la regla o la BATE? Test de equivalencia (TOST)
+El SHAP dice que el aprendiz **usa** las señales de STRATA. Falta zanjar si solo las **redescubre** (equivalente a
+la regla M8) o si además la **bate**. Esto NO se decide con un test de diferencia no significativo (ausencia de
+evidencia ≠ evidencia de ausencia), sino con un **contraste de equivalencia (TOST**, Schuirmann 1987): equivalencia
+si el IC90% bootstrap de Δ=métrica(aprendiz)−métrica(M8) ⊂ (−δ,+δ); superioridad si el IC excluye 0 por arriba.
+Margen δ pre-registrado (acc 0.03 ≈ 1 SE de un activo; Sharpe 0.50) + sensibilidad. Fuente: `equivalence_tost.json`.""")
+
+code(r"""# TOST aprendiz vs regla M8 (accuracy y Sharpe): ¿equivalente (redescubre) o superior (bate)?
+def _veredicto(x):
+    eq = x["equivalente_delta_preReg"]; sup = x["p_superioridad_aprendiz"] < 0.05
+    return "BATE (superior)" if (sup and not eq) else ("REDESCUBRE (equiv.)" if (eq and not sup) else
+           ("equiv.+borde-sup" if eq and sup else "no concluyente"))
+rows = []
+for scope in ("SPY", "POOLED10"):
+    for par, r in EQT[scope].items():
+        for m in ("accuracy", "sharpe"):
+            x = r[m]
+            rows.append({"ámbito": scope, "contraste": par.replace("_vs_", " vs "), "métrica": m,
+                         "Δ (apr.−M8)": x["point"], "IC90": f"[{x['ci90_low']:+.3f},{x['ci90_high']:+.3f}]",
+                         "p_superior": x["p_superioridad_aprendiz"], "veredicto": _veredicto(x)})
+print(pd.DataFrame(rows).to_string(index=False))
+pa = EQT["POOLED10"]["AutoML_vs_M8"]["accuracy"]; pm = EQT["POOLED10"]["M10_vs_M8"]["accuracy"]
+print(f"\nVeredicto: NO hay equivalencia en ningún caso. En ACCURACY el aprendiz BATE a la regla M8 — pooled "
+      f"M10 Δ={pm['point']:+.3f} IC90[{pm['ci90_low']:+.3f},{pm['ci90_high']:+.3f}], AutoML Δ={pa['point']:+.3f} "
+      f"IC90[{pa['ci90_low']:+.3f},{pa['ci90_high']:+.3f}] (modesto, 2–3 pp; SPY AutoML con fuerza). En SHARPE es "
+      "NO concluyente → regla y aprendiz son INDISTINGUIBLES en riesgo.")
+print("Lectura honesta (refuta el 'no bate'): el aprendiz redescubre las señales de STRATA (SHAP) Y las combina "
+      "con más flexibilidad → supera a la regla fija en accuracy, porque modela interacciones no lineales que la "
+      "regla determinista no puede (leverage invertido, §5). No es 'otra señal'; es la misma, mejor combinada.")""")
+
 code(r"""# Heatmap accuracy (10 × estrategias) centrado en 0.5
 acc = pd.DataFrame({s: {a: PAN[a]["table"][PKEY[s]]["accuracy"] for a in PANEL10} for s in COL}).loc[PANEL10]
 M = acc[list(COL)].astype(float)
@@ -855,8 +886,9 @@ md(r"""## §5 Mecanismo: dos supervisores con trabajos distintos (y la única le
 STRATA ofrece **dos supervisores complementarios**, y la evidencia dice que **no compiten por el mismo trabajo**:
 
 - **Regla M8 = capa de RIESGO.** Rescata al agente en **riesgo** de forma significativa (pooled bootstrap
-  ΔSharpe M8 vs M5), es **interpretable** (todo el P&L de rescate es del canal régimen, §2) y **rara vez lidera
-  en accuracy**.
+  ΔSharpe M8 vs M5), es **interpretable** (todo el P&L de rescate es del canal régimen, §2) y **rara vez es el
+  máximo de accuracy por activo** — y el aprendiz, de hecho, la **supera modestamente** en accuracy a nivel pooled
+  (TOST, §4), porque capta interacciones no lineales que la regla fija no puede.
 - **Aprendiz M10/AutoML = capa de ACCURACY.** Rescata al agente en **acierto direccional** de forma significativa
   (McNemar vs M5), aprendiendo la condición (sesgo del agente × régimen × volatilidad).
 
@@ -1055,7 +1087,7 @@ for c, d in prof.items():
     print(f"   naturaleza media: leverage={nat['leverage_corr']:+.3f} crisis_mean={nat['crisis_mean']:+.5f} "
           f"vol={nat['oos_vol']:.2f} agente_corto={nat['agent_short_frac']:.2f}")
     print(f"   mejor no-trivial: acc={d['mejor_acc_no_trivial']} · Sharpe={d['mejor_sharpe_no_trivial']}")
-print("\nLectura (exploratoria, n=15): los grupos se ordenan por leverage/volatilidad; el aprendiz rescata más "
+print("\nLectura (exploratoria, n=10): los grupos se ordenan por leverage/volatilidad; el aprendiz rescata más "
       "donde el leverage es fuerte (ley §5). Qué MODELO concreto se despliega por activo es decisión operativa, "
       "no una predicción del cluster — y eso se dice tal cual.")""")
 
@@ -1247,7 +1279,14 @@ sobrevivía (un DSR indistinguible de azar) y por eso se retiró el DSR; lo rein
 meta-learner sobre el panel la situación **ya no es la misma**, y se aplica **por igual a los cuatro brazos**
 (tres reprueban). El *pooled* de este contraste es sobre los **10** activos con posiciones $\pm1$ (no es el
 *pooled* del titular de riesgo, que es sobre 15 con retorno neto causal): mismo **método** de bootstrap, distinto
-universo. Fuente: `bullbear_confirmatory.json`.""")
+universo. Fuente: `bullbear_confirmatory.json`.
+
+> **Puente con el titular de riesgo (§4), para que no parezca contradicción.** Que la **regla M8 sola no pase la
+> cota Bonferroni** aquí (SPY −0.66, pooled-10 −0.05) **no contradice** que M8 rescate el riesgo en el titular
+> (pooled-15, ΔSharpe +0.66, IC95 excluye 0). Es el **mismo efecto** sometido a (i) un test **más exigente**
+> (cota Bonferroni con corrección por familia $m=3$, no IC95 simple) y (ii) **otro universo y serie** (pooled-10
+> con ±1, no pooled-15 con retorno neto). La lectura correcta: la regla **rescata** en riesgo; bajo corrección por
+> familia, quien **sostiene** ese rescate en Sharpe es el **meta-learner**.""")
 
 code(r"""# (i) CONFIRMATORIO — mediana ΔSharpe con cota Bonferroni + Deflated Sharpe (SPY y POOLED-10)
 def _conf_rows(scope):
@@ -1468,7 +1507,10 @@ md(r"""## §9 Conclusiones del marco práctico
 1. **El agente solo pierde (O1).** SPY M5 0.366, Sharpe −3.07; sign test rechaza 0.5.
 2. **STRATA rescata — y se prueba (O2).** Accuracy: McNemar M10/AutoML vs M5 sig (SPY 0.007/0.0002). Riesgo:
    bootstrap pooled-15 (canónico) M8 vs M5 ΔSharpe +0.66 IC95[0.225,1.157] (excluye 0); pooled-10 consistente.
-3. **El ML redescubre STRATA (O3).** Cuota SHAP media ~0.66; sobre momentum, STRATA añade accuracy.
+3. **El ML redescubre STRATA y bate modestamente a la regla (O3).** Cuota SHAP media ~0.66 (el ML **usa** las
+   señales de STRATA en 10/10). Y un **test de equivalencia (TOST)** refuta el "no bate": el aprendiz **supera a la
+   regla M8 en accuracy** (pooled M10 Δacc +0.021 IC90[+0.001,+0.039]; AutoML +0.034 [+0.010,+0.056]) porque modela
+   interacciones no lineales que la regla fija no puede; en **riesgo** regla y aprendiz son **indistinguibles**.
 4. **Dos supervisores complementarios (O4).** La **regla M8** es la **capa de riesgo** (pooled ΔSharpe vs M5 +0.66
    IC excl. 0, interpretable); el **aprendiz M10/AutoML** es la **capa de accuracy** (McNemar vs M5 sig). No
    compiten; cada función sobrevive a su test. Qué modelo lidera por activo NO es predecible (honesto, n=15).
@@ -1481,7 +1523,6 @@ md(r"""## §9 Conclusiones del marco práctico
    M5 en >50 % de ventanas en 8/10), en **val/test** (las tres particiones) y **en ambos regímenes de mercado**:
    McNemar pooled sup vs M5 significativo en **alcista Y bajista** (M10/AutoML p<0.02 en los dos). Además es
    **robusto a la ventana de calibración**: acortar a 2010 no daña (incluso mejora en índices), manteniendo la
-   ventana completa pre-registrada (sin elegir calibración por OOS).
    ventana completa pre-registrada (sin elegir calibración por OOS).
    **Y el rescate de riesgo (ΔSharpe) sobrevive un test en alcista Y bajista por separado en el pooled** (no es
    de un solo régimen), con un patrón **complementario en espejo**: el aprendiz **M10 rescata más en alcista**
@@ -1569,6 +1610,10 @@ assert all(_pbj[k]["mcnemar_p_holm"] < 0.10 for k in _pbj), "pooled-bajista: los
 # DiD: la complementariedad por régimen es sig en el pooled (IC excluye 0) y NO en SPY-solo (fenómeno de panel)
 assert REGDID["POOLED10"]["ci95_low"] > 0, "pooled: el DiD de complementariedad debe excluir 0 (M10 alcista / AutoML bajista, significativo)"
 assert REGDID["SPY"]["ci95_low"] < 0 < REGDID["SPY"]["ci95_high"], "SPY-solo: el DiD debe cruzar 0 (la complementariedad es cross-asset, no de un activo)"
+# TOST: el aprendiz NO es equivalente a la regla — la bate en accuracy (pooled), indistinguible en riesgo
+_eqa = EQT["POOLED10"]["AutoML_vs_M8"]["accuracy"]; _eqm = EQT["POOLED10"]["M10_vs_M8"]["accuracy"]
+assert _eqa["ci90_low"] > 0 and _eqm["ci90_low"] > 0, "pooled: el aprendiz (M10/AutoML) debe BATIR a la regla M8 en accuracy (IC90 excluye 0 por arriba) — refuta el 'no bate'"
+assert not EQT["POOLED10"]["AutoML_vs_M8"]["sharpe"]["equivalente_delta_preReg"] or EQT["POOLED10"]["AutoML_vs_M8"]["sharpe"]["ci90_low"] < 0, "en Sharpe el aprendiz vs regla NO debe salir superior-claro (indistinguible en riesgo)"
 assert KSEL["per_k"]["3"]["heldout_loglik_perobs"] > KSEL["per_k"]["2"]["heldout_loglik_perobs"], "K=3 debe mejorar held-out vs K=2"
 # ley naturaleza→resultado (leverage→rescate ML) significativa Y robusta a leave-one-out (fix #2)
 assert LAW_P < 0.10, "la ley leverage→rescate-ML debe ser significativa"

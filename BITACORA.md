@@ -2314,7 +2314,13 @@ si REDESCUBRE, se confirma. Margen sensibilidad = blindaje anti-cherry-picking.
 × {accuracy, sharpe}: punto, IC90, equivalencia(δ)+sensibilidad, p_superioridad.
 
 **Resultado (2026-06-23).** **El TOST NO confirma equivalencia en ningún caso; al contrario, el aprendiz BATE a la
-regla M8 en accuracy.** Pooled: M10 vs M8 Δacc=+0.021 IC90[+0.001,+0.039] y AutoML vs M8 Δacc=+0.034
+regla M8 en accuracy.** **[Propagado al notebook 2026-06-23]** Una auditoría de coherencia (harvard-professor)
+detectó que el resultado del TOST llegó al dossier pero NO al notebook (O3/§5/§9 aún decían "redescubre/no bate").
+Se corrigió: el builder carga `equivalence_tost.json`, hay celda del cuadro 2×2 en §4, y O3+§5+§9.3 se reformularon
+a la jerarquía honesta. También se arregló un "n=15"→"n=10" en la lectura del clustering (que ya es sobre 10) y una
+línea duplicada en §9. Notebook 89 celdas, 0 errores, AUTO-TEST OK. Conclusiones extraídas a
+`conclusiones_notebook_central.md`. Cifras SPY, reconciliación SHAP y universo 10/15 validados sin más
+incoherencias. Pooled: M10 vs M8 Δacc=+0.021 IC90[+0.001,+0.039] y AutoML vs M8 Δacc=+0.034
 IC90[+0.010,+0.056] → ambos superiores (efecto modesto, 2–3 pp). SPY: AutoML vs M8 superior en accuracy
 (Δ=+0.132) y Sharpe (Δ=+4.25); M10 vs M8 no concluyente. En **Sharpe el pooled es no concluyente** (IC cruza 0):
 regla y aprendiz son **indistinguibles en riesgo**. **Implicación (refina la universalidad, no la rompe):** la
