@@ -44,7 +44,7 @@ El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathr
 
 Los tres detectores miran ejes ortogonales de la decisión del agente. RAM lee el régimen y comprueba si la dirección de la apuesta concuerda con el estado vigente: su \emph{score} es la probabilidad que el HMM pone en que el agente apuesta contra el régimen, y dispara cuando $\mathrm{RAM}_t \ge \tau = 0{,}50$. PSA vigila con BOCPD si el agente cambia de criterio de forma estructural (Adams y MacKay 2007 \cite{adams2007}). GSO contrasta el tamaño de la posición con la volatilidad del GARCH (Bollerslev 1986 \cite{bollerslev1986}). Cuando RAM dispara, la intervención reorienta la posición al signo del régimen, fijado por un prior calibrado por activo a partir de la media del retorno de cada estado, nunca por una regla del tipo ``Crisis implica corto'' escrita a mano.
 
-Sobre SPY actúa una sola supervisión (Tabla~\ref{tab:mp-detectores}). RAM dispara el $30{,}2\,\%$ de los días: de las ciento veintiuna intervenciones, setenta y una aciertan y cincuenta fallan. PSA dispara dos días y GSO ninguno. El motivo es que el agente mantiene una posición casi constante sobre SPY, corta la mayor parte de los días, de modo que sus \emph{scores} de cambio y de tamaño quedan por debajo de los umbrales de calibración. PSA y GSO son detectores inertes como reglas sobre este activo, un hallazgo que registramos. La atribución de P\&L cierra la lectura: el rescate acumulado, $+0{,}312$, sale entero de los días en que RAM dispara, y PSA y GSO aportan exactamente cero.
+Sobre SPY actúa una sola supervisión (Tabla~\ref{tab:mp-detectores}). RAM dispara el $30{,}2\%$ de los días: de las ciento veintiuna intervenciones, setenta y una aciertan y cincuenta fallan. PSA dispara dos días y GSO ninguno. El motivo es que el agente mantiene una posición casi constante sobre SPY, corta la mayor parte de los días, de modo que sus \emph{scores} de cambio y de tamaño quedan por debajo de los umbrales de calibración. PSA y GSO son detectores inertes como reglas sobre este activo, un hallazgo que registramos. La atribución de P\&L cierra la lectura: el rescate acumulado, $+0{,}312$, sale entero de los días en que RAM dispara, y PSA y GSO aportan exactamente cero.
 
 \begin{table}[htbp]
 \centering
@@ -54,9 +54,9 @@ Sobre SPY actúa una sola supervisión (Tabla~\ref{tab:mp-detectores}). RAM disp
 \toprule
 Detector & Tasa de disparo & Acierto M8 & Acierto M5 & P\&L de rescate \\
 \midrule
-\textbf{RAM} (régimen) & $\mathbf{30{,}2\,\%}$ & $\mathbf{0{,}587}$ & $0{,}413$ & $\mathbf{+0{,}312}$ \\
-PSA (cambio estructural) & $0{,}5\,\%$ & --- & --- & $0{,}000$ \\
-GSO (volatilidad) & $0{,}0\,\%$ & --- & --- & $0{,}000$ \\
+\textbf{RAM} (régimen) & $\mathbf{30{,}2\%}$ & $\mathbf{0{,}587}$ & $0{,}413$ & $\mathbf{+0{,}312}$ \\
+PSA (cambio estructural) & $0{,}5\%$ & --- & --- & $0{,}000$ \\
+GSO (volatilidad) & $0{,}0\%$ & --- & --- & $0{,}000$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -70,7 +70,7 @@ Que RAM acierte al intervenir no es casualidad, y la Figura~\ref{fig:mp-scores-d
 \label{fig:mp-scores-detectores}
 \end{figure}
 
-La intervención puede ejecutarse de tres maneras, y la elección no es cosmética. Puede abstenerse los días dudosos cerrando la posición, reducir el tamaño a la mitad, o reorientar la dirección al signo del régimen, el modo que llamamos \emph{override}. La Tabla~\ref{tab:mp-variantes} compara los tres sobre los días en mercado ($n = 232$). El \emph{override}, que adoptamos como modo canónico, acierta el $47{,}8\,\%$ de las direcciones; abstenerse acierta el $40{,}1\,\%$ y reducir el $39{,}7\,\%$, indistinguible del agente sin tocar. El Sharpe y la máxima caída acompañan al acierto: el \emph{override} deja $-0{,}46$ de Sharpe frente a $-2{,}10$ de abstenerse y $-2{,}75$ de reducir. El valor está en corregir activamente la dirección cuando choca con el régimen, no en limitarse a evitar el riesgo.
+La intervención puede ejecutarse de tres maneras, y la elección no es cosmética. Puede abstenerse los días dudosos cerrando la posición, reducir el tamaño a la mitad, o reorientar la dirección al signo del régimen, el modo que llamamos \emph{override}. La Tabla~\ref{tab:mp-variantes} compara los tres sobre los días en mercado ($n = 232$). El \emph{override}, que adoptamos como modo canónico, acierta el $47{,}8\%$ de las direcciones; abstenerse acierta el $40{,}1\%$ y reducir el $39{,}7\%$, indistinguible del agente sin tocar. El Sharpe y la máxima caída acompañan al acierto: el \emph{override} deja $-0{,}46$ de Sharpe frente a $-2{,}10$ de abstenerse y $-2{,}75$ de reducir. El valor está en corregir activamente la dirección cuando choca con el régimen, no en limitarse a evitar el riesgo.
 
 \begin{table}[htbp]
 \centering
@@ -110,28 +110,28 @@ Sobre el agente comparamos seis estrategias. M5 es el agente sin supervisar. M8 
 \toprule
 Estrategia & Accuracy & Sharpe & Máx.\ caída & Calmar & Capital \\
 \midrule
-\textbf{AutoML} (búsqueda H2O) & $\mathbf{0{,}574}$ & $\mathbf{+2{,}68}$ & $\mathbf{-5{,}5\,\%}$ & $\mathbf{6{,}93}$ & $\mathbf{1{,}38\times}$ \\
-ZeroR (clase mayoritaria) & $0{,}566$ & $+2{,}21$ & $-9{,}8\,\%$ & $3{,}10$ & $1{,}30\times$ \\
-B\&H (comprar y mantener) & $0{,}566$ & $+2{,}21$ & $-9{,}8\,\%$ & $3{,}10$ & $1{,}30\times$ \\
-M10 (meta-learner XGBoost) & $0{,}494$ & $-0{,}60$ & $-16{,}1\,\%$ & $-0{,}50$ & $0{,}92\times$ \\
-M8 (regla STRATA) & $0{,}442$ & $-0{,}46$ & $-15{,}2\,\%$ & $-0{,}39$ & $0{,}94\times$ \\
-M5 (agente solo) & $0{,}366$ & $-3{,}07$ & $-30{,}2\,\%$ & $-1{,}00$ & $0{,}70\times$ \\
+\textbf{AutoML} (búsqueda H2O) & $\mathbf{0{,}574}$ & $\mathbf{+2{,}68}$ & $\mathbf{-5{,}5\%}$ & $\mathbf{6{,}93}$ & $\mathbf{1{,}38\times}$ \\
+ZeroR (clase mayoritaria) & $0{,}566$ & $+2{,}21$ & $-9{,}8\%$ & $3{,}10$ & $1{,}30\times$ \\
+B\&H (comprar y mantener) & $0{,}566$ & $+2{,}21$ & $-9{,}8\%$ & $3{,}10$ & $1{,}30\times$ \\
+M10 (meta-learner XGBoost) & $0{,}494$ & $-0{,}60$ & $-16{,}1\%$ & $-0{,}50$ & $0{,}92\times$ \\
+M8 (regla STRATA) & $0{,}442$ & $-0{,}46$ & $-15{,}2\%$ & $-0{,}39$ & $0{,}94\times$ \\
+M5 (agente solo) & $0{,}366$ & $-3{,}07$ & $-30{,}2\%$ & $-1{,}00$ & $0{,}70\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Leída de abajo arriba, cada capa rescata al agente. M8 sube la accuracy de $0{,}366$ a $0{,}442$ y recorta la máxima caída del $30{,}2\,\%$ al $15{,}2\,\%$. M10 llega a $0{,}494$. AutoML alcanza $0{,}574$ y gana en todas las columnas, también a las dos triviales, con un Sharpe de $+2{,}68$ frente a $+2{,}21$ del pasivo y una máxima caída de solo el $5{,}5\,\%$. La significancia del rescate está en el McNemar pareado (McNemar 1947 \cite{mcnemar1947}) sobre los aciertos diarios: $p = 0{,}0002$ para AutoML frente a M5, $p = 0{,}0074$ para M10 y $p = 0{,}051$ para M8. Los tres rescatan al agente, y el rescate es significativo.
+Leída de abajo arriba, cada capa rescata al agente. M8 sube la accuracy de $0{,}366$ a $0{,}442$ y recorta la máxima caída del $30{,}2\%$ al $15{,}2\%$. M10 llega a $0{,}494$. AutoML alcanza $0{,}574$ y gana en todas las columnas, también a las dos triviales, con un Sharpe de $+2{,}68$ frente a $+2{,}21$ del pasivo y una máxima caída de solo el $5{,}5\%$. La significancia del rescate está en el McNemar pareado (McNemar 1947 \cite{mcnemar1947}) sobre los aciertos diarios: $p = 0{,}0002$ para AutoML frente a M5, $p = 0{,}0074$ para M10 y $p = 0{,}051$ para M8. Los tres rescatan al agente, y el rescate es significativo.
 
 La victoria sobre la trivial pide un matiz que damos por delante. El mismo McNemar de AutoML frente a ZeroR da $p = 0{,}90$: no hay potencia para separarlos en una ventana de doscientos cincuenta días. La ventaja de AutoML sobre el mercado pasivo es real en punto pero nominal en significancia, y tiene una explicación económica: SPY es mayormente beta de mercado, el periodo de evaluación fue alcista, e ir largo capturó esa subida. La Figura~\ref{fig:mp-equity-spy} hace visible la diferencia, y el Sharpe deflactado (López de Prado 2018 \cite{lopezdeprado2018}; Bailey y López de Prado 2014 \cite{bailey2014}) la pone en contexto: el DSR de AutoML es $0{,}92$, frente a $0{,}05$ de M10 y $0{,}00$ del agente. AutoML es el único de los modelos cuyo Sharpe sobrevive al ajuste por número de pruebas.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_equity_spy}
-\caption{Curvas de capital de las seis estrategias sobre SPY (ventana desplegable, $n = 251$ días, un euro inicial). AutoML (línea destacada) supera a las dos referencias triviales en Sharpe ($+2{,}68$ frente a $+2{,}21$), en máxima caída ($-5{,}5\,\%$ frente a $-9{,}8\,\%$) y en capital final ($1{,}38\times$ frente a $1{,}30\times$); el agente solo (M5) termina en $0{,}70\times$. La ventaja sobre la trivial es nominal (McNemar AutoML vs ZeroR $p = 0{,}90$). Fuente: \texttt{automl\_net\_returns.json}.}
+\caption{Curvas de capital de las seis estrategias sobre SPY (ventana desplegable, $n = 251$ días, un euro inicial). AutoML (línea destacada) supera a las dos referencias triviales en Sharpe ($+2{,}68$ frente a $+2{,}21$), en máxima caída ($-5{,}5\%$ frente a $-9{,}8\%$) y en capital final ($1{,}38\times$ frente a $1{,}30\times$); el agente solo (M5) termina en $0{,}70\times$. La ventaja sobre la trivial es nominal (McNemar AutoML vs ZeroR $p = 0{,}90$). Fuente: \texttt{automl\_net\_returns.json}.}
 \label{fig:mp-equity-spy}
 \end{figure}
 
-Hay un resultado en riesgo que no alcanza significancia a este nivel. Sobre un único activo, el intervalo de confianza del $\Delta$Sharpe de la regla frente al agente cruza el cero: el rescate de riesgo de SPY visto en solitario no se distingue de cero. La prueba dura del rescate en riesgo vive en la agregación del panel, y la damos en la Sección~\ref{sec:panel-agregado}.
+Hay un resultado en riesgo que no alcanza significancia a este nivel. Sobre un único activo, el intervalo de confianza del $\Delta$Sharpe de la regla frente al agente cruza el cero: el rescate de riesgo de SPY visto en solitario no se distingue de cero. El panel de diez activos, en el capítulo siguiente, da la prueba dura de ese rescate en riesgo.
 
 \section{Qué rescata STRATA}
 \label{sec:spy-rescate}

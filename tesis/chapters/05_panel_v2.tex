@@ -96,7 +96,7 @@ Las tres rescatan al agente en riesgo, y las tres excluyen el cero. La regla M8 
 
 \begin{table}[htbp]
 \centering
-\caption{Rescate en riesgo agregado (\emph{pooled-10}, $n = 2493$ días): $\Delta$Sharpe de cada estrategia supervisada frente al agente M5, con intervalo de confianza al $95\,\%$ por \emph{bootstrap} estacionario de bloque medio $\sqrt{n}$ (Politis y Romano 1994). La columna de Bonferroni aplica la cota inferior corregida por $m = 3$ comparaciones (López de Prado 2018): un $\Delta$Sharpe pasa si su cota inferior corregida supera cero. M10 y AutoML pasan; M8 no. Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
+\caption{Rescate en riesgo agregado (\emph{pooled-10}, $n = 2493$ días): $\Delta$Sharpe de cada estrategia supervisada frente al agente M5, con intervalo de confianza al $95\%$ por \emph{bootstrap} estacionario de bloque medio $\sqrt{n}$ (Politis y Romano 1994). La columna de Bonferroni aplica la cota inferior corregida por $m = 3$ comparaciones (López de Prado 2018): un $\Delta$Sharpe pasa si su cota inferior corregida supera cero. M10 y AutoML pasan; M8 no. Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
 \label{tab:mp-pooled}
 \begin{tabular}{lrcrc}
 \toprule
@@ -114,7 +114,7 @@ La corrección por multiplicidad mete un matiz. Comparamos tres estrategias cont
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_forest_pooled}
-\caption{Diagrama de bosque del $\Delta$Sharpe \emph{pooled-10} frente al agente M5, con intervalo al $95\,\%$ (\emph{bootstrap} estacionario, Politis y Romano 1994) y cota inferior corregida por Bonferroni ($m = 3$). La línea vertical marca el cero. Los tres intervalos simples excluyen el cero; bajo Bonferroni, M10 y AutoML se mantienen positivos y M8 toca el cero (cota inferior $-0{,}047$). Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
+\caption{Diagrama de bosque del $\Delta$Sharpe \emph{pooled-10} frente al agente M5, con intervalo al $95\%$ (\emph{bootstrap} estacionario, Politis y Romano 1994) y cota inferior corregida por Bonferroni ($m = 3$). La línea vertical marca el cero. Los tres intervalos simples excluyen el cero; bajo Bonferroni, M10 y AutoML se mantienen positivos y M8 toca el cero (cota inferior $-0{,}047$). Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
 \label{fig:mp-forest}
 \end{figure}
 
@@ -134,11 +134,11 @@ La Figura~\ref{fig:mp-equity-panel} traslada el riesgo a la economía, una curva
 
 Si el aprendiz mejora a la regla, la pregunta es de qué se está alimentando. La respuesta es que se apoya en los detectores de STRATA. Las cuotas de Shapley (Lundberg y Lee 2017 \cite{lundberg2017}) miden cuánto del juicio del aprendiz descansa en cada bloque de características; la cuota de las features de STRATA supera la mitad en los \textbf{diez de diez} activos, con una media de $0{,}66$. El aprendiz no inventa una señal nueva: redescubre los detectores que diseñamos a mano y los pondera por encima de las características del propio agente.
 
-Que se apoye en STRATA no quiere decir que solo replique la regla. El contraste lo da el TOST de Schuirmann (1987) \cite{schuirmann1987}: su hipótesis nula es que la diferencia entre dos estrategias cae fuera de un intervalo de equivalencia $[-\delta, +\delta]$, y solo la rechaza cuando los dos contrastes unilaterales quedan dentro de ese margen, lo que impone un criterio activo de similitud. La Tabla~\ref{tab:mp-tost} lo aplica al aprendiz frente a la regla M8. En accuracy no hay equivalencia, y el desempate va para el aprendiz: M10 supera a la regla en $+0{,}021$ con intervalo al $90\,\%$ de $[+0{,}001,\ +0{,}039]$, y AutoML en $+0{,}034$ con $[+0{,}010,\ +0{,}056]$. En Sharpe el TOST es no concluyente: aprendiz y regla son indistinguibles en riesgo, ninguno domina al otro. El mecanismo de la diferencia es claro. La regla M8 es una compuerta fija sobre el régimen; el aprendiz modela interacciones no lineales entre régimen y agente que la regla no alcanza, y de ahí saca el punto extra de accuracy.
+Que se apoye en STRATA no quiere decir que solo replique la regla. El contraste lo da el TOST de Schuirmann (1987) \cite{schuirmann1987}: su hipótesis nula es que la diferencia entre dos estrategias cae fuera de un intervalo de equivalencia $[-\delta, +\delta]$, y solo la rechaza cuando los dos contrastes unilaterales quedan dentro de ese margen, lo que impone un criterio activo de similitud. La Tabla~\ref{tab:mp-tost} lo aplica al aprendiz frente a la regla M8. En accuracy no hay equivalencia, y el desempate va para el aprendiz: M10 supera a la regla en $+0{,}021$ con intervalo al $90\%$ de $[+0{,}001,\ +0{,}039]$, y AutoML en $+0{,}034$ con $[+0{,}010,\ +0{,}056]$. En Sharpe el TOST es no concluyente: aprendiz y regla son indistinguibles en riesgo, ninguno domina al otro. El mecanismo de la diferencia es claro. La regla M8 es una compuerta fija sobre el régimen; el aprendiz modela interacciones no lineales entre régimen y agente que la regla no alcanza, y de ahí saca el punto extra de accuracy.
 
 \begin{table}[htbp]
 \centering
-\caption{TOST del aprendiz frente a la regla M8 (Schuirmann 1987) y cuota de Shapley de las features de STRATA por activo (Lundberg y Lee 2017). En accuracy el aprendiz supera a la regla (intervalo al $90\,\%$ por encima de cero); en Sharpe el test es no concluyente (indistinguibles). La cuota SHAP de STRATA supera $0{,}5$ en los diez activos. Fuente: TOST de \texttt{equivalence\_tost.json}; cuota SHAP de \texttt{decision\_automl\_prep.json}.}
+\caption{TOST del aprendiz frente a la regla M8 (Schuirmann 1987) y cuota de Shapley de las features de STRATA por activo (Lundberg y Lee 2017). En accuracy el aprendiz supera a la regla (intervalo al $90\%$ por encima de cero); en Sharpe el test es no concluyente (indistinguibles). La cuota SHAP de STRATA supera $0{,}5$ en los diez activos. Fuente: TOST de \texttt{equivalence\_tost.json}; cuota SHAP de \texttt{decision\_automl\_prep.json}.}
 \label{tab:mp-tost}
 \begin{tabular}{lccc}
 \toprule
@@ -169,7 +169,7 @@ El aprendiz deja, entonces, dos hechos atados con su test. Se apoya en STRATA, c
 \midrule
 Eje que rescata & riesgo & accuracy \\
 $\Delta$Sharpe pooled vs M5 & $\mathbf{+0{,}60}$ $[0{,}05,\,1{,}22]$ & $+1{,}12$ / $+1{,}08$ \\
-P\&L de rescate (SPY) & $+0{,}312$ ($100\,\%$ RAM) & --- \\
+P\&L de rescate (SPY) & $+0{,}312$ ($100\%$ RAM) & --- \\
 Lidera en accuracy & $0/10$ & $\mathbf{10/10}$ \\
 Significancia accuracy (McNemar) & al borde & significativa \\
 \bottomrule
@@ -179,7 +179,7 @@ Significancia accuracy (McNemar) & al borde & significativa \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_atribucion_capas}
-\caption{Reparto de funciones entre las dos capas. A la izquierda, atribución del P\&L de rescate por detector sobre SPY: el canal de régimen (RAM) concentra el $100\,\%$, PSA y GSO aportan cero. A la derecha, evolución diaria del rescate de la regla (riesgo, $\Delta$Sharpe acumulado) frente al del aprendiz (accuracy, aciertos acumulados sobre el agente): cada serie sube por un eje distinto. Fuente: \texttt{spy\_intervention\_anatomy.json}, \texttt{bullbear\_confirmatory.json}.}
+\caption{Reparto de funciones entre las dos capas. A la izquierda, atribución del P\&L de rescate por detector sobre SPY: el canal de régimen (RAM) concentra el $100\%$, PSA y GSO aportan cero. A la derecha, evolución diaria del rescate de la regla (riesgo, $\Delta$Sharpe acumulado) frente al del aprendiz (accuracy, aciertos acumulados sobre el agente): cada serie sube por un eje distinto. Fuente: \texttt{spy\_intervention\_anatomy.json}, \texttt{bullbear\_confirmatory.json}.}
 \label{fig:mp-capas}
 \end{figure}
 
@@ -328,11 +328,11 @@ Un rescate probado necesita sus límites dichos con la misma claridad. Reconocer
 \subsection{Qué no sobrevive a un test}
 \label{sec:panel-lim-tests}
 
-Cinco resultados del capítulo viven por debajo del listón de la significancia, y los reunimos aquí con su cifra. El más visible es la ventaja en accuracy sobre la referencia trivial. En SPY, AutoML acierta el $57{,}4\,\%$ frente al $56{,}6\,\%$ de ZeroR, una victoria en punto; pero el McNemar pareado de AutoML contra ZeroR da $p = 0{,}902$, y en una ventana de doscientos cincuenta días no hay potencia para separarlos. Lo mismo ocurre en el resto del panel: ninguna derivada de STRATA bate a la clase mayoritaria con significancia, y la estrategia ganadora cambia de un activo a otro. La victoria es real en el número, nominal en el test y leída a posteriori, así que la situamos como valor del trabajo, no como habilidad probada.
+Cinco resultados del capítulo viven por debajo del listón de la significancia, y los reunimos aquí con su cifra. El más visible es la ventaja en accuracy sobre la referencia trivial. En SPY, AutoML acierta el $57{,}4\%$ frente al $56{,}6\%$ de ZeroR, una victoria en punto; pero el McNemar pareado de AutoML contra ZeroR da $p = 0{,}902$, y en una ventana de doscientos cincuenta días no hay potencia para separarlos. Lo mismo ocurre en el resto del panel: ninguna derivada de STRATA bate a la clase mayoritaria con significancia, y la estrategia ganadora cambia de un activo a otro. La victoria es real en el número, nominal en el test y leída a posteriori, así que la situamos como valor del trabajo, no como habilidad probada.
 
 La ley del leverage es el segundo. El rescate del aprendiz escala con el \emph{leverage effect} del activo: cuanto más negativa es la correlación de Black, mayor es la mejora en accuracy. Sobre los diez activos la correlación de Pearson es $r = -0{,}56$ con $p = 0{,}093$, y la de Spearman $\rho = -0{,}59$ con $p = 0{,}074$. Quedan por debajo de $0{,}10$, el nivel de significancia que el proyecto fijó por adelantado, pero no alcanzan el $0{,}05$ convencional ni resisten un \emph{leave-one-out}. Con diez puntos la correlación es tan fuerte como sobre un universo mayor; lo que pierde es potencia. De ahí que la llamemos tendencia y no ley cerrada, como ya la enmarca el cierre de la Sección~\ref{sec:panel-patron}.
 
-Un tercer límite pesa sobre la regla. El rescate de riesgo agregado, medido por el $\Delta$Sharpe \emph{pooled} de los diez activos frente al agente, excluye el cero para los tres supervisores: M8 deja $+0{,}60$, M10 $+1{,}12$ y AutoML $+1{,}08$, con intervalos al $95\,\%$ que no tocan el cero. La corrección por comparación múltiple cambia el veredicto de la regla. Bajo una cota de Bonferroni con $m = 3$ pruebas (López de Prado 2018 \cite{lopezdeprado2018}), las cotas inferiores de M10 y AutoML siguen por encima del cero, pero la de M8 cae a $-0{,}047$. La protección de riesgo de la regla es real en punto, pero no resiste el ajuste por número de pruebas; la de los aprendices sí.
+Un tercer límite pesa sobre la regla. El rescate de riesgo agregado, medido por el $\Delta$Sharpe \emph{pooled} de los diez activos frente al agente, excluye el cero para los tres supervisores: M8 deja $+0{,}60$, M10 $+1{,}12$ y AutoML $+1{,}08$, con intervalos al $95\%$ que no tocan el cero. La corrección por comparación múltiple cambia el veredicto de la regla. Bajo una cota de Bonferroni con $m = 3$ pruebas (López de Prado 2018 \cite{lopezdeprado2018}), las cotas inferiores de M10 y AutoML siguen por encima del cero, pero la de M8 cae a $-0{,}047$. La protección de riesgo de la regla es real en punto, pero no resiste el ajuste por número de pruebas; la de los aprendices sí.
 
 Sigue una falsación que pre-registramos. A nivel de SPY en solitario, restringiendo la evaluación al régimen bajista ($n = 50$ días), la regla M8 invierte su signo: el $\Delta$Sharpe frente al agente cae a $-1{,}49$. En el régimen peligroso, sobre un único activo, la regla empeora al agente en lugar de rescatarlo. Anotamos esta condición de fracaso antes de mirar el resultado, y la agregación del panel la resuelve: el rescate de riesgo es un fenómeno de conjunto, no de un activo aislado en un régimen aislado. Lo que falla en SPY-bajista vive dentro de un pooled que sí rescata, y por eso reportamos los dos números juntos.
 

@@ -1,7 +1,7 @@
 \chapter{Cómo funciona STRATA}
 \label{cap:strata}
 
-El capítulo anterior dejó abierto un hueco: ninguna de las tres líneas que recorre, agentes LLM de trading, supervisión en tiempo de ejecución y modelos clásicos de régimen y volatilidad, las había combinado sobre un mismo agente. STRATA llena ese hueco. Este capítulo reúne la base matemática sobre la que se construye y fija la notación que usa el resto de la memoria. El desarrollo se organiza en tres bloques. El primero presenta los tres detectores, RAM, PSA y GSO, cada uno sobre el modelo estadístico clásico que lo sostiene, y la capa que convierte sus señales en una intervención. El segundo desarrolla las estrategias que aprenden sobre esas señales, de la regla determinista M8 al meta-learner M10 y a la búsqueda automatizada AutoML. El tercero reúne las herramientas con las que medimos el rescate: las métricas, las salvaguardas contra la fuga temporal y los contrastes de hipótesis. El caso de SPY, donde toda esta maquinaria se pone a prueba, queda para el capítulo~\ref{cap:spy}.
+El capítulo anterior dejó abierto un hueco: ninguna de las tres líneas que recorre, agentes LLM de trading, supervisión en tiempo de ejecución y modelos clásicos de régimen y volatilidad, las había combinado sobre un mismo agente. STRATA llena ese hueco, y este capítulo reúne la base matemática que lo sostiene y fija la notación del resto de la memoria. Construimos primero los tres detectores, RAM, PSA y GSO, cada uno sobre un modelo estadístico clásico, y la capa que convierte sus señales en una intervención. Sobre esas señales aprenden luego las estrategias, de la regla determinista M8 al meta-learner M10 y a la búsqueda automatizada AutoML. Cierran el capítulo las herramientas con que medimos el rescate: las métricas, las salvaguardas contra la fuga temporal y los contrastes de hipótesis. El caso de SPY, donde la maquinaria se pone a prueba, queda para el capítulo~\ref{cap:spy}.
 
 \section{Tres detectores: RAM, PSA, GSO}
 \label{sec:strata-detectores}
@@ -15,7 +15,7 @@ Trabajamos con una serie de precios diarios de un activo. Denotamos por $P_t > 0
 \]
 El log-retorno mide el crecimiento del precio en escala logarítmica; es positivo cuando el precio sube y negativo cuando baja.
 
-Conviene compararlo con el \emph{retorno simple} $R_t = (P_t - P_{t-1})/P_{t-1} = P_t/P_{t-1} - 1$, que es la definición intuitiva, la fracción ganada o perdida. Ambos se relacionan por $\reglog = \log(1 + R_t)$. La razón de preferir el log-retorno es su aditividad temporal. Consideremos el retorno acumulado entre los días $t_0$ y $t_0 + n$. En escala logarítmica,
+Comparémoslo con el \emph{retorno simple} $R_t = (P_t - P_{t-1})/P_{t-1} = P_t/P_{t-1} - 1$, que es la definición intuitiva, la fracción ganada o perdida. Ambos se relacionan por $\reglog = \log(1 + R_t)$. La razón de preferir el log-retorno es su aditividad temporal. Consideremos el retorno acumulado entre los días $t_0$ y $t_0 + n$. En escala logarítmica,
 \[
 \log\!\left(\frac{P_{t_0+n}}{P_{t_0}}\right)
 = \log\!\left(\prod_{j=1}^{n} \frac{P_{t_0+j}}{P_{t_0+j-1}}\right)
@@ -37,7 +37,7 @@ RV_t \;=\; \sqrt{\sum_{j=0}^{h-1} \big(r^{\log}_{t-j}\big)^2}\,,
 \]
 esto es, la raíz de la suma de cuadrados de los log-retornos de la ventana. $RV_t$ es un estimador no paramétrico de la dispersión local de los retornos: crece cuando el activo encadena días de movimientos grandes y se reduce en los tramos planos. A diferencia de la volatilidad condicional $\sigmat$ que se introduce en la Sección~\ref{sec:garch}, $RV_t$ no presupone ningún modelo; es una lectura directa de los datos.
 
-Las series de retornos financieros no se comportan como ruido blanco gaussiano. Tres regularidades empíricas, documentadas de forma sistemática en la literatura \cite{cont2001}, motivan los modelos del resto del capítulo. La primera es que la distribución de los retornos tiene \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituir la gaussiana por una distribución de colas anchas como la $t$ de Student en el modelo de volatilidad. El \emph{agrupamiento de volatilidad} es la segunda: los días de gran movimiento tienden a seguirse unos a otros, así que la magnitud de los retornos sí está correlada en el tiempo aunque su signo apenas lo esté, y eso es lo que captura un modelo GARCH. Queda la tercera, la \emph{poca autocorrelación} de los retornos en niveles: casi nula a partir del primer rezago, mientras que sus cuadrados o sus valores absolutos sí la presentan. La combinación de las tres sugiere que el comportamiento del activo alterna entre estados o regímenes con dinámicas distintas, idea que formaliza el modelo de cambio de régimen que se desarrolla más adelante (Sección~\ref{sec:hmm}).
+Las series de retornos financieros no se comportan como ruido blanco gaussiano. Tres regularidades empíricas, documentadas de forma sistemática en la literatura \cite{cont2001}, motivan los modelos del resto del capítulo. La primera es que la distribución de los retornos tiene \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituir la gaussiana por una distribución de colas anchas como la $t$ de Student en el modelo de volatilidad. El \emph{agrupamiento de volatilidad} es la segunda: los días de gran movimiento tienden a seguirse unos a otros, así que la magnitud de los retornos sí está correlada en el tiempo aunque su signo apenas lo esté, y eso es lo que captura un modelo GARCH. Queda la tercera, la \emph{poca autocorrelación} de los retornos en niveles: casi nula a partir del primer rezago, mientras que sus cuadrados o sus valores absolutos sí la presentan. La combinación de las tres sugiere que el comportamiento del activo alterna entre estados o regímenes con dinámicas distintas, idea que el modelo de cambio de régimen formaliza.
 
 \subsection{La salida del agente}
 \label{sec:agente-salida}
@@ -69,14 +69,14 @@ objeto central del caso de estudio, que se desarrollará en el capítulo~\ref{ca
 \subsection{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
 
-RAM quiere saber una cosa muy concreta: si la dirección de la apuesta del agente encaja con el estado en que está el mercado. Para ello necesita primero una lectura del estado, y la lectura nace de la idea de que el mercado no se comporta siempre igual, sino que atraviesa fases distintas, calma, estrés, crisis, que no vemos directamente pero podemos inferir de los retornos. El instrumento que formaliza esa idea es el modelo oculto de Markov gaussiano, que desarrollamos a continuación.
+RAM quiere saber una cosa muy concreta: si la dirección de la apuesta del agente encaja con el estado en que está el mercado. Para ello necesita primero una lectura del estado, y la lectura nace de la idea de que el mercado no se comporta siempre igual, sino que atraviesa fases distintas, calma, estrés, crisis, que no vemos directamente pero podemos inferir de los retornos. El modelo oculto de Markov gaussiano formaliza esa lectura del estado latente.
 
 \subsubsection{Cambio de régimen en series financieras}
 \label{sec:hmm-regimen}
 
 Un único modelo con parámetros constantes describe mal una serie financiera larga. Un mercado en tendencia alcista tranquila y un mercado en plena caída no comparten ni media ni volatilidad de los retornos, y forzar un solo conjunto de parámetros para ambos promedia dos comportamientos que conviene separar. La alternativa clásica es admitir que la serie atraviesa distintos \emph{regímenes}, cada uno con su propia ley de probabilidad, y que el régimen vigente cambia en el tiempo de forma no observable directamente. Hamilton formalizó esta idea para series económicas mediante un proceso de Markov sobre los estados no observados \cite{hamilton1989}: el régimen sigue una cadena de Markov y, condicionado a él, la serie observada se distribuye según los parámetros de ese régimen.
 
-En el caso que nos ocupa interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura puede cambiar según el activo, como se discute en la Sección~\ref{sec:hmm-K}. El instrumento concreto es el modelo oculto de Markov gaussiano, que se define a continuación.
+En el caso que nos ocupa interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura puede cambiar según el activo, como se discute en la Sección~\ref{sec:hmm-K}.
 
 \subsubsection{Definición del HMM gaussiano}
 \label{sec:hmm-def}
@@ -163,9 +163,7 @@ Basta dividir la probabilidad conjunta $\alpha_t(k) = \Prob(x_{1:t}, z_t = k)$ p
 Para cada $t$, el posterior filtrado $\gammaf$ es función únicamente de las observaciones $x_{1:t}$. En particular, puede calcularse en tiempo real el día $t$ sin recurrir a ninguna observación posterior.
 \end{corolario}
 
-El argumento es inductivo sobre $t$, apoyado en que la recursión forward construye cada $\alpha_t$ a partir de $\alpha_{t-1}$ y de $x_t$; el desarrollo de ambas pruebas está en el Anexo~\ref{anx:filtrado}.
-
-Así, la estimación del régimen en $t$ condiciona solo sobre el pasado y el presente, nunca sobre el futuro: es \emph{causal} y podría calcularse el mismo día $t$ con la información que existe ese día.
+El argumento es inductivo sobre $t$, apoyado en que la recursión forward construye cada $\alpha_t$ a partir de $\alpha_{t-1}$ y de $x_t$; el desarrollo de ambas pruebas está en el Anexo~\ref{anx:filtrado}. Esa causalidad es lo que permite usar el filtrado en producción: cada día STRATA estima el régimen con lo que ya conoce.
 
 Esto contrasta con el \emph{posterior suavizado}
 \[
@@ -192,7 +190,7 @@ Sea $\lambda'$ el conjunto de parámetros que produce un paso de EM a partir de 
 
 La demostración se encuentra en el Anexo~\ref{anx:demostraciones}.
 
-El algoritmo itera los pasos E y M hasta que la verosimilitud se estabiliza. Su convergencia a un punto estacionario de la verosimilitud, bajo condiciones de regularidad, es un resultado clásico de la teoría de EM \cite{dempster1977}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla y de partir de una inicialización razonable, como se documenta en el capítulo de metodología.
+El algoritmo itera los pasos E y M hasta que la verosimilitud se estabiliza. Su convergencia a un punto estacionario de la verosimilitud, bajo condiciones de regularidad, es un resultado clásico de la teoría de EM \cite{dempster1977}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla y de partir de una inicialización razonable.
 
 \subsubsection{El algoritmo de Viterbi}
 \label{sec:hmm-viterbi}
@@ -275,7 +273,7 @@ y en ese caso la varianza incondicional vale
 
 La demostración se encuentra en el Anexo~\ref{anx:demostraciones}.
 
-La suma $\alpha + \beta$ mide la \emph{persistencia} de la volatilidad: cuán despacio se reabsorbe un golpe. Cuando $\alpha + \beta$ está cerca de $1$, la varianza incondicional $\omega/(1-\alpha-\beta)$ explota y los choques tardan muchísimo en disiparse; en series financieras diarias es habitual estimar valores muy próximos a la unidad, signo de volatilidad muy persistente. El caso límite $\alpha + \beta = 1$ define el modelo \emph{IGARCH} (GARCH integrado) \cite{englebollerslev1986}, en el que la varianza incondicional ya no es finita y un choque tiene efecto permanente sobre la volatilidad esperada, de forma análoga a una raíz unitaria en la media. En esa frontera el Teorema~\ref{teo:garch-estac} deja de garantizar estacionariedad en covarianza, y la interpretación de $\sigmat$ como fluctuación alrededor de un nivel de largo plazo se pierde. Conviene distinguir esta estacionariedad en covarianza, que exige $\alpha+\beta<1$, de la estacionariedad estricta, que se cumple bajo la condición más débil $\E[\log(\alpha \eta_t^2+\beta)]<0$ \cite{nelson1990}.
+La suma $\alpha + \beta$ mide la \emph{persistencia} de la volatilidad: cuán despacio se reabsorbe un golpe. Cuando $\alpha + \beta$ está cerca de $1$, la varianza incondicional $\omega/(1-\alpha-\beta)$ explota y los choques tardan muchísimo en disiparse; en series financieras diarias es habitual estimar valores muy próximos a la unidad, signo de volatilidad muy persistente. El caso límite $\alpha + \beta = 1$ define el modelo \emph{IGARCH} (GARCH integrado) \cite{englebollerslev1986}, en el que la varianza incondicional ya no es finita y un choque tiene efecto permanente sobre la volatilidad esperada, de forma análoga a una raíz unitaria en la media. En esa frontera el Teorema~\ref{teo:garch-estac} deja de garantizar estacionariedad en covarianza, y la interpretación de $\sigmat$ como fluctuación alrededor de un nivel de largo plazo se pierde. Distinguimos esta estacionariedad en covarianza, que exige $\alpha+\beta<1$, de la estacionariedad estricta, que se cumple bajo la condición más débil $\E[\log(\alpha \eta_t^2+\beta)]<0$ \cite{nelson1990}.
 
 \subsubsection{Innovaciones Student-t}
 \label{sec:garch-t}
@@ -302,7 +300,7 @@ El estimador resultante hereda las buenas propiedades de la máxima verosimilitu
 \subsection{Detección bayesiana de puntos de cambio (BOCPD)}
 \label{sec:bocpd}
 
-PSA es el detector que mira al agente en lugar de al mercado. Su pregunta es si el agente ha roto con su manera habitual de operar, y la responde estimando día a día cuánto tiempo lleva bajo el mismo patrón; cuando esa cuenta se reinicia, ha habido una ruptura. El instrumento que formaliza esta idea es la detección bayesiana de puntos de cambio, que desarrollamos a continuación.
+PSA es el detector que mira al agente en lugar de al mercado. Su pregunta es si el agente ha roto con su manera habitual de operar, y la responde estimando día a día cuánto tiempo lleva bajo el mismo patrón; cuando esa cuenta se reinicia, ha habido una ruptura. La detección bayesiana de puntos de cambio formaliza ese conteo del tiempo bajo un mismo patrón.
 
 \subsubsection{Run-length y detección online}
 \label{sec:bocpd-runlength}
@@ -316,7 +314,7 @@ r_t = 0 \;\Leftrightarrow\; \text{hay un punto de cambio en } t,
 \]
 y $r_t = r$ indica que el día actual y los $r$ días previos se atribuyen al mismo segmento, todavía sin ruptura. La run-length crece de uno en uno mientras no hay cambio ($r_t = r_{t-1} + 1$) y se reinicia a $0$ cuando lo hay.
 
-La distinción entre detección \emph{online} y \emph{offline} es decisiva para esta memoria. Un detector \emph{offline} dispone de toda la serie $x_{1:T}$ y localiza los cambios mirando hacia delante y hacia atrás; es más preciso, pero no es causal. Un detector \emph{online} estima la run-length usando únicamente $x_{1:t}$, la información disponible en el instante $t$, sin asomarse al futuro. El método de Adams y MacKay es online por construcción: en cada día actualiza la distribución de $r_t$ a partir de la del día anterior y de la nueva observación. Esta causalidad es exactamente la que exige el detector PSA, igual que el filtrado del HMM frente al suavizado (Sección~\ref{sec:hmm-filtrado}): una alarma de cambio de comportamiento del agente solo es legítima si pudo emitirse el mismo día, sin conocer lo que el agente hizo después.
+La distinción entre detección \emph{online} y \emph{offline} es decisiva para esta memoria. Un detector \emph{offline} dispone de toda la serie $x_{1:T}$ y localiza los cambios mirando hacia delante y hacia atrás; es más preciso, pero no es causal. Un detector \emph{online} estima la run-length usando únicamente $x_{1:t}$, la información disponible en el instante $t$, sin asomarse al futuro. El método de Adams y MacKay es online por construcción: en cada día actualiza la distribución de $r_t$ a partir de la del día anterior y de la nueva observación. Esta causalidad es exactamente la que exige el detector PSA, igual que el filtrado del HMM frente al suavizado: una alarma de cambio de comportamiento del agente solo es legítima si pudo emitirse el mismo día, sin conocer lo que el agente hizo después.
 
 \subsubsection{Recursión de la distribución de run-length}
 \label{sec:bocpd-recursion}
@@ -362,7 +360,7 @@ H(r) = \frac{1}{\lambda}, \qquad \lambda > 0,
 \]
 independiente de $r$. Bajo esta elección la dinámica de la run-length carece de memoria: la probabilidad de que el segmento actual termine en el paso siguiente es siempre $1/\lambda$, sea cual sea el tiempo que lleve vigente. La longitud de cada segmento queda entonces distribuida como una geométrica de parámetro $1/\lambda$ y media $\lambda$ pasos. El parámetro $\lambda$ codifica, por tanto, la escala temporal esperada entre rupturas y es el único hiperparámetro de la dinámica.
 
-La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación dentro de un tramo en una familia exponencial con su \emph{previa conjugada}: la posterior de los parámetros del tramo pertenece entonces a la misma familia que la previa, y la predictiva del dato nuevo tiene expresión analítica que se actualiza de forma incremental al llegar cada observación. Esta conjugación es lo que hace que la recursión de la Proposición~\ref{prop:bocpd} sea barata de evaluar día a día. La especificación concreta del modelo de observación de PSA se detalla en el capítulo de metodología. Como contexto, el trabajo de Fearnhead sobre inferencia exacta para modelos multipunto desarrolla los métodos de cálculo de estas distribuciones predictivas y de la partición en tramos sobre los que se apoya el enfoque online \cite{fearnhead2006}.
+La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación dentro de un tramo en una familia exponencial con su \emph{previa conjugada}: la posterior de los parámetros del tramo pertenece entonces a la misma familia que la previa, y la predictiva del dato nuevo tiene expresión analítica que se actualiza de forma incremental al llegar cada observación. Esta conjugación es lo que hace que la recursión de la Proposición~\ref{prop:bocpd} sea barata de evaluar día a día. El modelo de observación concreto de PSA forma parte de la calibración de los detectores. Como contexto, el trabajo de Fearnhead sobre inferencia exacta para modelos multipunto desarrolla los métodos de cálculo de estas distribuciones predictivas y de la partición en tramos sobre los que se apoya el enfoque online \cite{fearnhead2006}.
 
 \subsection{STRATA aplicado: construcción, calibración y umbrales}
 \label{sec:strata-aplicado}
