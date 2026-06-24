@@ -1,0 +1,36 @@
+\chapter{Objetivos}
+\label{cap:objetivos}
+
+El capítulo anterior dejó el problema sobre la mesa: un agente LLM que decide con dinero real pierde la dirección y el capital, y lo hace de forma sistemática. Este capítulo fija qué se propone el trabajo frente a ese problema, la hipótesis que pone a prueba y cómo la contrasta.
+
+\section{Hipótesis}
+\label{sec:obj-hipotesis}
+
+La pregunta de investigación es si una capa de supervisión estadística externa puede rescatar a un agente LLM cuando pierde. La formulamos como una afirmación que puede refutarse:
+
+\begin{quote}
+Filtrar o atenuar las decisiones de un agente LLM de trading con detectores estadísticos clásicos rescata al agente de forma significativa cuando este pierde dinero y acierta la dirección menos de la mitad de las veces.
+\end{quote}
+
+La hipótesis nula es que la supervisión no cambia nada: las decisiones supervisadas no se distinguen de las del agente solo, ni en acierto direccional ni en riesgo. Para poder rechazarla fijamos de antemano el contraste de cada nivel y un criterio de fracaso, de modo que un resultado contrario refute la hipótesis en lugar de maquillarla.
+
+\section{Objetivo general}
+\label{sec:obj-general}
+
+Demostrar, con rigor estadístico, que supervisar en tiempo de ejecución las decisiones de un agente LLM de trading con detectores estadísticos clásicos rescata al agente cuando pierde, y caracterizar cuándo y por qué funciona. No se persigue batir al mercado ni generar alfa: el alcance es la supervisión, y el listón es el propio agente, no una referencia pasiva.
+
+\section{Objetivos específicos}
+\label{sec:obj-especificos}
+
+\begin{enumerate}
+  \item Formalizar tres detectores estadísticos clásicos (régimen con un HMM, cambio estructural con BOCPD y volatilidad con GARCH) que auditen cada decisión del agente en tiempo de ejecución, junto con el protocolo de medición causal y sin fuga que los evalúa (capítulo~\ref{cap:strata}).
+  \item Probar, con contrastes pareados, si esa supervisión rescata al agente cuando pierde, tanto en acierto direccional (McNemar y \emph{sign test}) como en riesgo ($\Delta$Sharpe con \emph{bootstrap}), primero sobre el caso de SPY y luego sobre el panel (capítulos~\ref{cap:spy} y~\ref{cap:panel}).
+  \item Atribuir el efecto a cada detector y caracterizar en qué activos funciona la supervisión y por qué, a través de la anatomía de la intervención, la compuerta de régimen y el patrón que liga la naturaleza del activo con el canal que lo rescata (capítulos~\ref{cap:spy} y~\ref{cap:panel}).
+  \item Comprobar si un meta-learner libre redescubre las señales de STRATA en lugar de prescindir de ellas, contrastando atribución (valores de Shapley y ablación) y equivalencia frente a la regla (capítulo~\ref{cap:panel}).
+  \item Delimitar el alcance honesto de la técnica: declarar dónde no aporta (frente a una referencia trivial y en activos de apalancamiento débil), con el mismo rigor con que se reporta lo que sí aporta (capítulo~\ref{cap:panel}).
+\end{enumerate}
+
+\section{Plan de trabajo}
+\label{sec:obj-plan}
+
+La memoria sigue este orden. El capítulo~\ref{cap:estado-arte} sitúa el trabajo entre los agentes LLM de trading, la supervisión en tiempo de ejecución y los modelos clásicos de régimen y volatilidad. El capítulo~\ref{cap:strata} formaliza los tres detectores, las estrategias que derivan de ellos y el protocolo de medición fuera de muestra. El capítulo~\ref{cap:spy} lleva STRATA al caso de SPY, paso a paso. El capítulo~\ref{cap:panel} prueba el rescate sobre el panel de diez activos y busca el patrón que lo ordena. Cierran las conclusiones y el trabajo futuro (capítulo~\ref{cap:conclusiones}).

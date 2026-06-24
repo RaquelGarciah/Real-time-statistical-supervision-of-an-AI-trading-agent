@@ -1,39 +1,28 @@
 \chapter{Introducción}
 \label{cap:introduccion}
 
-\section{Motivación: un agente que pierde}
+\section{Motivación}
 \label{sec:intro-motivacion}
 
-La inteligencia artificial ha pasado en pocos años de promesa a infraestructura, y con ella ha crecido una confianza que no siempre se ha ganado. Hay ya agentes basados en grandes modelos de lenguaje tomando decisiones de inversión reales. El problema es que un modelo de lenguaje es, por debajo, un sistema no determinista: ante la misma pregunta puede responder cosas distintas, y acierta o se equivoca sin avisar de cuándo. Esa naturaleza choca con la del dinero, donde un fallo no es un texto mal redactado, es una pérdida. La industria lo intuye y pide supervisión continua y trazable de lo que el agente decide \cite{milligan2024guardrails}, pero la resuelve por la vía de la gobernanza humana, resumida en la consigna que circula entre directivos de banca, \emph{guardrails but no handcuffs}: comités de riesgo que fijan límites y un humano siempre por encima del lazo. Cuando esa supervisión se quiere automática, el discurso profesional la nombra \emph{statistical validation}, alinear las salidas con normas estadísticas, pero no dice qué norma, qué contraste ni cómo se mide la corrección \cite{milligan2024guardrails}.
+Los agentes basados en grandes modelos de lenguaje ya toman decisiones de inversión. Con ese despliegue ha crecido una demanda concreta: supervisar de forma continua y trazable lo que la IA agéntica decide. La salida más inmediata es poner a una persona a vigilarla sin descanso, pero no escala. A medida que damos más libertad a estos sistemas, sus decisiones se vuelven difíciles de seguir para un humano, y por eso crece el interés en los \emph{guardrails}: una supervisión automática que acote lo que el agente puede hacer.
 
-La sobreconfianza no es una impresión. Los agentes LLM ejecutan instrucciones con fidelidad antes que maximizar beneficio \cite{lopezlira2025cantrade}, su confianza declarada está sistemáticamente mal calibrada \cite{sung2025grace} y son manipulables \cite{yan2025tradetrap}. Le entregamos decisiones de dinero a una herramienta potente, opaca y no determinista, sin una red que la atrape cuando falla.
+El problema es que no son pocas las personas que ya confían su dinero a inversiones gestionadas por estos agentes. Pero un agente LLM no es determinista: ante la misma pregunta puede responder cosas distintas, y acierta o falla sin saber cuándo. Esa naturaleza choca con la del dinero, donde un solo fallo puede costar caro.
 
-Ese es el problema que vimos, y de ahí nace este trabajo. Tomamos un agente concreto, una réplica de AI Hedge Fund: cinco personalidades inversoras sobre un mismo modelo de lenguaje que deciden, para cada activo y cada día, una dirección y un tamaño. Sin supervisión pierde dinero. Sobre SPY acierta la dirección el $0{,}366$ de los días, por debajo de lo que daría una moneda, y una inversión inicial de \euro{}1000 termina en \euro{}700.\,% fuente: cap. STRATA-SPY (SPY M5: acc 0,366, equity 0,70)
-El fenómeno no es propio de SPY: el agente acierta por debajo del medio punto en siete de los diez activos del panel.\,% fuente: cap. panel (7/10 < 0,5)
+Esto hace real la necesidad de una herramienta más estricta en el sector financiero. Los agentes LLM ejecutan instrucciones con fidelidad antes que maximizar beneficio \cite{lopezlira2025cantrade}; su confianza declarada está mal calibrada y son manipulables. La motivación de desarrollar esta herramienta se encuentra entre la supervisión que se reclama y la herramienta falsable que la haría real.
 
-La pérdida tiene estructura. El agente mantiene una posición casi rígida que apenas atiende a la señal del día. Un fallo sistemático se puede corregir desde fuera, y esa es la oportunidad que aprovechamos.
+Esto vuelve real la necesidad de un control más estricto en el sector financiero. Los agentes LLM ejecutan las instrucciones con fidelidad antes que maximizar el beneficio \cite{lopezlira2025cantrade}, su confianza declarada está mal calibrada y son manipulables. Entre la supervisión que se está reclamando y una herramienta falsable que de verdad la ejerza hay un hueco, y llenarlo es la motivación de este trabajo.
 
-\section{La idea: supervisión estadística externa}
+
+El agente que estudiamos es una réplica de AI Hedge Fund: cinco personalidades inversoras sobre un mismo modelo de lenguaje que deciden, para cada activo y cada día, una dirección y un tamaño. Sin supervisión pierde dinero. Sobre SPY acierta la dirección el $0{,}366$ de los días, por debajo de lo que daría una moneda, y una inversión inicial de \euro{}1000 termina en \euro{}700.\,% fuente: cap. STRATA-SPY (SPY M5: acc 0,366, equity 0,70)
+El fenómeno no es propio de SPY: el agente acierta por debajo del medio punto en siete de los diez activos del panel que estudiamos.\,% fuente: cap. panel (7/10 < 0,5)
+
+La pérdida tiene estructura. El agente mantiene una posición casi rígida que apenas atiende a la señal del día. Un fallo sistemático se puede corregir desde fuera, y ese es el problema que vamos a atacar.
+
+\section{Propuesta: supervisión estadística externa}
 \label{sec:intro-idea}
 
-STRATA es la solución que proponemos, un sistema diseñado para este trabajo: un supervisor estadístico exógeno y falsable que audita cada decisión del agente en tiempo de ejecución y la rectifica cuando contradice un modelo explícito del mercado. Lo sostienen tres detectores ortogonales, cada uno sobre un modelo estadístico clásico que el capítulo~\ref{cap:strata} formaliza: RAM mira el régimen de mercado, PSA la coherencia temporal de la opinión del agente y GSO la compatibilidad del tamaño con la volatilidad. Cuando uno se dispara, STRATA actúa sobre la decisión: la registra, atenúa su tamaño o la sustituye. La corrección se contrasta de forma pareada contra el mismo agente sin supervisar, decisión a decisión.
+STRATA es la solución, un sistema diseñado para este problema: un supervisor estadístico exógeno que audita cada decisión en tiempo de ejecución y la rectifica cuando contradice el comportamiento del mercado. Lo sostienen tres detectores ortogonales, cada uno sobre un modelo estadístico clásico que el capítulo~\ref{cap:strata} formaliza: RAM mira la coherencia de la apuesta con el régimen de mercado, PSA la coherencia temporal de las decisiones del agente y GSO la compatibilidad del tamaño con la volatilidad. Cuando uno se dispara, STRATA actúa sobre la decisión: la registra, atenúa su tamaño o la sustituye. La corrección se contrasta de forma pareada contra el mismo agente sin supervisar, decisión a decisión.
 
-Arquitectónicamente, STRATA instancia la lógica del \emph{meta-learner} \cite{lopezdeprado2018}: un modelo secundario que filtra o atenúa las señales del primario. Lo nuevo es trasladar esa lógica a un agente LLM multipersona y hacerla falsable con contrastes explícitos. Se diferencia así del equipo de riesgo de TradingAgents \cite{xiao2024tradingagents}, un agente LLM deliberativo dentro del propio sistema que comparte su información y sus sesgos. STRATA es exógeno: su intervención depende de los detectores estadísticos, no de lo que el agente diga.
+La idea de una etapa secundaria que vigila a un modelo primario no es nueva: el \emph{meta-labeling} de López de Prado \cite{lopezdeprado2018} añade un segundo modelo que decide si actuar sobre la señal del primero. STRATA recoge esa lógica y la lleva más lejos. Aquí el primario es el agente LLM, y el supervisor son tres detectores estadísticos clásicos que juzgan su decisión desde ejes independientes y la registran, atenúan o sustituyen. La intervención es exógena: depende de lo que los detectores leen del mercado, no de lo que el agente declare. Eso la separa del equipo de riesgo de TradingAgents \cite{xiao2024tradingagents}, un agente deliberativo interno que comparte la información y los sesgos del sistema.
 
-La hipótesis que ponemos a prueba es falsable: filtrar o atenuar las decisiones del agente con detectores estadísticos clásicos lo rescata de forma significativa cuando pierde dinero y acierta la dirección menos de la mitad de las veces. La falsamos en tres niveles. El rescate debe ser significativo en un test de McNemar pareado; la atribución del P\&L a cada detector debe identificar de dónde viene la corrección; y el valor de un meta-learner libre debe residir en las señales de STRATA, lo que se comprueba si se apoya en ellas y se degrada al quitarlas. La regla \texttt{prior-flip}, fijada antes de mirar los resultados, marca de antemano cuándo concluiríamos que la técnica no funciona.
-
-El rigor matemático es la aportación del trabajo. El rescate se prueba en acierto direccional y en riesgo, y el aprendiz redescubre las señales de STRATA como las informativas. STRATA rescata al agente que pierde y deja ver la mecánica de cada corrección. No supera de forma significativa a una posición pasiva: la rentabilidad absoluta frente al mercado queda como línea futura.
-
-\section{Objetivos y plan de trabajo}
-\label{sec:intro-objetivos}
-
-El trabajo persigue cuatro objetivos:
-
-\begin{enumerate}
-  \item Formalizar tres detectores estadísticos clásicos que auditen en tiempo de ejecución las decisiones de un agente LLM de trading.
-  \item Probar, con contrastes pareados, si esa supervisión rescata al agente cuando pierde, tanto en acierto direccional como en riesgo.
-  \item Atribuir el efecto a cada detector y caracterizar en qué activos funciona y por qué.
-  \item Comprobar si un meta-learner libre redescubre las señales de STRATA en lugar de prescindir de ellas.
-\end{enumerate}
-
-El resto de la memoria recorre esos objetivos en orden. El capítulo~\ref{cap:estado-arte} sitúa el trabajo entre los agentes LLM de trading, la supervisión en tiempo de ejecución y los modelos de régimen y volatilidad. El capítulo~\ref{cap:strata} formaliza los tres detectores, las estrategias que derivan de ellos y el protocolo de medición fuera de muestra. El capítulo~\ref{cap:spy} lleva STRATA al caso de SPY, paso a paso. El capítulo~\ref{cap:panel} prueba el rescate sobre el panel de diez activos y busca el patrón que lo ordena. Cierran las conclusiones y las líneas futuras (capítulo~\ref{cap:conclusiones}). El recorrido empieza por el estado del arte.
+Formalizamos esta propuesta como una hipótesis, con sus objetivos y su plan de contraste, en el capítulo siguiente.
