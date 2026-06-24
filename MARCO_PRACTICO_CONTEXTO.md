@@ -84,8 +84,8 @@ titular.
 ## IV. Conclusiones (C1–C9), todas con su test y su matiz
 
 **C1. El agente pierde; STRATA lo rescata en RIESGO (significativo).** SPY M5 acc 0,366, Sharpe −3,07, equity
-0,70. **Pooled-10 ΔSharpe vs M5: M8 +0,64 IC95[0,10, 1,29]; M10 +0,93 [0,19, 1,65]; AutoML +0,97 [0,27, 1,70]**
-(los tres excluyen 0). Bajo **cota de Bonferroni (m=3)**: M10 y AutoML pasan; **M8 no** (cota inferior −0,047) —
+0,70. **Pooled-10 ΔSharpe vs M5: M8 +0,60 IC95[0,05, 1,22]; M10 +1,12 [0,39, 1,84]; AutoML +1,08 [0,40, 1,85]**
+(fuente: `bullbear_confirmatory.json` POOLED10, n=2493; los tres excluyen 0). Bajo **cota de Bonferroni (m=3)**: M10 y AutoML pasan; **M8 no** (cota inferior −0,047) —
 falsación honesta de la regla en riesgo bajo corrección. **DSR (deflactado) AutoML-SPY = 0,92.**
 
 **C2. STRATA rescata en ACCURACY (significativo).** McNemar vs M5: **AutoML p=0,0002 · M10 p=0,0074 · M8
@@ -146,7 +146,7 @@ PSA/GSO apenas disparan como reglas (RAM domina) pero sus scores continuos infor
 - **SPY, 6 estrategias (desplegable, n=251):** M5 0,366 (Sharpe −3,07, eq 0,70) · M8 0,442 (−0,46) · M10 0,494
   (−0,60) · **AutoML 0,574 (+2,68, maxDD −5,5 %, eq 1,38×)** · ZeroR/B&H 0,566 (+2,21, −9,8 %, 1,30×). McNemar
   AutoML vs ZeroR **p=0,90** (nominal); vs M5 = **0,0002/0,0074/0,051** (AutoML/M10/M8).
-- **Pooled-10 riesgo:** M8 +0,64 [0,10,1,29] · M10 +0,93 [0,19,1,65] · AutoML +0,97 [0,27,1,70]. Bonferroni:
+- **Pooled-10 riesgo** (`bullbear_confirmatory.json` POOLED10, n=2493)**:** M8 +0,60 [0,05,1,22] · M10 +1,12 [0,39,1,84] · AutoML +1,08 [0,40,1,85]. Bonferroni:
   M10/AutoML sí, M8 no. **DSR AutoML-SPY 0,92.**
 - **TOST aprendiz vs regla:** accuracy superior (M10 +0,021, AutoML +0,034); Sharpe no concluyente.
 - **DiD complementariedad:** +1,37 [0,20,2,60], p=0,008 (pooled; no en SPY solo).
@@ -188,7 +188,7 @@ capas + naturaleza→leverage + complementariedad) → límites (nominal vs triv
 
 1. **Accuracy nominal** vs lo trivial (ventana corta n≈250 → significancia plena, línea futura).
 2. **Pooled:** apila días-activo como independientes; la correlación cruzada (SPY-QQQ >0,9) hace el $n$ efectivo
-   menor que el nominal y el IC algo optimista; aun así +0,64 excluye 0 con holgura. Bloque medio $\sqrt N$.
+   menor que el nominal y el IC algo optimista; aun así +0,60 excluye 0 en el IC simple. Bloque medio $\sqrt N$.
 3. **Ley del leverage:** sobre 10, tendencia sig al α=0,10 (p=0,093); no p<0,05 ni LOO. Se cumple en el panel.
 4. **Clustering n=10:** exploratorio; qué modelo concreto gana por activo no es predecible por el cluster.
 5. **Complementariedad por régimen:** sig en pooled, no en SPY solo (fenómeno cross-asset).
@@ -226,7 +226,7 @@ capas + naturaleza→leverage + complementariedad) → límites (nominal vs triv
 
 - `DECISIONES_ESENCIALES.md`: universo = **10, sin apéndice** (los demás fuera del TFG); jerarquía de valor (§I);
   pooled = **pooled-10**; SMCI es uno de los 10, no caso central.
-- `RESULTADOS_OBJETIVO.md`: headline canónico = §V (pooled-10 +0,64; TOST; DiD; ley leverage sobre 10, p=0,093;
+- `RESULTADOS_OBJETIVO.md`: headline canónico = §V (pooled-10 M8 +0,60/M10 +1,12/AutoML +1,08; TOST; DiD; ley leverage sobre 10, p=0,093;
   victorias en punto vs trivial en SPY/SMCI/MARA/UNG).
 - `CONOCIMIENTO_ACUMULADO.md`: banner caso central **SPY + panel de 10 + patrones**; el valor es rescate + dos
   capas + naturaleza→leverage + batir-a-la-trivial-donde-se-puede; no genera alfa.

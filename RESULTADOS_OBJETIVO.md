@@ -3,7 +3,7 @@
 > **⚠️ ENFOQUE ACTUAL (2026-06-24) — fuente de verdad práctica: [`MARCO_PRACTICO_CONTEXTO.md`](MARCO_PRACTICO_CONTEXTO.md).**
 > Caso central = **SPY + panel de 10** (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), **sin apéndice**;
 > SMCI es **uno de los 10**, no el caso central. Headline: SPY AutoML 0,574 (McNemar vs M5 0,0002; vs ZeroR 0,90
-> nominal); **pooled-10 riesgo M8/M10/AutoML vs M5 +0,64/+0,93/+0,97** (Bonferroni: M10/AutoML sí, M8 no); **TOST**
+> nominal); **pooled-10 riesgo M8/M10/AutoML vs M5 +0,60/+1,12/+1,08** (`bullbear_confirmatory.json` POOLED10; Bonferroni: M10/AutoML sí, M8 no); **TOST**
 > (aprendiz bate la regla en accuracy, empata en riesgo); **DiD** +1,37 (p=0,008); **ley leverage sobre 10** r=−0,56
 > p=0,093 (α=0,10). Alcance = rescate + riesgo (alfa = línea futura). **Lo que abajo diga "SMCI caso de estudio /
 > 0,539 CPCV / pooled-15 / M10 0,552" está obsoleto.**

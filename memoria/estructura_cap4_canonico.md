@@ -120,7 +120,7 @@ Sirve a O2, O4, O6, C1, C2, C3, C6, C7, C8. El resultado duro (pooled-10 de ries
 - **Citas:** McNemar (vs ZeroR), sign test vs 0,5 (ref. Cap. 3).
 
 ### §4.2.3 Pooled-10: el rescate en riesgo (el resultado duro)
-- **Contamos:** pooled-10 ΔSharpe vs M5 (M8 +0,64 [0,10,1,29]; M10 +0,93 [0,19,1,65]; AutoML +0,97 [0,27,1,70],
+- **Contamos:** pooled-10 ΔSharpe vs M5, fuente `bullbear_confirmatory.json` POOLED10 (M8 +0,60 [0,05,1,22]; M10 +1,12 [0,39,1,84]; AutoML +1,08 [0,40,1,85],
   los tres excluyen 0); Bonferroni m=3 → M10/AutoML pasan, **M8 no** (cota inferior −0,047, falsación honesta
   de la regla en riesgo); DSR AutoML-SPY 0,92; caveat pooled (corr cruzada SPY-QQQ>0,9, n efectivo menor,
   bloque medio √N). → **O2 (el central), C1, C8, Q1/Q3.**

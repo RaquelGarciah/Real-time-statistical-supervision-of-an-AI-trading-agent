@@ -4,7 +4,7 @@
 > canónicas**. Si una cifra o decisión no está aquí o en las fuentes que enlazo, **no entra en la memoria**.
 >
 > **⚠️ Fuente de verdad de la parte práctica (2026-06-24): [`MARCO_PRACTICO_CONTEXTO.md`](../MARCO_PRACTICO_CONTEXTO.md)** —
-> caso central SPY + **panel de 10** (sin apéndice), pooled-10 (M8 +0,64), ley leverage sobre 10 (p=0,093), TOST/DiD,
+> caso central SPY + **panel de 10** (sin apéndice), pooled-10 (M8 +0,60/M10 +1,12/AutoML +1,08), ley leverage sobre 10 (p=0,093), TOST/DiD,
 > alcance = rescate + riesgo (alfa = línea futura). Las cifras de SMCI/CPCV de abajo son históricas.
 >
 > **[Actualizado 2026-06-23 — cambio de enfoque.]** SMCI deja de ser el activo del caso de estudio. El caso

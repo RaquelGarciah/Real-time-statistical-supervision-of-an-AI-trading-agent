@@ -3,7 +3,7 @@
 > **⚠️ ENFOQUE ACTUAL (2026-06-24) — fuente de verdad práctica: [`MARCO_PRACTICO_CONTEXTO.md`](MARCO_PRACTICO_CONTEXTO.md).**
 > Universo = **panel de 10** (SPY central + QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegido **ex ante por
 > naturaleza, SIN apéndice**; los demás activos no existen en el TFG. SMCI es **uno de los 10**, no el caso central.
-> Riesgo = **pooled-10** (M8 vs M5 ΔSharpe +0,64). Notebook canónico = `STRATA_marco_practico.ipynb`. Decisiones,
+> Riesgo = **pooled-10** (M8 vs M5 ΔSharpe +0,60; M10 +1,12; AutoML +1,08; fuente `bullbear_confirmatory.json` POOLED10). Notebook canónico = `STRATA_marco_practico.ipynb`. Decisiones,
 > jerarquía de valor y cifras canónicas, en CONTEXTO. **Lo que abajo trate a SMCI como caso central (#13–#16) o
 > hable de "10 de 15 / apéndice" está obsoleto** (queda como registro histórico del pivot).
 
