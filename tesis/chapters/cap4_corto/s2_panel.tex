@@ -165,7 +165,7 @@ McNemar bajista (Holm $p$) & $0{,}0092$ & $0{,}0268$ & $0{,}0017$ \\
 \end{tabular}
 \end{table}
 
-Los dos aprendices no rescatan igual en cada régimen, y eso abre una vía: M10 protege más en alcista, AutoML más en bajista. Para contrastar si ese reparto es real y no ruido construimos un test de diferencia-en-diferencias, pre-registrado antes de mirar resultados: comparamos la diferencia de $\Delta$Sharpe entre los dos aprendices entre los dos regímenes, de modo que cualquier efecto común se cancela y queda solo la complementariedad. El $\Delta\Delta$Sharpe pooled es $+1{,}37$ con $[0{,}20,\ 2{,}60]$ y $p = 0{,}008$, que excluye el cero. La complementariedad por régimen es significativa sobre el panel; la Figura~\ref{fig:mp-did} la dibuja, con AutoML cubriendo el régimen peligroso y M10 el favorable.
+Los dos aprendices no rescatan igual en cada régimen, y eso abre una vía: M10 protege más en alcista, AutoML más en bajista. Para contrastar si ese reparto es real y no ruido construimos un test de diferencia-en-diferencias, pre-registrado antes de mirar resultados. Comparamos, entre los dos regímenes, la diferencia de $\Delta$Sharpe de cada aprendiz frente al agente: cualquier efecto común a ambos se cancela y queda solo la complementariedad. El $\Delta\Delta$Sharpe pooled es $+1{,}37$ con $[0{,}20,\ 2{,}60]$ y $p = 0{,}008$, que excluye el cero. La complementariedad por régimen es significativa sobre el panel; la Figura~\ref{fig:mp-did} la dibuja, con AutoML cubriendo el régimen peligroso y M10 el favorable.
 
 \begin{figure}[htbp]
 \centering
