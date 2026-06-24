@@ -81,7 +81,7 @@ Estas victorias son reales en punto, y son nominales. La ventana desplegable tie
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_heatmap_accuracy}
-\caption{Mapa de calor de la accuracy direccional por activo (filas) y estrategia (columnas), centrado en $0{,}5$: el color mide la distancia a una referencia trivial. Verde marca accuracy por encima de la trivial del activo, rojo por debajo. La mejor derivada de STRATA supera a las dos triviales solo en SPY, SMCI, MARA y UNG; en los demás la trivial aguanta. Victorias nominales (n${}\approx 250$, a posteriori; McNemar AutoML vs ZeroR en SPY $p = 0{,}90$). Fuente: \texttt{automl\_runs/panel\_mm25\_inclGBM-XGB-SE\_AUC\_emb1\_N0-150\_step21\_kfold\_seed42.json}.}
+\caption{Mapa de calor de la accuracy direccional por activo (filas) y estrategia (columnas), centrado en $0{,}5$: el color mide la distancia a una referencia trivial. Verde marca accuracy por encima de la trivial del activo, rojo por debajo. La mejor derivada de STRATA supera a las dos triviales solo en SPY, SMCI, MARA y UNG; en los demás la trivial aguanta. Victorias nominales (n${}\approx 250$, a posteriori). Fuente: \texttt{automl\_runs/panel\_mm25\_inclGBM-XGB-SE\_AUC\_emb1\_N0-150\_step21\_kfold\_seed42.json}.}
 \label{fig:mp-heatmap}
 \end{figure}
 
@@ -359,7 +359,7 @@ La naturaleza define grupos de activos & Consenso de cuatro métodos, Rand $= 1{
 \end{tabular}
 \end{table}
 
-Dos cautelas estadísticas atraviesan estos cinco límites. La primera es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La segunda afecta al \emph{pooled}: apilar los días de los diez activos los trata como independientes, y no lo son. La correlación cruzada entre índices como SPY y QQQ supera $0{,}9$, de modo que el tamaño efectivo de la muestra es menor que el nominal y el intervalo queda algo optimista. Lo controlamos con un bootstrap estacionario de bloque medio $\sqrt{N}$ (Politis y Romano 1994 \cite{politis1994}), y aun así el $\Delta$Sharpe de M10 y AutoML excluye el cero con holgura. La regla, en cambio, vive en el filo, y por eso queda fuera de lo que sobrevive a Bonferroni.
+Dos cautelas estadísticas atraviesan estos cinco límites. La primera es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La segunda afecta al \emph{pooled}, ya descontada en la Sección~\ref{sec:panel-pooled}: el tamaño efectivo de la muestra es menor que el nominal y el intervalo queda algo optimista. Aun así, el $\Delta$Sharpe de M10 y AutoML excluye el cero con holgura, mientras la regla vive en el filo y queda fuera de lo que sobrevive a Bonferroni.
 
 \subsection{Desplegabilidad}
 \label{sec:panel-lim-despliegue}
