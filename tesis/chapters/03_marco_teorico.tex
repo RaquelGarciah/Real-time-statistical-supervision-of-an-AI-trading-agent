@@ -737,14 +737,46 @@ Las dos últimas son las referencias frente a las que cualquier estrategia con p
 \section{Métricas de evaluación}
 \label{sec:metricas}
 
-Para juzgar si una estrategia lo hace bien no basta con mirar cuánto gana: hay que poner el rendimiento en relación con el riesgo asumido. A continuación describiremos unas métricas que enriqueceran nuestros resultados aunque es importante entender que inguna prueba nada por sí sola y la prueba estadística del trabajo descansa en los contrastes de la Sección~\ref{sec:tests}.
+Para juzgar si una estrategia lo hace bien no basta con mirar cuánto gana: hay que poner el rendimiento en relación con el riesgo asumido. Las métricas que siguen enriquecen la lectura de los resultados, pero ninguna prueba nada por sí sola: la prueba estadística del trabajo descansa en los contrastes de la Sección~\ref{sec:tests}.
+
+\subsection{Acierto direccional y matriz de confusión}
+\label{sec:metricas-direccional}
+
+La métrica primaria de este trabajo es el acierto direccional. Una estrategia produce cada día una posición $w_t$ y se mide contra el retorno del día siguiente $\rnext$; acierta cuando la dirección apostada coincide con la realizada. La \emph{accuracy direccional} es la fracción de días en que ambos signos concuerdan,
+\[
+\mathrm{Acc} \;=\; \frac{1}{n} \sum_{t} \mathbf{1}\big\{\operatorname{sign}(w_t) = \operatorname{sign}(\rnext)\big\}.
+\]
+Mide la habilidad de la decisión sin pasar por la economía: cuánto del tiempo la apuesta acierta el signo del mercado.
+
+El acierto diario se ordena en una \emph{matriz de confusión} $2\times 2$ que cruza lo apostado con lo ocurrido. Tomando la apuesta larga como clase positiva, un día puede ser verdadero positivo (larga y sube), verdadero negativo (corta y baja), falso positivo (larga y baja) o falso negativo (corta y sube). La accuracy es la masa de la diagonal, $(\mathrm{TP}+\mathrm{TN})/n$. Del lado largo leemos también la \emph{precisión}, $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, la fracción de apuestas alcistas que aciertan, y el \emph{recall}, $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, la fracción de subidas que la estrategia capta. El objeto sobre el que operan los contrastes de la Sección~\ref{sec:tests} es más fino que estos escalares: es el \emph{vector diario} de acierto/fallo $a_t = \mathbf{1}\{\operatorname{sign}(w_t) = \operatorname{sign}(\rnext)\} \in \{0,1\}$, que alineado día a día entre dos estrategias da los pares sobre los que trabajan el sign test y McNemar.
+
+Cuando la estrategia emite una probabilidad $p_1(\mathbf{x}_t)$ de subida antes de umbralizarla, disponemos de una métrica que no depende del umbral: el \emph{AUC}, área bajo la curva ROC. La curva ROC traza la tasa de verdaderos positivos frente a la de falsos positivos al recorrer todos los umbrales \cite{hanley1982, fawcett2006}, y su área es la probabilidad de que un día de subida reciba mayor $p_1$ que un día de bajada tomado al azar. Vale $0{,}5$ para un ordenamiento sin información y $1$ para uno perfecto. La búsqueda automatizada de la Sección~\ref{sec:sup-automl} selecciona su \emph{leader} por este criterio.
+
+Dos referencias triviales fijan el listón de toda accuracy, ya definidas en el catálogo de estrategias (Definición~\ref{def:estrategias}). \emph{ZeroR} predice la clase mayoritaria del pasado estricto: su accuracy es la frecuencia de la dirección dominante, el techo que se alcanza sin información alguna. \emph{B\&H} (comprar y mantener) mide la exposición pasiva al activo. Una estrategia con pretensión de habilidad ha de batir a las dos, no solo a la moneda equilibrada.
 
 \subsection{El ratio de Sharpe}
 \label{sec:economia-sharpe}
 
+Las métricas de riesgo trabajan sobre los retornos diarios de la estrategia, $g_t = w_t \cdot \rnext$, el resultado causal de aplicar la posición de $t$ al movimiento de $t+1$. La más extendida es el \emph{ratio de Sharpe}, la recompensa por unidad de variabilidad que introdujo Sharpe \cite{sharpe1966, sharpe1994}: el cociente entre el retorno medio y su desviación típica,
+\[
+\mathrm{SR} \;=\; \frac{\bar{g}}{\hat{\sigma}_g}, \qquad \bar{g} = \frac{1}{n}\sum_t g_t, \quad \hat{\sigma}_g^2 = \frac{1}{n-1}\sum_t (g_t - \bar{g})^2.
+\]
+Cuanto retorno extrae la estrategia por cada punto de volatilidad que soporta. Como en la Sección~\ref{sec:garch}, las cifras se reportan anualizadas, multiplicando el ratio diario por $\sqrt{252}$, la escala con que las desviaciones de días aproximadamente independientes acumulan a lo largo del año bursátil. Un Sharpe alto señala una estrategia que gana de forma estable; uno negativo, que pierde de media.
 
-\subsection{Sortino, drawdown máximo y Calmar}
+\subsection{Drawdown máximo y Calmar}
 \label{sec:economia-otros}
+
+El Sharpe penaliza por igual la volatilidad al alza y a la baja, pero quien arriesga capital teme sobre todo las rachas malas. La \emph{máxima caída} (\emph{maximum drawdown}) las captura. Sobre la curva de capital acumulado $V_t = \prod_{s \le t}(1 + g_s)$, es la mayor pérdida relativa desde un máximo previo hasta un mínimo posterior,
+\[
+\mathrm{maxDD} \;=\; \max_{t}\, \frac{\max_{s \le t} V_s - V_t}{\max_{s \le t} V_s} \;\ge\; 0,
+\]
+una cantidad no negativa que lee el peor tramo de la historia: cuánto habría perdido quien entró justo en el peor momento \cite{magdonismail2004}. Es la medida de riesgo que más pesa en la lectura de los resultados del panel.
+
+El \emph{ratio de Calmar} relaciona el rendimiento con esa peor caída \cite{young1991}: el rendimiento anualizado dividido por la máxima caída,
+\[
+\mathrm{Calmar} \;=\; \frac{\text{rendimiento anualizado}}{\mathrm{maxDD}}.
+\]
+El Sharpe divide por la volatilidad media; el Calmar, por el peor tramo, de modo que es sensible al episodio más adverso y no solo a la dispersión típica. Un activo de Sharpe razonable pero con un desplome puntual severo recibe un Calmar bajo, lo que lo delata como peligroso.
 
 \section{Validación}
 \label{sec:cpcv}
@@ -767,38 +799,105 @@ La posición se fija en $t$ y se evalúa con el primer retorno que aún no se co
 
 La convención \texttt{signal\_lag=1} asegura la causalidad de una decisión aislada, pero el meta-learner del caso de estudio \emph{aprende} de los datos, y validar un modelo que aprende necesita un protocolo que reproduzca cómo se usaría si queremos llevarlo a producción. El que adoptamos es el \emph{walk-forward} de origen rodante (\emph{rolling-origin}), el estándar para evaluar predicción sobre series temporales \cite{tashman2000, bergmeir2018}: el modelo se entrena solo con el pasado, predice un tramo futuro, y la ventana de entrenamiento avanza en el tiempo repitiendo el ciclo.
 
-Se reserva un \emph{periodo de arranque} (\emph{burn-in}) inicial, que sirve para el primer entrenamiento y no se puntúa. A partir de ahí, cada cierto número de días el modelo se reentrena con \emph{toda} la información disponible hasta esa fecha y predice el bloque siguiente, estrictamente futuro respecto al entrenamiento. Como la ventana se expande y nunca retrocede, ninguna predicción usa datos posteriores al día en que se emite: el protocolo es causal por construcción y \emph{desplegable}: reproduce lo que se haría en la realidad, reentrenando de forma periódica y operando hacia delante. Los valores concretos del burn-in y de la frecuencia de reentreno se fijarán en el capítulo 4.
+Se reserva un \emph{periodo de arranque} (\emph{burn-in}) inicial, que sirve para el primer entrenamiento y no se puntúa. A partir de ahí, cada cierto número de días el modelo se reentrena con \emph{toda} la información disponible hasta esa fecha y predice el bloque siguiente, estrictamente futuro respecto al entrenamiento. Como la ventana se expande y nunca retrocede, ninguna predicción usa datos posteriores al día en que se emite: el protocolo es causal por construcción y \emph{desplegable}: reproduce lo que se haría en la realidad, reentrenando de forma periódica y operando hacia delante. El burn-in y la frecuencia de reentreno se calibran en el caso de estudio.
 
 \subsection{Purga y embargo}
 \label{sec:cpcv-purga}
 
+Reentrenar sobre el pasado y predecir el futuro no basta cuando la etiqueta de un día se define sobre un horizonte que se solapa con el bloque de evaluación. La \emph{purga} corrige ese solape: eliminamos del conjunto de entrenamiento las muestras cuyo intervalo de etiqueta toca el tramo de test \cite{lopezdeprado2018}. Una muestra etiquetada con un retorno que se extiende dentro del periodo evaluado comparte información con él, y dejarla dentro filtra futuro hacia el entrenamiento; purgarla rompe ese puente.
+
+La purga no agota la fuga. Los retornos contiguos están autocorrelados, de modo que una muestra de entrenamiento inmediatamente anterior al test, aunque su etiqueta no solape, comparte estructura con las primeras muestras evaluadas. El \emph{embargo} la corta descartando además los $h$ días posteriores a cada bloque de test antes de readmitir muestras al entrenamiento \cite{lopezdeprado2018}. En este trabajo el horizonte de la etiqueta es de un solo día, la dirección de $\rnext$, así que un día de separación elimina el único solape posible: fijamos $h = 1$. Un embargo mayor descartaría información válida sin ganar protección.
 
 \subsection{Por qué no validación cruzada convencional. CPCV}
 \label{sec:cpcv-cpcv}
 
+Barajar los pliegues al azar rompe el orden del tiempo. La validación cruzada $K$-\emph{fold} convencional reparte las muestras sin mirar la fecha, de modo que un pliegue de entrenamiento puede contener días posteriores a los del pliegue de test: el modelo aprende del futuro y se evalúa sobre el pasado. Esa fuga infla las métricas y no se reproduce en operativa real. Ningún resultado del trabajo descansa sobre la $K$-fold barajada.
+
+La forma correcta de cortar los pliegues en el tiempo es la \emph{validación cruzada combinatoria purgada} (CPCV), que combina los pliegues de forma exhaustiva y aplica a cada combinación la purga y el embargo de la subsección anterior \cite[sec.~7.4]{lopezdeprado2018}. De ella tomamos dos formas concretas. El meta-learner se valida con el walk-forward desplegable de la Sección~\ref{sec:cpcv-walkforward}, que con horizonte de etiqueta uno y origen rodante es la versión que reproduce el despliegue en el tiempo. La búsqueda automatizada valida internamente con una \emph{$K$-fold purgada}: parte los pliegues por una columna temporal y les aplica embargo, no los baraja al azar. La $K$-fold sin purgar aparece una sola vez en el trabajo, deliberadamente, como contraejemplo que mide el sesgo que introduce.
+
+\subsection{Agregación pooled y su alcance}
+\label{sec:cpcv-pooled}
+
+El caso de estudio se construye sobre un activo, pero la prueba dura del rescate de riesgo necesita más muestra de la que da uno solo. Definimos la agregación \emph{pooled} como la concatenación de las series diarias pareadas de los diez activos del panel en una única serie de $n \approx 2493$ días. En lugar de un contraste por activo, un solo contraste sobre el conjunto, que multiplica el tamaño de muestra y, con él, la potencia para distinguir del cero un efecto que en un activo aislado queda dentro del ruido.
+
+El \emph{pooling} tiene un coste que pesa al leer sus intervalos. Las series de los diez activos no son independientes: varios son índices con correlación cruzada alta ($\rho > 0{,}9$), de modo que apilar sus días aporta menos información nueva de lo que sugiere el conteo bruto $n \approx 2493$. El tamaño de muestra \emph{efectivo} es menor que el nominal. El bootstrap estacionario de la Sección~\ref{sec:tests-bootstrap}, con bloques de longitud media $\sqrt{n}$, amortigua en parte esta dependencia al remuestrear tramos contiguos en lugar de días sueltos, pero no la cancela: el intervalo de confianza pooled es algo más estrecho de lo que daría una muestra verdaderamente independiente, esto es, ligeramente optimista. Lo descontamos al interpretar el panel.
+
 \section{Contraste de hipótesis}
 \label{sec:tests}
 
-\subsection{Test del signo binomial}
+La economía ilustra; la prueba vive aquí. Cada pregunta del trabajo tiene un contraste propio, con su hipótesis nula explícita y su estadístico, y las subsecciones se ordenan por la pregunta que responden: si la estrategia acierta la dirección, si rescata el riesgo, si su ventaja sobrevive a la multiplicidad, si equivale a la regla y si se asocia con la naturaleza del activo. Cierran el catálogo las herramientas de interpretabilidad y de agrupamiento que sostienen la parte de mecanismo.
+
+\subsection{Dirección: signo, McNemar y permutación por bloques}
 \label{sec:tests-sign}
 
-\subsection{Test de McNemar pareado}
-\label{sec:tests-mcnemar}
+Bajo la hipótesis nula de no-habilidad, cada acierto diario es una Bernoulli de parámetro $0{,}5$ y el número total de aciertos sigue una binomial. El \emph{sign test} contrasta la accuracy observada contra ese $0{,}5$ y rechaza cuando el exceso de aciertos es improbable bajo el azar \cite{conover1999}; los días sin movimiento ($\rnext = 0$), de medida prácticamente nula en retornos diarios, se descartan del conteo. Lo acompañamos con el \emph{intervalo de Wilson} para la proporción de acierto, que se comporta bien con muestras moderadas y cerca de los extremos, donde el intervalo normal ingenuo falla. Con este contraste medimos la primera afirmación del trabajo, que el agente acierta por debajo del azar.
 
+La pregunta pareada es si una estrategia acierta más que otra sobre los mismos días. La responde el \emph{test de McNemar}, que mira solo los días en que ambas discrepan \cite{mcnemar1947}. Sean $b$ los días en que la primera acierta y la segunda falla, y $c$ los del caso opuesto; los días en que ambas coinciden no informan sobre cuál es mejor. Bajo la nula de igual habilidad, $b$ y $c$ se reparten por igual, y
+\[
+\chi^2 \;=\; \frac{(b - c)^2}{b + c}
+\]
+sigue asintóticamente una $\chi^2_1$. Cuando los discordantes son pocos usamos la versión exacta, una binomial de parámetro $\tfrac{1}{2}$ sobre los $b + c$ pares. McNemar es el test central de accuracy: con él contrastamos si una derivada de STRATA rescata al agente.
 
-\subsection{Test de Diebold-Mariano}
-\label{sec:tests-dm}
+El sign test y McNemar tratan los días como intercambiables, y los aciertos de una serie financiera están autocorrelados. Para un nulo que respete esa estructura permutamos bloques contiguos de aciertos en lugar de días sueltos, lo que preserva la dependencia temporal local al construir la distribución del estadístico. La \emph{permutación por bloques} da un $p$ más conservador y más fiel a la serie, y blinda el rescate por sub-ventana y por régimen frente a la autocorrelación.
 
-\subsection{Contrastes de equivalencia}
-\label{sec:tests-tost}
-
-\subsection{Bootstrap estacionario}
+\subsection{Riesgo: bootstrap estacionario y Sharpe deflactado}
 \label{sec:tests-bootstrap}
 
+El rescate de riesgo se mide sobre la diferencia de Sharpe pareada entre dos estrategias, $\Delta\mathrm{SR}$. No hay fórmula cerrada fiable para su distribución bajo dependencia temporal, así que la estimamos por remuestreo. El \emph{bootstrap estacionario} de Politis y Romano remuestrea la serie en bloques contiguos de longitud aleatoria geométrica de media $\sqrt{n}$, lo que reproduce la autocorrelación de los retornos y mantiene estacionaria la serie remuestreada \cite{politis1994}. De cada réplica recalculamos $\Delta\mathrm{SR}$; el conjunto de réplicas da la distribución de la que tomamos los intervalos percentiles. Un intervalo que excluye el cero señala un rescate de riesgo distinguible de cero. Es el caballo de batalla del riesgo en el panel: del pooled-10, de los estratos por régimen y de la diferencia en diferencias.
 
-\subsection{Deflated Sharpe Ratio}
-\label{sec:tests-dsr}
+Un Sharpe alto no prueba habilidad si se ha elegido el mejor de muchas pruebas. El \emph{Deflated Sharpe Ratio} corrige ese sesgo de selección \cite{bailey2014}: ajusta el Sharpe observado por el número de configuraciones ensayadas y por la asimetría y la curtosis de los retornos, que inflan la varianza del estimador de Sharpe respecto al caso gaussiano. El resultado es la probabilidad de que el Sharpe verdadero supere un umbral, ya descontado el haber probado varias veces. Un Sharpe que sobrevive a la deflación es habilidad; uno que cae con ella, suerte de búsqueda.
 
+\subsection{Multiplicidad: Bonferroni y Holm}
+\label{sec:tests-multiplicidad}
+
+Contrastamos varias estrategias contra el mismo agente, y probar $m$ hipótesis al nivel $\alpha$ infla la probabilidad de que alguna resulte significativa por azar. Las correcciones por multiplicidad controlan la \emph{tasa de error por familia}, la probabilidad de al menos un falso positivo en el conjunto. La de \emph{Bonferroni} es la más simple: exige $p < \alpha/m$ en cada contraste, o equivalentemente ensancha cada intervalo de confianza al nivel $1 - \alpha/m$ \cite{bonferroni1936}. Es conservadora pero transparente. La aplicamos a los intervalos del $\Delta$Sharpe pooled, donde la cota de Bonferroni decide qué estrategias sobreviven.
+
+La corrección de \emph{Holm} alcanza el mismo control con más potencia \cite{holm1979}. Ordena los $p$-valores de menor a mayor, $p_{(1)} \le \dots \le p_{(m)}$, y compara el $i$-ésimo contra el umbral $\alpha/(m - i + 1)$, deteniéndose en el primer no rechazo. Solo el contraste más extremo paga el factor pleno $m$; los siguientes se relajan. Así Holm rechaza al menos tanto como Bonferroni sin perder la garantía. Con él reportamos el rescate por régimen, donde se contrasta más de una estrategia a la vez.
+
+\subsection{Equivalencia: el TOST}
+\label{sec:tests-tost}
+
+Los contrastes anteriores buscan diferencias; a veces la pregunta es la contraria, si dos estrategias son \emph{prácticamente iguales}. No rechazar la nula de igualdad no demuestra equivalencia, porque puede deberse a falta de potencia. El contraste correcto invierte la carga de la prueba: es el \emph{TOST} (\emph{two one-sided tests}) de Schuirmann \cite{schuirmann1987}. Se fija de antemano un margen de equivalencia $\delta$ y se toma como hipótesis nula que la diferencia cae \emph{fuera} de $[-\delta, +\delta]$,
+\[
+H_0:\ |\Delta| \ge \delta \qquad\text{frente a}\qquad H_1:\ |\Delta| < \delta.
+\]
+Rechazarla exige dos contrastes unilaterales: uno que descarte que la diferencia sea menor que $-\delta$ y otro que sea mayor que $+\delta$. Solo cuando ambos rechazan, esto es, cuando el intervalo de confianza de la diferencia cae entero dentro del margen, concluimos equivalencia. La similitud se convierte así en un criterio activo que hay que ganar. Lo aplicamos a la pregunta de si el aprendiz redescubre o bate a la regla M8.
+
+\subsection{Asociación: Pearson y Spearman}
+\label{sec:tests-asociacion}
+
+La ley del \emph{leverage} relaciona dos magnitudes continuas por activo: el rescate de accuracy del aprendiz y la firma del leverage effect. Para medir esa asociación usamos dos coeficientes de correlación. El de \emph{Pearson} cuantifica la relación lineal; el de \emph{Spearman}, la monótona, calculando Pearson sobre los rangos, lo que lo hace robusto a valores atípicos y a no linealidades que conserven el orden. El $p$-valor de cada uno sale del estadístico
+\[
+t \;=\; r \sqrt{\frac{n - 2}{1 - r^2}},
+\]
+que bajo la nula de correlación nula sigue una $t$ de Student con $n - 2$ grados de libertad. La $p$ depende de $n$, y la muestra de esta ley es pequeña: $n = 10$ activos. Por eso fijamos de antemano el nivel $\alpha = 0{,}10$, pre-registrado, y reportamos la asociación como tendencia. Con diez puntos no perseguimos $p < 0{,}05$ ni robustez \emph{leave-one-out}, que ese tamaño no sostiene.
+
+\subsection{Complementariedad: diferencia en diferencias}
+\label{sec:tests-did}
+
+La última pregunta sobre el reparto de funciones es si dos aprendices rescatan en regímenes distintos: si uno aporta más en mercado alcista y el otro en bajista. Un solo $\Delta$Sharpe no la responde, porque mezcla el efecto del aprendiz con el del régimen. La aislamos con un contraste de \emph{diferencia en diferencias} (DiD): tomamos la diferencia de Sharpe de cada aprendiz frente al agente en cada régimen y comparamos esas diferencias entre regímenes,
+\[
+\Delta\Delta\mathrm{SR} \;=\; \big(\mathrm{SR}^{A}_{\text{alza}} - \mathrm{SR}^{B}_{\text{alza}}\big) - \big(\mathrm{SR}^{A}_{\text{baja}} - \mathrm{SR}^{B}_{\text{baja}}\big).
+\]
+Un $\Delta\Delta\mathrm{SR}$ distinto de cero indica que el reparto de fuerzas entre los dos aprendices cambia con el régimen, esto es, que se complementan. Su intervalo de confianza sale del bootstrap estacionario de la Sección~\ref{sec:tests-bootstrap}. Es un contraste propio sobre nuestras series pareadas, pre-registrado; toma el nombre del estimador de tratamiento de la econometría, pero no su maquinaria de identificación.
+
+\subsection{Interpretabilidad: valores de Shapley e importancia por permutación}
+\label{sec:tests-shap}
+
+La objeción central al aprendiz es si bate a STRATA o solo la redescubre. Para responderla atribuimos su predicción a cada característica de entrada con los \emph{valores de Shapley}, que reparten la predicción entre las variables según lo que aporta cada una en todas las coaliciones posibles, con fundamento en teoría de juegos cooperativos \cite{lundberg2017}. Para los ensembles de árboles del trabajo, TreeSHAP calcula esa atribución de forma exacta y en tiempo lineal recorriendo la estructura de los árboles, sin enumerar coaliciones \cite{lundberg2020}. Definimos la \emph{cuota STRATA} como la fracción de importancia que se llevan las siete features de los detectores,
+\[
+\text{cuota STRATA} \;=\; \frac{\sum_{j \in \text{STRATA}} \overline{|\mathrm{SHAP}_j|}}{\sum_{j} \overline{|\mathrm{SHAP}_j|}},
+\]
+el cociente entre la importancia media absoluta de las features de STRATA y la del total de las veintidós. Una cuota superior a un medio dice que el aprendiz se apoya mayoritariamente en las señales de los detectores.
+
+Como verificación agnóstica al modelo añadimos la \emph{importancia por permutación} \cite{breiman2001}: se permuta al azar una característica, rompiendo su relación con la etiqueta, y se mide cuánto se degrada la métrica de validación; la caída es la importancia de esa variable. No depende de la estructura interna del modelo, y confirma desde fuera el reparto que da SHAP. Que los dos métodos coincidan en señalar las features de STRATA es la evidencia con que respondemos a la objeción de universalidad.
+
+\subsection{Agrupamiento: silueta, Rand y PCA}
+\label{sec:tests-clustering}
+
+La parte exploratoria del panel pregunta si la naturaleza de los activos dibuja grupos. Agrupamos los diez activos por sus rasgos con cuatro algoritmos de familias distintas: $k$-medias \cite{macqueen1967}, el enlace aglomerativo de Ward \cite{ward1963}, las mezclas gaussianas \cite{dempster1977} y el clustering espectral \cite{ng2002spectral}. Que partan de principios distintos es lo que hace informativo su acuerdo.
+
+Juzgamos la partición con tres herramientas. La \emph{silueta} mide, para cada activo, su cohesión con el propio grupo frente a su separación del más cercano, en una escala de $-1$ a $1$; una media alta indica grupos compactos y bien separados. El \emph{BIC} (criterio de información bayesiano) fija el número de grupos y de componentes en las mezclas gaussianas, penalizando la verosimilitud por el número de parámetros para no partir la muestra en más grupos de los que sostiene \cite{schwarz1978}. El \emph{índice de Rand ajustado} compara dos particiones corregido por la concordancia que se esperaría al azar: vale $1$ cuando coinciden y ronda $0$ cuando no se parecen más que por casualidad \cite{hubert1985}. Un Rand de $1$ entre los cuatro métodos es un consenso fuerte. Por último, el \emph{PCA} (análisis de componentes principales) proyecta los rasgos sobre las direcciones de máxima varianza \cite{jolliffe2002}, lo que deja leer en pocos ejes el factor que separa los grupos.
 
 % Fin del capítulo. El contenido de STRATA (función de supervisión, los tres detectores y la capa
 % de intervención) está desarrollado en las Secciones \ref{sec:strata-tecnico} y \ref{sec:strata-aplicado}.
