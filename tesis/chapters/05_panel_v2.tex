@@ -45,7 +45,7 @@ UNG  & $0{,}078$ & $0{,}169$ & agente $>$ régimen \\
 \label{fig:mp-gate-ram}
 \end{figure}
 
-La compuerta de régimen que vimos en SPY (Sección~\ref{sec:spy-anatomia}) gobierna también el panel: en seis de los diez activos la corrección apunta en la dirección buena. Que la actividad de la regla escale con la discrepancia confirma que la intervención está dirigida: actúa donde el agente y el mercado se contradicen y permanece inactiva donde coinciden.
+La compuerta de régimen que vimos en SPY (Sección~\ref{sec:spy-anatomia}) gobierna también el panel. Que la actividad de la regla escale con la discrepancia confirma que la intervención está dirigida: actúa donde el agente y el mercado se contradicen y permanece inactiva donde coinciden.
 
 \subsection{Accuracy por activo: dónde se bate a la trivial}
 \label{sec:panel-accuracy}
@@ -222,7 +222,7 @@ Agregado el panel, el rescate deja de ser una anécdota de SPY. El $\Delta$Sharp
 
 % Clustering = EXPLORATORIO (n=10).
 
-La sección anterior deja un hecho sin explicar: qué canal rescata cada activo cambia de uno a otro. Primero medimos qué propiedad del activo ordena el rescate del aprendiz, y resulta ser el \emph{leverage effect}. Después un clustering, sin etiquetas, recupera los mismos grupos que esa propiedad dibuja. Sobre diez activos esto es un patrón, no un teorema.
+La sección anterior deja un hecho sin explicar: qué canal rescata cada activo cambia de uno a otro. La propiedad que ordena el rescate del aprendiz resulta ser el \emph{leverage effect}, y un clustering sin etiquetas recupera los mismos grupos que esa propiedad dibuja. Sobre diez activos esto es un patrón, no un teorema.
 
 \subsection{La ley del \emph{leverage}}
 \label{sec:panel-ley}
@@ -349,4 +349,4 @@ La naturaleza define grupos de activos & Consenso de cuatro métodos, Rand $= 1{
 
 Dos cautelas estadísticas atraviesan estos cinco límites. La primera es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La segunda afecta al \emph{pooled}, ya descontada en la Sección~\ref{sec:panel-pooled}: el tamaño efectivo de la muestra es menor que el nominal y el intervalo queda algo optimista. Aun así, el $\Delta$Sharpe de M10 y AutoML excluye el cero con holgura, mientras la regla vive en el filo y queda fuera de lo que sobrevive a Bonferroni.
 
-El panel cierra la pregunta con la que abrió: lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar. El balance y sus implicaciones quedan para el capítulo de conclusiones.
+El panel cierra la pregunta con la que abrió: lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar.
