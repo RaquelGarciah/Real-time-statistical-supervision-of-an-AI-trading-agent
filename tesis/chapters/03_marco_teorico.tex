@@ -6,7 +6,7 @@
 % Estructura por disciplina (4 bloques): §0 preliminares · §1 STRATA técnico · §2 teoría de los
 % detectores · §3 STRATA aplicado (calibración/umbrales) · §4 validación (métricas/tests).
 
-Este capítulo reúne la base matemática sobre la que se construye STRATA y fija la notación que usa el resto de la memoria. Tras unos preliminares que establecen la notación el desarrollo se organiza en cuatro bloques. El primero presenta STRATA a nivel técnico: qué supervisa, con qué tres detectores y de qué forma interviene (Sección~\ref{sec:strata-tecnico}). El segundo desarrolla la teoría matemática que sostiene cada detector: el modelo oculto de Markov del régimen (Sección~\ref{sec:hmm}), el modelo GARCH de la volatilidad (Sección~\ref{sec:garch}) y la detección bayesiana de puntos de cambio (Sección~\ref{sec:bocpd}). El tercero construye STRATA sobre esa teoría y fija sus calibraciones y umbrales (Sección~\ref{sec:strata-aplicado}). El cuarto reúne las herramientas de validación: las métricas de evaluación, la ausencia de fuga temporal y los contrastes de hipótesis (Secciones~\ref{sec:metricas}, \ref{sec:cpcv} y~\ref{sec:tests}). 
+Este capítulo reúne la base matemática sobre la que se construye STRATA y fija la notación que usa el resto de la memoria. Tras unos preliminares que establecen la notación, y una presentación del agente de trading basado en modelos de lenguaje que el sistema supervisa (Sección~\ref{sec:agente-trading}), el desarrollo se organiza en cuatro bloques. El primero presenta STRATA a nivel técnico: qué supervisa, con qué tres detectores y de qué forma interviene (Sección~\ref{sec:strata-tecnico}). El segundo desarrolla la teoría matemática que sostiene cada detector: el modelo oculto de Markov del régimen (Sección~\ref{sec:hmm}), el modelo GARCH de la volatilidad (Sección~\ref{sec:garch}) y la detección bayesiana de puntos de cambio (Sección~\ref{sec:bocpd}). El tercero construye STRATA sobre esa teoría y fija sus calibraciones y umbrales (Sección~\ref{sec:strata-aplicado}). El cuarto reúne las herramientas de validación: las métricas de evaluación, la ausencia de fuga temporal y los contrastes de hipótesis (Secciones~\ref{sec:metricas}, \ref{sec:cpcv} y~\ref{sec:tests}). 
 
 \section{Preliminares y notación}
 \label{sec:preliminares}
@@ -39,7 +39,62 @@ RV_t \;=\; \sqrt{\sum_{j=0}^{h-1} \big(r^{\log}_{t-j}\big)^2}\,,
 \]
 esto es, la raíz de la suma de cuadrados de los log-retornos de la ventana. $RV_t$ es un estimador no paramétrico de la dispersión local de los retornos: crece cuando el activo encadena días de movimientos grandes y se reduce en los tramos planos. A diferencia de la volatilidad condicional $\sigmat$ que se introduce en la Sección~\ref{sec:garch}, $RV_t$ no presupone ningún modelo; es una lectura directa de los datos.
 
-Las series de retornos financieros no se comportan como ruido blanco gaussiano. Tres regularidades empíricas, documentadas de forma sistemática en la literatura \cite{cont2001}, motivan los modelos del resto del capítulo. La primera es que la distribución de los retornos tiene \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituir la gaussiana por una distribución de colas anchas como la $t$ de Student en el modelo de volatilidad. El \emph{agrupamiento de volatilidad} es la segunda: los días de gran movimiento tienden a seguirse unos a otros, así que la magnitud de los retornos sí está correlada en el tiempo aunque su signo apenas lo esté, y eso es lo que captura un modelo GARCH. Queda la tercera, la \emph{poca autocorrelación} de los retornos en niveles: casi nula a partir del primer rezago, mientras que sus cuadrados o sus valores absolutos sí la presentan. La combinación de las tres sugiere que el comportamiento del activo alterna entre estados o regímenes con dinámicas distintas, idea que formaliza el modelo de cambio de régimen de la siguiente sección.
+Las series de retornos financieros no se comportan como ruido blanco gaussiano. Tres regularidades empíricas, documentadas de forma sistemática en la literatura \cite{cont2001}, motivan los modelos del resto del capítulo. La primera es que la distribución de los retornos tiene \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituir la gaussiana por una distribución de colas anchas como la $t$ de Student en el modelo de volatilidad. El \emph{agrupamiento de volatilidad} es la segunda: los días de gran movimiento tienden a seguirse unos a otros, así que la magnitud de los retornos sí está correlada en el tiempo aunque su signo apenas lo esté, y eso es lo que captura un modelo GARCH. Queda la tercera, la \emph{poca autocorrelación} de los retornos en niveles: casi nula a partir del primer rezago, mientras que sus cuadrados o sus valores absolutos sí la presentan. La combinación de las tres sugiere que el comportamiento del activo alterna entre estados o regímenes con dinámicas distintas, idea que formaliza el modelo de cambio de régimen que se desarrolla más adelante (Sección~\ref{sec:hmm}).
+
+\section{Agentes de trading basados en modelos de lenguaje}
+\label{sec:agente-trading}
+
+El objeto que STRATA supervisa es la decisión diaria de un agente de trading construido sobre un modelo de lenguaje. La inteligencia artificial agéntica es reciente y su mecánica no se da por conocida, así que fijamos primero qué es ese agente y cómo decide, antes de levantar la capa que lo vigila. El capítulo~\ref{cap:estado-arte} lo situó frente a la literatura; describimos ahora su funcionamiento con el detalle justo para seguir el resto de la memoria. Nos quedamos con lo que importa para la supervisión: la entrada del agente, su salida y la naturaleza de la función que las une. La arquitectura interna del transformer no es objeto de este trabajo.
+
+\subsection{Modelos de lenguaje}
+\label{sec:agente-llm}
+
+Un \emph{modelo de lenguaje} (LLM, por \emph{large language model}) es un modelo estadístico entrenado sobre un corpus enorme de texto con un objetivo simple: predecir la siguiente palabra de una secuencia dado lo que la precede. La arquitectura que hizo viable entrenarlo a gran escala es el \emph{transformer} \cite{vaswani2017attention}. Brown et al. observaron que, pasada cierta escala, el modelo resuelve tareas nuevas sin reajustar sus pesos, con solo describirlas o ejemplificarlas en la entrada, un régimen que llamaron aprendizaje en contexto \cite{brown2020language}. Sobre texto financiero, un modelo así sostiene un razonamiento económico y no se limita a clasificar el sentimiento de una noticia \cite{yang2023fingpt}. El modelo recibe un texto de entrada, el \emph{prompt}, y devuelve texto, generado palabra a palabra. Un parámetro de \emph{temperatura} regula cuánta aleatoriedad introduce esa generación: a temperatura cero toma siempre la palabra más probable y se vuelve casi determinista. El agente de este trabajo opera a temperatura cero, lo que recorta la aleatoriedad de sus decisiones y favorece la reproducibilidad sin garantizarla del todo.
+
+De este modelo, la supervisión hereda dos rasgos. El primero es su opacidad: la función que lleva el prompt a la decisión no tiene forma cerrada que podamos auditar término a término, y a efectos de la supervisión el modelo es una caja negra que decide sin justificarse en términos verificables. El segundo es su \emph{corte de entrenamiento} (\emph{cut-off}): el modelo aprende de un corpus fijo hasta una fecha, y nada posterior a ella entra en su entrenamiento. Esa fecha condiciona cómo se le puede evaluar sin engaño. Si el periodo de prueba cae dentro del corpus de entrenamiento, el modelo puede reproducir un desenlace que ya vio en lugar de inferirlo, sesgo conocido como \emph{look-ahead} que infla de forma artificial las métricas \cite{benhenda2026lookahead}. Por eso la ventana de evaluación de esta memoria arranca después del corte del modelo empleado, decisión que la Sección~\ref{sec:strata-calib} retoma.
+
+\subsection{De modelo a agente}
+\label{sec:agente-agentico}
+
+Un modelo de lenguaje, por sí solo, transforma una entrada en una salida en un solo paso: se le pregunta y responde. Un \emph{agente} es ese mismo modelo puesto a funcionar dentro de un bucle. Le damos un papel mediante un prompt que fija su cometido, lo equipamos con herramientas y una memoria, y lo dejamos operar por turnos. En cada turno el agente elige una acción, la ejecuta sobre su entorno y actualiza su contexto con lo que observa; ese resultado guía el turno siguiente, hasta una condición de parada \cite{yao2023react, wang2024survey}. La Figura~\ref{fig:agente-bucle} resume la diferencia: el modelo razona; el agente, además, actúa y se corrige con lo que observa. A este uso de los modelos de lenguaje, como motor de decisión de un sistema que actúa sobre su entorno, se le llama \emph{IA agéntica} \cite{schluntz2024building}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  caja/.style={draw, rounded corners, align=center, font=\small, inner sep=6pt},
+  et/.style={font=\footnotesize\itshape}]
+  \node[caja, fill=gray!12, minimum width=46mm, minimum height=13mm] (llm)
+       {Modelo de lenguaje\\[1pt]\footnotesize con un papel, memoria y herramientas};
+  \node[caja, fill=gray!4, minimum width=46mm, minimum height=11mm, below=20mm of llm] (env)
+       {Entorno\\[1pt]\footnotesize datos del mercado, herramientas};
+  \node[et, left=12mm of llm] (in) {objetivo};
+  \node[et, right=12mm of llm] (out) {decisión};
+  \draw[->] (in) -- (llm.west);
+  \draw[->] (llm.east) -- (out);
+  \draw[->] ([xshift=-10mm]llm.south) -- ([xshift=-10mm]env.north)
+        node[et, midway, left] {acción};
+  \draw[->] ([xshift=10mm]env.north) -- ([xshift=10mm]llm.south)
+        node[et, midway, right] {observación};
+\end{tikzpicture}
+\caption{De modelo a agente. Un modelo de lenguaje aislado lleva una entrada a una salida en un solo paso. Un \emph{agente} envuelve al modelo en un bucle: dotado de un papel, una memoria y unas herramientas, emite una acción sobre el entorno, observa el resultado y decide el paso siguiente, hasta una condición de parada que fija la decisión final. Esquema adaptado de Schluntz y Zhang \cite{schluntz2024building}.}
+\label{fig:agente-bucle}
+\end{figure}
+
+En nuestro caso el papel describe a un inversor, las herramientas dan acceso a los precios y a los datos del activo, y la acción es una decisión de inversión sobre el día en curso. La pieza que aprovechamos es que al mismo modelo se le pueden dar papeles distintos: a cada \emph{personalidad} le entregamos un prompt con el estilo de un inversor reconocido, y el modelo razona desde ese papel. Cinco personalidades sobre un mismo modelo producen cinco lecturas del mismo activo, cada una con su criterio, sin entrenar cinco modelos separados.
+
+\subsection{La arquitectura multiagente del fondo}
+\label{sec:agente-arquitectura}
+
+Cuando varios agentes se reparten el trabajo y un agente central coordina sus aportaciones, hablamos de una \emph{arquitectura multiagente}. El fondo sigue el patrón de \emph{orquestador y trabajadores}: cada personalidad aporta su lectura del activo de forma independiente y el orquestador las sintetiza en la decisión final del fondo \cite{schluntz2024building, wang2024survey}. La partición en roles tiene una ventaja para quien quiere supervisar el sistema: cada parte de la decisión procede de una fuente identificable.
+
+El agente concreto es una réplica de AI Hedge Fund \cite{singh2024aihedgefund}, presentada en el capítulo~\ref{cap:estado-arte}: un sistema multiagente de cinco personalidades inversoras sobre un mismo modelo de lenguaje, en la línea de los marcos multiagente de trading \cite{xiao2024tradingagents}. Los trabajadores son las cinco personalidades. Buffett aporta la mirada de valor, Wood la del crecimiento disruptivo, y junto a ellos operan la lectura macro de Druckenmiller, el contrarian de Burry y el activismo de Ackman. Para cada activo y cada día, cada personalidad analiza la información disponible y emite una señal direccional, alcista, bajista o neutral, con un grado de confianza. Un \emph{gestor de riesgo} fija el límite de la posición a partir de la volatilidad reciente. El orquestador es un \emph{gestor de cartera}, también un modelo de lenguaje, que integra las cinco señales y ese límite en una sola decisión: una dirección y un tamaño. Ese acuerdo lo produce el criterio del gestor de cartera, que pondera las cinco lecturas, no una regla de voto ni un promedio. La decisión resultante, una por activo y día, es la que STRATA supervisa.
+
+\subsection{La salida del agente}
+\label{sec:agente-salida}
+
+Para la capa de supervisión, el agente queda descrito por su salida diaria: una dirección, un tamaño y la confianza con que los emite. La Sección~\ref{sec:strata-tecnico} la formaliza como una posición $w_t \in [-1, +1]$, el objeto sobre el que actúan los detectores. Las señales de las cinco personalidades reaparecen además como variables de entrada del meta-learner de la Sección~\ref{sec:sup-problema}, junto a las lecturas estadísticas de STRATA.
+
+STRATA trata al agente como una caja negra: supervisa su decisión sin abrir el modelo ni reconstruir su razonamiento. Es la respuesta natural a sus dos rasgos. El modelo es opaco, su salida no tiene forma cerrada y su entrenamiento pudo ver parte del periodo de prueba; frente a eso, una capa externa que contrasta la decisión con un modelo explícito del mercado es más fiable que confiar en la coherencia interna del propio agente. El capítulo~\ref{cap:marco-practico} documenta que esa decisión, sobre el caso de estudio, acierta la dirección menos de la mitad de los días, con un fallo sistemático y por tanto corregible desde fuera.
 
 \section{STRATA a nivel técnico}
 \label{sec:strata-tecnico}
