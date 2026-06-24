@@ -32,10 +32,13 @@ sino *"¿una capa de supervisión estadística clásica (STRATA: régimen, cambi
 5. **El valor probado es relativo al agente** (el rescate), no un Sharpe absoluto que bata al mercado. *(El
    ángulo de generar alfa no entra en la narrativa: se trata solo en las conclusiones, como línea futura.)*
 
-**Línea roja.** STRATA no genera alfa *de forma general ni significativa* y no bate a lo trivial *con
-significancia* en accuracy (las victorias en Sharpe de 4/10 son en punto, nominales). Lo que sí sobrevive a un
-test: (a) rescate del agente en accuracy y riesgo; (b) que el aprendiz se apoya en STRATA y la mejora (SHAP +
-TOST); (c) el patrón naturaleza→canal (ley del leverage); (d) la complementariedad por régimen.
+**Lo que STRATA hace, y se prueba (el titular).** Su valor es la supervisión: (a) **rescata al agente** en
+accuracy y en riesgo, con significancia; (b) el aprendiz **se apoya en sus señales y las mejora** (SHAP + TOST);
+(c) la **naturaleza del activo (leverage) explica qué canal rescata** (ley del leverage + clustering); (d) los
+dos supervisores se **complementan por régimen** (DiD). El **alcance** de STRATA es el rescate y el control de
+riesgo, no la rentabilidad absoluta frente al mercado: batir al pasivo nunca fue el objetivo. La honestidad
+técnica (no lo supera de forma significativa) se queda en los límites (§VIII), como alcance, no como conclusión
+titular.
 
 ---
 
@@ -191,6 +194,10 @@ capas + naturaleza→leverage + complementariedad) → límites (nominal vs triv
 5. **Complementariedad por régimen:** sig en pooled, no en SPY solo (fenómeno cross-asset).
 6. **Desplegabilidad:** M8 opera desde el día 1 (regla ex-ante, rota poco); M10/AutoML necesitan ~150 días de
    arranque y reentreno, y AutoML cambia de leader en cada reentreno (más difícil de validar en producción).
+7. **Alcance (alfa):** el resultado probado es **relativo al agente** (el rescate); STRATA **no supera al
+   benchmark pasivo de forma significativa** (n≈250). A nivel de punto, en 4/10 una derivada supera al pasivo en
+   Sharpe —notablemente en leverage débil/invertido (SMCI/MARA/UNG), donde el pasivo pierde—, pero es nominal y a
+   posteriori. **Desarrollar una estrategia que genere alfa robusta queda como línea futura.**
 
 ---
 
