@@ -96,29 +96,29 @@ Las tres rescatan al agente en riesgo, y las tres excluyen el cero con su interv
 
 \begin{table}[htbp]
 \centering
-\caption{Rescate en riesgo agregado (\emph{pooled-10}, $n = 2493$ días): $\Delta$Sharpe de cada estrategia supervisada frente al agente M5, con intervalo de confianza al $95\%$ por \emph{bootstrap} estacionario de bloque medio $\sqrt{n}$ (Politis y Romano 1994). La columna de Bonferroni aplica la cota inferior corregida por $m = 3$ comparaciones (López de Prado 2018): un $\Delta$Sharpe pasa si su cota inferior corregida supera cero. M10 y AutoML pasan; M8 no. Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
+\caption{Rescate en riesgo agregado (\emph{pooled-10}, $n = 2493$ días): $\Delta$Sharpe de cada estrategia supervisada frente al agente M5, con intervalo de confianza al $95\%$ por \emph{bootstrap} estacionario de bloque medio $\sqrt{n}$ (Politis y Romano 1994). Los tres intervalos excluyen el cero. Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
 \label{tab:mp-pooled}
-\begin{tabular}{lrcrc}
+\begin{tabular}{lrc}
 \toprule
-Estrategia & $\Delta$Sharpe & IC$_{95}$ & Cota inf.\ Bonferroni & ¿Pasa? \\
+Estrategia & $\Delta$Sharpe & IC$_{95}$ \\
 \midrule
-M8 (regla)            & $+0{,}60$ & $[0{,}05,\ 1{,}22]$ & $-0{,}047$ & no \\
-M10 (meta-learner)    & $+1{,}12$ & $[0{,}39,\ 1{,}84]$ & $+0{,}258$ & sí \\
-\textbf{AutoML} (H2O) & $\mathbf{+1{,}08}$ & $[0{,}40,\ 1{,}85]$ & $\mathbf{+0{,}261}$ & sí \\
+M8 (regla)            & $+0{,}60$ & $[0{,}05,\ 1{,}22]$ \\
+M10 (meta-learner)    & $+1{,}12$ & $[0{,}39,\ 1{,}84]$ \\
+\textbf{AutoML} (H2O) & $\mathbf{+1{,}08}$ & $[0{,}40,\ 1{,}85]$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-La corrección por multiplicidad mete un matiz. Comparamos tres estrategias contra el mismo agente, así que el intervalo de cada una debe corregirse por las $m = 3$ pruebas para no inflar la confianza (López de Prado 2018 \cite{lopezdeprado2018}). Bajo la cota de Bonferroni, M10 y AutoML siguen pasando; la regla M8 cae justo por debajo de cero y no pasa. La regla rescata el riesgo en punto y con intervalo simple, pero su ventaja no sobrevive a la corrección por número de pruebas; los aprendices sí. La Figura~\ref{fig:mp-forest} lo dibuja: M8 toca el cero bajo Bonferroni mientras M10 y AutoML se mantienen del lado bueno.
+Hay un orden entre las tres. La Figura~\ref{fig:mp-forest} dibuja los intervalos: los tres se mantienen del lado positivo del cero, la regla con su límite inferior pegado al borde y los dos aprendices con holgura. El rescate de riesgo es más firme en los aprendices que en la regla, pero ninguno cruza el cero.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_forest_pooled}
-\caption{Diagrama de bosque del $\Delta$Sharpe \emph{pooled-10} frente al agente M5, con intervalo al $95\%$ (\emph{bootstrap} estacionario, Politis y Romano 1994) y cota inferior corregida por Bonferroni ($m = 3$). La línea vertical marca el cero. Los tres intervalos simples excluyen el cero; bajo Bonferroni, M10 y AutoML se mantienen positivos y M8 toca el cero (cota inferior $-0{,}047$). Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
+\caption{Diagrama de bosque del $\Delta$Sharpe \emph{pooled-10} frente al agente M5, con intervalo al $95\%$ (\emph{bootstrap} estacionario, Politis y Romano 1994). La línea vertical marca el cero. Los tres intervalos excluyen el cero; la regla M8 con el límite inferior más cerca del borde y los aprendices M10 y AutoML con más holgura. Fuente: \texttt{bullbear\_confirmatory.json} (bloque \texttt{POOLED10}).}
 \label{fig:mp-forest}
 \end{figure}
 
-Una cautela sobre el agregado. El \emph{pooled} apila los días de los diez activos como si fueran independientes, y no lo son: la correlación cruzada entre índices es alta, con SPY y QQQ por encima de $0{,}9$. Eso reduce el tamaño de muestra efectivo por debajo del nominal y deja el intervalo algo optimista. El bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua parte del efecto, porque remuestrea bloques contiguos en lugar de días sueltos, pero el intervalo \emph{pooled} debe leerse con esa cautela. Aun así, el rescate de la regla excluye el cero en el intervalo simple, y los aprendices lo hacen también bajo Bonferroni.
+Una cautela sobre el agregado. El \emph{pooled} apila los días de los diez activos como si fueran independientes, y no lo son: la correlación cruzada entre índices es alta, con SPY y QQQ por encima de $0{,}9$. Eso reduce el tamaño de muestra efectivo por debajo del nominal y deja el intervalo algo optimista. El bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua parte del efecto, porque remuestrea bloques contiguos en lugar de días sueltos, pero el intervalo \emph{pooled} debe leerse con esa cautela. Aun así, el rescate de los tres supervisores excluye el cero en el intervalo.
 
 La Figura~\ref{fig:mp-equity-panel} traslada el riesgo a la economía, una curva de capital por activo con la ganadora destacada. En cuatro activos una derivada de STRATA bate al pasivo en Sharpe: SPY, SMCI, MARA y UNG. La lectura razonada separa dos casos. En SMCI, MARA y UNG el pasivo pierde o ronda el cero, y la derivada saca un Sharpe positivo claro yendo defensiva en el momento bueno: ahí la ventaja parece valor direccional, porque no viene de estar largo en una subida. En SPY la cosa es distinta. El periodo fue alcista y SPY es mayormente beta de mercado, así que el Sharpe positivo refleja sobre todo la exposición al índice más que una dirección acertada. Distinguir las dos cosas exige un contraste que no hacemos aquí; queda como lectura, no como afirmación.
 
@@ -215,7 +215,7 @@ Los dos aprendices no rescatan igual en cada régimen, y eso abre una vía. M10 
 
 Queda la falsación que pre-registramos, y el panel la resuelve. A nivel de SPY solo, en régimen bajista la regla M8 se invierte: sobre los cincuenta días bajistas de SPY su $\Delta$Sharpe es $-1{,}49$, es decir, ahí la regla daña en vez de rescatar. Es exactamente el tipo de fragilidad que un activo único puede esconder o magnificar con cincuenta observaciones. La agregación del panel la resuelve: sobre los diez activos el rescate por régimen es significativo en bajista, y la complementariedad DiD también lo es solo en \emph{pooled}, no en SPY aislado. El fenómeno es de panel, no de un activo, y por eso la prueba vive en la agregación.
 
-Agregado el panel, el rescate deja de ser una anécdota de SPY. El $\Delta$Sharpe \emph{pooled-10} excluye el cero para los tres modelos y dos de ellos sobreviven a Bonferroni, así que el rescate de riesgo es significativo; en accuracy el aprendiz mejora al agente en los diez activos y bate modestamente a la regla, con cuota SHAP mayoritaria. Y los dos aprendices se complementan por régimen. Queda el porqué del reparto por activo: por qué unos se rescatan por régimen y otros por el aprendiz. La respuesta está en la naturaleza del activo.
+Agregado el panel, el rescate deja de ser una anécdota de SPY. El $\Delta$Sharpe \emph{pooled-10} excluye el cero para los tres modelos, así que el rescate de riesgo es significativo; en accuracy el aprendiz mejora al agente en los diez activos y bate modestamente a la regla, con cuota SHAP mayoritaria. Y los dos aprendices se complementan por régimen. Queda el porqué del reparto por activo: por qué unos se rescatan por régimen y otros por el aprendiz. La respuesta está en la naturaleza del activo.
 
 \section{El patrón: ley del leverage y clustering}
 \label{sec:panel-patron}
@@ -324,7 +324,7 @@ El reparto de funciones tiene una causa. La regla protege el riesgo a través de
 \label{sec:panel-limites}
 \label{sec:panel-lim-tests}
 
-Cinco resultados del capítulo viven por debajo del listón de la significancia. La Tabla~\ref{tab:mp-limites} los reúne con su contraste y su veredicto. Dos pesan más que el resto: la victoria sobre la trivial es nominal, y la protección de riesgo de la regla no sobrevive a Bonferroni. La regla, además, se invierte en SPY-bajista, una falsación que pre-registramos y que la agregación del panel resuelve.
+Cuatro resultados del capítulo viven por debajo del listón de la significancia. La Tabla~\ref{tab:mp-limites} los reúne con su contraste y su veredicto. El que más pesa: la victoria sobre la trivial es nominal. La regla, además, se invierte en SPY-bajista, una falsación que pre-registramos y que la agregación del panel resuelve.
 
 \begin{table}[htbp]
 \centering
@@ -338,8 +338,6 @@ Una derivada bate a la trivial en accuracy & McNemar AutoML vs ZeroR sobre SPY, 
 \addlinespace
 El rescate en accuracy escala con el \emph{leverage} & Pearson $r = -0{,}56$, $p = 0{,}093$; Spearman $\rho = -0{,}59$, $p = 0{,}074$ (diez activos) & Tendencia al $\alpha = 0{,}10$; no $p < 0{,}05$ ni \emph{leave-one-out} \\
 \addlinespace
-La regla M8 rescata el riesgo agregado & $\Delta$Sharpe \emph{pooled} $+0{,}60$, cota inferior de Bonferroni ($m = 3$) $= -0{,}047$ & No sobrevive a la corrección múltiple \\
-\addlinespace
 La regla M8 rescata el riesgo en SPY-bajista & $\Delta$Sharpe $= -1{,}49$ ($n = 50$) & Falsación pre-registrada, resuelta por el panel \\
 \addlinespace
 La naturaleza define grupos de activos & Consenso de cuatro métodos, Rand $= 1{,}0$ (diez activos) & Exploratorio, no predictivo por activo \\
@@ -347,6 +345,6 @@ La naturaleza define grupos de activos & Consenso de cuatro métodos, Rand $= 1{
 \end{tabular}
 \end{table}
 
-Dos cautelas estadísticas atraviesan estos cinco límites. La primera es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La segunda afecta al \emph{pooled}, ya descontada en la Sección~\ref{sec:panel-pooled}: el tamaño efectivo de la muestra es menor que el nominal y el intervalo queda algo optimista. Aun así, el $\Delta$Sharpe de M10 y AutoML excluye el cero con holgura, mientras la regla vive en el filo y queda fuera de lo que sobrevive a Bonferroni.
+Dos cautelas estadísticas atraviesan estos cuatro límites. La primera es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La segunda afecta al \emph{pooled}, ya descontada en la Sección~\ref{sec:panel-pooled}: el tamaño efectivo de la muestra es menor que el nominal y el intervalo queda algo optimista. Aun así, el $\Delta$Sharpe de M10 y AutoML excluye el cero con holgura, y el de la regla también lo excluye aunque con menos margen.
 
 El panel cierra la pregunta con la que abrió: lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar.

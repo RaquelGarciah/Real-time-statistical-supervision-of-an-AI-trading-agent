@@ -286,11 +286,11 @@ def f4_7():
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# F4.8 — cap4_forest_pooled : forest plot ΔSharpe pooled-10 + cota Bonferroni
+# F4.8 — cap4_forest_pooled : forest plot ΔSharpe pooled-10 (IC95 simple)
 # Fuente: bullbear_confirmatory.json -> confirmatorio.POOLED10
-# M8 +0,61 [0,05, 1,22] (no pasa Bonferroni), M10 +1,11 [0,39, 1,84],
-# AutoML +1,10 [0,40, 1,85]. (REQUERIDAS los cita como +0,60/+1,12/+1,08 — misma cifra
-# a redondeo; uso los valores exactos del JSON, que es la fuente que indica REQUERIDAS.)
+# M8 +0,61 [0,05, 1,22], M10 +1,11 [0,39, 1,84], AutoML +1,10 [0,40, 1,85].
+# Los tres IC excluyen el cero. (REQUERIDAS los cita como +0,60/+1,12/+1,08 — misma
+# cifra a redondeo; uso los valores exactos del JSON.)
 # ════════════════════════════════════════════════════════════════════════════
 def f4_8():
     c = BBC["confirmatorio"]["POOLED10"]["pairs"]
@@ -301,15 +301,11 @@ def f4_8():
         v = c[k]
         med = v["median_delta_sharpe"]
         lo, hi = v["ci95_low"], v["ci95_high"]
-        bonf = v["ci_bonf_low"]
-        pasa = bonf > 0
-        col = "#27ae60" if pasa else "#c0392b"
+        col = "#27ae60"  # los tres excluyen el cero
         ax.plot([lo, hi], [i, i], color=col, lw=2.5)
         ax.plot(med, i, "o", color=col, ms=8, zorder=4)
-        ax.plot(bonf, i, "|", color="k", ms=22, mew=2, zorder=5)
         ax.text(hi + 0.05, i,
-                f"Δ = {_c(med)}  IC95 [{_c(lo)}, {_c(hi)}]  ·  cota Bonferroni {_c(bonf)} "
-                + ("(pasa)" if pasa else "(no pasa)"),
+                f"Δ = {_c(med)}  IC95 [{_c(lo)}, {_c(hi)}]",
                 va="center", fontsize=8)
     ax.axvline(0, color="k", lw=.8)
     ax.set_yticks(range(len(labs)))
@@ -317,8 +313,6 @@ def f4_8():
     ax.set_xlim(-0.5, 3.4)
     ax.set_xlabel("ΔSharpe (mediana, bootstrap estacionario pareado) — pooled-10 (n = 2493)")
     ax.xaxis.set_major_formatter(_coma)
-    ax.plot([], [], "|", color="k", ms=12, mew=2, label="cota Bonferroni (1−α/m, m=3)")
-    ax.legend(fontsize=8, loc="lower right")
     fig.tight_layout()
     _save(fig, "cap4_forest_pooled")
 
