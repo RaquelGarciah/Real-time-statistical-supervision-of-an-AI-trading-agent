@@ -37,7 +37,7 @@ El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathr
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{figuras/cap4_regimenes_spy}
+\includegraphics[width=0.74\textwidth]{figuras/cap4_regimenes_spy}
 \caption{Regímenes del HMM ($K = 3$) sobre el precio de SPY en el periodo de evaluación. Calma (volatilidad baja, retorno medio positivo), Estrés (intermedio) y Crisis (volatilidad alta, retorno medio negativo) ordenan por la firma del \emph{leverage effect}. El sombreado marca el régimen vigente cada día; la coincidencia régimen$\leftrightarrow$caída es contemporánea, no predictiva. Fuente: \texttt{regime\_direction\_table.json}.}
 \label{fig:mp-regimenes-spy}
 \end{figure}
@@ -65,7 +65,7 @@ Que RAM acierte al intervenir no es casualidad, y la Figura~\ref{fig:mp-scores-d
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{figuras/cap4_scores_detectores}
+\includegraphics[width=0.74\textwidth]{figuras/cap4_scores_detectores}
 \caption{Distribución de los \emph{scores} de RAM, PSA y GSO sobre el OOS de SPY, con su umbral de disparo marcado (RAM $\tau = 0{,}50$, PSA $P_{95} = 0{,}023$, GSO $P_{95} = 2{,}371$). El \emph{score} de RAM es bimodal y cruza el umbral con frecuencia; los de PSA y GSO se acumulan muy por debajo del suyo, de ahí que apenas disparen. Fuente: \texttt{spy\_intervention\_variants.json}.}
 \label{fig:mp-scores-detectores}
 \end{figure}
@@ -126,7 +126,7 @@ La victoria sobre la trivial pide un matiz que damos por delante. El mismo McNem
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{figuras/cap4_equity_spy}
+\includegraphics[width=0.74\textwidth]{figuras/cap4_equity_spy}
 \caption{Curvas de capital de las seis estrategias sobre SPY (ventana desplegable, $n = 251$ días, un euro inicial). AutoML (línea destacada) supera a las dos referencias triviales en Sharpe ($+2{,}68$ frente a $+2{,}21$), en máxima caída ($-5{,}5\,\%$ frente a $-9{,}8\,\%$) y en capital final ($1{,}38\times$ frente a $1{,}30\times$); el agente solo (M5) termina en $0{,}70\times$. La ventaja sobre la trivial es nominal (McNemar AutoML vs ZeroR $p = 0{,}90$). Fuente: \texttt{automl\_net\_returns.json}.}
 \label{fig:mp-equity-spy}
 \end{figure}
@@ -158,7 +158,7 @@ La objeción más natural es que los umbrales se eligieran para que el resultado
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{figuras/cap4_sensibilidad_umbrales}
+\includegraphics[width=0.74\textwidth]{figuras/cap4_sensibilidad_umbrales}
 \caption{Sensibilidad de la accuracy al umbral de decisión sobre SPY: M8 frente a $\tau$ del detector RAM y M10 frente a su umbral de probabilidad. Las dos curvas son planas en una meseta alrededor del valor canónico (marcado), señal de robustez y no de ajuste a un punto. Fuente: \texttt{psa\_gso\_threshold\_sensitivity.json}.}
 \label{fig:mp-sensibilidad}
 \end{figure}
