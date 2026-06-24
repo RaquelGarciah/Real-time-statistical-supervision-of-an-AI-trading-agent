@@ -1,0 +1,44 @@
+\chapter{Conclusiones}
+\label{cap:conclusiones}
+
+El panel de diez activos cerró la pregunta que SPY dejó abierta: el rescate no es una anécdota de un índice, sobrevive a la agregación y se ordena por una propiedad del activo. Con ese balance podemos responder a la hipótesis del trabajo y situar su alcance. Supervisar al agente con detectores estadísticos clásicos aporta un valor que sobrevive a un test, y ese valor vive en el rescate y en la interpretabilidad.
+
+La jerarquía de ese valor ordena lo que sigue. STRATA rescata al agente en dirección y en riesgo, con significancia pareada. El aprendiz se apoya en sus señales y le saca un par de puntos de acierto a la regla. El apalancamiento del activo decide qué canal hace el rescate. Batir a la referencia trivial o generar alfa sobre el mercado queda como valor en punto o como línea futura.
+
+\section{Veredicto en tres niveles}
+\label{sec:conc-veredicto}
+
+La hipótesis pedía tres cosas a la vez: que el rescate sobreviva a un test, que se lea por dentro, y que su valor resida en las señales clásicas y no en la potencia del aprendiz. Las contrastamos por separado.
+
+\textbf{Nivel estadístico.} En acierto direccional, el McNemar pareado frente al agente confirma el rescate de los tres supervisores sobre SPY, y aguanta partido por régimen en los tramos alcistas y bajistas del panel (Secciones~\ref{sec:spy-estrategias} y~\ref{sec:panel-agregado}). En riesgo, el resultado duro vive en la agregación: apilados los diez activos, el $\Delta$Sharpe frente al agente excluye el cero para los tres supervisores. La grieta tiene nombre y la dejamos a la vista. Bajo corrección de Bonferroni, el rescate de riesgo lo sostienen el meta-learner y AutoML, mientras la regla cae justo por debajo del cero. La protección de riesgo de la regla es real con el intervalo simple y se desvanece al ajustar por número de pruebas.
+
+\textbf{Nivel mecánico.} El rescate se lee detector a detector. Sobre SPY actúa un solo canal, el del régimen: RAM concentra todo el P\&L de rescate y los otros dos detectores quedan inertes como reglas (Sección~\ref{sec:spy-rescate}). En el panel la evidencia apunta igual, seguir el régimen bate a seguir al agente en la mayoría de los activos, y la intervención crece con la discrepancia entre la apuesta del agente y el estado del mercado. Las dos capas hacen trabajos disjuntos: la regla aporta el rescate de riesgo, los aprendices mejoran el acierto, y la ablación confirma que el aprendiz se apoya de verdad en STRATA, porque su acierto cae al quitar los detectores.
+
+\textbf{Nivel de universalidad.} El enunciado mezclaba dos cosas que conviene separar: la atribución, que el valor del aprendiz venga de las señales de STRATA, y la equivalencia, que un meta-learner libre no bata a la regla. La atribución se confirma sin ambigüedad: la cuota de Shapley de los detectores supera la mitad en los diez activos, y su ablación degrada al aprendiz (Sección~\ref{sec:panel-agregado}). El criterio de fracaso, fijado de antemano, no se cumple. La equivalencia se refuta en su letra: el aprendiz supera a la regla en acierto por un par de puntos, montándose sobre las mismas señales para modelar las interacciones no lineales entre régimen y agente que una regla fija no alcanza, y empata en riesgo. La cláusula sustantiva, la atribución, se confirma; la indirecta, la equivalencia, se refuta a favor del aprendiz.
+
+\textbf{Veredicto.} El rescate sobrevive a un test pareado en dirección y en riesgo, se lee por dentro y reside en las señales clásicas que un aprendiz potente redescubre y solo afina. La hipótesis se sostiene, con dos márgenes medidos: la regla rescata el riesgo pero no aguanta Bonferroni, y el aprendiz mejora a la regla en acierto sin distinguirse en riesgo. Falta un listón, la ventaja sobre la trivial no llega a significativa, compatible con un límite de muestra antes que con un fallo del mecanismo.
+
+\section{La ley del leverage}
+\label{sec:conc-ley}
+
+El rescate no es uniforme, y una sola propiedad ordena su intensidad: cuanto más fuerte es el \emph{leverage effect} de un activo, más rescata el aprendiz en acierto (Sección~\ref{sec:panel-patron}). Lo llamamos tendencia, significativa al nivel $\alpha = 0{,}10$ que fijamos por adelantado, sólida sobre diez activos pero sin potencia para afirmar más. El agrupamiento de los activos por su naturaleza de mercado dibuja la misma estructura sin ver una sola métrica de rescate, y su primer eje recupera casi exactamente el apalancamiento. La naturaleza define un eje, ese eje es el \emph{leverage}, y el \emph{leverage} decide qué canal rescata cada activo: el régimen en los índices de apalancamiento fuerte, el aprendiz en los volátiles de apalancamiento débil. El patrón ordena el rescate del aprendiz, pero no el de la regla, y queda como hipótesis para trabajos futuros.
+
+\section{Aportaciones}
+\label{sec:conc-aportaciones}
+
+La aportación central es metodológica: un protocolo de supervisión estadística sobre un agente opaco que es interpretable, calibrado por completo antes de mirar la evaluación, y contrastado con tests pareados y sus intervalos de confianza. Cada decisión de diseño se justifica por mecanismo o por literatura, cada cifra se traza a su fichero de origen, y la causalidad es estricta, con dos ventanas que nunca se mezclan. Pre-registramos las condiciones de fracaso: la regla se invierte en SPY-bajista, una falsación anotada por adelantado que la agregación del panel resuelve (Sección~\ref{sec:panel-limites}). La aportación empírica es doble: la demostración de que una capa de supervisión clásica rescata a un agente perdedor en acierto y en riesgo, y la ley que liga el apalancamiento del activo con el canal que lo rescata. Una prueba el resultado, la otra lo organiza.
+
+\section{Limitaciones}
+\label{sec:conc-limitaciones}
+
+La limitación principal es el tamaño de la muestra. El agente solo existe en el periodo posterior al corte de conocimiento del modelo de lenguaje, lo que acota la evaluación a unos doscientos cincuenta días por activo y deja la significancia plena fuera de alcance frente a una referencia exigente. Por eso la ventaja en acierto sobre la trivial es nominal, y el rescate de riesgo es significativo en el agregado de los diez activos pero no por activo individual. El alcance se estrecha donde el \emph{leverage effect} es débil, porque ahí el régimen pierde su contenido direccional. Las dos regularidades de patrón viven al borde de su contraste, la ley del leverage como tendencia y el clustering como descripción exploratoria. El estudio se ciñe a un único agente y a una única ventana fuera de muestra, de modo que la generalización a otros agentes, universos y periodos queda por establecer.
+
+\section{Líneas futuras}
+\label{sec:conc-futuro}
+
+Cada límite ancla una continuación. La vía directa para llevar la ventaja nominal en acierto a significancia plena es una muestra mayor, en horizonte temporal o en número de activos, sin réplicas sintéticas que inflarían la potencia. La complementariedad por régimen que documentamos sugiere un ensemble enrutado por régimen, que elija el supervisor según el estado del mercado. Repetir el esquema sobre otros agentes, otros modelos de lenguaje y otros mercados separaría lo propio de STRATA de lo propio de este agente, y pondría a prueba si la ley del leverage aguanta fuera del panel. Los modos de intervención intermedios, que atenúan la posición en lugar de sustituirla, quedan por explorar. El paso a producción tiene su camino: la regla opera desde el primer día, mientras los aprendices necesitan su ventana de calentamiento y un mantenimiento recurrente. Y queda una línea más ambiciosa: en algunos activos una derivada de STRATA supera al pasivo en Sharpe yendo defensiva en el momento correcto (Sección~\ref{sec:panel-limites}), una señal nominal y leída a posteriori que marca un punto de partida para construir, con un contraste pre-registrado y una muestra que dé potencia, una estrategia que genere alfa direccional. Hasta superar ese contraste, el listón del trabajo sigue siendo el agente, no el mercado.
+
+\section{Cierre}
+\label{sec:conc-cierre}
+
+Supervisar estadísticamente a un agente de lenguaje que pierde dinero recupera su acierto direccional y disciplina su riesgo, con evidencia que sobrevive a un test pareado, por un mecanismo que se puede leer por dentro y con su frontera de aplicabilidad delimitada. El valor probado es el rescate y la interpretabilidad; batir al mercado nunca fue el objetivo. STRATA vuelve fiable, dentro de sus límites medidos, a un agente que por sí solo no lo era.
