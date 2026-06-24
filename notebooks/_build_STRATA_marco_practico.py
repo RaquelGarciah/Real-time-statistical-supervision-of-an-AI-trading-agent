@@ -51,9 +51,8 @@ estructura el panel (§6).
 **Alcance y honestidad (lo lleva el cuaderno, no lo esconde).** El listón de STRATA es **el agente, no el
 mercado**: es una **capa de supervisión y control de riesgo** que **rescata** a un decisor que pierde, no una
 estrategia que bata al mercado (batir al baseline trivial ZeroR/B&H en accuracy es **nominal**, n≈250 → ventana
-corta). La lectura alfa-vs-beta (§7, F4.9) lo matiza: en índices alcistas el Sharpe positivo es **beta**; el
-**valor direccional** aparece en activos de leverage débil/invertido (nominal). Generar alfa absoluta queda
-**fuera de su alcance por diseño**.
+corta). Generar alfa absoluta queda **fuera de su alcance por diseño** — el listón es el agente, no el mercado.
+(La lectura alfa-vs-beta de §7 es **descriptiva** y alimenta una **línea futura**, no una conclusión central.)
 
 Estrategias: **M5** agente · **M8** STRATA-regla (override-C) · **M10** meta-learner XGBoost · **AutoML** (H2O) ·
 **ZeroR** clase mayoritaria · **B&H** comprar-y-mantener.""")
@@ -67,7 +66,7 @@ md(r"""## Objetivos (cada uno con su validación)
 | **O3** | El ML **redescubre** las señales de STRATA (SHAP) y, por flexibilidad no lineal, **bate modestamente a la regla** en accuracy | cuota SHAP + ablación (§3,§4) + **TOST** equivalencia/superioridad vs M8 (§4) |
 | **O4** | **Mecanismo**: dos capas complementarias (regla=riesgo, aprendiz=accuracy) | pooled ΔSharpe (M8) + McNemar (ML) (§5) |
 | **O5** | **Ley naturaleza→resultado**: el rescate del aprendiz ∝ leverage | correlación (Pearson/Spearman) + clustering (§5,§6) |
-| **O6** | **Alcance: supervisión, no alfa** | listón = el agente; lectura alfa-vs-beta (§7, F4.9); accuracy nominal vs trivial |
+| **O6** | **Alcance: supervisión, no alfa** | listón = el agente; accuracy nominal vs trivial; alfa = línea futura (§7/§8) |
 | **O7** | **Rigor** | test+IC+cita; `signal_lag=1`; embargo=1; sin KFold; ex-ante (§1,§2) |
 
 ## Notación
@@ -1449,7 +1448,8 @@ riesgo). Para hacerlo tangible —y matizar dónde el Sharpe positivo es **beta*
 y dónde es **valor direccional**— descomponemos la mejor STRATA de cada activo con el **modelo de mercado**
 $r_{\text{strat}} = \alpha + \beta\, r_{\text{B\&H}}$ (Sharpe 1964; Jensen 1968), pero **como lectura descriptiva,
 sin contraste**: $\beta$ es la exposición pasiva al activo y $\alpha$ (anualizada) lo que no explica esa exposición.
-**Es nominal/ilustrativo, no una afirmación con test.**""")
+**Es nominal/ilustrativo, NO una conclusión del trabajo**: alimenta la **línea de investigación futura** "¿puede
+STRATA generar alfa direccional robusta en leverage débil/invertido?" (§8).""")
 
 code(r"""# (F4.9) Descomposición alfa/beta de la mejor STRATA por activo (modelo de mercado, DESCRIPTIVO sin test)
 A = ABT["por_activo"]
@@ -1469,11 +1469,12 @@ handles = [plt.Line2D([], [], marker="o", ls="", color=c, label=k) for k, c in c
 ax.legend(handles=handles, fontsize=8, title="lectura (descriptiva)")
 ax.set_title("Lectura alfa vs beta por activo (modelo de mercado, sin test)")
 plt.tight_layout(); plt.show()
-print("Lectura razonada (NO test): en los ÍNDICES ALCISTAS (SPY/QQQ/XLE) el Sharpe positivo es BETA — β≈0.5–0.7 y "
-      "el pasivo (B&H) ya gana, la STRATA va larga y captura la subida. En los de leverage débil/invertido que CAEN "
-      "(SMCI B&H 0.04, MARA −0.28, UNG −0.83) la mejor STRATA saca Sharpe positivo (1.91/1.28/0.67) yendo "
-      "corta/defensiva: β bajo o negativo y α>0 → es VALOR DIRECCIONAL, no exposición. Matiz honesto: nominal, sin "
-      "contraste; refina la frase 'STRATA no genera alfa significativa' mostrando dónde su valor es direccional.")""")
+print("Lectura razonada (NO test, NO conclusión central — alimenta una LÍNEA FUTURA): en los ÍNDICES ALCISTAS "
+      "(SPY/QQQ/XLE) el Sharpe positivo es BETA — β≈0.5–0.7 y el pasivo (B&H) ya gana, la STRATA va larga y captura "
+      "la subida. En los de leverage débil/invertido que CAEN (SMCI B&H 0.04, MARA −0.28, UNG −0.83) la mejor STRATA "
+      "saca Sharpe positivo (1.91/1.28/0.67) yendo corta/defensiva: β bajo o negativo → valor DIRECCIONAL, no "
+      "exposición. Nominal, sin contraste, a posteriori → NO es un resultado del trabajo; es un INDICIO que motiva la "
+      "línea futura 'desarrollar una estrategia que genere alfa direccional robusta' (§8).")""")
 
 # ═══════════════════════════  §8 Conclusiones + auto-test  ═══════════════════════════
 md(r"""## §8 Conclusiones del marco práctico
@@ -1510,14 +1511,19 @@ md(r"""## §8 Conclusiones del marco práctico
    Implicación de despliegue: AutoML, que modela la interacción condicional, es el que protege mejor en el
    régimen **peligroso** (bajista) — argumento para que sea la capa de accuracy desplegable; y queda como línea
    futura un **ensemble enrutado por régimen** (M10 en alcista / AutoML en bajista), pre-registrable.
-7. **Honestidad y límite (O6).** No se bate a ZeroR/B&H en accuracy de forma significativa (nominal, ventana
-   corta, n≈250). **El alcance de STRATA es la supervisión, no el alfa:** su listón es el agente, no el mercado —
-   rescata al perdedor y acota su riesgo. La lectura alfa-vs-beta (§7, F4.9) lo matiza: en índices alcistas el
-   Sharpe es **beta**; en leverage débil/invertido (SMCI/MARA/UNG) hay **valor direccional** (nominal).
+7. **Alcance: supervisión, no alfa (O6).** El listón de STRATA es **el agente, no el mercado**: rescata al
+   perdedor y acota su riesgo. No se bate a ZeroR/B&H en accuracy de forma significativa (nominal, ventana corta,
+   n≈250); generar alfa absoluta queda **fuera de su alcance por diseño**.
 8. **Rigor (O7).** `signal_lag=1`, embargo=1, ex-ante, tests con cita, auto-test que cruza cada cifra con su JSON.
 
 **Tesis sostenida:** supervisar estadísticamente a un agente LLM **aporta valor diferencial medible** (rescate
-significativo + dos canales cuyo uso predice la naturaleza del activo), reportado con honestidad sobre su alcance.""")
+significativo + dos canales cuyo uso predice la naturaleza del activo), reportado con honestidad sobre su alcance.
+
+**Líneas de investigación futura** (no son conclusiones del trabajo): (a) **ensemble enrutado por régimen** (M10 en
+alcista / AutoML en bajista) usando la señal de RAM (C-complementariedad); (b) **explorar si STRATA puede generar
+alfa direccional robusta** en activos de leverage débil/invertido — la lectura alfa-vs-beta de §7 (F4.9, descriptiva,
+sin test) sugiere que ahí (SMCI/MARA/UNG) hay valor direccional nominal, pero **no se prueba con un contraste**;
+(c) ventana OOS mayor para llevar la accuracy de nominal a significativa.""")
 
 code(r"""# --- AUTO-TEST: headlines vs JSON ---
 assert len(PANEL10) == 10, "panel mal dimensionado (10 activos)"

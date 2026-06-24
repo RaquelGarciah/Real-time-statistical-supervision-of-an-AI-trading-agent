@@ -293,6 +293,13 @@ complementariedad) → **límites** (nominal vs trivial en significancia, no alf
 - *Contenido:* qué no sobrevive a un test (nominal vs trivial; ley α=0,10; M8 no pasa Bonferroni; SPY-solo
   bajista); desplegabilidad (M8 día 1; M10/AutoML burn-in + leader cambiante); líneas futuras (muestra mayor,
   ensemble enrutado por régimen, otros agentes, despliegue).
+- *Línea futura — ¿puede STRATA generar alfa direccional?* **Lectura alfa-vs-beta (F4.9, descriptiva, modelo de
+  mercado $r_{\text{strat}}=\alpha+\beta\,r_{\text{B\&H}}$, SIN test, `alfa_beta_lectura.json`):** en índices
+  alcistas (SPY/QQQ/XLE) el Sharpe positivo es **beta** (β≈0,5–0,7, va largo); en **SMCI/MARA/UNG** (leverage
+  débil/invertido, B&H Sharpe 0,04/−0,28/−0,83) la mejor STRATA saca Sharpe positivo (1,91/1,28/0,67) yendo
+  corta/defensiva (β bajo/negativo) → **valor direccional**, no exposición. **Nominal, a posteriori, sin
+  contraste** → entra como **línea futura** ("desarrollar una estrategia que genere alfa direccional robusta",
+  muestra mayor + pre-registro), **NO como conclusión central** del proyecto (el listón sigue siendo el agente).
 
 ---
 

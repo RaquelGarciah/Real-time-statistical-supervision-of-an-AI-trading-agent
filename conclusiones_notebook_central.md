@@ -38,7 +38,7 @@ supervisión** con patrones falsables.
 | **O3** | Mecanismo de **dos capas** (regla=riesgo, aprendiz=accuracy) | pooled ΔSharpe (M8) + McNemar (aprendiz), cada uno con su test |
 | **O4** | **Universalidad:** el ML redescubre STRATA y la supera modestamente | cuota SHAP 0.66 + **TOST** (superior en accuracy, equivalente en riesgo) |
 | **O5 (patrón)** | La **naturaleza (leverage)** explica qué supervisión funciona | ley leverage→rescate (sobre 10) + clustering + complementariedad por régimen |
-| **O6** | **Alcance: supervisión, no alfa** | listón = el agente; lectura alfa-vs-beta (F4.9); accuracy nominal vs trivial |
+| **O6** | **Alcance: supervisión, no alfa** | listón = el agente; accuracy nominal vs trivial; alfa = línea futura (§XIV) |
 | **O7** | **Rigor** | signal_lag=1, embargo=1, ex-ante, tests con cita, reproducibilidad determinista |
 
 ---
@@ -110,12 +110,10 @@ pre-registrada); la agregación lo resuelve.
 0.574) y degrada al quitar PSA+GSO (0.550) → usa los detectores. M10-XGBoost (params fijos) se sobreajusta con 22.
 PSA/GSO apenas disparan como reglas (RAM domina) pero sus scores continuos informan al aprendiz.
 
-**C9. Honestidad/límite.** No se bate a ZeroR/B&H en accuracy con significancia (nominal, ventana corta n≈250).
-**El alcance de STRATA es la supervisión, no el alfa:** su listón es el agente, no el mercado — rescata al
-perdedor y acota su riesgo. **Lectura alfa-vs-beta (F4.9, descriptiva, sin test):** en índices alcistas (SPY/QQQ/XLE)
-el Sharpe positivo es **beta** (β≈0.5–0.7, va largo y captura la subida); en activos de leverage débil/invertido que
-caen (**SMCI** B&H Sh 0.04→strat 1.91, **MARA** −0.28→1.28, **UNG** −0.83→0.67) la STRATA saca **valor direccional**
-(β bajo/negativo, α>0) yendo corta/defensiva. Nominal, no significativo → matiza, no afirma.
+**C9. Alcance: supervisión, no alfa.** El listón de STRATA es **el agente, no el mercado** — rescata al perdedor y
+acota su riesgo. No se bate a ZeroR/B&H en accuracy con significancia (nominal, ventana corta n≈250); generar alfa
+absoluta queda **fuera de su alcance por diseño**. *(La lectura alfa-vs-beta que sugiere valor direccional en
+SMCI/MARA/UNG es descriptiva y va a **líneas futuras** §XIV — NO es una conclusión del trabajo.)*
 
 ---
 
@@ -142,7 +140,6 @@ caen (**SMCI** B&H Sh 0.04→strat 1.91, **MARA** −0.28→1.28, **UNG** −0.8
 - **Pooled-10 riesgo:** M8 vs M5 ΔSharpe **+0.64 IC95[0.10,1.29]**; M10 +0.93; AutoML +0.97 (todos sig).
 - **Confirmatorio Bonferroni + DSR:** M10/AutoML pasan; M8 no; **DSR AutoML-SPY 0.924**.
 - **TOST aprendiz vs regla:** accuracy superior (pooled M10 +0.021, AutoML +0.034); Sharpe no concluyente.
-- **Lectura alfa-vs-beta (F4.9, descriptiva):** SPY/QQQ/XLE = beta (β≈0.5–0.7, índice alcista); SMCI/MARA/UNG = valor direccional (β bajo/neg, gana donde el pasivo pierde). Nominal, sin test.
 - **DiD complementariedad:** +1.37, IC95[0.20,2.60], p=0.008 (pooled; no en SPY-solo).
 - **SHAP cuota:** media 0.66, >0.5 en 10/10. **Clustering:** Rand=1.0, silhouette 0.55. **Ley leverage:** r=−0.56,
   p=0.093 (α=0.10).
@@ -246,8 +243,22 @@ naturaleza→leverage) → **límites** (nominal vs trivial, no alfa).
    el panel (tabla por activo).
 4. **Clustering n=10:** exploratorio; qué modelo concreto gana por activo NO es predecible por el cluster.
 5. **Complementariedad por régimen:** sig en pooled, **no** en SPY-solo (fenómeno cross-asset).
-6. **Alcance = supervisión, no alfa:** el listón es el agente, no el mercado; los Sharpe positivos en índices
-   alcistas son **beta** (F4.9), no rentabilidad superior al pasivo. El valor direccional (SMCI/MARA/UNG) es nominal.
+6. **Alcance = supervisión, no alfa:** el listón es el agente, no el mercado; generar alfa absoluta queda fuera de
+   alcance por diseño. (El indicio de valor direccional en SMCI/MARA/UNG va a líneas futuras §XIV, no a conclusiones.)
+
+---
+
+## XIV. Líneas de investigación futura (NO son conclusiones del trabajo)
+
+1. **Ensemble enrutado por régimen** (M10 en alcista / AutoML en bajista) usando la señal de RAM — motivado por la
+   complementariedad significativa (DiD p=0.008). Pre-registrable; enrutar post-hoc sería p-hacking.
+2. **¿Puede STRATA generar alfa direccional robusta en leverage débil/invertido?** La **lectura alfa-vs-beta
+   (F4.9, descriptiva, modelo de mercado, SIN test)** lo sugiere como *indicio nominal*: en índices alcistas
+   (SPY/QQQ/XLE) el Sharpe positivo es **beta** (β≈0.5–0.7, va largo); en **SMCI/MARA/UNG** (leverage débil/invertido,
+   B&H Sharpe 0.04/−0.28/−0.83) la mejor STRATA saca Sharpe positivo (1.91/1.28/0.67) yendo corta/defensiva (β
+   bajo/negativo) → valor **direccional**, no exposición. **Nominal, a posteriori, sin contraste** → no se reporta
+   como resultado; queda como hipótesis a probar con muestra mayor y pre-registro. Fuente: `alfa_beta_lectura.json`.
+3. **Ventana OOS mayor** para llevar la accuracy de nominal a significativa (el techo ZeroR actual es por n≈250).
 
 ---
 
