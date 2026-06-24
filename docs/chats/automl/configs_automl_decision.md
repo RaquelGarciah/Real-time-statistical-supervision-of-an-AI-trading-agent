@@ -246,3 +246,89 @@ mejor-STRATA-vs-agente por activo; luego investiga todos los notebooks y propón
 - **Notebook:** 43 celdas de código, 0 errores, auto-test (17 asserts) verde; cerrado por el bucle
   constructor↔`raquel-quant`. Gap futuro anotado: argumentar conservación de PSA/GSO (ya hecho en §2).
 - **Punto más blando (declarado):** UNG en el cuerpo (el agente no pierde ahí; encuadrado como caso ML).
+
+---
+---
+
+# CONTINUACIÓN 2 — Análisis estadístico avanzado y consolidación final (panel de 10 SIN apéndice)
+
+> 3ª fase de la misma conversación: del notebook ya APROBADO pasamos a (a) reforzar la estadística (PARTE B
+> confirmatoria, complementariedad por régimen, TOST), (b) consolidar el enfoque final (panel de 10 sin
+> apéndice; ley y riesgo sobre 10), (c) reformular el alfa, y (d) preparar el contexto para la tesis (Cap.4 +
+> qué falta del Cap.3). Registro fiel: **[Raquel]** pidió · **[Claude]** hizo/decidió + cifras.
+
+## 8. Matrices de confusión + PARTE B confirmatoria + complementariedad
+**[Raquel]** "Faltan matrices de confusión (SPY por estrategia + panel mejor-STRATA)." → **[Claude]**
+`confusion_panel.py` (reconstrucción ±1 desde correct_by_arm; diagonal = accuracy del panel). §3 (6 estrategias) + §4.
+**[Raquel]** mostró la "PARTE B" del notebook viejo (`strata_canonical`) y pidió replicarla **con DSR**: "lo quité
+porque me anulaba el resultado, pero igual ya no estamos en la misma situación, pruébalo." → **[Claude]**
+`bullbear_confirmatory.py`: mediana ΔSharpe + **cota Bonferroni** (m=3) + **DSR** + rescate por régimen (McNemar
+Holm + block-perm). Resultado: **M10/AutoML pasan la cota** (SPY +0.02/+1.91; pooled +0.26/+0.26), **M8-regla NO**
+(falsación honesta); **DSR AutoML-SPY 0.924**. Por régimen: SPY-bajista M8 se invierte (−1.49, n=50) pero el
+pooled rescata sig en alcista Y bajista.
+**[Raquel]** "el rescate por régimen es muy interesante, en pooled M10/AutoML se invierten alcista/bajista." →
+**[Claude]** lo desarrolló: **complementariedad en espejo** (M10 +1.37 alcista / AutoML +1.52 bajista; M8
+simétrica). **[Raquel]** "¿qué implicación tiene?" → AutoML protege en el régimen peligroso (bajista); línea
+futura = ensemble enrutado por régimen. **[Raquel]** "dale" → **DiD pre-registrado** (`regime_did_learners.py`):
+**pooled DiD +1.37 IC[0.20,2.60] p=0.008 (sig)**, SPY-solo no (fenómeno de panel/cross-asset).
+
+## 9. "¿Qué es pooled? ¿se puede hacer?"
+**[Raquel]** "no sé qué es pooled ni por qué lo usas tanto, ¿es significativo?" → **[Claude]** lo definió (apilar
+los días de todos los activos en una muestra para ganar potencia) y lo documentó en el notebook (faltaba en
+palabras). **[Raquel]** "¿pero se puede hacer pooled o no?" → **[Claude]**: SÍ, es estadística de panel estándar;
+caveat honesto = correlación cruzada → n efectiva < nominal (matiz de precisión, no de validez); el IC excluye 0
+con holgura.
+
+## 10. Contexto para la tesis + reencuadre del valor
+**[Raquel]** "la memoria se ha quedado pobre desde el cambio de enfoque; ¿cómo le doy todo el contexto?" →
+**[Claude]** creó `docs/marco_practico_dossier.md` (fuente única notebook→Cap.4) y luego `conclusiones_notebook_central.md`.
+**[Raquel]** "encontrar patrones también es objetivo, dales su valor" → **[Claude]** sección "EL APORTE REAL"
+(C1–C9 con su valor; la memoria lidera con el patrón y el rescate, no con la accuracy).
+
+## 11. TOST: ¿el aprendiz redescubre o bate a la regla?
+**[Raquel]** (sobre formalizar "M10 redescubre, no bate") "pruébalo." → **[Claude]** `equivalence_tost.py` (TOST,
+Schuirmann 1987, IC90 bootstrap + margen pre-registrado + sensibilidad). Resultado honesto: **NO hay equivalencia;
+el aprendiz BATE a la regla M8 en accuracy** (pooled M10 +0.021, AutoML +0.034) por flexibilidad no lineal; en
+Sharpe indistinguible. Refina la universalidad (el SHAP aguanta; "no bate" refutado). Una auditoría
+(harvard-professor) detectó que el TOST no se había propagado al notebook → corregido (O3/§5/§9 reformulados).
+
+## 12. Enfoque final: panel de 10 SIN apéndice (plan aprobado)
+**[Raquel]** "nos hemos quedado con 10; olvídate de los otros 5, no los quiero ni de apéndice." → **[Claude]** midió
+la consecuencia: la **ley del leverage** sobre 10 baja a r=−0.56 **p=0.093** (α=0.10, sin LOO-robusta; antes 15:
+p=0.034), y explicó por activo que **la ley SE CUMPLE en los 10** (tabla leverage↔rescate; 9/10 la siguen, índices
+0.097 vs débil 0.059); solo baja la potencia con menos puntos. **[Raquel]** eligió **Opción A** (cero rastro de los
+5). Ejecutado: eliminada §8 apéndice; §1 a "panel de 10"; **riesgo titular = pooled-10** (+0.64 IC[0.10,1.29]);
+auto-test sin EXCL5/pooled-15/LOO. Docs raíz los distribuye la otra sesión desde `conclusiones_notebook_central.md`
+(esta sesión no los toca). Notebook 87→89 celdas, 0 errores, AUTO-TEST OK.
+
+## 13. "No genera alfa" → reencuadre + lectura alfa-vs-beta (F4.9, línea futura)
+**[Raquel]** "no me gusta 'no genera alfa' como conclusión, reformúlalo." → **[Claude]** opciones; canónico =
+**"el alcance de STRATA es la supervisión, no el alfa; su listón es el agente, no el mercado"**. **[Raquel]** "haz
+un experimento F4.9 alfa-vs-beta (SMCI/MARA/UNG = alfa direccional, SPY = beta), como lectura razonada, no test." →
+**[Claude]** `alfa_beta_lectura.py` (modelo de mercado r_strat=α+β·r_B&H, descriptivo): SPY/QQQ/XLE = **beta**
+(β≈0.5–0.7, índice alcista); SMCI/MARA/UNG = **valor direccional** (β bajo/neg, gana donde el pasivo pierde:
+1.91/1.28/0.67). **[Raquel]** "esto va a LÍNEAS FUTURAS, no como conclusión central (resta valor)." → **[Claude]**
+demotado: §8 conclusiones = solo "alcance: supervisión, no alfa"; nueva sección "Líneas futuras" (ensemble
+enrutado, ¿alfa direccional robusta?, ventana mayor); celda F4.9 se queda en §7 como lectura que alimenta una
+línea futura. Propagado a `conclusiones_notebook_central.md` (§XIV) y `MARCO_PRACTICO_CONTEXTO.md` (§4) de la otra sesión.
+
+## 14. Instrucciones para el Cap. 3 (caja de validación)
+**[Raquel]** "dime exactamente qué falla del Cap.3 para pasarle instrucciones a tesis (añadir/importancia/dónde se
+usa/quitar)." → **[Claude]** auditó `03_marco_teorico.tex`: modelos COMPLETOS (no tocar); de "Métricas" en
+adelante = stubs vacíos. `docs/instrucciones_cap3_validacion.md`: AÑADIR (Sharpe, maxDD/Calmar, AUC,
+accuracy+confusión, purga/embargo, CPCV, sign/McNemar/block-perm/bootstrap/DSR/Holm-Bonferroni/Pearson-Spearman/
+TOST, SHAP, clustering+PCA, definición pooled) con importancia+uso+cita; QUITAR Sortino y Diebold-Mariano;
+reorganizar tests por pregunta.
+
+## ESTADO CANÓNICO AL CIERRE (CONTINUACIÓN 2)
+- **Panel = 10 (SIN apéndice):** SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG. Los 5 restantes FUERA del TFG.
+- **Riesgo titular = pooled-10** (M8 vs M5 ΔSharpe +0.64 IC[0.10,1.29]). **Ley leverage = sobre 10** (r=−0.56,
+  p=0.093, α=0.10). **TOST:** el aprendiz bate a la regla en accuracy, empata en riesgo.
+- **alfa = línea futura** (lectura alfa-vs-beta F4.9, descriptiva), NO conclusión central.
+- **Notebook:** `STRATA_marco_practico.ipynb`, 89 celdas, 0 errores, AUTO-TEST OK.
+- **Outputs nuevos:** `confusion_panel`, `bullbear_confirmatory`, `regime_did_learners`, `equivalence_tost`,
+  `spy_intervention_anatomy`, `spy_panel_gate_descriptive`, `cluster_panel10`, `alfa_beta_lectura`.json.
+- **Docs de contexto:** `conclusiones_notebook_central.md` + `docs/marco_practico_dossier.md` +
+  `docs/instrucciones_cap3_validacion.md`. Docs raíz los actualiza la otra sesión (esta no los toca).
+- **Memoria persistente** actualizada (fichas: enfoque-panel-10-sin-apendice, jerarquia-valor-honesta,
+  clustering-canonico-10, bullbear-confirmatorio-dsr, dossier-marco-practico).
