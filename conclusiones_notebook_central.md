@@ -20,7 +20,8 @@
 > no equivalente, por flexibilidad no lineal) > **EMPATA con la regla en riesgo** (Sharpe indistinguible) > **NO
 > BATE a lo trivial** (ZeroR, accuracy nominal).
 
-**Regla de honestidad (línea roja).** STRATA **no genera alfa**. La superioridad en accuracy frente a las triviales
+**Alcance y honestidad (línea roja).** El listón de STRATA es **el agente, no el mercado**: es una capa de
+supervisión y control de riesgo; generar alfa absoluta queda **fuera de su alcance por diseño**. La superioridad en accuracy frente a las triviales
 (ZeroR/B&H) es **nominal** (McNemar AutoML vs ZeroR p≈0.90, n≈250 sin potencia). Lo que **sí** sobrevive a un test:
 (a) **rescate del agente** en accuracy y en riesgo; (b) **universalidad** (el ML usa STRATA, SHAP); (c) **patrón**
 naturaleza→canal. El objetivo del trabajo **no es vencer en accuracy** sino **medir y entender el valor de la
@@ -37,7 +38,7 @@ supervisión** con patrones falsables.
 | **O3** | Mecanismo de **dos capas** (regla=riesgo, aprendiz=accuracy) | pooled ΔSharpe (M8) + McNemar (aprendiz), cada uno con su test |
 | **O4** | **Universalidad:** el ML redescubre STRATA y la supera modestamente | cuota SHAP 0.66 + **TOST** (superior en accuracy, equivalente en riesgo) |
 | **O5 (patrón)** | La **naturaleza (leverage)** explica qué supervisión funciona | ley leverage→rescate (sobre 10) + clustering + complementariedad por régimen |
-| **O6** | **Honestidad/límite** | accuracy nominal vs trivial; STRATA no genera alfa |
+| **O6** | **Alcance: supervisión, no alfa** | listón = el agente; lectura alfa-vs-beta (F4.9); accuracy nominal vs trivial |
 | **O7** | **Rigor** | signal_lag=1, embargo=1, ex-ante, tests con cita, reproducibilidad determinista |
 
 ---
@@ -110,7 +111,11 @@ pre-registrada); la agregación lo resuelve.
 PSA/GSO apenas disparan como reglas (RAM domina) pero sus scores continuos informan al aprendiz.
 
 **C9. Honestidad/límite.** No se bate a ZeroR/B&H en accuracy con significancia (nominal, ventana corta n≈250).
-STRATA **no genera alfa**: rescata al agente y acota el riesgo; ese es su valor.
+**El alcance de STRATA es la supervisión, no el alfa:** su listón es el agente, no el mercado — rescata al
+perdedor y acota su riesgo. **Lectura alfa-vs-beta (F4.9, descriptiva, sin test):** en índices alcistas (SPY/QQQ/XLE)
+el Sharpe positivo es **beta** (β≈0.5–0.7, va largo y captura la subida); en activos de leverage débil/invertido que
+caen (**SMCI** B&H Sh 0.04→strat 1.91, **MARA** −0.28→1.28, **UNG** −0.83→0.67) la STRATA saca **valor direccional**
+(β bajo/negativo, α>0) yendo corta/defensiva. Nominal, no significativo → matiza, no afirma.
 
 ---
 
@@ -137,6 +142,7 @@ STRATA **no genera alfa**: rescata al agente y acota el riesgo; ese es su valor.
 - **Pooled-10 riesgo:** M8 vs M5 ΔSharpe **+0.64 IC95[0.10,1.29]**; M10 +0.93; AutoML +0.97 (todos sig).
 - **Confirmatorio Bonferroni + DSR:** M10/AutoML pasan; M8 no; **DSR AutoML-SPY 0.924**.
 - **TOST aprendiz vs regla:** accuracy superior (pooled M10 +0.021, AutoML +0.034); Sharpe no concluyente.
+- **Lectura alfa-vs-beta (F4.9, descriptiva):** SPY/QQQ/XLE = beta (β≈0.5–0.7, índice alcista); SMCI/MARA/UNG = valor direccional (β bajo/neg, gana donde el pasivo pierde). Nominal, sin test.
 - **DiD complementariedad:** +1.37, IC95[0.20,2.60], p=0.008 (pooled; no en SPY-solo).
 - **SHAP cuota:** media 0.66, >0.5 en 10/10. **Clustering:** Rand=1.0, silhouette 0.55. **Ley leverage:** r=−0.56,
   p=0.093 (α=0.10).
@@ -240,7 +246,8 @@ naturaleza→leverage) → **límites** (nominal vs trivial, no alfa).
    el panel (tabla por activo).
 4. **Clustering n=10:** exploratorio; qué modelo concreto gana por activo NO es predecible por el cluster.
 5. **Complementariedad por régimen:** sig en pooled, **no** en SPY-solo (fenómeno cross-asset).
-6. **STRATA no genera alfa:** Sharpe absolutos mayormente negativos; se mide el rescate **relativo** al agente.
+6. **Alcance = supervisión, no alfa:** el listón es el agente, no el mercado; los Sharpe positivos en índices
+   alcistas son **beta** (F4.9), no rentabilidad superior al pasivo. El valor direccional (SMCI/MARA/UNG) es nominal.
 
 ---
 
@@ -259,4 +266,5 @@ naturaleza→leverage) → **límites** (nominal vs trivial, no alfa).
 | PARTE B confirmatoria + por régimen | `bullbear_confirmatory.json` |
 | DiD complementariedad | `regime_did_learners.json` |
 | TOST aprendiz vs regla | `equivalence_tost.json` |
+| Lectura alfa-vs-beta (F4.9) | `alfa_beta_lectura.json` |
 | Rodante/val-test/bull-bear · calibración | `panel_robustness.json`, `calib_window_panel.json` |

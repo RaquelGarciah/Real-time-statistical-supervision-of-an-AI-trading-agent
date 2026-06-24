@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "panel": [
+      "SPY",
+      "QQQ",
+      "XLF",
+      "DIA",
+      "XLK",
+      "XLE",
+      "ROKU",
+      "SMCI",
+      "MARA",
+      "UNG"
+    ],
+    "modelo": "market-model r_strat = α + β·r_BH (descriptivo, sin test); α anualizada ×252; β = exposición al activo. F4.9 lectura alfa-vs-beta.",
+    "nota": "LECTURA RAZONADA, no afirmación con contraste. nominal."
+  },
+  "por_activo": {
+    "SPY": {
+      "mejor_strata": "AutoML",
+      "strat_sharpe": 2.71,
+      "bh_sharpe": 2.27,
+      "beta": 0.529,
+      "alfa_anual": 0.186,
+      "corr_con_mercado": 0.531,
+      "lectura": "BETA (gana por estar largo en un activo que sube)"
+    },
+    "QQQ": {
+      "mejor_strata": "AutoML",
+      "strat_sharpe": 0.55,
+      "bh_sharpe": 2.29,
+      "beta": 0.519,
+      "alfa_anual": -0.1046,
+      "corr_con_mercado": 0.514,
+      "lectura": "BETA (gana por estar largo en un activo que sube)"
+    },
+    "XLF": {
+      "mejor_strata": "M8",
+      "strat_sharpe": -0.34,
+      "bh_sharpe": 0.24,
+      "beta": 0.731,
+      "alfa_anual": -0.0757,
+      "corr_con_mercado": 0.731,
+      "lectura": "mixto"
+    },
+    "DIA": {
+      "mejor_strata": "AutoML",
+      "strat_sharpe": 0.46,
+      "bh_sharpe": 1.64,
+      "beta": 0.389,
+      "alfa_anual": -0.0221,
+      "corr_con_mercado": 0.387,
+      "lectura": "mixto"
+    },
+    "XLK": {
+      "mejor_strata": "AutoML",
+      "strat_sharpe": 1.39,
+      "bh_sharpe": 2.31,
+      "beta": 0.409,
+      "alfa_anual": 0.0949,
+      "corr_con_mercado": 0.406,
+      "lectura": "mixto"
+    },
+    "XLE": {
+      "mejor_strata": "AutoML",
+      "strat_sharpe": 1.23,
+      "bh_sharpe": 1.9,
+      "beta": 0.65,
+      "alfa_anual": 0.0001,
+      "corr_con_mercado": 0.647,
+      "lectura": "BETA (gana por estar largo en un activo que sube)"
+    },
+    "ROKU": {
+      "mejor_strata": "AutoML",
+      "strat_sharpe": 1.12,
+      "bh_sharpe": 1.38,
+      "beta": 0.447,
+      "alfa_anual": 0.2264,
+      "corr_con_mercado": 0.446,
+      "lectura": "mixto"
+    },
+    "SMCI": {
+      "mejor_strata": "M10",
+      "strat_sharpe": 1.91,
+      "bh_sharpe": 0.04,
+      "beta": -0.157,
+      "alfa_anual": 1.5696,
+      "corr_con_mercado": -0.158,
+      "lectura": "ALFA DIRECCIONAL (gana donde el pasivo pierde, vía posicionamiento corto/defensivo)"
+    },
+    "MARA": {
+      "mejor_strata": "M10",
+      "strat_sharpe": 1.28,
+      "bh_sharpe": -0.28,
+      "beta": 0.252,
+      "alfa_anual": 1.0578,
+      "corr_con_mercado": 0.253,
+      "lectura": "ALFA DIRECCIONAL (gana donde el pasivo pierde, vía posicionamiento corto/defensivo)"
+    },
+    "UNG": {
+      "mejor_strata": "M8",
+      "strat_sharpe": 0.67,
+      "bh_sharpe": -0.83,
+      "beta": -0.875,
+      "alfa_anual": -0.0344,
+      "corr_con_mercado": -0.874,
+      "lectura": "ALFA DIRECCIONAL (gana donde el pasivo pierde, vía posicionamiento corto/defensivo)"
+    }
+  }
+}

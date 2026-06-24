@@ -18,7 +18,9 @@ de aquí. (2) La redacción (agentes `redactor-tesis` + gates de estilo/citas) c
 (si una cifra cambia en el notebook, se actualiza aquí). (4) El §9 del notebook es el *resumen*; este dossier es
 el *desarrollo*.
 
-**Regla de honestidad transversal (no negociable).** STRATA **no genera alfa**. Su valor probado es: (a) **rescate
+**Alcance y honestidad (no negociable).** El listón de STRATA es **el agente, no el mercado**: es una capa de
+supervisión y control de riesgo; el alfa absoluta queda fuera de su alcance por diseño (lectura alfa-vs-beta F4.9, §7).
+Su valor probado es: (a) **rescate
 del agente** (accuracy, McNemar, significativo); (b) **rescate de riesgo** (ΔSharpe pooled, significativo);
 (c) **universalidad** (el ML redescubre STRATA, cuota SHAP); (d) **patrón** naturaleza→estrategia. La superioridad
 en accuracy sobre las triviales (ZeroR/B&H) es **nominal**, no significativa: se etiqueta siempre como tal.
@@ -350,7 +352,7 @@ Supervisar estadísticamente a un agente LLM **aporta valor diferencial medible*
 A esto se añaden las dos capas complementarias cuyo uso se relaciona con la naturaleza del activo (ley
 leverage→rescate, complementariedad por régimen), la universalidad por SHAP (el ML redescubre las señales de
 STRATA) y un mecanismo interpretable. Los límites (accuracy nominal, leverage débil, ley sobre 10 marginal) se declaran.
-**STRATA rescata, ordena el valor con rigor y acota; no genera alfa.**
+**STRATA rescata al agente, ordena el valor con rigor y acota el riesgo; su listón es el agente, no el mercado (alcance: supervisión, no alfa).**
 
 ---
 
@@ -371,6 +373,7 @@ STRATA) y un mecanismo interpretable. Los límites (accuracy nominal, leverage d
 | PARTE B confirmatoria + DSR + régimen | **bullbear_confirmatory** | `bullbear_confirmatory.json` | §7 |
 | Test DiD complementariedad | **regime_did_learners** | `regime_did_learners.json` | §7 |
 | Equivalencia/superioridad aprendiz vs regla (TOST) | **equivalence_tost** | `equivalence_tost.json` | §4 |
+| Lectura alfa-vs-beta (F4.9, descriptiva) | **alfa_beta_lectura** | `alfa_beta_lectura.json` | §7 |
 | Variantes de intervención SPY | spy_intervention_variants | `spy_intervention_variants.json` | §3 |
 | Rodante / val-test / bull-bear panel | panel_robustness | `panel_robustness.json` | §7 |
 | Robustez calibración | calib_window_panel | `calib_window_panel.json` | §7 |
@@ -385,5 +388,5 @@ STRATA) y un mecanismo interpretable. Los límites (accuracy nominal, leverage d
 3. **Clustering n=10:** exploratorio/descriptivo; qué modelo gana por activo no es predecible por el cluster.
 4. **Complementariedad por régimen:** significativa en pooled, **no** en SPY-solo (fenómeno cross-asset).
 5. **Selección del panel de 10:** ex-ante por naturaleza, no por significancia (sin apéndice; los 5 restantes fuera del TFG).
-6. **STRATA no genera alfa:** todos los Sharpe absolutos siguen mayormente negativos; se mide el rescate **relativo**
+6. **Alcance = supervisión, no alfa:** los Sharpe positivos en índices alcistas son beta (F4.9); se mide el rescate **relativo**
    al agente, que es la tesis.

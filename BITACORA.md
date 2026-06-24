@@ -2359,3 +2359,26 @@ Cap.4 qué aparece, Cap.3 qué falta, defensa, líneas rojas, figuras).
 
 **Referencias.** `notebooks/_build_STRATA_marco_practico.py`, `conclusiones_notebook_central.md`,
 `docs/marco_practico_dossier.md`, plan en `.claude/plans/`.
+
+---
+
+## [2026-06-24] [Hallazgo] - Lectura alfa-vs-beta (F4.9) y reencuadre de "no genera alfa"
+
+**Contexto.** A Raquel no le convencía "STRATA no genera alfa" como conclusión (suena a fracaso). Se reformula en
+positivo (alcance: supervisión, no alfa) y se añade un diagnóstico **descriptivo** que matiza dónde el Sharpe es
+beta y dónde valor direccional.
+
+**Detalle.** `experiments/alfa_beta_lectura.py` → `alfa_beta_lectura.json`: modelo de mercado
+r_strat = α + β·r_B&H (descriptivo, **sin contraste**). Mejor STRATA por activo:
+- **BETA** (índice alcista, va largo): SPY (β0.53, B&H Sh 2.27), QQQ, XLE.
+- **VALOR DIRECCIONAL** (gana donde el pasivo pierde, β bajo/negativo): **SMCI** (B&H 0.04→strat 1.91),
+  **MARA** (−0.28→1.28), **UNG** (−0.83→0.67).
+- Resto, mixto.
+
+**Implicaciones para el TFG.** Reencuadre canónico: "STRATA no genera alfa" → **"el alcance de STRATA es la
+supervisión, no el alfa; su listón es el agente, no el mercado"**. La lectura F4.9 (nominal, sin test) muestra que
+el Sharpe positivo en índices es beta y el valor direccional aparece en leverage débil/invertido. Añadido al
+notebook §7 (celda F4.9, lectura razonada NO test) + propagado a conclusiones_notebook_central.md y dossier.
+Notebook 89 celdas, 0 errores, AUTO-TEST OK.
+
+**Referencias.** `experiments/alfa_beta_lectura.py`, `outputs/experiments/alfa_beta_lectura.json`, notebook §7.
