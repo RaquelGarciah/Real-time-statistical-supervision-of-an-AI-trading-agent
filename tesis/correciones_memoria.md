@@ -62,6 +62,13 @@ Estado de la verificación: `[verificado]` = comprobado contra el .tex o el JSON
 > Las seis demostraciones (forward, monotonía EM, estacionariedad GARCH, pseudo-residuos,
 > pesos XGBoost, recursión BOCPD) están **verificadas y son correctas**. En particular, la
 > dirección de necesidad del Teorema de estacionariedad GARCH **no es circular**. [verificado]
+>
+> **Re-auditoría 2026-06-24 (v2):** el fichero creció con una sección nueva §2 "Agentes de
+> trading basados en modelos de lenguaje" (líneas 44-97, con figura TikZ del bucle del agente).
+> Verificado: sus 9 citas existen en el `.bib` (sin alucinaciones); el preámbulo carga
+> `tikz` + `arrows.meta` (la figura compila); labels y refs cruzadas correctas. La sección es
+> una buena adición. Confirmado además que **C1-C12 siguen sin resolver** (no se ha tocado
+> nada de lo anterior). Nuevos ítems de la sección: C13, C14.
 
 ### C1 · 🔴 · Colisión de notación en λ (tres significados) · ABIERTO
 - **Dónde:** λ = parámetros del HMM (líneas 103-283); λ = inverso del hazard BOCPD (λ=250,
@@ -149,11 +156,34 @@ Estado de la verificación: `[verificado]` = comprobado contra el .tex o el JSON
   Ω(f)=γT+…). [verificado]
 - **Qué hacer:** nota aclaratoria o cambiar el nº de hojas a |hojas|/otro símbolo.
 
-### C11 · 🟡 · Frase-mapa de apertura incompleta · ABIERTO
+### C11 · 🟡 · Frase-mapa de apertura incompleta · PARCIAL
 - **Dónde:** línea 9.
-- **Qué descuadra:** anuncia "cuatro bloques" pero omite la §3.6 "Estrategias supervisadas"
-  (M10/AutoML/boosting), que es extensa y central. [verificado]
-- **Qué hacer:** reajustar la frase para incluir ese bloque.
+- **Qué descuadra:** la frase se editó (v2) y ahora sí cita la sección nueva del agente, pero
+  **sigue anunciando "cuatro bloques" y omite la §"Estrategias supervisadas"** (M10/AutoML/
+  boosting, `sec:estrategias`), que es extensa y central. [verificado v2]
+- **Qué hacer:** añadir ese bloque al mapa (es el que aprende sobre las señales).
+
+### C13 · 🟡 · Coherencia de la salida del agente: ¿lleva confianza la decisión final? · ABIERTO
+- **Dónde:** línea 90 (el gestor de cartera integra en *"una dirección y un tamaño"*) vs líneas
+  95 y 102 (*"una dirección, un tamaño y la confianza con que los emite"* / terna signo-tamaño-
+  confianza). [verificado v2]
+- **Qué descuadra:** la decisión orquestada se describe sin confianza en un sitio y con confianza
+  en otros dos. Las 15 features del meta-learner son la confianza **por personalidad** (línea
+  660), no necesariamente una confianza de la decisión final.
+- **Qué hacer:** aclarar si la decisión final del fondo lleva un escalar de confianza propio o si
+  la confianza es solo por personalidad. Unificar la descripción de la salida en las tres líneas.
+
+### C14 · 🟢 · Oportunidad: el gestor de riesgo interno explica por qué GSO casi no dispara · ABIERTO
+- **Dónde:** línea 90 (*"Un gestor de riesgo fija el límite de la posición a partir de la
+  volatilidad reciente"* — interno al agente) vs s1_spy/GSO inerte (F5, D-GSO 0% disparo).
+- **Qué descuadra:** no es un error, es una conexión sin explotar. El agente **ya dimensiona por
+  volatilidad internamente**; por eso su tamaño rara vez viola la banda de GSO y el detector
+  externo casi nunca dispara. [verificado v2 — coherente con que GSO es inerte]
+- **Por qué importa:** convierte una debilidad ("GSO no hace nada") en un hallazgo defendible
+  ("GSO es redundante con el risk-manager interno del agente, que ya hace vol-targeting"). Buena
+  munición frente a la objeción F5.
+- **Qué hacer:** añadir una frase en §GSO (o en límites del Cap.4) ligando la inactividad de GSO
+  al risk-manager interno del agente. Refuerza, no debilita.
 
 ### C12 · 🟡 · Recortar pasajes de nivel doctoral · ABIERTO
 - **Dónde:** monotonía EM (243-258); construcción de la solución estacionaria GARCH en L¹
