@@ -21,7 +21,7 @@ mismo LLM) puede perder dinero y acertar la dirección menos del 50 %. La pregun
 sino *"¿una capa de supervisión estadística clásica (STRATA: régimen, cambio de opinión, volatilidad)
 **rescata** a ese agente, y puede **probarse**?"*.
 
-**Jerarquía de valor (cada peldaño con su test):**
+**Jerarquía de valor (cada afirmación con su test):**
 1. El aprendiz **RESCATA al agente** — significativo, en accuracy (McNemar) y en riesgo (pooled-10).
 2. **BATE modestamente a la regla** en accuracy — TOST: superioridad, no equivalencia (flexibilidad no lineal).
 3. **EMPATA con la regla** en riesgo — Sharpe indistinguible (TOST no concluyente).
@@ -29,12 +29,13 @@ sino *"¿una capa de supervisión estadística clásica (STRATA: régimen, cambi
    accuracy, Sharpe, máxima caída y equity) y en SMCI/MARA/UNG (una derivada de STRATA supera a las dos
    triviales en accuracy). Es parte del valor y se enseña; el matiz honesto es que la **significancia** pooled
    en accuracy frente a la trivial **no se alcanza** (nominal, n≈250).
-5. **NO genera alfa** — los Sharpe absolutos son mayormente negativos; el valor es **relativo al agente**, no
-   absoluto frente al mercado.
+5. **El valor probado es relativo al agente** (el rescate), no un Sharpe absoluto que bata al mercado. *(El
+   ángulo de generar alfa no entra en la narrativa: se trata solo en las conclusiones, como línea futura.)*
 
-**Línea roja.** STRATA no genera alfa y no bate a lo trivial *con significancia* en accuracy. Lo que sí
-sobrevive a un test: (a) rescate del agente en accuracy y riesgo; (b) que el aprendiz se apoya en STRATA y la
-mejora (SHAP + TOST); (c) el patrón naturaleza→canal (ley del leverage); (d) la complementariedad por régimen.
+**Línea roja.** STRATA no genera alfa *de forma general ni significativa* y no bate a lo trivial *con
+significancia* en accuracy (las victorias en Sharpe de 4/10 son en punto, nominales). Lo que sí sobrevive a un
+test: (a) rescate del agente en accuracy y riesgo; (b) que el aprendiz se apoya en STRATA y la mejora (SHAP +
+TOST); (c) el patrón naturaleza→canal (ley del leverage); (d) la complementariedad por régimen.
 
 ---
 
@@ -44,10 +45,10 @@ mejora (SHAP + TOST); (c) el patrón naturaleza→canal (ley del leverage); (d) 
 |---|---|---|
 | **O1** | El agente solo (M5) pierde y acierta < 0,5 | SPY M5 acc 0,366, Sharpe −3,07, equity 0,70; sign test vs 0,5 ($p<0,001$); transversal en el panel |
 | **O2 (central)** | STRATA **rescata** al agente, y se prueba | accuracy: McNemar vs M5 sig; riesgo: pooled-10 ΔSharpe sig (IC excluye 0) |
+| **O6** | STRATA **gana a la trivial donde puede**, y se dice el límite | victorias en punto (SPY, SMCI, MARA, UNG); significancia vs trivial nominal; no genera alfa |
 | **O3** | Mecanismo de **dos capas** (regla = riesgo, aprendiz = accuracy) | pooled ΔSharpe (M8) + McNemar (aprendiz); gate RAM |
 | **O4** | El aprendiz **redescubre STRATA y la mejora** | cuota SHAP 0,66 (>0,5 en 10/10) + **TOST** (superior en accuracy, equivalente en riesgo) |
 | **O5 (patrón)** | La **naturaleza (leverage)** explica qué supervisión funciona | ley leverage→rescate (sobre 10) + clustering (Rand=1,0) + complementariedad DiD |
-| **O6** | STRATA **gana a la trivial donde puede**, y se dice el límite | victorias en punto (SPY, SMCI, MARA, UNG); significancia vs trivial nominal; no genera alfa |
 | **O7** | **Rigor** | `signal_lag=1`, embargo=1, ex-ante, tests con cita, reproducibilidad determinista |
 
 ---
@@ -66,7 +67,7 @@ mejora (SHAP + TOST); (c) el patrón naturaleza→canal (ley del leverage); (d) 
 5. **HMM K=3** por verosimilitud held-out ($-1{,}30 > -1{,}69$ de K=2) + interpretabilidad (Calma/Estrés/Crisis);
    calibrado por activo. **GARCH(1,1)-t** (Bollerslev); **BOCPD** (Adams-MacKay).
 6. **Intervención = override-C** (reorienta al signo del régimen): voltear acierta 0,478 frente a 0,401 de
-   abstenerse y 0,397 de reducir. Corregir activamente gana a evitar.
+   abstenerse y 0,397 de reducir. Corregir activamente gana a evitar. No la llames override-C, refiérete a ella como intervención fuerte si estás comparándola con las demás intervenciones o solo como intervención.
 7. **prior RAM data-driven por activo** (signo de la media del régimen), nunca "Crisis ⇒ short" hardcoded.
 8. **Umbrales ex-ante:** RAM $\tau=0{,}50$; PSA $P_{95}=0{,}023$; GSO $P_{95}=2{,}371$ (cuantiles de calibración).
 9. **`leverage_corr` = $\operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1}-\mathrm{RV}^{21}_t)$** (correlación de
@@ -119,13 +120,17 @@ protege mejor en el régimen peligroso (bajista). Línea futura: ensemble enruta
 el rescate de Sharpe se concentra en alcista y la regla M8 se invierte en bajista (n=50, ΔSharpe −1,49,
 falsación pre-registrada); la agregación del panel lo resuelve.
 
-**C8. STRATA bate a la trivial donde la naturaleza lo permite (en punto).** En **SPY**, AutoML supera a ZeroR/B&H
-en accuracy (0,574 vs 0,566), Sharpe (+2,68 vs +2,21), máxima caída (−5,5 % vs −9,8 %) y equity (1,38× vs 1,30×)
-— la gráfica de equity lo hace visible. En **SMCI** (M10 0,552 > 0,516/0,484), **MARA** (AutoML 0,544 >
-0,532/0,468) y **UNG** (M10 0,518 > 0,449/0,486) una derivada de STRATA bate a las dos triviales en accuracy.
-Honesto: estas victorias son **en punto**; la significancia pooled vs trivial es nominal (McNemar AutoML vs
-ZeroR SPY p=0,90, n≈250). El valor está, parte, en estas victorias por activo; el límite es que no se prueban
-con un test a esta muestra.
+**C8. STRATA bate a la trivial donde la naturaleza lo permite (en punto).** En **accuracy**, una derivada supera
+a las dos triviales en SPY (AutoML 0,574 vs 0,566), SMCI (M10 0,552 > 0,516/0,484), MARA (AutoML 0,544 >
+0,532/0,468) y UNG (M10 0,518 > 0,449/0,486). En **Sharpe**, una derivada bate al pasivo en **4/10**: SPY (AutoML
++2,68 > +2,21), SMCI (M10 +1,84 > +0,04), MARA (M10 +1,35 > +0,28) y UNG (M8 +0,54 > −0,70). Matiz importante: el
+caso de **SPY es mayormente beta de mercado** (OOS alcista, ir largo, no alfa limpia); los que de verdad parecen
+**alfa** son **SMCI, MARA y UNG** —de leverage débil o invertido—, donde el pasivo pierde (B\&H Sharpe $\approx 0$
+o negativo) y la derivada, al ir defensiva correctamente, saca Sharpe positivo claro: valor **direccional**, no
+exposición pasiva. Honesto: son victorias **en punto**, nominales (n≈250, a posteriori; ninguna bate a ZeroR con
+significancia, McNemar AutoML vs ZeroR SPY p=0,90), y la estrategia ganadora **cambia por activo** (no hay una
+universal). El valor está, en parte, en estas victorias; el límite es que no se prueban con un test. La gráfica
+de equity de SPY lo hace visible. **Desarrollar una estrategia que genere alfa de forma robusta = línea futura.**
 
 **C9. La ablación depende del modelo; el ganador usa STRATA.** AutoML alcanza su máximo con las 22 features
 (0,574) y **degrada al quitar PSA+GSO** (0,550) → usa los detectores. M10 con params fijos se sobreajusta con 22.
@@ -167,7 +172,9 @@ capas + naturaleza→leverage + complementariedad) → límites (nominal vs triv
 
 ## VII. Líneas rojas (lo que NUNCA se afirma ni se escribe)
 
-- No "bate al mercado"; no "genera alfa"; no "bate a ZeroR/B&H **con significancia** en accuracy".
+- No "bate al mercado"; no "genera alfa **de forma general o significativa**" (las victorias en Sharpe de 4/10
+  son en punto y nominales, no significativas); no "bate a ZeroR/B&H **con significancia** en accuracy". Tampoco
+  el absoluto "nunca genera alfa": en 4/10 una derivada supera al pasivo en Sharpe (nominal).
 - No presentar la accuracy nominal como significativa; no afirmar la ley a p<0,05 (sobre 10); no afirmar
   robustez leave-one-out (sobre 10); no mezclar las dos ventanas (OOS completo n≈401 vs desplegable n≈250).
 - **No escribir que el trabajo se hizo sobre más de 10 activos ni que "elegimos 10".** El universo es 10.
@@ -229,7 +236,7 @@ Aquí no hay flexibilidad. Es lo que convierte el capítulo en un research note 
   la cifra no entra. Las cifras vienen de los JSON canónicos (§IX), nunca a mano, nunca de notebooks obsoletos.
 - **Q2 — Causalidad estricta.** `signal_lag=1`; embargo=1; sin KFold (única excepción documentada: M3, para
   denunciar el sesgo). Las dos ventanas (OOS completo n≈401, desplegable n≈250) nunca se mezclan.
-- **Q3 — Honestidad.** Lo nominal se etiqueta nominal; las limitaciones se declaran; no se ocultan resultados
+- **Q3 — Honestidad.** Lo nominal se etiqueta nominal y se argumenta el posible motivo; las limitaciones se declaran; no se ocultan resultados
   malos. Si un detector no aporta, se dice (PSA/GSO inertes). Si algo no llega a significancia, se reporta y se
   argumenta, con la lectura que lo pone en contexto.
 - **Q4 — Reproducibilidad.** Semillas fijas; AutoML por `max_models` (determinista), nunca por tiempo; auto-test
@@ -290,7 +297,7 @@ complementariedad) → **límites** (nominal vs trivial en significancia, no alf
 - **Intros que captan la atención** (prioridad alta): cada capítulo abre directo al problema y a la jerarquía de
   valor, sin andamiaje.
 - **Frase canónica del universo (la que se usa):** *"el estudio se realiza sobre un panel de diez activos
-  (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegidos ex ante por su naturaleza de mercado"*. **Nunca**
+  (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG)"*. **Nunca**
   "de entre 15", "elegimos 10", ni "apéndice".
 - Lo nominal se dice nominal; lo que pasa un test se dice con su test; no se nombra "p-hacking".
 
