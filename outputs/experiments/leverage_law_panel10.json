@@ -1,0 +1,75 @@
+{
+ "meta": {
+  "n_activos": 10,
+  "panel": [
+   "SPY",
+   "QQQ",
+   "XLF",
+   "DIA",
+   "XLK",
+   "XLE",
+   "ROKU",
+   "SMCI",
+   "MARA",
+   "UNG"
+  ],
+  "metrica": "Pearson/Spearman entre leverage_corr y rescate en accuracy del mejor aprendiz (max(M10,AutoML)-M5)",
+  "fuente": "recomputado sobre el panel canónico de 10 desde leverage_law_panel.json/por_activo (subconjunto de 10)",
+  "leverage_corr_def": "corr(r_t, RV21_{t+1}-RV21_t) (Black 1976; Christie 1982)",
+  "nivel_alpha": 0.1,
+  "nota": "exploratorio, n=10; NO se reporta leave-one-out ni p<0.05 por tamaño muestral"
+ },
+ "ley_leverage": {
+  "pearson_r": -0.5588,
+  "pearson_p": 0.0931,
+  "spearman_rho": -0.5879,
+  "spearman_p": 0.0739,
+  "n_siguen_signo": 9,
+  "excepcion": "ROKU",
+  "rescate_medio_leverage_fuerte": 0.0972,
+  "rescate_medio_leverage_debil": 0.0587,
+  "umbral_fuerte_debil": -0.05
+ },
+ "por_activo": {
+  "SPY": {
+   "leverage_corr": -0.1099,
+   "rescate_aprendiz": 0.2072
+  },
+  "QQQ": {
+   "leverage_corr": -0.0921,
+   "rescate_aprendiz": 0.1156
+  },
+  "XLF": {
+   "leverage_corr": -0.0909,
+   "rescate_aprendiz": 0.0972
+  },
+  "DIA": {
+   "leverage_corr": -0.1117,
+   "rescate_aprendiz": 0.08
+  },
+  "XLK": {
+   "leverage_corr": -0.0863,
+   "rescate_aprendiz": 0.0796
+  },
+  "XLE": {
+   "leverage_corr": -0.0891,
+   "rescate_aprendiz": 0.0847
+  },
+  "ROKU": {
+   "leverage_corr": 0.0028,
+   "rescate_aprendiz": 0.1
+  },
+  "SMCI": {
+   "leverage_corr": -0.0042,
+   "rescate_aprendiz": 0.068
+  },
+  "MARA": {
+   "leverage_corr": -0.0595,
+   "rescate_aprendiz": 0.0162
+  },
+  "UNG": {
+   "leverage_corr": 0.0409,
+   "rescate_aprendiz": 0.0081
+  }
+ }
+}
