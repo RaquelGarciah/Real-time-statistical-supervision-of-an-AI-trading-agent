@@ -1,5 +1,12 @@
 # Decisiones esenciales — vivas a 2026-06-17
 
+> **⚠️ ENFOQUE ACTUAL (2026-06-24) — fuente de verdad práctica: [`MARCO_PRACTICO_CONTEXTO.md`](MARCO_PRACTICO_CONTEXTO.md).**
+> Universo = **panel de 10** (SPY central + QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegido **ex ante por
+> naturaleza, SIN apéndice**; los demás activos no existen en el TFG. SMCI es **uno de los 10**, no el caso central.
+> Riesgo = **pooled-10** (M8 vs M5 ΔSharpe +0,64). Notebook canónico = `STRATA_marco_practico.ipynb`. Decisiones,
+> jerarquía de valor y cifras canónicas, en CONTEXTO. **Lo que abajo trate a SMCI como caso central (#13–#16) o
+> hable de "10 de 15 / apéndice" está obsoleto** (queda como registro histórico del pivot).
+
 Las 12 decisiones que sobreviven al pivot final del proyecto anterior, **más 4 del pivot a caso de estudio
 SMCI (#13–#16, 2026-06-17)**. Cada una con: **Qué + Por qué + Dónde está justificada en el archivo + Estado**. Léelas antes de cuestionar cualquier hiperparámetro.
 

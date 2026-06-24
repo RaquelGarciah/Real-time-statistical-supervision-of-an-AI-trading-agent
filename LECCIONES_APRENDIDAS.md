@@ -1,5 +1,7 @@
 # Lecciones aprendidas — errores cometidos y cómo NO repetirlos
 
+> **⚠️ ENFOQUE ACTUAL (2026-06-24):** fuente de verdad práctica = [`MARCO_PRACTICO_CONTEXTO.md`](MARCO_PRACTICO_CONTEXTO.md); notebook canónico = `STRATA_marco_practico.ipynb`; caso central = SPY + panel de 10 (no SMCI).
+
 12 errores reales del proyecto anterior. Cada lección: **Qué pasó + Síntoma + Causa raíz + Cómo evitarlo en el nuevo proyecto + Quién audita**.
 
 ---

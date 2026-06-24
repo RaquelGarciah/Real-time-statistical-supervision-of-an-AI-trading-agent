@@ -1,6 +1,11 @@
-# Estructura aprobada del Capítulo 4 (Marco práctico — caso de estudio SMCI)
+# Estructura aprobada del Capítulo 4 (Marco práctico — caso de estudio SMCI) — OBSOLETO
 
-> **Fuente de verdad** que custodia el agente `arquitecto-estructura`. Cualquier redacción del cap. 4 debe
+> **⚠️ OBSOLETO (2026-06-24).** Esta estructura es de la era **SMCI** y NO se usa. La estructura del cap. 4 del
+> enfoque actual (SPY + panel de 10 + patrones) la define `coordinador-redaccion` sobre la fuente de verdad
+> [`MARCO_PRACTICO_CONTEXTO.md`](../MARCO_PRACTICO_CONTEXTO.md) (§XII: estructura y figuras/tablas imprescindibles).
+> Se conserva abajo solo como registro histórico.
+
+> **Fuente de verdad [HISTÓRICA]** que custodiaba el agente `arquitecto-estructura`. Cualquier redacción del cap. 4 debe
 > seguir EXACTAMENTE estos bloques y este orden. Decisiones de Raquel (2026-06-18): **todo SMCI** (SPY no entra
 > al cuerpo), **mecánica de STRATA en el cuerpo** (no apéndice), **compacto y directo** (subsecciones de 1-2
 > párrafos). Las cifras vienen de JSON / `RESULTADOS_OBJETIVO.md §1bis`, nunca a mano.

@@ -3,6 +3,10 @@
 > La estrella polar del TFG. Breve y claro: **qué demostramos, los objetivos, la estructura y las cifras
 > canónicas**. Si una cifra o decisión no está aquí o en las fuentes que enlazo, **no entra en la memoria**.
 >
+> **⚠️ Fuente de verdad de la parte práctica (2026-06-24): [`MARCO_PRACTICO_CONTEXTO.md`](../MARCO_PRACTICO_CONTEXTO.md)** —
+> caso central SPY + **panel de 10** (sin apéndice), pooled-10 (M8 +0,64), ley leverage sobre 10 (p=0,093), TOST/DiD,
+> alcance = rescate + riesgo (alfa = línea futura). Las cifras de SMCI/CPCV de abajo son históricas.
+>
 > **[Actualizado 2026-06-23 — cambio de enfoque.]** SMCI deja de ser el activo del caso de estudio. El caso
 > central pasa a ser **SPY**, con un **panel de 15 activos** (10 beneficiados) y **clustering**. El brief
 > completo del marco práctico (cap. 4) es **`memoria/MARCO_PRACTICO_SPEC.md`** (lo que ahí se dice manda sobre
@@ -76,7 +80,7 @@ con vocación de generalizar a cualquier agente y cualquier activo.
 - **Caso central: SPY.** Activo amplio con *leverage effect* fuerte, donde el régimen del HMM tiene contenido
   direccional. Análisis extenso de las decisiones ex-ante, calibraciones, los tres detectores, y las tres
   derivadas en orden: **M8 → M10 + SHAP → AutoML** (`MARCO_PRACTICO_SPEC.md §1`).
-- **Panel de 15 activos (10 beneficiados).** Robustez de la hipótesis de que STRATA aporta valor: pruebas por
+- **Panel de 10 activos).** Robustez de la hipótesis de que STRATA aporta valor: pruebas por
   activo y **pooled bootstrap** (Sharpe, MaxDD, Calmar con IC95), robustez a ventanas/particiones/régimen y a la
   ventana de calibración. Config = **panel canónico mm25** (la de `decision_automl`). Criterio de inclusión de
   los 10 = mecanístico y ex-ante (ver `REVISAR_AL_VOLVER.md`; decisión pendiente §6.1 del SPEC).

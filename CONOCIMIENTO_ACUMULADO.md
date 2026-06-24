@@ -1,9 +1,13 @@
 # Conocimiento acumulado — síntesis ejecutiva (10 min)
 
-> **[Coherencia 2026-06-17]** El caso de estudio canónico es **SMCI** (benchmark justo, M10-WF ensemble
-> 0,552). Las cifras de SPY que aparecen abajo con **0,539 son CPCV (look-ahead)**: valen solo como *contraste
-> del método*, no como resultado desplegable (lo desplegable es walk-forward, embargo=1). Para lo canónico y al
-> día: **`memoria/MANUAL.md`**, `RESULTADOS_OBJETIVO.md §1bis`, `DECISIONES_ESENCIALES.md #13–16`.
+> **⚠️ ENFOQUE ACTUAL (2026-06-24) — fuente de verdad práctica: [`MARCO_PRACTICO_CONTEXTO.md`](MARCO_PRACTICO_CONTEXTO.md).**
+> Caso central = **SPY + panel de 10 + patrones** (NO SMCI; SMCI es uno de los 10). El valor de STRATA es la
+> supervisión: **rescate del agente** (accuracy + riesgo, sig), el aprendiz **se apoya en STRATA y la mejora**
+> (SHAP + TOST), la **naturaleza (leverage) explica qué canal rescata** (ley + clustering), los dos supervisores
+> se **complementan por régimen** (DiD). Alcance = rescate + control de riesgo, no rentabilidad absoluta
+> (alfa = línea futura). **Lo que abajo diga "caso de estudio SMCI / 0,539 CPCV" está obsoleto.**
+>
+> _[Coherencia 2026-06-17 — HISTÓRICO, superado]_ El caso de estudio canónico era **SMCI** (M10-WF 0,552); las cifras de SPY con **0,539 son CPCV** (contraste, no desplegable).
 
 Lectura obligatoria antes de cualquier experimento. Para profundidad, consulta `_archivo_proyecto_anterior/`.
 

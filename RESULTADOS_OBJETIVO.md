@@ -1,8 +1,14 @@
 # Resultados objetivo — cifras de referencia (no objetivo único)
 
-> **[Coherencia 2026-06-17]** Resultado canónico del **caso de estudio = §1bis (SMCI, walk-forward, embargo=1,
-> M10 0,552)**. El §1 (SPY) es el *método* y su **0,539 es CPCV** (contraste, no desplegable). Resumen
-> ejecutivo de una página: **`memoria/MANUAL.md`**.
+> **⚠️ ENFOQUE ACTUAL (2026-06-24) — fuente de verdad práctica: [`MARCO_PRACTICO_CONTEXTO.md`](MARCO_PRACTICO_CONTEXTO.md).**
+> Caso central = **SPY + panel de 10** (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), **sin apéndice**;
+> SMCI es **uno de los 10**, no el caso central. Headline: SPY AutoML 0,574 (McNemar vs M5 0,0002; vs ZeroR 0,90
+> nominal); **pooled-10 riesgo M8/M10/AutoML vs M5 +0,64/+0,93/+0,97** (Bonferroni: M10/AutoML sí, M8 no); **TOST**
+> (aprendiz bate la regla en accuracy, empata en riesgo); **DiD** +1,37 (p=0,008); **ley leverage sobre 10** r=−0,56
+> p=0,093 (α=0,10). Alcance = rescate + riesgo (alfa = línea futura). **Lo que abajo diga "SMCI caso de estudio /
+> 0,539 CPCV / pooled-15 / M10 0,552" está obsoleto.**
+>
+> _[Coherencia 2026-06-17 — HISTÓRICO, superado]_ caso de estudio = §1bis (SMCI, M10 0,552); §1 (SPY) 0,539 es CPCV.
 
 **ESTRUCTURA:** §1 = cifras canónicas del nuevo proyecto (fuente única de verdad para la memoria LaTeX). §2 = tabla del proyecto anterior (referencia histórica, no canónica).
 
