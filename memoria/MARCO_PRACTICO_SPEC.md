@@ -1,6 +1,12 @@
 # MARCO PRÁCTICO — especificación para los agentes constructor y revisor
 
-> Este documento define **qué tiene que mostrar el notebook del marco práctico, cómo y con qué nivel de rigor**. Lo leen los dos agentes (constructor + `raquel-quant` revisor) al arrancar cada ronda. Si algo no está aquí o en las fuentes que enlaza (`CLAUDE.md`, `DECISIONES_ESENCIALES.md`, `RESULTADOS_OBJETIVO.md`, `BITACORA.md`), no entra al notebook.
+> **⚠️ FUENTE DE VERDAD ACTUAL: `MARCO_PRACTICO_CONTEXTO.md`** (raíz). Este SPEC define el **mandato de calidad,
+> la estructura y las figuras/tablas imprescindibles**; las conclusiones, decisiones y cifras canónicas viven en
+> CONTEXTO. **Enfoque canónico: el estudio es sobre un panel de 10 activos** (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU,
+> SMCI, MARA, UNG), elegidos **ex ante por naturaleza**. NO hay apéndice ni "10 de 15": los demás activos no
+> existen en el TFG. Donde abajo aún se lea "10 de entre 15 / apéndice", está **obsoleto** y manda esta nota.
+>
+> Este documento define **qué tiene que mostrar el notebook del marco práctico, cómo y con qué nivel de rigor**. Lo leen los dos agentes (constructor + `raquel-quant` revisor) al arrancar cada ronda. Si algo no está aquí o en las fuentes que enlaza (`MARCO_PRACTICO_CONTEXTO.md`, `CLAUDE.md`, `DECISIONES_ESENCIALES.md`, `RESULTADOS_OBJETIVO.md`, `BITACORA.md`), no entra al notebook.
 
 ---
 
@@ -105,9 +111,9 @@ Tiene que cubrir, en este orden:
 - **Test de significancia**. Métrica central: **accuracy**. Pero el valor también está en Sharpe, MaxDD y equity — reconocer y expresar.
 - **Mucha gráfica**: tasa de intervención por detector, ablación que demuestre que STRATA añade información sobre el agente, equity curve con todas las estrategias, curva de regímenes HMM sobre precio, distribución de scores con umbrales marcados, matriz McNemar.
 
-### Sección 2. Panel de 10 casos de aplicabilidad (seleccionados de 15)
+### Sección 2. Panel de 10 activos
 
-El panel del estudio se compone de **10 casos de aplicabilidad de STRATA, seleccionados a posteriori de entre los 15 activos analizados durante el proyecto**, como aquellos donde STRATA muestra valor diferencial sobre el agente y/o sobre las estrategias triviales. La selección se presenta siempre como posterior y como caracterización de aplicabilidad, no como criterio ex-ante; ver §6.1 para la frase canónica y reglas operativas. Los 5 activos restantes se documentan en el apéndice de límites de aplicabilidad.
+El universo del estudio es un **panel de 10 activos** (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegidos **ex ante por su naturaleza de mercado** (clases con distinto leverage). El riesgo agregado se mide con el **pooled-10**. No hay apéndice ni otros activos en el TFG.
 
 Tiene que cubrir:
 
@@ -208,11 +214,11 @@ Las tres decisiones que estaban abiertas en la primera versión de este SPEC que
 
 ### 6.1. Selección de los 10 activos del panel
 
-Se presenta en el cuerpo del marco práctico un panel de **10 casos de estudio de aplicabilidad**, seleccionados a posteriori de entre los 15 activos del proyecto como aquellos donde STRATA muestra valor diferencial sobre el agente y/o sobre las estrategias triviales. Los 5 activos restantes se documentan en el **apéndice de límites de aplicabilidad** como caracterización del dominio donde la metodología no aporta valor.
+El cuerpo del marco práctico es un **panel de 10 activos**, el universo del estudio, elegidos **ex ante por su naturaleza de mercado**. No hay apéndice ni otros activos.
 
 Frase canónica a usar en el notebook y en la memoria, palabra por palabra:
 
-> *"Del panel completo de 15 activos analizados durante el proyecto, se presentan en detalle los 10 casos donde STRATA muestra valor diferencial sobre el agente y/o sobre las estrategias triviales. Los 5 restantes se documentan en el apéndice X como caracterización del límite de aplicabilidad de la metodología."*
+> *"El estudio se realiza sobre un panel de diez activos (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegidos ex ante por su naturaleza de mercado (clases con distinto leverage)."* (Frase canónica del universo. NUNCA "de entre 15", "elegimos 10" ni "apéndice".)
 
 Reglas operativas para la redacción:
 
