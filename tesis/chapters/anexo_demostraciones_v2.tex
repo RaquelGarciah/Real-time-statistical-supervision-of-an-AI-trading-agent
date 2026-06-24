@@ -217,7 +217,15 @@ que es el mensaje de reinicio. Finalmente, la posterior se obtiene de la conjunt
 \section{Pseudo-residuos del boosting logístico}
 \label{anx:gbm-residuo}
 
-Demostración de la Proposición~\ref{prop:gbm-residuo} (Pseudo-residuos del boosting logístico), Sección~\ref{sec:sup-gbm}.
+Enunciado y demostración del resultado citado en la Sección~\ref{sec:sup-gbm} (gradient boosting).
+
+\begin{proposicion}[Pseudo-residuos del boosting logístico]
+\label{prop:gbm-residuo}
+Si $F$ es el logaritmo de la razón de momios y $p = \sigma(F) = (1 + e^{-F})^{-1}$ la probabilidad asociada, el pseudo-residuo de la pérdida logística es la diferencia entre la etiqueta y la probabilidad predicha,
+\[
+r_i = -\frac{\partial L}{\partial F}\bigg|_{F(\mathbf{x}_i)} = y_i - p(\mathbf{x}_i).
+\]
+\end{proposicion}
 
 \begin{proof}
 Con $p = \sigma(F)$ se tiene $\mathrm{d}p/\mathrm{d}F = p(1-p)$. La contribución de un dato a la pérdida es $L = -y\log p - (1-y)\log(1-p)$, de donde
@@ -230,7 +238,22 @@ Por la regla de la cadena, $\partial L/\partial F = \big(\partial L/\partial p\b
 \section{Pesos óptimos y ganancia de una división en XGBoost}
 \label{anx:xgb}
 
-Demostración de la Proposición~\ref{prop:xgb-score} (Pesos óptimos y ganancia de una división), Sección~\ref{sec:sup-xgboost}.
+Enunciado y demostración del resultado citado en la Sección~\ref{sec:sup-xgboost} (XGBoost).
+
+\begin{proposicion}[Pesos óptimos y ganancia de una división]
+\label{prop:xgb-score}
+Fijada la estructura $q$, con conjuntos de instancias por hoja $I_j = \{i : q(\mathbf{x}_i) = j\}$ y sumas $G_j = \sum_{i \in I_j} g_i$, $H_j = \sum_{i \in I_j} h_i$, el peso que minimiza la aproximación de segundo orden del objetivo y el valor óptimo correspondiente son
+\[
+w_j^{\star} = -\frac{G_j}{H_j + \lambda},
+\qquad
+\widetilde{\mathcal{L}}^{\star}(q) = -\frac{1}{2}\sum_{j=1}^{T} \frac{G_j^2}{H_j + \lambda} + \gamma\, T.
+\]
+En consecuencia, dividir una hoja en dos descendientes $L$ y $R$ reduce el objetivo en
+\[
+\mathrm{Gan} = \frac{1}{2}\left[\frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda}\right] - \gamma,
+\]
+que es el criterio con el que se eligen los cortes.
+\end{proposicion}
 
 \begin{proof}
 La expansión de Taylor de segundo orden de la pérdida y el descarte del término constante $l(y_i, \widehat{y}_i^{(t-1)})$ dan
