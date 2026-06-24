@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.6.18)  24 JUN 2026 04:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.6.18)  24 JUN 2026 09:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -789,7 +789,14 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 Package color Info: Driver file: pdftex.def on input line 149.
 
 (/usr/local/texlive/2026/texmf-dist/tex/latex/graphics/mathcolor.ltx))
-(./main.aux)
+(./main.aux
+LaTeX Info: Redefining \. on input line 12.
+LaTeX Info: Redefining \% on input line 12.
+Package babel Info: 'spanish' activates 'spanish' shorthands.
+(babel)             Reported on input line 12.
+ (./chapters/01_introduccion.aux) (./chapters/02_estado_arte.aux)
+(./chapters/03_marco_teorico.aux) (./chapters/04_marco_practico.aux)
+(./chapters/05_conclusiones.aux))
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
@@ -812,8 +819,6 @@ LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 12.
 LaTeX Font Info:    ... okay on input line 12.
 LaTeX Info: Redefining \. on input line 12.
 LaTeX Info: Redefining \% on input line 12.
-Package babel Info: 'spanish' activates 'spanish' shorthands.
-(babel)             Reported on input line 12.
 LaTeX Info: Redefining \microtypecontext on input line 12.
 Package microtype Info: Applying patch `item' on input line 12.
 Package microtype Info: Applying patch `toc' on input line 12.
@@ -831,7 +836,8 @@ Package microtype Info: Patching command `\showhyphens'.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
- (/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+
+(/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
@@ -910,37 +916,58 @@ Package biblatex Info: Automatic encoding selection.
 \openout3 = `main.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'main.bbl' not found.
+Package biblatex Info: ... file 'main.bbl' found.
 
-No file main.bbl.
+(./main.bbl)
 Package biblatex Info: Reference section=0 on input line 12.
 Package biblatex Info: Reference segment=0 on input line 12.
 Package hyperref Info: Link coloring OFF on input line 12.
+ (./main.out) (./main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
 
-(./portada.tex [1
+ (./portada.tex [1
 
 {/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
-al/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}])
-No file main.toc.
-\tf@toc=\write5
-\openout5 = `main.toc'.
+al/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]) (./main.
+toc
+LaTeX Info: Redefining \sptext on input line 1.
+LaTeX Info: Redefining \. on input line 1.
+LaTeX Info: Redefining \% on input line 1.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 4.
 
+(/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+(/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 4.
 
+(/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+(/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.18 \cleardoublepage
-                      [1
+l.35 ...izaje sobre las señales}{27}{section.3.7}
+                                                  % [1
 
-]
+] [2])
+\tf@toc=\write5
+\openout5 = `main.toc'.
+
+ [3]
 \openout2 = `chapters/01_introduccion.aux'.
 
- (./chapters/01_introduccion.tex
+
+(./chapters/01_introduccion.tex
 Cap\'{\i }tulo 1.
-) [2
+) [4
 
 
 
@@ -949,801 +976,685 @@ Cap\'{\i }tulo 1.
 
  (./chapters/02_estado_arte.tex
 Cap\'{\i }tulo 2.
-
-LaTeX Warning: Citation 'yang2023fingpt' on page 3 undefined on input line 7.
-
-
-LaTeX Warning: Citation 'xiao2024tradingagents' on page 3 undefined on input li
-ne 7.
-
-
-LaTeX Warning: Citation 'li2025deepfund' on page 3 undefined on input line 8.
-
-
-LaTeX Warning: Citation 'benhenda2026lookahead' on page 3 undefined on input li
-ne 8.
-
-
-LaTeX Warning: Reference `cap:marco-teorico' on page 3 undefined on input line 
-8.
-
-LaTeX Font Info:    Trying to load font information for U+msa on input line 10.
-
-(/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-(/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-msa.cfg
-File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 10.
-
-
-(/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-(/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-msb.cfg
-File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-) [3
-
-
-
-
-]
-
-LaTeX Warning: Citation 'chandola2009anomaly' on page 4 undefined on input line
- 17.
-
-
-LaTeX Warning: Reference `cap:marco-teorico' on page 4 undefined on input line 
-19.
-
-
-LaTeX Warning: Citation 'hamilton1989' on page 4 undefined on input line 24.
-
-
-LaTeX Warning: Citation 'ang2002regime' on page 4 undefined on input line 24.
-
-
-LaTeX Warning: Citation 'guidolin2007regime' on page 4 undefined on input line 
-24.
-
-
-LaTeX Warning: Citation 'moreira2017' on page 4 undefined on input line 24.
-
-
-LaTeX Warning: Citation 'ang2002regime' on page 4 undefined on input line 24.
-
-
-LaTeX Warning: Citation 'guidolin2007regime' on page 4 undefined on input line 
-24.
-
-
-LaTeX Warning: Reference `sec:hmm-K' on page 4 undefined on input line 24.
-
-[4]
-
-LaTeX Warning: Citation 'black1976' on page 5 undefined on input line 26.
-
-
-LaTeX Warning: Citation 'christie1982' on page 5 undefined on input line 26.
-
-
-LaTeX Warning: Reference `cap:marco-teorico' on page 5 undefined on input line 
-26.
-
-) [5]
-\openout2 = `chapters/03_marco_teorico.aux'.
-
- (./chapters/03_marco_teorico.tex
-Cap\'{\i }tulo 3.
-
-LaTeX Warning: Reference `sec:strata-tecnico' on page 6 undefined on input line
- 9.
-
-
-LaTeX Warning: Reference `sec:hmm' on page 6 undefined on input line 9.
-
-
-LaTeX Warning: Reference `sec:garch' on page 6 undefined on input line 9.
-
-
-LaTeX Warning: Reference `sec:bocpd' on page 6 undefined on input line 9.
-
-
-LaTeX Warning: Reference `sec:strata-aplicado' on page 6 undefined on input lin
-e 9.
-
-
-LaTeX Warning: Reference `sec:metricas' on page 6 undefined on input line 9.
-
-
-LaTeX Warning: Reference `sec:cpcv' on page 6 undefined on input line 9.
-
-
-LaTeX Warning: Reference `sec:tests' on page 6 undefined on input line 9.
-
-[6
-
-
-
-
-]
-
-LaTeX Warning: Reference `sec:garch' on page 7 undefined on input line 40.
-
-
-LaTeX Warning: Citation 'cont2001' on page 7 undefined on input line 42.
-
-[7]
-
-LaTeX Warning: Reference `sec:hmm' on page 8 undefined on input line 55.
-
-
-LaTeX Warning: Reference `sec:garch' on page 8 undefined on input line 55.
-
-
-LaTeX Warning: Reference `sec:strata-aplicado' on page 8 undefined on input lin
-e 57.
-
-
-LaTeX Warning: Reference `sec:strata-intervencion' on page 8 undefined on input
- line 59.
-
-
-LaTeX Warning: Citation 'hamilton1989' on page 8 undefined on input line 70.
-
-[8]
-
-LaTeX Warning: Reference `sec:hmm-K' on page 9 undefined on input line 72.
-
-
-LaTeX Warning: Citation 'rabiner1989' on page 9 undefined on input line 77.
-
-
-LaTeX Warning: Citation 'cappe2005' on page 9 undefined on input line 77.
-
-[9]
-
-LaTeX Warning: Citation 'rabiner1989' on page 10 undefined on input line 121.
-
-
-LaTeX Warning: Citation 'bishop2006' on page 10 undefined on input line 121.
-
-[10]
-
-LaTeX Warning: Citation 'rabiner1989' on page 11 undefined on input line 175.
-
-
-LaTeX Warning: Citation 'bishop2006' on page 11 undefined on input line 175.
-
-
-LaTeX Warning: Reference `prop:filtrado' on page 11 undefined on input line 203
-.
-
-
-LaTeX Warning: Reference `prop:forward' on page 11 undefined on input line 203.
-
-
-[11]
-
-LaTeX Warning: Citation 'baum1970' on page 12 undefined on input line 212.
-
-
-LaTeX Warning: Citation 'rabiner1989' on page 12 undefined on input line 212.
-
-
-LaTeX Warning: Reference `cor:causal' on page 12 undefined on input line 212.
-
-
-LaTeX Warning: Citation 'baum1970' on page 12 undefined on input line 217.
-
-
-LaTeX Warning: Citation 'dempster1977' on page 12 undefined on input line 217.
-
-[12]
-
-LaTeX Warning: Citation 'dempster1977' on page 13 undefined on input line 260.
-
-
-LaTeX Warning: Citation 'viterbi1967' on page 13 undefined on input line 269.
-
-[13]
-
-LaTeX Warning: Reference `sec:hmm-filtrado' on page 14 undefined on input line 
-274.
-
-
-LaTeX Warning: Citation 'rabiner1989' on page 14 undefined on input line 283.
-
-
-LaTeX Warning: Reference `sec:garch-mv' on page 14 undefined on input line 295.
-
-
-
-LaTeX Warning: Citation 'hamilton1994' on page 14 undefined on input line 295.
-
-
-LaTeX Warning: Citation 'tsay2010' on page 14 undefined on input line 295.
-
-[14]
-
-LaTeX Warning: Reference `sec:preliminares' on page 15 undefined on input line 
-297.
-
-
-LaTeX Warning: Citation 'cont2001' on page 15 undefined on input line 297.
-
-
-LaTeX Warning: Citation 'brockwell1991' on page 15 undefined on input line 301.
-
-
-
-LaTeX Warning: Reference `teo:garch-estac' on page 15 undefined on input line 3
-01.
-
-
-LaTeX Warning: Reference `sec:preliminares' on page 15 undefined on input line 
-306.
-
-
-LaTeX Warning: Citation 'engle1982' on page 15 undefined on input line 308.
-
-[15]
-
-LaTeX Warning: Citation 'bollerslev1986' on page 16 undefined on input line 315
-.
-
-
-LaTeX Warning: Reference `eq:garch11' on page 16 undefined on input line 330.
-
-
-LaTeX Warning: Reference `eq:garch11' on page 16 undefined on input line 334.
-
-[16]
-
-LaTeX Warning: Reference `eq:garch11' on page 17 undefined on input line 353.
-
-
-LaTeX Warning: Reference `eq:garch11' on page 17 undefined on input line 370.
-
-[17]
-
-LaTeX Warning: Reference `eq:garch11' on page 18 undefined on input line 382.
-
-
-LaTeX Warning: Citation 'nelson1990' on page 18 undefined on input line 389.
-
-
-LaTeX Warning: Citation 'francqzakoian2019' on page 18 undefined on input line 
-389.
-
-
-LaTeX Warning: Citation 'englebollerslev1986' on page 18 undefined on input lin
-e 392.
-
-
-LaTeX Warning: Reference `teo:garch-estac' on page 18 undefined on input line 3
-92.
-
-
-LaTeX Warning: Citation 'nelson1990' on page 18 undefined on input line 392.
-
-
-LaTeX Warning: Reference `sec:preliminares' on page 18 undefined on input line 
-397.
-
-
-LaTeX Warning: Citation 'bollerslev1987' on page 18 undefined on input line 397
-.
-
-[18]
-
-LaTeX Warning: Reference `eq:garch11' on page 19 undefined on input line 412.
-
-
-LaTeX Warning: Reference `teo:garch-estac' on page 19 undefined on input line 4
-14.
-
-
-LaTeX Warning: Citation 'francqzakoian2019' on page 19 undefined on input line 
-414.
-
-
-LaTeX Warning: Citation 'adams2007' on page 19 undefined on input line 422.
-
-[19]
-
-LaTeX Warning: Citation 'adams2007' on page 20 undefined on input line 424.
-
-
-LaTeX Warning: Reference `sec:hmm-filtrado' on page 20 undefined on input line 
-431.
-
-[20]
-
-LaTeX Warning: Citation 'adams2007' on page 21 undefined on input line 444.
-
-[21]
-
-LaTeX Warning: Reference `prop:bocpd' on page 22 undefined on input line 511.
-
-
-LaTeX Warning: Citation 'fearnhead2006' on page 22 undefined on input line 511.
-
-
-[22]
-
-LaTeX Warning: Citation 'bai1998' on page 23 undefined on input line 521.
-
-
-LaTeX Warning: Citation 'bai2003' on page 23 undefined on input line 521.
-
-
-LaTeX Warning: Reference `sec:hmm-filtrado' on page 23 undefined on input line 
-526.
-
-
-LaTeX Warning: Citation 'black1976' on page 23 undefined on input line 528.
-
-
-LaTeX Warning: Citation 'christie1982' on page 23 undefined on input line 528.
-
-[23]
-
-LaTeX Warning: Citation 'moreira2017' on page 24 undefined on input line 545.
-
-
-LaTeX Warning: Reference `sec:garch' on page 24 undefined on input line 545.
-
-
-LaTeX Warning: Reference `sec:bocpd' on page 24 undefined on input line 564.
-
-
-LaTeX Warning: Reference `sec:bocpd-hazard' on page 24 undefined on input line 
-564.
-
-[24] [25]
-
-LaTeX Warning: Citation 'lopezdeprado2018' on page 26 undefined on input line 6
-13.
-
-
-LaTeX Warning: Citation 'hastie2009' on page 26 undefined on input line 624.
-
-
-LaTeX Warning: Citation 'friedman2001' on page 26 undefined on input line 633.
-
-[26]
-
-LaTeX Warning: Citation 'friedman2001' on page 27 undefined on input line 656.
-
-
-LaTeX Warning: Citation 'friedman2001' on page 27 undefined on input line 659.
-
-
-LaTeX Warning: Citation 'hastie2009' on page 27 undefined on input line 659.
-
-
-LaTeX Warning: Citation 'chen2016' on page 27 undefined on input line 664.
-
-[27]
-
-LaTeX Warning: Reference `prop:gbm-residuo' on page 28 undefined on input line 
-696.
-
-
-LaTeX Warning: Citation 'chen2016' on page 28 undefined on input line 696.
-
-
-LaTeX Warning: Citation 'breiman1996' on page 28 undefined on input line 703.
-
-
-LaTeX Warning: Citation 'hastie2009' on page 28 undefined on input line 703.
-
-
-LaTeX Warning: Reference `sec:cpcv-walkforward' on page 28 undefined on input l
-ine 703.
-
-[28]
-
-LaTeX Warning: Citation 'wolpert1992' on page 29 undefined on input line 708.
-
-
-LaTeX Warning: Citation 'vanderlaan2007' on page 29 undefined on input line 708
-.
-
-
-LaTeX Warning: Citation 'ledell2020' on page 29 undefined on input line 713.
-
-
-LaTeX Warning: Reference `sec:cpcv' on page 29 undefined on input line 713.
-
-
-LaTeX Warning: Reference `cap:marco-practico' on page 29 undefined on input lin
-e 715.
-
-
-LaTeX Warning: Reference `def:m8' on page 29 undefined on input line 727.
-
-[29]
-
-LaTeX Warning: Reference `sec:tests' on page 30 undefined on input line 740.
-
-
-LaTeX Warning: Reference `sec:preliminares' on page 30 undefined on input line 
-757.
-
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `cmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-[30]
-
-LaTeX Warning: Reference `sec:hmm-filtrado' on page 31 undefined on input line 
-763.
+[5
 
 
-LaTeX Warning: Citation 'lopezdeprado2018' on page 31 undefined on input line 7
-63.
 
 
-LaTeX Warning: Citation 'tashman2000' on page 31 undefined on input line 768.
+] [6]) [7]
+\openout2 = `chapters/03_marco_teorico.aux'.
+
+ (./chapters/03_marco_teorico.tex
+Cap\'{\i }tulo 3.
+[8
 
 
-LaTeX Warning: Citation 'bergmeir2018' on page 31 undefined on input line 768.
 
-) [31]
+
+] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22]
+[23] [24] [25] [26] [27] [28] [29] [30] [31]
+
+LaTeX Warning: Citation 'hanley1982' on page 32 undefined on input line 753.
+
+
+LaTeX Warning: Citation 'fawcett2006' on page 32 undefined on input line 753.
+
+[32]
+
+LaTeX Warning: Citation 'sharpe1966' on page 33 undefined on input line 760.
+
+
+LaTeX Warning: Citation 'sharpe1994' on page 33 undefined on input line 760.
+
+
+LaTeX Warning: Citation 'magdonismail2004' on page 33 undefined on input line 7
+73.
+
+[33] [34] [35] [36]
+
+LaTeX Warning: Citation 'bonferroni1936' on page 37 undefined on input line 853
+.
+
+[37]
+
+LaTeX Warning: Citation 'lundberg2020' on page 38 undefined on input line 887.
+
+[38]
+
+LaTeX Warning: Citation 'breiman2001' on page 39 undefined on input line 893.
+
+
+Overfull \hbox (23.09596pt too wide) in paragraph at lines 893--894
+[]\T1/cmr/m/n/10.95 (-20) Como ve-ri-fi-ca-ci�n ag-n�s-ti-ca al mo-de-lo a�a-di
+-mos la \T1/cmr/m/it/10.95 (-20) im-por-tan-cia por per-mu-ta-ci�n \T1/cmr/m/n/
+10.95 (-20) [[]]:
+ []
+
+
+LaTeX Warning: Citation 'schwarz1978' on page 39 undefined on input line 900.
+
+
+LaTeX Warning: Citation 'jolliffe2002' on page 39 undefined on input line 900.
+
+) [39]
 \openout2 = `chapters/04_marco_practico.aux'.
 
  (./chapters/04_marco_practico.tex
 Cap\'{\i }tulo 4.
-
-LaTeX Warning: Reference `sec:mp-spy' on page 32 undefined on input line 10.
-
-
-LaTeX Warning: Reference `sec:mp-panel' on page 32 undefined on input line 10.
-
-
-LaTeX Warning: Reference `sec:mp-mecanismo' on page 32 undefined on input line 
-10.
-
-
-LaTeX Warning: Reference `sec:mp-limites' on page 32 undefined on input line 10
-.
-
-
-LaTeX Warning: Citation 'black1976' on page 32 undefined on input line 15.
-
-
-LaTeX Warning: Citation 'christie1982' on page 32 undefined on input line 15.
-
+(./chapters/cap4_parts/s1_spy.tex
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.20 ...solo, M5, acierta sobre SPY el $36{,}6\,\%
+l.9 ... solo (M5) acierta sobre SPY el $36{,}6\,\%
                                                   $ de las direcciones, con ...
 I'm going to assume that 1mu=1pt when they're mixed.
 
-[32
+[40
 
 
 
 
 ]
 
-LaTeX Warning: Reference `def:m8' on page 33 undefined on input line 22.
+! LaTeX Error: File `figuras/cap4_regimenes_spy' not found.
 
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.42 ...0.9\textwidth]{figuras/cap4_regimenes_spy}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
 
-LaTeX Warning: Reference `sec:estrategias' on page 33 undefined on input line 2
-2.
-
-
-LaTeX Warning: Reference `sec:cpcv-causalidad' on page 33 undefined on input li
-ne 22.
-
-
-LaTeX Warning: Reference `sec:strata-calib' on page 33 undefined on input line 
-27.
-
-
-LaTeX Warning: Reference `tab:mp-calib' on page 33 undefined on input line 27.
-
-
-Underfull \hbox (badness 1596) in paragraph at lines 31--31
-[]\T1/cmr/m/n/10.95 (+20) Tabla 4.1: []Decisiones de ca-li-bra-ci�n de STRA-TA,
- con su cri-te-rio de fi-ja-ci�n. To-
- []
-
-
-LaTeX Warning: Citation 'rabiner1989' on page 33 undefined on input line 37.
-
-
-LaTeX Warning: Citation 'bollerslev1986' on page 33 undefined on input line 38.
-
-
-
-LaTeX Warning: Citation 'bollerslev1987' on page 33 undefined on input line 38.
-
-
-
-LaTeX Warning: Citation 'adams2007' on page 33 undefined on input line 39.
-
-
-Overfull \hbox (69.11826pt too wide) in paragraph at lines 33--45
- [][] 
- []
-
-
-LaTeX Warning: Citation 'rabiner1989' on page 33 undefined on input line 47.
-
-[33]
-
-LaTeX Warning: Reference `sec:strata-tecnico' on page 34 undefined on input lin
-e 52.
-
-
-LaTeX Warning: Reference `sec:strata-ram' on page 34 undefined on input line 52
-.
-
-
-LaTeX Warning: Reference `sec:strata-psa' on page 34 undefined on input line 52
-.
-
-
-LaTeX Warning: Reference `sec:strata-gso' on page 34 undefined on input line 52
-.
-
-
-LaTeX Warning: Reference `tab:mp-detectores' on page 34 undefined on input line
- 54.
-
+[41]
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.54 ...p-detectores}). RAM dispara el $30{,}2\,\%
-                                                  $ de los días, y cuando l...
+l.52 ...p-detectores}). RAM dispara el $30{,}2\,\%
+                                                  $ de los días: de las cie...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.54 ...do lo hace la regla acierta el $58{,}7\,\%
-                                                  $ de las direcciones frent...
+l.62 ...tbf{RAM} (régimen) & $\mathbf{30{,}2\,\%}
+                                                  $ & $\mathbf{0{,}587}$ & $...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.54 ...$ de las direcciones frente al $41{,}3\,\%
-                                                  $ del agente en esos mismo...
-I'm going to assume that 1mu=1pt when they're mixed.
-
-! Incompatible glue units.
-\es@sppercent ...fnum \gluestretchorder \lastskip 
-                                                  =\z@ \unskip \fi \textorma...
-l.54 ...ción casi constante (corto el $75{,}6\,\%
-                                                  $ de los días) y sus \emp...
-I'm going to assume that 1mu=1pt when they're mixed.
-
-! Incompatible glue units.
-\es@sppercent ...fnum \gluestretchorder \lastskip 
-                                                  =\z@ \unskip \fi \textorma...
-l.64 RAM (régimen) & $30{,}2\,\%
-                                 $ & $0{,}587$ & $0{,}413$ & $+0{,}312$ \\
-I'm going to assume that 1mu=1pt when they're mixed.
-
-! Incompatible glue units.
-\es@sppercent ...fnum \gluestretchorder \lastskip 
-                                                  =\z@ \unskip \fi \textorma...
-l.65 PSA (cambio estructural) & $0{,}5\,\%
+l.63 PSA (cambio estructural) & $0{,}5\,\%
                                           $ & --- & --- & $0{,}000$ \\
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.66 GSO (volatilidad) & $0{,}0\,\%
+l.64 GSO (volatilidad) & $0{,}0\,\%
                                    $ & --- & --- & $0{,}000$ \\
 I'm going to assume that 1mu=1pt when they're mixed.
 
+[42]
 
-LaTeX Warning: Reference `tab:mp-variantes' on page 34 undefined on input line 
-76.
+! LaTeX Error: File `figuras/cap4_scores_detectores' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.73 ...textwidth]{figuras/cap4_scores_detectores}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.76 ... ($n=232$). Voltear acierta el $47{,}8\,\%
-                                                  $, frente al $40{,}1\,\%$ ...
+l.81 ...omo modo canónico, acierta el $47{,}8\,\%
+                                                  $ de las direcciones; abst...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.76 ...rta el $47{,}8\,\%$, frente al $40{,}1\,\%
-                                                  $ de abstenerse y el $39{,...
+l.81 ...cciones; abstenerse acierta el $40{,}1\,\%
+                                                  $ y reducir el $39{,}7\,\%...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.76 ...40{,}1\,\%$ de abstenerse y el $39{,}7\,\%
-                                                  $ de reducir. El valor est...
+l.81 ...a el $40{,}1\,\%$ y reducir el $39{,}7\,\%
+                                                  $, indistinguible del agen...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 
-LaTeX Warning: Reference `tab:mp-spy' on page 34 undefined on input line 97.
+! LaTeX Error: File `figuras/cap4_confusion_spy' not found.
 
-! Incompatible glue units.
-\es@sppercent ...fnum \gluestretchorder \lastskip 
-                                                  =\z@ \unskip \fi \textorma...
-l.97 ...,}442$ y recorta la caída del $30{,}2\,\%
-                                                  $ al $15{,}2\,\%$; M10 lle...
-I'm going to assume that 1mu=1pt when they're mixed.
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.103 ....7\textwidth]{figuras/cap4_confusion_spy}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
 
-! Incompatible glue units.
-\es@sppercent ...fnum \gluestretchorder \lastskip 
-                                                  =\z@ \unskip \fi \textorma...
-l.97 ... la caída del $30{,}2\,\%$ al $15{,}2\,\%
-                                                  $; M10 llega a $0{,}494$; ...
-I'm going to assume that 1mu=1pt when they're mixed.
-
-[34]
-Underfull \hbox (badness 4608) in paragraph at lines 101--101
-[]\T1/cmr/m/n/10.95 (+20) Tabla 4.4: []SPY, ven-ta-na des-ple-ga-ble ($\OML/cmm
-/m/it/10.95 n \OT1/cmr/m/n/10.95 (+20) = 251$\T1/cmr/m/n/10.95 (+20) , \T1/cmtt
-/m/n/10.95 signal_lag$[] \OT1/cmr/m/n/10.95 (+20) = 1$\T1/cmr/m/n/10.95 (+20) )
-. Fuen-te:
+[43]
+Overfull \hbox (1.17764pt too wide) in paragraph at lines 115--115
+\T1/cmtt/m/n/10.95 automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21
+_kfold_seed42.json\T1/cmr/m/n/10.95 (-20) . 
  []
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.107 ...0,574} & \textbf{$+2{,}68$} & $-5{,}5\,\%
-                                                  $ & 6,93 & 1,38$\times$ \\
+l.121 ...$\mathbf{+2{,}68}$ & $\mathbf{-5{,}5\,\%}
+                                                  $ & $\mathbf{6{,}93}$ & $\...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.108 ...itaria) & 0,566 & $+2{,}21$ & $-9{,}8\,\%
-                                                  $ & 3,10 & 1,30$\times$ \\
+l.122 ...ia) & $0{,}566$ & $+2{,}21$ & $-9{,}8\,\%
+                                                  $ & $3{,}10$ & $1{,}30\tim...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.109 ...ntener) & 0,566 & $+2{,}21$ & $-9{,}8\,\%
-                                                  $ & 3,10 & 1,30$\times$ \\
+l.123 ...er) & $0{,}566$ & $+2{,}21$ & $-9{,}8\,\%
+                                                  $ & $3{,}10$ & $1{,}30\tim...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.110 ...Boost) & 0,494 & $-0{,}60$ & $-16{,}1\,\%
-                                                  $ & $-0{,}50$ & 0,92$\time...
+l.124 ...t) & $0{,}494$ & $-0{,}60$ & $-16{,}1\,\%
+                                                  $ & $-0{,}50$ & $0{,}92\ti...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.111 ...TRATA) & 0,442 & $-0{,}46$ & $-15{,}2\,\%
-                                                  $ & $-0{,}39$ & 0,94$\time...
+l.125 ...A) & $0{,}442$ & $-0{,}46$ & $-15{,}2\,\%
+                                                  $ & $-0{,}39$ & $0{,}94\ti...
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.112 ... solo) & 0,366 & $-3{,}07$ & $-30{,}2\,\%
-                                                  $ & $-1{,}00$ & 0,70$\time...
+l.126 ...o) & $0{,}366$ & $-3{,}07$ & $-30{,}2\,\%
+                                                  $ & $-1{,}00$ & $0{,}70\ti...
 I'm going to assume that 1mu=1pt when they're mixed.
-
-
-LaTeX Warning: Citation 'lundberg2017' on page 35 undefined on input line 117.
-
-
-LaTeX Warning: Reference `tab:mp-mcnemar' on page 35 undefined on input line 12
-2.
-
-
-LaTeX Warning: Citation 'lopezdeprado2018' on page 35 undefined on input line 1
-22.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.130 ...ión & $p$ (McNemar) & ¿sig.\ al $10\,\%
-                                                  $? \\
+l.131 ...recorta la máxima caída del $30{,}2\,\%
+                                                  $ al $15{,}2\,\%$. M10 lle...
 I'm going to assume that 1mu=1pt when they're mixed.
-
-[35]
-
-LaTeX Warning: Reference `tab:mp-panel' on page 36 undefined on input line 153.
-
-
-
-LaTeX Warning: Citation 'politis1994' on page 36 undefined on input line 181.
-
-
-LaTeX Warning: Reference `tab:mp-pooled' on page 36 undefined on input line 181
-.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.185 ...llbear\_confirmatory.json} (Bonferroni).}
+l.131 ...ma caída del $30{,}2\,\%$ al $15{,}2\,\%
+                                                  $. M10 llega a $0{,}494$. ...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.131 ... una máxima caída de solo el $5{,}5\,\%
+                                                  $. La significancia del re...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+
+! LaTeX Error: File `figuras/cap4_equity_spy' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.137 ...h=0.9\textwidth]{figuras/cap4_equity_spy}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.138 ...nte: \texttt{automl\_net\_returns.json}.}
                                                   
 I'm going to assume that 1mu=1pt when they're mixed.
 
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.185 ...llbear\_confirmatory.json} (Bonferroni).}
+l.138 ...nte: \texttt{automl\_net\_returns.json}.}
                                                   
 I'm going to assume that 1mu=1pt when they're mixed.
 
-[36]
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.138 ...nte: \texttt{automl\_net\_returns.json}.}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
 
-LaTeX Warning: Reference `tab:mp-bullbear' on page 37 undefined on input line 2
-06.
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.138 ...nte: \texttt{automl\_net\_returns.json}.}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
 
-[37]
+[44]
 
-LaTeX Warning: Reference `tab:mp-leverage' on page 38 undefined on input line 2
-44.
+! LaTeX Error: File `figuras/cap4_sensibilidad_umbrales' not found.
 
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.167 ...idth]{figuras/cap4_sensibilidad_umbrales}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
 
-LaTeX Warning: Reference `tab:mp-clusters' on page 38 undefined on input line 2
-74.
+) (./chapters/cap4_parts/s2_panel.tex [45]
 
-[38]
-Underfull \hbox (badness 3098) in paragraph at lines 285--285
-[]|\T1/cmr/m/n/10 (+20) SPY, QQQ, XLF, DIA,
+! LaTeX Error: File `figuras/cap4_gate_ram' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.40 ...dth=0.85\textwidth]{figuras/cap4_gate_ram}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+[46]
+Underfull \hbox (badness 10000) in paragraph at lines 54--54
+[]\T1/cmr/m/n/10.95 (+20) Tabla 4.7: []Accuracy di-rec-cio-nal por ac-ti-vo y e
+s-tra-te-gia (ven-ta-na des-ple-
  []
 
-[39]) [40]
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--54
+\T1/cmr/m/n/10.95 (+20) ga-ble, \T1/cmtt/m/n/10.95 signal_lag$[] \OT1/cmr/m/n/1
+0.95 (+20) = 1$\T1/cmr/m/n/10.95 (+20) ). En ne-gri-ta, la me-jor de-ri-va-da d
+e STRA-TA
+ []
+
+
+Underfull \hbox (badness 2005) in paragraph at lines 54--54
+\T1/cmr/m/n/10.95 (+20) (M8/M10/AutoML) cuan-do su-pera a las dos re-fe-ren-cia
+s tri-via-les (Ze-roR y B&H)
+ []
+
+
+Underfull \hbox (badness 5637) in paragraph at lines 54--54
+\T1/cmr/m/n/10.95 (+20) en ese ac-ti-vo. Ze-roR y B&H com-par-ten va-lor sal-vo
+ cuan-do di-fie-ren. Fuen-te:
+ []
+
+
+Overfull \hbox (1.17764pt too wide) in paragraph at lines 54--54
+\T1/cmtt/m/n/10.95 automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21
+_kfold_seed42.json\T1/cmr/m/n/10.95 (-20) . 
+ []
+
+
+! LaTeX Error: File `figuras/cap4_heatmap_accuracy' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.80 ...\textwidth]{figuras/cap4_heatmap_accuracy}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (1.17764pt too wide) in paragraph at lines 81--81
+\T1/cmtt/m/n/10.95 automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21
+_kfold_seed42.json\T1/cmr/m/n/10.95 (-20) . 
+ []
+
+[47]
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.96 ...rmatory.json} (bloque \texttt{POOLED10}).}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.96 ...rmatory.json} (bloque \texttt{POOLED10}).}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+[48]
+
+! LaTeX Error: File `figuras/cap4_forest_pooled' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.113 ...85\textwidth]{figuras/cap4_forest_pooled}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.114 ...matory.json} (bloque \texttt{POOLED10}).}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.114 ...matory.json} (bloque \texttt{POOLED10}).}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+
+! LaTeX Error: File `figuras/cap4_equity_panel' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.124 ....95\textwidth]{figuras/cap4_equity_panel}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.134 ...la en $+0{,}021$ con intervalo al $90\,\%
+                                                  $ de $[+0{,}001,\ +0{,}039...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+[49]
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.138 ...de \texttt{decision\_automl\_prep.json}.}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.138 ...de \texttt{decision\_automl\_prep.json}.}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+
+Overfull \hbox (4.12793pt too wide) in paragraph at lines 140--148
+ [][] 
+ []
+
+
+! LaTeX Error: File `figuras/cap4_tost_2x2' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.152 ...dth=0.8\textwidth]{figuras/cap4_tost_2x2}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+[50]
+
+! LaTeX Error: File `figuras/cap4_did_regimen' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.184 ...=0.8\textwidth]{figuras/cap4_did_regimen}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+) (./chapters/cap4_parts/s3_patrones.tex [51]
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.14 ...la sobre SPY, $+0{,}312$, sale al $100\,\%
+                                                  $ del canal RAM; PSA y GSO...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.28 P\&L de rescate (SPY) & $+0{,}312$ ($100\,\%
+                                                 $ RAM) & --- \\
+I'm going to assume that 1mu=1pt when they're mixed.
+
+
+! LaTeX Error: File `figuras/cap4_atribucion_capas' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.37 ...\textwidth]{figuras/cap4_atribucion_capas}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.38 ...n}, \texttt{bullbear\_confirmatory.json}.}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.38 ...n}, \texttt{bullbear\_confirmatory.json}.}
+                                                  
+I'm going to assume that 1mu=1pt when they're mixed.
+
+[52]
+
+! LaTeX Error: File `figuras/cap4_scatter_leverage' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.82 ...\textwidth]{figuras/cap4_scatter_leverage}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+[53]
+
+! LaTeX Error: File `figuras/cap4_pca_clusters' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.127 ....85\textwidth]{figuras/cap4_pca_clusters}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: File `figuras/cap4_casos' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.134 ...[width=0.9\textwidth]{figuras/cap4_casos}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+) [54] (./chapters/cap4_parts/s4_limites.tex
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.12 ...ial. En SPY, AutoML acierta el $57{,}4\,\%
+                                                  $ frente al $56{,}6\,\%$ d...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.12 ...erta el $57{,}4\,\%$ frente al $56{,}6\,\%
+                                                  $ de ZeroR, una victoria e...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+[55]
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.16 ...utoML $+1{,}08$, con intervalos al $95\,\%
+                                                  $ que no tocan el cero. La...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--24
+[]\T1/cmr/m/n/10.95 (+20) Tabla 4.14: []Resumen de los re-sul-ta-dos que no al-
+can-zan sig-ni-fi-can-cia ple-na,
+ []
+
+
+Underfull \hbox (badness 4531) in paragraph at lines 24--24
+\T1/cmr/m/n/10.95 (+20) con su con-tras-te y su ve-re-dic-to. Ca-da fi-la en-la
+-za una afir-ma-ci�n del ca-p�-tu-
+ []
+
+
+Underfull \hbox (badness 2035) in paragraph at lines 24--24
+\T1/cmr/m/n/10.95 (+20) lo con el test que la mi-de y con el JSON del que sa-le
+ la ci-fra. La co-lum-na
+ []
+
+
+Underfull \hbox (badness 3646) in paragraph at lines 24--24
+\T1/cmr/m/n/10.95 (+20) de ve-re-dic-to dis-tin-gue lo no-mi-nal de lo fal-sa-d
+o y de lo ex-plo-ra-to-rio. Fuen-tes:
+ []
+
+
+Overfull \hbox (1.78737pt too wide) in paragraph at lines 24--24
+\T1/cmtt/m/n/10.95 automl_runs/panel_mm25_inclGBM-XGB-SE_AUC_emb1_N0-150_step21
+_kfold_seed42.json\T1/cmr/m/n/10.95 (-20) ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--24
+\T1/cmtt/m/n/10.95 leverage_law_panel10.json\T1/cmr/m/n/10.95 (+20) , \T1/cmtt/
+m/n/10.95 bullbear_confirmatory.json \T1/cmr/m/n/10.95 (+20) (\T1/cmtt/m/n/10.9
+5 POOLED10\T1/cmr/m/n/10.95 (+20) ),
+ []
+
+[56] [57])) [58]
 \openout2 = `chapters/05_conclusiones.aux'.
 
  (./chapters/05_conclusiones.tex
 Cap\'{\i }tulo 5.
-
-LaTeX Warning: Reference `cap:marco-teorico' on page 41 undefined on input line
- 4.
-
-
-LaTeX Warning: Reference `cap:marco-practico' on page 41 undefined on input lin
-e 4.
-
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.9 ...reccional. Sobre SPY acierta el $36{,}6\,\%
+l.11 ...n~\ref{sec:mp-spy}) acierta el $36{,}6\,\%
                                                   $ de las direcciones, con ...
 I'm going to assume that 1mu=1pt when they're mixed.
 
+[59
+
+
+
+
+]
 ! Incompatible glue units.
 \es@sppercent ...fnum \gluestretchorder \lastskip 
                                                   =\z@ \unskip \fi \textorma...
-l.16 ...túa sobre SPY: RAM dispara el $30{,}2\,\%
-                                                  $ de los días y concentra...
+l.18 ... AutoML, los tres con intervalo al $95\,\%
+                                                  $ que excluye el cero (Tab...
 I'm going to assume that 1mu=1pt when they're mixed.
 
-[41
+! Incompatible glue units.
+\es@sppercent ...fnum \gluestretchorder \lastskip 
+                                                  =\z@ \unskip \fi \textorma...
+l.36 ...L en $+0{,}034$, con intervalos al $90\,\%
+                                                  $ por encima del cero (Tab...
+I'm going to assume that 1mu=1pt when they're mixed.
+
+[60] [61] [62]) [63] [64
 
 
 
+] [65]
+Overfull \hbox (5.22058pt too wide) in paragraph at lines 28--28
+[]\T1/cmr/m/n/10.95 (-20) David H. Wol-pert. ^^S  Stac-ked ge-ne-ra-li-za-tion^
+^T. En: \T1/cmr/m/it/10.95 (-20) Neu-ral Net-works \T1/cmr/m/n/10.95 (-20) 5.2 
+(1992), p�gs. 241[]259.
+ []
 
-] [42]) [43]
-
-LaTeX Warning: Empty bibliography on input line 28.
-
-(./main.aux
+[66] [67] (./main.aux
 LaTeX Info: Redefining \sptext on input line 12.
 LaTeX Info: Redefining \. on input line 12.
 LaTeX Info: Redefining \% on input line 12.
- (./chapters/01_introduccion.aux) (./chapters/02_estado_arte.aux)
-(./chapters/03_marco_teorico.aux) (./chapters/04_marco_practico.aux)
-(./chapters/05_conclusiones.aux))
+ (./chapters/01_introduccion.aux)
+(./chapters/02_estado_arte.aux) (./chapters/03_marco_teorico.aux)
+(./chapters/04_marco_practico.aux) (./chapters/05_conclusiones.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -1755,14 +1666,8 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-
-Package rerunfilecheck Warning: File `main.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `main.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  F29D7A08F0E72876537E08B0A0396D78;18237.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 7A9DDDBC04A98ECCFB690944692A28D6;22613.
 
 Package biblatex Warning: Please (re)run Biber on the file:
 (biblatex)                main
@@ -1773,13 +1678,13 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29312 strings out of 467525
- 569480 string characters out of 5418982
- 1412295 words of memory out of 5000000
- 57398 multiletter control sequences out of 15000+600000
- 664489 words of font info for 272 fonts, out of 8000000 for 9000
+ 30308 strings out of 467525
+ 600232 string characters out of 5418982
+ 1455654 words of memory out of 5000000
+ 58228 multiletter control sequences out of 15000+600000
+ 665453 words of font info for 282 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 78i,10n,83p,1457b,2022s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 78i,12n,83p,1457b,2936s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb><
 /usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
@@ -1795,23 +1700,26 @@ exlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/tex
 live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texli
 ve/2026/texmf-dist/fonts/type1/public/eurosym/feymr10.pfb></usr/local/texlive/2
 026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texli
-ve/2026/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive
+ve/2026/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/local/texlive
 /2026/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/2
 026/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/202
 6/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2026/
 texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></usr/local/texlive/2026/te
 xmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/local/texlive/2026/texm
-f-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2026/texmf-
-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2026/texmf-di
-st/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2026/texmf-dist
-/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2026/texmf-dist/f
-onts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2026/texmf-dist/fon
-ts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2026/texmf-dist/fonts
-/type1/public/cm-super/sftt1095.pfb>
-Output written on main.pdf (44 pages, 614294 bytes).
+f-dist/fonts/type1/public/cm-super/sfcc1095.pfb></usr/local/texlive/2026/texmf-
+dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/texlive/2026/texmf-di
+st/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2026/texmf-dist
+/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2026/texmf-dist/f
+onts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2026/texmf-dist/fon
+ts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2026/texmf-dist/fonts
+/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2026/texmf-dist/fonts/t
+ype1/public/cm-super/sfti1095.pfb></usr/local/texlive/2026/texmf-dist/fonts/typ
+e1/public/cm-super/sftt0900.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1
+/public/cm-super/sftt1095.pfb>
+Output written on main.pdf (68 pages, 805015 bytes).
 PDF statistics:
- 478 PDF objects out of 1000 (max. 8388607)
- 372 compressed objects within 4 object streams
- 153 named destinations out of 1000 (max. 500000)
- 57857 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 1345 PDF objects out of 1440 (max. 8388607)
+ 1200 compressed objects within 12 object streams
+ 261 named destinations out of 1000 (max. 500000)
+ 55017 words of extra memory for PDF output out of 61914 (max. 10000000)
 
