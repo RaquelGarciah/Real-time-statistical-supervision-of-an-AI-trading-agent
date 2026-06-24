@@ -4,7 +4,7 @@
 % Fuente única de cifras: notebooks/STRATA_marco_practico.ipynb (panel canónico de 10) y sus JSON en
 % outputs/experiments/. Toda cifra trazada a su JSON en el caption de su tabla.
 
-El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde dinero: ese es el punto de partida. Aquí ponemos a trabajar la maquinaria del capítulo~\ref{cap:strata} sobre el primer caso, el ETF del S\&P~500. Es el activo que mejor deja ver el mecanismo, porque en un índice amplio la volatilidad alta coincide con las caídas del mismo día y el detector de régimen lleva contenido direccional. Sobre él construimos la cadena entera: la intervención y su anatomía, las seis estrategias que compiten y la atribución de lo que STRATA rescata.
+El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde dinero: ese es el punto de partida. Aquí ponemos a trabajar la maquinaria del capítulo~\ref{cap:strata} sobre el primer caso, el ETF del S\&P~500. Es el activo que mejor deja ver el mecanismo, porque su \emph{leverage effect} de índice amplio da al régimen contenido direccional (Sección~\ref{sec:strata-ram}). Sobre él construimos la cadena entera: la intervención y su anatomía, las seis estrategias que compiten y la atribución de lo que STRATA rescata.
 
 \section{Anatomía de una intervención}
 \label{sec:spy-anatomia}
@@ -33,7 +33,7 @@ Umbral GSO & $P_{95} = 2{,}371$ & cuantil de calibración \\
 \end{tabular}
 \end{table}
 
-El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathrm{lev} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, entre el retorno de hoy y el cambio de la volatilidad realizada a veintiún días: es negativa cuando una caída eleva la volatilidad del día siguiente. La Figura~\ref{fig:mp-regimenes-spy} muestra los tres regímenes pintados sobre el precio de SPY. Una precisión gobierna toda la lectura: en la calibración el retorno del mismo día baja con el régimen, pero la fracción de días al alza del día siguiente ronda $0{,}5$ incluso en Crisis. El régimen separa por volatilidad y coincide con las caídas el mismo día; ordena las decisiones del agente sin anticipar el signo de mañana, y ahí está su valor.
+El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathrm{lev} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, entre el retorno de hoy y el cambio de la volatilidad realizada a veintiún días: es negativa cuando una caída eleva la volatilidad del día siguiente. La Figura~\ref{fig:mp-regimenes-spy} muestra los tres regímenes pintados sobre el precio de SPY. Una precisión gobierna toda la lectura: en la calibración el retorno del mismo día baja con el régimen, pero la fracción de días al alza del día siguiente ronda $0{,}5$ incluso en Crisis. El régimen separa por volatilidad y coincide con la caída del mismo día, no anticipa el signo de mañana.
 
 \begin{figure}[htbp]
 \centering
@@ -136,9 +136,7 @@ Hay un resultado en riesgo que no alcanza significancia a este nivel. Sobre un �
 \section{Qué rescata STRATA}
 \label{sec:spy-rescate}
 
-El rescate de SPY tiene una sola fuente. Todo el P\&L acumulado de la intervención, $+0{,}312$, sale de los días en que RAM dispara; PSA y GSO aportan exactamente cero, porque sobre este activo no se encienden como reglas. Sobre SPY el mecanismo es el canal de régimen y nada más.
-
-¿Usa de verdad el aprendiz las señales de STRATA, o gana por otro lado? La ablación lo responde. Al quitar PSA y GSO de las características, AutoML baja de $0{,}574$ a $0{,}550$ en accuracy (Tabla~\ref{tab:mp-ablacion}): aunque PSA y GSO casi no disparen como reglas, sus \emph{scores} continuos informan al modelo. Las características de Shapley (Lundberg y Lee 2017 \cite{lundberg2017}) lo confirman, y aquí etiquetamos cada cuota con su modelo y su ventana porque no son el mismo objeto. Sobre el ensemble M10 ($n = 251$), la cuota de las features de STRATA es $0{,}71$. Sobre el \emph{leader} de AutoML ($n = 401$, otro modelo y otra ventana), es $0{,}565$ por árbol y $0{,}564$ por permutación. Las dos cuotas superan la mitad y colocan los detectores por delante de las características del propio agente.
+Ya vimos que sobre SPY el rescate sale por un solo canal, el del régimen (Sección~\ref{sec:spy-anatomia}). Queda una pregunta distinta: ¿usa de verdad el aprendiz las señales de STRATA, o gana por otro lado? La ablación lo responde. Al quitar PSA y GSO de las características, AutoML baja de $0{,}574$ a $0{,}550$ en accuracy (Tabla~\ref{tab:mp-ablacion}): aunque PSA y GSO casi no disparen como reglas, sus \emph{scores} continuos informan al modelo. Las características de Shapley (Lundberg y Lee 2017 \cite{lundberg2017}) lo confirman, y aquí etiquetamos cada cuota con su modelo y su ventana porque no son el mismo objeto. Sobre el ensemble M10 ($n = 251$), la cuota de las features de STRATA es $0{,}71$. Sobre el \emph{leader} de AutoML ($n = 401$, otro modelo y otra ventana), es $0{,}565$ por árbol y $0{,}564$ por permutación. Las dos cuotas superan la mitad y colocan los detectores por delante de las características del propio agente.
 
 \begin{table}[htbp]
 \centering

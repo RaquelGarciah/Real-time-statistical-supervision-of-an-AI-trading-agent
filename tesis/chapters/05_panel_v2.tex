@@ -45,7 +45,7 @@ UNG  & $0{,}078$ & $0{,}169$ & agente $>$ régimen \\
 \label{fig:mp-gate-ram}
 \end{figure}
 
-La compuerta gobierna toda la lectura del panel. RAM deja pasar la decisión del agente salvo cuando choca con el régimen, y solo entonces la corrige; en seis de los diez activos esa corrección apunta en la dirección buena. Que la actividad de la regla escale con la discrepancia confirma que la intervención está dirigida: actúa donde el agente y el mercado se contradicen y permanece inactiva donde coinciden.
+La compuerta de régimen que vimos en SPY (Sección~\ref{sec:spy-anatomia}) gobierna también el panel: en seis de los diez activos la corrección apunta en la dirección buena. Que la actividad de la regla escale con la discrepancia confirma que la intervención está dirigida: actúa donde el agente y el mercado se contradicen y permanece inactiva donde coinciden.
 
 \subsection{Accuracy por activo: dónde se bate a la trivial}
 \label{sec:panel-accuracy}
@@ -320,23 +320,11 @@ C2 volátiles (ROKU, MARA)                 & $-0{,}028$ & AutoML \\
 
 El reparto de funciones tiene una causa. La regla protege el riesgo a través del régimen, el aprendiz gana accuracy modelando interacciones no lineales que la regla fija no alcanza, y la naturaleza del activo decide cuál de los dos pesa más. El \emph{leverage} ordena el rescate del aprendiz (tendencia significativa al $\alpha = 0{,}10$) y el clustering recupera los mismos grupos sin etiquetas (Rand $= 1{,}0$), con el \emph{leverage} como primer eje ($r = 0{,}84$). Sobre diez activos esto es un patrón fuerte, no un teorema, y ese límite abre la sección siguiente.
 
-\section{Límites y líneas futuras}
+\section{Qué no sobrevive a un test}
 \label{sec:panel-limites}
-
-Un rescate probado necesita sus límites dichos con la misma claridad. Reconocer dónde acaba el alcance no diluye lo demostrado: lo vuelve defendible.
-
-\subsection{Qué no sobrevive a un test}
 \label{sec:panel-lim-tests}
 
-Cinco resultados del capítulo viven por debajo del listón de la significancia, y los reunimos aquí con su cifra. El más visible es la ventaja en accuracy sobre la referencia trivial. En SPY, AutoML acierta el $57{,}4\%$ frente al $56{,}6\%$ de ZeroR, una victoria en punto; pero el McNemar pareado de AutoML contra ZeroR da $p = 0{,}902$, y en una ventana de doscientos cincuenta días no hay potencia para separarlos. Lo mismo ocurre en el resto del panel: ninguna derivada de STRATA bate a la clase mayoritaria con significancia, y la estrategia ganadora cambia de un activo a otro. La victoria es real en el número, nominal en el test y leída a posteriori, así que la situamos como valor del trabajo, no como habilidad probada.
-
-La ley del leverage es el segundo. El rescate del aprendiz escala con el \emph{leverage effect} del activo: cuanto más negativa es la correlación de Black, mayor es la mejora en accuracy. Sobre los diez activos la correlación de Pearson es $r = -0{,}56$ con $p = 0{,}093$, y la de Spearman $\rho = -0{,}59$ con $p = 0{,}074$. Quedan por debajo de $0{,}10$, el nivel de significancia que el proyecto fijó por adelantado, pero no alcanzan el $0{,}05$ convencional ni resisten un \emph{leave-one-out}. Con diez puntos la correlación es tan fuerte como sobre un universo mayor; lo que pierde es potencia. De ahí que la llamemos tendencia y no ley cerrada, como ya la enmarca el cierre de la Sección~\ref{sec:panel-patron}.
-
-Un tercer límite pesa sobre la regla. El rescate de riesgo agregado, medido por el $\Delta$Sharpe \emph{pooled} de los diez activos frente al agente, excluye el cero para los tres supervisores: M8 deja $+0{,}60$, M10 $+1{,}12$ y AutoML $+1{,}08$, con intervalos al $95\%$ que no tocan el cero. La corrección por comparación múltiple cambia el veredicto de la regla. Bajo una cota de Bonferroni con $m = 3$ pruebas (López de Prado 2018 \cite{lopezdeprado2018}), las cotas inferiores de M10 y AutoML siguen por encima del cero, pero la de M8 cae a $-0{,}047$. La protección de riesgo de la regla es real en punto, pero no resiste el ajuste por número de pruebas; la de los aprendices sí.
-
-Sigue una falsación que pre-registramos. A nivel de SPY en solitario, restringiendo la evaluación al régimen bajista ($n = 50$ días), la regla M8 invierte su signo: el $\Delta$Sharpe frente al agente cae a $-1{,}49$. En el régimen peligroso, sobre un único activo, la regla empeora al agente en lugar de rescatarlo. Anotamos esta condición de fracaso antes de mirar el resultado, y la agregación del panel la resuelve: el rescate de riesgo es un fenómeno de conjunto, no de un activo aislado en un régimen aislado. Lo que falla en SPY-bajista vive dentro de un pooled que sí rescata, y por eso reportamos los dos números juntos.
-
-El último afecta al clustering. Los cuatro métodos recuperan los mismos tres grupos con un índice de Rand de $1{,}0$, y eso es un consenso fuerte. Pero descansa sobre diez activos. El clustering es exploratorio: identifica que la naturaleza dibuja los grupos, no permite predecir qué modelo concreto ganará en un activo nuevo. La Tabla~\ref{tab:mp-limites} reúne los cinco con su test y su veredicto.
+Un rescate probado necesita sus límites dichos con la misma claridad. Reconocer dónde acaba el alcance no diluye lo demostrado: lo vuelve defendible. Cinco resultados del capítulo viven por debajo del listón de la significancia, y la Tabla~\ref{tab:mp-limites} los reúne con su contraste y su veredicto: la victoria sobre la trivial es nominal, la ley del \emph{leverage} es una tendencia al $\alpha = 0{,}10$, la protección de riesgo de la regla no sobrevive a Bonferroni, la regla se invierte en SPY-bajista (una falsación que pre-registramos y que la agregación del panel resuelve), y el clustering es exploratorio.
 
 \begin{table}[htbp]
 \centering
@@ -361,22 +349,4 @@ La naturaleza define grupos de activos & Consenso de cuatro métodos, Rand $= 1{
 
 Dos cautelas estadísticas atraviesan estos cinco límites. La primera es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La segunda afecta al \emph{pooled}, ya descontada en la Sección~\ref{sec:panel-pooled}: el tamaño efectivo de la muestra es menor que el nominal y el intervalo queda algo optimista. Aun así, el $\Delta$Sharpe de M10 y AutoML excluye el cero con holgura, mientras la regla vive en el filo y queda fuera de lo que sobrevive a Bonferroni.
 
-\subsection{Desplegabilidad}
-\label{sec:panel-lim-despliegue}
-
-Los tres supervisores no cuestan lo mismo de poner en marcha. La regla M8 opera desde el primer día. Es una regla ex ante: sus umbrales se fijan en la calibración de 2000 a 2024 y no necesita reentreno, así que el día uno del periodo de evaluación ya está disponible y produce su decisión. Esa simplicidad es su ventaja operativa: no hay ventana de arranque, no hay modelo que mantener, no hay nada que reajustar.
-
-Los aprendices piden más. M10 y AutoML entrenan en un \emph{walk-forward} de origen rodante, y antes de emitir su primera decisión necesitan unos ciento cincuenta días de arranque para acumular historia suficiente. De ahí que su ventana desplegable empiece más tarde que la de la regla. Una vez en marcha, además, reentrenan de forma periódica, lo que añade un mantenimiento recurrente. AutoML lleva esa carga un paso más allá: en cada reentreno H2O vuelve a buscar entre GBM, XGBoost y su apilamiento, y el modelo líder cambia de una iteración a otra. Que el ganador no sea el mismo modelo en dos reentrenos consecutivos complica su validación y su gobernanza en producción, porque obliga a auditar un objeto distinto cada vez en lugar de vigilar una pieza estable.
-
-El balance es claro y lo dejamos como tal. La regla es la más sencilla de desplegar, lista para producción sin arranque ni reentreno. Los aprendices dan más accuracy a cambio de más mantenimiento y de una pieza que cambia bajo los pies. Quien priorice robustez operativa se queda con la regla; quien priorice precisión direccional paga el coste de gobernar un aprendiz que se reentrena.
-
-\subsection{Alcance y líneas futuras}
-\label{sec:panel-lim-futuro}
-
-El resultado que sobrevive a un test es el rescate del agente: STRATA es una capa de supervisión y de control de riesgo sobre un agente que pierde, y se mide por cuánto lo mejora. Superar al mercado pasivo nunca fue su objetivo, y no lo logra con significancia: en la ventana de $n \approx 250$ días no hay potencia para separar a las derivadas de la referencia pasiva.
-
-En punto sí asoma un valor que merece nombrarse. En cuatro de los diez activos una derivada de STRATA supera al pasivo en Sharpe, y lo hace de forma más nítida justamente donde el \emph{leverage} es débil o se invierte. En SMCI, MARA y UNG el pasivo pierde o queda plano, y la derivada, al ir defensiva en el momento correcto, saca un Sharpe positivo claro. La ventaja es compatible con valor direccional, pendiente de un contraste pre-registrado, porque la derivada acierta el lado en activos donde comprar y mantener no paga. La equity de la Figura~\ref{fig:mp-equity-panel} lo hace visible. Sigue siendo nominal y leído a posteriori, y por eso no asciende a conclusión del trabajo, pero es una señal de que el camino existe.
-
-Ese camino organiza las líneas futuras. La vía más directa es repetir el estudio sobre una muestra mayor, en activos y en días, para que la significancia plena frente a la trivial deje de estar limitada por potencia. Otra surge de la complementariedad que documentamos por régimen: M10 rescata más en mercado alcista y AutoML en bajista, con un contraste de diferencia en diferencias significativo sobre el panel, lo que sugiere un ensemble enrutado por régimen que elija el supervisor según el estado del mercado. Cabe también abrir el banco de pruebas a otros agentes y a otros modelos de lenguaje, para separar lo que es propio de STRATA de lo que es propio de este agente concreto, y llevar el sistema a un despliegue en vivo, con la regla operando desde el día uno y los aprendices arrancando tras su ventana. La más ambiciosa queda fuera del cuerpo de esta memoria: desarrollar a partir de STRATA una estrategia que genere alfa robusta, una rentabilidad absoluta que bata al mercado con un contraste pre-registrado y no a posteriori. Las victorias direccionales en SMCI, MARA y UNG son el punto de partida de esa línea, no su conclusión.
-
-El panel cierra la pregunta con la que abrió. Lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar: STRATA rescata al agente en accuracy y en riesgo sobre los diez activos, el aprendiz redescubre sus señales y mejora modestamente a la regla, y la naturaleza del activo explica qué canal rescata a través del \emph{leverage}. Cada límite queda con su cifra al lado: frente a la trivial el avance es nominal, la ley del leverage es una tendencia al $\alpha = 0{,}10$ y la regla no sobrevive a Bonferroni en el rescate de riesgo. El alcance probado es la supervisión y el control del riesgo del agente; generar alfa robusta frente al mercado queda como línea futura, con el listón pre-registrado por delante. El capítulo de conclusiones recoge ese balance y lo lee como un todo.
+El panel cierra la pregunta con la que abrió: lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar. El capítulo de conclusiones recoge ese balance, lee sus implicaciones prácticas de despliegue y abre las líneas futuras.
