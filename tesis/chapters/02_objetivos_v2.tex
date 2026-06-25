@@ -1,12 +1,12 @@
 \chapter{Objetivos}
 \label{cap:objetivos}
 
-Queremos abordar el siguiente problema: un agente LLM que decide de manera indeterminística sobre nuestro dinero pierde la dirección y el capital, y lo hace de forma sistemática. Este capítulo fija qué se propone el trabajo frente a ese problema, la hipótesis que pone a prueba y cómo la contrasta.
+Queremos abordar el siguiente problema: un agente LLM que decide de manera indeterminística sobre nuestro dinero pierde la dirección y el capital, y lo hace de forma sistemática. Este capítulo concreta qué se propone el trabajo frente a ese problema y cómo lo pone a prueba.
 
 \section{Hipótesis}
 \label{sec:obj-hipotesis}
 
-La pregunta de investigación es si una capa de supervisión estadística externa puede rescatar a un agente LLM cuando pierde. La formulamos como una afirmación que puede refutarse:
+Nos preguntamos si una capa de supervisión estadística externa puede rescatar a un agente LLM cuando pierde. La formulamos como una afirmación que puede refutarse:
 
 \begin{quote}
 Filtrar o atenuar las decisiones de un agente LLM de trading con detectores estadísticos clásicos rescata al agente de forma significativa cuando este pierde dinero y acierta la dirección menos de la mitad de las veces.
@@ -23,12 +23,12 @@ Demostrar, con rigor estadístico, que supervisar en tiempo de ejecución las de
 \label{sec:obj-especificos}
 
 \begin{enumerate}
-  \item Formalizar tres detectores estadísticos clásicos (régimen con un HMM, cambio estructural con BOCPD y volatilidad con GARCH) que auditen cada decisión del agente en tiempo de ejecución, junto con el protocolo de medición causal y sin fuga que los evalúa (capítulo~\ref{cap:strata}).
-  \item Probar, con contrastes pareados, si esa supervisión rescata al agente cuando pierde, tanto en acierto direccional (McNemar y \emph{sign test}) como en riesgo ($\Delta$Sharpe con \emph{bootstrap}), primero sobre el caso de SPY y luego sobre el panel (capítulos~\ref{cap:spy} y~\ref{cap:panel}).
-  \item Atribuir el efecto a cada detector y caracterizar en qué activos funciona la supervisión y por qué, a través de la anatomía de la intervención, la compuerta de régimen y el patrón que liga la naturaleza del activo con el canal que lo rescata (capítulos~\ref{cap:spy} y~\ref{cap:panel}).
-  \item Comprobar si un meta-learner libre redescubre las señales de STRATA en lugar de prescindir de ellas, contrastando atribución (valores de Shapley y ablación) y equivalencia frente a la regla (capítulo~\ref{cap:panel}).
-  \item Comprobar si alguna estrategia derivada de STRATA bate a la referencia trivial (B&H o la clase mayoritaria ZeroR) en acierto direccional. (capítulo~\ref{cap:panel}).
-  \item Delimitar el alcance honesto de la técnica: declarar dónde no aporta (frente a una referencia trivial y en activos de apalancamiento débil), con el mismo rigor con que se reporta lo que sí aporta (capítulo~\ref{cap:panel}).
+  \item Formalizar los tres detectores clásicos sobre los que se apoya STRATA, el régimen con un HMM, el cambio estructural con BOCPD y la volatilidad con un GARCH, junto con el protocolo de medición causal y sin fuga que los evalúa. El capítulo~\ref{cap:strata} se ocupa de ello.
+  \item Probar si esa supervisión rescata al agente cuando pierde. Lo medimos con contrastes pareados, en acierto direccional (McNemar y \emph{sign test}) y en riesgo ($\Delta$Sharpe con \emph{bootstrap}), primero sobre SPY y después sobre el panel de diez activos.
+  \item Atribuir el efecto a cada detector y entender en qué activos funciona la supervisión, desde la anatomía de una intervención hasta el patrón que liga la naturaleza del activo con el canal que lo rescata.
+  \item Comprobar si un meta-learner libre redescubre las señales de STRATA en lugar de prescindir de ellas. Lo contrastamos por dos vías: la atribución, con valores de Shapley y ablación, y la equivalencia frente a la regla.
+  \item Ver si alguna estrategia derivada de STRATA bate en acierto direccional a la referencia trivial, comprar y mantener o la clase mayoritaria del pasado.
+  \item Delimitar con honestidad el alcance de la técnica, declarando con el mismo rigor lo que aporta y lo que no: ni gana a una referencia trivial ni mantiene su mecanismo en los activos de apalancamiento débil.
 \end{enumerate}
 
 \section{Plan de trabajo}

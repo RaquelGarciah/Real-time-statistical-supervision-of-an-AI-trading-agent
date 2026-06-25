@@ -4,7 +4,7 @@
 % Fuente única de cifras: notebooks/STRATA_marco_practico.ipynb (panel canónico de 10) y sus JSON en
 % outputs/experiments/. Toda cifra trazada a su JSON en el caption de su tabla.
 
-El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde dinero: ese es el punto de partida. SPY es el ETF que replica el S\&P~500, el índice de las quinientas mayores empresas cotizadas de Estados Unidos. Tiene un \emph{leverage effect} de índice amplio y por eso el régimen adquiere contenido direccional (Sección~\ref{sec:strata-ram}) según lo que dice la literatura lo que lo hace un buen candidato para mostrar la aplicabilidad de nuestro sistema. Sobre él construimos la cadena entera: la intervención y su anatomía, las seis estrategias que compiten y la atribución de lo que STRATA rescata.
+El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde dinero: ese es el punto de partida. SPY es el ETF que replica el S\&P~500, el índice de las quinientas mayores empresas cotizadas de Estados Unidos. Tiene un \emph{leverage effect} de índice amplio y por eso el régimen adquiere contenido direccional (Sección~\ref{sec:strata-ram}), lo que lo convierte en un buen candidato para mostrar la aplicabilidad del sistema. Sobre él construimos la cadena entera: la intervención y su anatomía, las seis estrategias que compiten y la atribución de lo que STRATA rescata.
 
 
 
@@ -13,11 +13,11 @@ El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde d
 
 Fijamos primero el protocolo. Con \texttt{signal\_lag}${}=1$ (capítulo~\ref{cap:strata}), la posición del día $t$ se enfrenta al retorno del día $t+1$, nunca al del propio día. Calibramos los detectores una sola vez sobre 2000-01-01 a 2024-09-30 y cerramos sus umbrales antes de ver la evaluación, que arranca el 2024-10-01, ya pasado el corte de conocimiento del modelo de lenguaje: así el agente no pudo memorizar esas decisiones.
 
-Conviven dos ventanas que nunca mezclamos. El OOS completo ($n = 401$) sirve a las estrategias que no entrenan: el agente, la regla y las dos triviales. La ventana desplegable ($n = 251$) es la que queda tras un arranque de ciento cincuenta días de \emph{walk-forward} de origen rodante, y la usan las estrategias que reentrenan a diario, con embargo${}=1$ por su horizonte de etiqueta de un día (Tashman 2000 \cite{tashman2000}; López de Prado 2018 \cite{lopezdeprado2018}).
+Conviven dos ventanas que nunca mezclamos. El OOS completo ($n = 401$) sirve a las estrategias que no entrenan: el agente, la regla y las dos triviales. La ventana desplegable ($n = 251$) es la que queda tras un arranque de ciento cincuenta días de \emph{walk-forward} de origen rodante, y la usan las estrategias que reentrenan a diario, con embargo${}=1$ por su horizonte de etiqueta de un día \cite{tashman2000,lopezdeprado2018}.
 
-Los tres detectores descansan en modelos clásicos calibrados en esa ventana. El régimen lo da un HMM gaussiano de tres estados ($K = 3$), que etiquetamos Calma, Estrés y Crisis (Rabiner 1989 \cite{rabiner1989}); $K$ no se elige a posteriori, lo fija una selección de modelo ex ante. La volatilidad la sigue un GARCH(1,1) de innovaciones $t$ de Student, cuya cola pesada recoge los movimientos extremos que una normal subestima (Bollerslev 1987 \cite{bollerslev1987}). El cambio estructural lo vigila un BOCPD en línea, que actualiza con cada dato la probabilidad de cuántos días lleva el agente sin cambiar de conducta, sin mirar el futuro (Adams y MacKay 2007 \cite{adams2007}). Sus umbrales de disparo son cuantiles de la calibración. Con esto fijado, entramos en la mecánica de la intervención sobre SPY.
+Los tres detectores descansan en modelos clásicos calibrados en esa ventana. El régimen lo da un HMM gaussiano de tres estados ($K = 3$), que etiquetamos Calma, Estrés y Crisis \cite{rabiner1989}; $K$ no se elige a posteriori, lo fija una selección de modelo ex ante. La volatilidad la sigue un GARCH(1,1) de innovaciones $t$ de Student, cuya cola pesada recoge los movimientos extremos que una normal subestima \cite{bollerslev1987}. El cambio estructural lo vigila un BOCPD en línea, que actualiza con cada dato la probabilidad de cuántos días lleva el agente sin cambiar de conducta, sin mirar el futuro \cite{adams2007}. Sus umbrales de disparo son cuantiles de la calibración.
 
-El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathrm{lev} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, entre el retorno de hoy y el cambio de la volatilidad realizada a veintiún días: es negativa cuando una caída eleva la volatilidad del día siguiente. La Figura~\ref{fig:mp-regimenes-spy} muestra los tres regímenes pintados sobre el precio de SPY. Esto es escriptivo, empleamos el camino de máxima verosimilitud de Viterbi (Anexo~\ref{anx:viterbi}), una decodificación retrospectiva sobre toda la serie; el detector RAM no lo usa para evitar look ahead en tiempo real lee la probabilidad filtrada causal del estado.Una precisión gobierna toda la lectura: en la calibración el retorno del mismo día baja con el régimen, pero la fracción de días al alza del día siguiente ronda $0{,}5$ incluso en Crisis. El régimen separa por volatilidad y coincide con la caída del mismo día, no anticipa el signo de mañana.
+El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathrm{lev} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, entre el retorno de hoy y el cambio de la volatilidad realizada a veintiún días: es negativa cuando una caída eleva la volatilidad del día siguiente. La Figura~\ref{fig:mp-regimenes-spy} muestra los tres regímenes pintados sobre el precio de SPY. La figura es descriptiva: para pintarla empleamos el camino de máxima verosimilitud de Viterbi (Anexo~\ref{anx:viterbi}), una decodificación retrospectiva sobre toda la serie. El detector RAM no la usa, para evitar el \emph{look-ahead}: en tiempo real lee la probabilidad filtrada causal del estado. Una precisión gobierna toda la lectura: en la calibración el retorno del mismo día baja con el régimen, pero la fracción de días al alza del día siguiente ronda $0{,}5$ incluso en Crisis. El régimen separa por volatilidad y coincide con la caída del mismo día, no anticipa el signo de mañana.
 
 \begin{figure}[htbp]
 \centering
@@ -26,13 +26,13 @@ El \emph{leverage} de un activo lo medimos con la correlación de Black, $\mathr
 \label{fig:mp-regimenes-spy}
 \end{figure}
 
-Los tres detectores miran ejes ortogonales de la decisión del agente. RAM lee el régimen y comprueba si la dirección de la apuesta concuerda con el estado vigente: su \emph{score} es la probabilidad que el HMM pone en que el agente apuesta contra el régimen, y dispara cuando $\mathrm{RAM}_t \ge \tau = 0{,}50$. PSA vigila con BOCPD si el agente cambia de criterio de forma estructural (Adams y MacKay 2007 \cite{adams2007}). GSO contrasta el tamaño de la posición con la volatilidad del GARCH (Bollerslev 1986 \cite{bollerslev1986}). Cuando RAM dispara, la intervención reorienta la posición al signo del régimen, fijado por un prior calibrado por activo a partir de la media del retorno de cada estado, nunca por una regla del tipo ``Crisis implica corto'' escrita a mano.
+Los tres detectores miran ejes ortogonales de la decisión del agente. RAM lee el régimen y comprueba si la dirección de la apuesta concuerda con el estado vigente: su \emph{score} es la probabilidad que el HMM pone en que el agente apuesta contra el régimen, y dispara cuando $\mathrm{RAM}_t \ge \tau = 0{,}50$. PSA vigila con BOCPD si el agente cambia de criterio de forma estructural \cite{adams2007}. GSO contrasta el tamaño de la posición con la volatilidad del GARCH \cite{bollerslev1986}. Cuando RAM dispara, la intervención reorienta la posición al signo del régimen, fijado por un prior calibrado por activo a partir de la media del retorno de cada estado, nunca por una regla del tipo ``Crisis implica corto'' escrita a mano.
 
 Sobre SPY actúa una sola supervisión (Tabla~\ref{tab:mp-detectores}). RAM dispara casi un tercio de los días y acierta más al intervenir que el agente al que corrige; PSA dispara dos días y GSO ninguno. El motivo es que el agente mantiene una posición casi constante sobre SPY, corta la mayor parte de los días, de modo que sus \emph{scores} de cambio y de tamaño quedan por debajo de los umbrales de calibración. PSA y GSO son detectores inertes como reglas sobre este activo, un hallazgo que registramos. La atribución de P\&L cierra la lectura: todo el rescate acumulado sale de los días en que RAM dispara, y PSA y GSO aportan exactamente cero.
 
 \begin{table}[htbp]
 \centering
-\caption{Actividad de los tres detectores sobre el OOS completo de SPY ($n = 401$ días). ``Acierto'' es la fracción de direcciones correctas en los días en que el detector dispara; el P\&L de rescate es el acumulado de la intervención en esos días. PSA y GSO apenas disparan: su columna de acierto no aplica. Fuente: \texttt{spy\_intervention\_anatomy.json}.}
+\caption{Actividad de los tres detectores sobre el OOS completo de SPY ($n = 401$ días). ``Acierto'' es la fracción de direcciones correctas en los días en que el detector dispara; el P\&L de rescate es el acumulado de la intervención en esos días. PSA y GSO apenas disparan: su columna de acierto no aplica.}
 \label{tab:mp-detectores}
 \begin{tabular}{lrrrr}
 \toprule
@@ -45,7 +45,7 @@ GSO (volatilidad) & $0{,}0\%$ & --- & --- & $0{,}000$ \\
 \end{tabular}
 \end{table}
 
-Que RAM acierte al intervenir no es casualidad, y la Figura~\ref{fig:mp-scores-detectores} lo deja ver. En los días en que RAM está alto, seguir el régimen bate a seguir al agente; cuando RAM está bajo, la ventaja se diluye y la intervención no se activa. El detector funciona como una compuerta: deja pasar la decisión del agente salvo cuando choca con el régimen, y solo entonces la corrige. En SPY esa compuerta es todo el mecanismo de la regla, porque el canal de régimen es el único que se enciende.
+En la Figura~\ref{fig:mp-scores-detectores} vemos que en los días en que RAM está alto, seguir el régimen bate a seguir al agente; cuando RAM está bajo, la ventaja se diluye y la intervención no se activa. El detector funciona como una compuerta: deja pasar la decisión del agente salvo cuando choca con el régimen, y solo entonces la corrige. En SPY esa compuerta es todo el mecanismo de la regla, porque el canal de régimen es el único que se enciende.
 
 \begin{figure}[htbp]
 \centering
@@ -58,7 +58,7 @@ La intervención puede ejecutarse de tres maneras. Puede abstenerse los días du
 
 \begin{table}[htbp]
 \centering
-\caption{Modos de intervención de M8 sobre SPY (días en mercado, $n = 232$). El modo canónico (\emph{override}) reorienta la posición al signo del régimen; las alternativas se abstienen o reducen el tamaño. En negrita, el modo adoptado. Fuente: \texttt{spy\_intervention\_variants.json}.}
+\caption{Modos de intervención de M8 sobre SPY (días en mercado, $n = 232$). El modo canónico (\emph{override}) reorienta la posición al signo del régimen; las alternativas se abstienen o reducen el tamaño. En negrita, el modo adoptado.}
 \label{tab:mp-variantes}
 \begin{tabular}{lrrr}
 \toprule
@@ -88,7 +88,7 @@ Sobre el agente comparamos las seis estrategias ya introducidas en el capítulo 
 
 \begin{table}[htbp]
 \centering
-\caption{Las seis estrategias sobre SPY, ventana desplegable ($n = 251$, \texttt{signal\_lag}${}=1$). Accuracy direccional, Sharpe anualizado, máxima caída, ratio de Calmar (Young 1991 \cite{young1991}) y capital final por euro invertido. En negrita, la mejor en cada columna. Fuente: \texttt{automl\_runs/panel\_mm25\_inclGBM-XGB-SE\_AUC\_emb1\_N0-150\_step21\_kfold\_seed42.json}.}
+\caption{Las seis estrategias sobre SPY, ventana desplegable ($n = 251$, \texttt{signal\_lag}${}=1$). Accuracy direccional, Sharpe anualizado, máxima caída, ratio de Calmar \cite{young1991} y capital final por euro invertido. En negrita, la mejor en cada columna.}
 \label{tab:mp-spy}
 \begin{tabular}{lrrrrr}
 \toprule
@@ -104,32 +104,39 @@ M5 (agente solo) & $0{,}366$ & $-3{,}07$ & $-30{,}2\%$ & $-1{,}00$ & $0{,}70\tim
 \end{tabular}
 \end{table}
 
-Leída de abajo arriba, podemos decir cada capa rescata a la anterior. La regla recupera al agente y le recorta a la mitad la máxima caída; el meta-learner sube otro escalón en accuracy; AutoML llega arriba y gana en todas las columnas, también a las dos triviales. El rescate es significativo en los tres casos, contrastado con el McNemar pareado sobre los aciertos diarios frente al agente (McNemar 1947 \cite{mcnemar1947}). Los tres rescatan al agente, y el rescate aguanta el test.
+Leída de abajo arriba, cada capa rescata a la anterior. La regla recupera al agente y le recorta a la mitad la máxima caída; el meta-learner sube otro escalón en accuracy; AutoML llega arriba y gana en todas las columnas, también a las dos triviales. El rescate es significativo en los tres casos, contrastado con el McNemar pareado sobre los aciertos diarios frente al agente \cite{mcnemar1947}. Los tres rescatan al agente, y el rescate aguanta el test.
 
-La victoria sobre la trivial necesita un matiz. El mismo McNemar de AutoML frente a ZeroR no separa a las dos: no hay potencia en una ventana de doscientos cincuenta días. La ventaja de AutoML sobre el mercado pasivo es real en punto pero nominal en significancia, y tiene una explicación económica: SPY es mayormente beta de mercado, el periodo de evaluación fue alcista, e ir largo capturó esa subida. La Figura~\ref{fig:mp-equity-spy} hace visible la diferencia, y el Sharpe deflactado (López de Prado 2018 \cite{lopezdeprado2018}; Bailey y López de Prado 2014 \cite{bailey2014}) la pone en contexto. El DSR confirma esa lectura: solo el de AutoML se acerca a uno, mientras los de M10 y el agente quedan pegados a cero. AutoML es el único de los modelos cuyo Sharpe sobrevive al ajuste por número de pruebas.
+Las matrices de confusión abren ese acierto (Figura~\ref{fig:mp-confusion-spy6}): no es lo mismo acertar repartido que acertar siempre la misma clase.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{figuras/cap4_confusion_spy_6}
+\caption{Matrices de confusión de las seis estrategias sobre SPY, dirección predicha frente a la real. Enseñan de dónde sale el acierto de cada una, no solo su porcentaje: el agente carga el error en una clase y las derivadas de STRATA lo reparten mejor.}
+\label{fig:mp-confusion-spy6}
+\end{figure}
+
+La victoria sobre la trivial necesita un matiz. El mismo McNemar de AutoML frente a ZeroR no separa a las dos: no hay potencia en una ventana de doscientos cincuenta días. La ventaja de AutoML sobre el mercado pasivo es real en punto pero nominal en significancia, y tiene una explicación económica: SPY es mayormente beta de mercado, el periodo de evaluación fue alcista, e ir largo capturó esa subida. La Figura~\ref{fig:mp-equity-spy} hace visible la diferencia, y el Sharpe deflactado \cite{lopezdeprado2018,bailey2014} la pone en contexto. El DSR confirma esa lectura: solo el de AutoML se acerca a uno, mientras los de M10 y el agente quedan pegados a cero. AutoML es el único de los modelos cuyo Sharpe sobrevive al ajuste por número de pruebas.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_equity_spy}
-\caption{Curvas de capital de las seis estrategias sobre SPY (ventana desplegable, $n = 251$ días, un euro inicial). AutoML (línea destacada) supera a las dos referencias triviales en Sharpe ($+2{,}68$ frente a $+2{,}21$), en máxima caída ($-5{,}5\%$ frente a $-9{,}8\%$) y en capital final ($1{,}38\times$ frente a $1{,}30\times$); el agente solo (M5) termina en $0{,}70\times$. La ventaja sobre la trivial es nominal (McNemar AutoML vs ZeroR $p = 0{,}90$).}
+\caption{Curvas de capital de las seis estrategias sobre SPY (ventana desplegable, $n = 251$ días, un euro inicial). AutoML (línea destacada) supera a las dos referencias triviales en Sharpe ($+2{,}68$ frente a $+2{,}21$), en máxima caída ($-5{,}5\%$ frente a $-9{,}8\%$) y en capital final ($1{,}38\times$ frente a $1{,}30\times$); el agente solo (M5) termina en $0{,}70\times$. La ventaja sobre la trivial es nominal (McNemar AutoML vs ZeroR $p = 0{,}902$).}
 \label{fig:mp-equity-spy}
 \end{figure}
 
-Sobre un único activo, el intervalo de confianza del $\Delta$Sharpe de la regla frente al agente cruza el cero. El resultado en riesgo que no alcanza significancia a este nivel, lo comprobamos en una muestra mayor de activos en el siguiente capítulo.
+Sobre un único activo, el intervalo de confianza del $\Delta$Sharpe de la regla frente al agente cruza el cero. Ese resultado en riesgo, que sobre un activo no alcanza significancia, lo comprobamos sobre una muestra mayor de activos en el capítulo siguiente.
 
 \section{El rescate sobre SPY}
 \label{sec:spy-rescate}
 
-Ya vimos que sobre SPY el régimen (Sección~\ref{sec:spy-anatomia}) es el único que rescata. La preguna que nos queda por responder es: ¿usa de verdad el aprendiz las señales de STRATA, o gana por otro lado? La ablación lo responde. Al quitar PSA y GSO de las características, la accuracy de AutoML baja (Tabla~\ref{tab:mp-ablacion}): aunque PSA y GSO casi no disparen como reglas, sus \emph{scores} continuos informan al modelo. Las características de Shapley (Lundberg y Lee 2017 \cite{lundberg2017}) lo confirman, y aquí etiquetamos cada cuota con su modelo y su ventana porque no son el mismo objeto. Sobre el ensemble M10 ($n = 251$), la cuota de las features de STRATA es $0{,}71$. Sobre el \emph{leader} de AutoML ($n = 401$, otro modelo y otra ventana), es $0{,}565$ por árbol y $0{,}564$ por permutación. Las dos cuotas superan la mitad y colocan los detectores por delante de las características del propio agente.
+Ya vimos que sobre SPY el régimen (Sección~\ref{sec:spy-anatomia}) es el único que rescata. La pregunta que nos queda por responder es: ¿usa de verdad el aprendiz las señales de STRATA, o gana por otro lado? La ablación lo responde. Quitamos PSA y GSO de las características y reentrenamos: la accuracy de AutoML baja (Tabla~\ref{tab:mp-ablacion}). Aunque esos dos detectores casi nunca disparen como reglas, sus \emph{scores} continuos llevan información que el modelo aprovecha porque sin ellos rinde peor. Que apenas disparen tiene su porqué: el agente apenas cambia de posición, así que sus \emph{scores} se quedan por debajo del umbral (Figura~\ref{fig:anx-psa-gso}), y el régimen que sí explota RAM es contemporáneo, no predictivo (Figura~\ref{fig:anx-regimen-dir}).
 
-Ya vimos que sobre SPY el régimen (Sección~\ref{sec:spy-anatomia}) es el único que rescata. La pregunta que nos queda por responder es: ¿usa de verdad el aprendiz las señales de STRATA, o gana por otro lado? La ablación lo responde. Quitamos PSA y GSO de las características y reentrenamos: la accuracy de AutoML baja (Tabla~\ref{tab:mp-ablacion}). Aunque esos dos detectores casi nunca disparen como reglas, sus \emph{scores} continuos llevan información que el modelo aprovecha porque sin ellos rinde peor.
-
-Los valores de Shapley (Lundberg y Lee 2017 \cite{lundberg2017}) lo confirman desde otro ángulo: reparten la importancia total del modelo entre las quince características del agente y las siete de STRATA. Aunque STRATA aporta solo siete de las veintidós, se lleva más de la mitad del peso. Damos la cuota etiquetada con su modelo y su ventana, porque no son el mismo objeto: sobre el ensemble M10 (ventana desplegable, $n = 251$) vale $0{,}71$; sobre el \emph{leader} de AutoML ($n = 401$, otro modelo) vale $0{,}565$ por árbol y $0{,}564$ por permutación, dos cálculos distintos que coinciden. En todos los casos supera la mitad: el aprendiz coloca los detectores por delante de las características del propio agente. Las dos pruebas apuntan a lo mismo, ablación y atribución: el aprendiz sí se apoya en STRATA.
+Los valores de Shapley \cite{lundberg2017} lo confirman desde otro ángulo: reparten la importancia total del modelo entre las quince características del agente y las siete de STRATA. Aunque STRATA aporta solo siete de las veintidós, se lleva más de la mitad del peso. Damos la cuota etiquetada con su modelo y su ventana, porque no son el mismo objeto: sobre el ensemble M10 (ventana desplegable, $n = 251$) vale $0{,}71$; sobre el \emph{leader} de AutoML ($n = 401$, otro modelo) vale $0{,}565$ por árbol y $0{,}564$ por permutación, dos cálculos distintos que coinciden. En todos los casos supera la mitad: el aprendiz coloca los detectores por delante de las características del propio agente. Las dos pruebas apuntan a lo mismo, ablación y atribución: el aprendiz sí se apoya en STRATA. Cómo usa cada señal y la estabilidad de ese apoyo en el tiempo están en las Figuras~\ref{fig:anx-shap-dep} y~\ref{fig:anx-shap-rodante}; dónde corrige al agente, en la Figura~\ref{fig:anx-confusion-m10}.
 
 
 \begin{table}[htbp]
 \centering
-\caption{Ablación de detectores sobre SPY (ventana desplegable, $n = 251$). El conjunto canónico usa las veintidós características; ``sin PSA+GSO'' deja solo el canal de régimen entre los detectores. AutoML degrada al quitar PSA+GSO, prueba de que usa sus \emph{scores}. Fuente: \texttt{automl\_ablation\_detectors.json}, \texttt{detector\_ablation\_panel.json}.}
+\caption{Ablación de detectores sobre SPY (ventana desplegable, $n = 251$). El conjunto canónico usa las veintidós características; ``sin PSA+GSO'' deja solo el canal de régimen entre los detectores. AutoML degrada al quitar PSA+GSO, prueba de que usa sus \emph{scores}.}
 \label{tab:mp-ablacion}
 \begin{tabular}{lrr}
 \toprule
@@ -152,4 +159,4 @@ La objeción más natural es que los umbrales se eligieran para que el resultado
 \label{fig:mp-sensibilidad}
 \end{figure}
 
-Para concluir, sobre SPY el mecanismo es transparente y el agente, sin supervisión, pierde con holgura. La intervención por régimen lo corrige de forma significativa, la derivada aprendida supera a la trivial en este punto apoyándose en las señales de STRATA, y todo descansa sobre una meseta robusta de umbrales. A nivel de un único activo, sin embargo, la corrección de riesgo no alcanza significancia y la victoria sobre la trivial es nominal. Queda la pregunta que enfoca el resto del trabajo: ¿se sostiene el rescate fuera de SPY? El panel de diez activos es el siguiente paso.
+Sobre SPY el mecanismo es transparente y el agente, sin supervisión, pierde con holgura. La intervención por régimen lo corrige de forma significativa, la derivada aprendida supera a la trivial en este punto apoyándose en las señales de STRATA, y todo descansa sobre una meseta robusta de umbrales. A nivel de un único activo, sin embargo, la corrección de riesgo no alcanza significancia y la victoria sobre la trivial es nominal. Queda la pregunta que enfoca el resto del trabajo: ¿se sostiene el rescate fuera de SPY? El panel de diez activos es el siguiente paso.
