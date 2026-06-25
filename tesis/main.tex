@@ -1,9 +1,9 @@
 % ============================================================================
-% main.tex — documento maestro de la memoria del TFG
-% STRATA: Supervisión estadística en tiempo real de un agente de trading con IA
+% main.tex — documento maestro de la memoria del TFG (versión v2, oficial)
+% STRATA: Supervisión estadística en tiempo de ejecución de un agente LLM de trading
 % Autora: Raquel García · Doble Grado en Matemáticas y Ciencia de Datos · UCM
-%
-% Compilar:  latexmk -pdf -bibtex main.tex   (o subir la carpeta a Overleaf)
+% Estructura "STRATA como hilo" (7 capítulos) + abstract EN + anexo de demostraciones.
+% Compilar:  latexmk -pdf -bibtex main.tex
 % ============================================================================
 \documentclass[11pt,a4paper,oneside]{report}
 
@@ -11,20 +11,29 @@
 
 \begin{document}
 
-% --- Portada (placeholder; se sustituye por el modelo UCM cuando esté) ---
+% --- Portada oficial UCM ---
 \input{portada}
+
+% --- Resumen en inglés (normativa: pág. 3, 100-200 palabras) ---
+\input{chapters/00_abstract_en_v2}
 
 \tableofcontents
 \cleardoublepage
 
-% --- Capítulos (orden de redacción: 3 primero; aquí van en orden de lectura) ---
-\include{chapters/01_introduccion}
-\include{chapters/02_estado_arte}
-\include{chapters/03_marco_teorico}
-\include{chapters/04_marco_practico}
-\include{chapters/05_conclusiones}
+% --- Capítulos (estructura v2: STRATA como hilo) ---
+\include{chapters/01_introduccion_v2}
+\include{chapters/02_objetivos_v2}
+\include{chapters/02_estado_arte_v2}
+\include{chapters/03_como_funciona_strata_v2}
+\include{chapters/04_strata_spy_v2}
+\include{chapters/05_panel_v2}
+\include{chapters/06_conclusiones_v2}
 
 % --- Bibliografía (numérica) ---
 \printbibliography[heading=bibintoc,title={Bibliografía}]
+
+% --- Anexos (no cuentan para el límite de páginas) ---
+\appendix
+\include{chapters/anexo_demostraciones_v2}
 
 \end{document}
