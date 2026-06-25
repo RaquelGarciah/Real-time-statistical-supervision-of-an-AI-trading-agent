@@ -1,4 +1,4 @@
-La memoria se recomienda tener entre 20 y 40 páginas, más posibles anexos. No más de 50 desde la introduccion hasta bibliografía (sin incluir)
+La memoria debe tener entre 20 y 40 páginas, más posibles anexos, desde la introduccion hasta bibliografía (sin incluir)
 
 Deberá estar escrita en castellano, en formato DIN A-4, incluir una portada normalizada (adjunta en esta carpeta) y contener:
 - Un breve resumen del trabajo escrito en inglés
