@@ -1060,17 +1060,243 @@ def n16_anexo_mcnemar():
     _save(fig, "cap4_anexo_mcnemar")
 
 
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  5 FIGURAS DE APOYO — arquitectura, protocolo temporal y naturaleza        ║
+# ║  Misma estética: _save / _c / _coma / COL / REGCOL. Sin título embebido.   ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
+
+
+def _caja(ax, x, y, w, h, texto, fc, ec="#333", fs=9, tc="black", lw=1.2):
+    """Caja de esquina redondeada centrada en (x, y) con texto multilínea."""
+    ax.add_patch(FancyBboxPatch((x - w / 2, y - h / 2), w, h,
+                                boxstyle="round,pad=0.02,rounding_size=0.12",
+                                fc=fc, ec=ec, lw=lw, zorder=2))
+    ax.text(x, y, texto, ha="center", va="center", fontsize=fs, color=tc, zorder=3)
+
+
+def _flecha(ax, xy_o, xy_d, texto="", fs=7.5, color="#2c3e50"):
+    ax.add_patch(FancyArrowPatch(xy_o, xy_d, arrowstyle="-|>", mutation_scale=16,
+                                 lw=1.6, color=color, zorder=1))
+    if texto:
+        mx, my = (xy_o[0] + xy_d[0]) / 2, (xy_o[1] + xy_d[1]) / 2
+        ax.text(mx + 0.15, my, texto, ha="left", va="center", fontsize=fs, color="#555", zorder=4)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# S1 — strata_arquitectura : diagrama de bloques del sistema STRATA
+# Agente LLM -> 3 detectores (RAM/PSA/GSO) -> M8 / aprendiz -> posición w*
+# Esquemático, sin datos.
+# ════════════════════════════════════════════════════════════════════════════
+def strata_arquitectura():
+    fig, ax = plt.subplots(figsize=(10, 7.6))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis("off")
+    # 1) agente LLM
+    _caja(ax, 5, 9.2, 8.6, 1.0,
+          "Agente LLM — 5 personalidades\n(Buffett · Wood · Druckenmiller · Burry · Ackman)",
+          fc="#e8eef4", fs=9.5)
+    _flecha(ax, (5, 8.7), (5, 7.85), "decisión diaria:  signo · tamaño · confianza")
+    # 2) tres detectores ortogonales
+    det = [(2.0, "RAM\nrégimen (HMM)", REGCOL[2]),
+           (5.0, "PSA\ncambio estructural (BOCPD)", REGCOL[1]),
+           (8.0, "GSO\nvolatilidad (GARCH)", REGCOL[0])]
+    for cx, txt, base in det:
+        _caja(ax, cx, 7.1, 2.7, 1.1, txt, fc=base + "33", ec=base, fs=9, lw=1.6)
+    # llaves desde el agente a cada detector
+    for cx, _t, _b in det:
+        _flecha(ax, (5, 7.85), (cx, 7.68))
+    ax.text(5, 6.35, "señales  RAM / PSA / GSO  ∈ [0, 1]", ha="center", fontsize=8.5, color="#555")
+    for cx, _t, _b in det:
+        _flecha(ax, (cx, 6.55), (cx, 5.85) if cx == 5 else ((3.2, 5.4) if cx == 2 else (6.8, 5.4)))
+    # 3) los dos supervisores
+    _caja(ax, 3.1, 4.7, 3.3, 1.1,
+          "M8\nregla de umbrales fijos\n(ex-ante, no aprende)", fc=COL["M8"] + "44", ec=COL["M8"], fs=8.7, lw=1.6)
+    _caja(ax, 6.9, 4.7, 3.3, 1.1,
+          "M10 / AutoML\nmeta-learner (aprende)\nXGBoost · H2O", fc=COL["M10"] + "44", ec=COL["M10"], fs=8.7, lw=1.6)
+    _flecha(ax, (3.1, 4.15), (4.7, 3.25))
+    _flecha(ax, (6.9, 4.15), (5.3, 3.25))
+    # 4) posición supervisada
+    _caja(ax, 5, 2.55, 4.4, 1.0, "posición supervisada  w*\n(warn · reduce · override)",
+          fc="#2c3e50", ec="#2c3e50", fs=10.5, tc="white")
+    fig.tight_layout()
+    _save(fig, "strata_arquitectura")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# S2 — strata_timeline : protocolo temporal (calibración una vez / OOS desplegable)
+# Esquemático, sin datos.
+# ════════════════════════════════════════════════════════════════════════════
+def strata_timeline():
+    fig, ax = plt.subplots(figsize=(12, 3.2))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 4)
+    ax.axis("off")
+    y = 2.0
+    # barra de calibración (2000-01 -> 2024-09)
+    cal = Rectangle((0.3, y - 0.45), 7.7, 0.9, fc="#9fb6c9", ec="#2c3e50", lw=1.2, zorder=2)
+    ax.add_patch(cal)
+    ax.text(4.15, y, "Calibración (24 años)\nHMM / GARCH / BOCPD se estiman UNA vez;\numbrales cerrados ex-ante",
+            ha="center", va="center", fontsize=8.5, zorder=3)
+    # barra OOS (2024-10 -> cierre)
+    oos = Rectangle((8.2, y - 0.45), 3.5, 0.9, fc="#27ae6055", ec="#27ae60", lw=1.4, zorder=2)
+    ax.add_patch(oos)
+    ax.text(9.95, y + 0.62, "Evaluación OOS\n(fuera de muestra)", ha="center", va="bottom",
+            fontsize=8.5, color="#1e7a45", zorder=3)
+    # tramos internos del OOS: burn-in y walk-forward
+    ax.add_patch(Rectangle((8.2, y - 0.45), 0.55, 0.9, fc="#bbbbbb", ec="#27ae60", lw=.8, hatch="//", zorder=3))
+    ax.text(8.47, y - 0.85, "burn-in\n150 d\n(no puntúa)", ha="center", va="top", fontsize=6.8, color="#555")
+    ax.text(10.25, y, "walk-forward rodante\n(251 d desplegable)\nembargo = 1",
+            ha="center", va="center", fontsize=7.3, zorder=4)
+    # línea de corte calibración | OOS
+    ax.axvline(8.1, color="#c0392b", ls="--", lw=1.4, ymin=0.18, ymax=0.82, zorder=1)
+    ax.text(8.1, y + 1.18, "corte de conocimiento\ndel LLM  (2024-09 / 2024-10)",
+            ha="center", va="bottom", fontsize=8, color="#c0392b")
+    # eje temporal abajo
+    ax.annotate("", xy=(11.9, 0.7), xytext=(0.3, 0.7),
+                arrowprops=dict(arrowstyle="-|>", lw=1.2, color="#333"))
+    for xpos, lab in [(0.3, "2000-01"), (8.1, "2024-09"), (11.7, "cierre TFG")]:
+        ax.plot([xpos, xpos], [0.62, 0.78], color="#333", lw=1)
+        ax.text(xpos, 0.45, lab, ha="center", va="top", fontsize=8)
+    ax.text(6, 0.18, "tiempo →", ha="center", fontsize=8, color="#333")
+    fig.tight_layout()
+    _save(fig, "strata_timeline")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# S3 — strata_walkforward : esquema rolling-origin (ventana expandible, embargo=1)
+# Esquemático, sin datos.
+# ════════════════════════════════════════════════════════════════════════════
+def strata_walkforward():
+    fig, ax = plt.subplots(figsize=(11, 4.2))
+    n_filas = 5
+    x0 = 0.5          # origen común de todos los train (izquierda)
+    train0 = 3.0      # longitud inicial del train
+    crece = 1.15      # crecimiento del train por fila
+    avance = 1.15     # avance del test por fila
+    gap = 0.25        # huequitos purga y embargo
+    test_w = 1.3
+    col = {"train": "#2c7fb8", "purga": "#e8a33d", "embargo": "#c0392b", "test": "#27ae60"}
+    for i in range(n_filas):
+        fila = n_filas - 1 - i  # de abajo (corta) a arriba (larga)
+        y = i
+        tlen = train0 + crece * i
+        xt = x0
+        ax.add_patch(Rectangle((xt, y + 0.12), tlen, 0.76, fc=col["train"], ec="k", lw=.5))
+        xp = xt + tlen
+        ax.add_patch(Rectangle((xp, y + 0.12), gap, 0.76, fc=col["purga"], ec="k", lw=.5))
+        xe = xp + gap
+        ax.add_patch(Rectangle((xe, y + 0.12), gap, 0.76, fc=col["embargo"], ec="k", lw=.5))
+        xs = xe + gap
+        ax.add_patch(Rectangle((xs, y + 0.12), test_w, 0.76, fc=col["test"], ec="k", lw=.5))
+        ax.text(x0 - 0.2, y + 0.5, f"reentreno {i + 1}", ha="right", va="center", fontsize=8)
+    ax.set_xlim(-1.7, x0 + train0 + crece * (n_filas - 1) + 2 * gap + test_w + 0.5)
+    ax.set_ylim(-1.3, n_filas + 0.2)
+    ax.axis("off")
+    # leyenda
+    handles = [Rectangle((0, 0), 1, 1, fc=col[k], ec="k") for k in ("train", "purga", "embargo", "test")]
+    ax.legend(handles, ["train (se EXPANDE)", "purga", "embargo = 1 día", "test (futuro)"],
+              loc="lower left", fontsize=8, ncol=4, bbox_to_anchor=(0.0, -0.04))
+    # eje tiempo
+    ax.annotate("", xy=(ax.get_xlim()[1] - 0.3, -0.55), xytext=(x0, -0.55),
+                arrowprops=dict(arrowstyle="-|>", lw=1.2, color="#333"))
+    ax.text((x0 + ax.get_xlim()[1]) / 2, -0.85, "tiempo →  (origen rodante; la ventana nunca retrocede: causal)",
+            ha="center", fontsize=8.5, color="#333")
+    fig.tight_layout()
+    _save(fig, "strata_walkforward")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# S4 — leverage_spy_vs_accion : leverage effect FUERTE (SPY) vs DÉBIL (ROKU)
+# scatter r_t vs ΔRV21_{t+1} con recta, dos paneles. RV21 = sqrt(suma r^2 últimos 21).
+# Fuente: build_states (en vivo, determinista) + leverage_corr de NAT.
+# ════════════════════════════════════════════════════════════════════════════
+def leverage_spy_vs_accion():
+    from experiments.quant_validation_panel import build_states
+    pares = [("SPY", "índice (leverage de Black fuerte)", "#2c7fb8"),
+             ("ROKU", "acción volátil (leverage casi nulo)", "#c0392b")]
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), sharey=False)
+    usado_fallback = False
+    for ax, (tk, sub, c) in zip(axes, pares):
+        _, _, oos_ret = build_states(tk)
+        r = oos_ret.dropna()
+        rv = np.sqrt((r ** 2).rolling(21).sum())          # RV21_t
+        drv = rv.shift(-1) - rv                            # ΔRV_{t+1}
+        df = pd.concat([r.rename("r"), drv.rename("d")], axis=1).dropna()
+        x, yv = df["r"].values, df["d"].values
+        ax.scatter(x, yv, s=14, color=c, alpha=.55, edgecolor="none")
+        b1, b0 = np.polyfit(x, yv, 1)
+        xs = np.linspace(x.min(), x.max(), 50)
+        ax.plot(xs, b0 + b1 * xs, color="k", lw=1.8, ls="--")
+        ax.axhline(0, color="#888", lw=.6)
+        ax.axvline(0, color="#888", lw=.6)
+        lev = NAT[tk]["leverage_corr"]
+        ax.set_title(f"{tk} · {sub}", fontsize=9.5)
+        ax.set_xlabel("retorno del día  r$_t$")
+        ax.set_ylabel("cambio de volatilidad  ΔRV$_{t+1}$")
+        ax.xaxis.set_major_formatter(_coma)
+        ax.yaxis.set_major_formatter(_coma)
+        ax.text(0.04, 0.95, f"leverage corr = {_c(lev, 3)}", transform=ax.transAxes,
+                ha="left", va="top", fontsize=9,
+                bbox=dict(boxstyle="round", fc="white", ec=c, alpha=.9))
+    fig.tight_layout()
+    _save(fig, "leverage_spy_vs_accion")
+    return "scatter" if not usado_fallback else "fallback"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# S5 — naturaleza_bloques : naturaleza de los 10 activos coloreada por cluster
+# C0 índices / C1 leverage invertido / C2 volátiles. Orden agrupado por cluster.
+# Fuente: NAT (leverage_corr, oos_crisis_frac) + cluster_panel10.json (asignación)
+# ════════════════════════════════════════════════════════════════════════════
+def naturaleza_bloques():
+    # asignación de cluster por activo (labels en el orden de meta.panel)
+    panel = CL10["meta"]["panel"]
+    labels = CL10["clustering"]["k3"]["kmeans"]["labels"]
+    cl = dict(zip(panel, labels))
+    CNAME = {0: "C0 · índices", 1: "C1 · leverage invertido", 2: "C2 · volátiles"}
+    CCOL = {0: "#2c7fb8", 1: "#e8a33d", 2: "#c0392b"}
+    # orden de activos agrupado por cluster (0, 1, 2) y, dentro, por leverage
+    order = sorted(PANEL10, key=lambda a: (cl[a], NAT[a]["leverage_corr"]))
+    cols = [CCOL[cl[a]] for a in order]
+    specs = [("leverage_corr", "Leverage de Black (corr. retorno–vol.; < 0 = estándar)"),
+             ("oos_crisis_frac", "Fracción de días en Crisis (OOS)")]
+    fig, axes = plt.subplots(1, 2, figsize=(14, 4.2))
+    for ax, (key, ttl) in zip(axes, specs):
+        ax.bar(order, [NAT[a][key] for a in order], color=cols, edgecolor="k", lw=.5)
+        ax.set_title(ttl, fontsize=9.5)
+        ax.tick_params(axis="x", rotation=45, labelsize=8.5)
+        ax.yaxis.set_major_formatter(_coma)
+        if key == "leverage_corr":
+            ax.axhline(0, color="k", lw=.7)
+    handles = [Rectangle((0, 0), 1, 1, fc=CCOL[k], ec="k") for k in (0, 1, 2)]
+    fig.legend(handles, [CNAME[k] for k in (0, 1, 2)], fontsize=9, ncol=3,
+               loc="lower center", bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    _save(fig, "naturaleza_bloques")
+
+
 if __name__ == "__main__":
     print("Generando las 15 figuras del Capítulo 4 en", FIGDIR)
     for fn in (f4_1, f4_2, f4_3, f4_4, f4_5, f4_6, f4_7, f4_8,
                f4_9, f4_10, f4_11, f4_12, f4_13, f4_14, f4_15):
         fn()
     print("Hecho: 15 figuras cap4_*.pdf")
-    print("\nGenerando las 16 figuras nuevas (cuerpo + anexo)")
-    for fn in (n2_confusion_spy_6, n3_activacion_panel, n4_naturaleza_panel,
+    print("\nGenerando las figuras nuevas (cuerpo + anexo)")
+    for fn in (n1_anatomia_dia, n2_confusion_spy_6, n3_activacion_panel, n4_naturaleza_panel,
                n5_robustez_calib, n6_robustez_panel, n7_anexo_confusion_panel,
-               n9_anexo_shap_dependency, n10_anexo_shap_cuota, n11_anexo_shap_rodante,
-               n12_anexo_regimen_direccion, n13_anexo_grupos, n14_anexo_psa_gso,
-               n15_anexo_confusion_m10_regimen, n16_anexo_mcnemar, n17_anexo_did):
+               n8_anexo_ablacion, n9_anexo_shap_dependency, n10_anexo_shap_cuota,
+               n11_anexo_shap_rodante, n12_anexo_regimen_direccion, n13_anexo_grupos,
+               n14_anexo_psa_gso, n15_anexo_confusion_m10_regimen, n16_anexo_mcnemar,
+               n17_anexo_did):
         fn()
     print("Hecho: figuras nuevas cap4_*.pdf")
+
+    print("\nGenerando las 5 figuras de apoyo (arquitectura / protocolo / naturaleza)")
+    strata_arquitectura()
+    strata_timeline()
+    strata_walkforward()
+    modo = leverage_spy_vs_accion()
+    naturaleza_bloques()
+    print(f"Hecho: figuras de apoyo (leverage_spy_vs_accion -> modo '{modo}')")

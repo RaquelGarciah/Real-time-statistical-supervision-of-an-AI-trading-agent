@@ -4,81 +4,48 @@
 % Fuente única de cifras: notebooks/STRATA_marco_practico.ipynb (panel canónico de 10) y sus JSON en
 % outputs/experiments/. Toda cifra trazada a su JSON en el caption de su tabla.
 
-El rescate de SPY no se separaba del cero en solitario: con un único activo, el intervalo de confianza del $\Delta$Sharpe cruzaba el cero. El contraste decisivo es el panel: diez activos (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegidos para cubrir distintos grados de \emph{leverage effect}. Sobre ellos se repite la cadena de SPY y se agregan los resultados. Al apilar el panel, el rescate de riesgo que en un activo no alcanzaba significancia la alcanza.
+El rescate de SPY no se separaba del cero en solitario: el intervalo del $\Delta$Sharpe cruzaba el cero. El contraste decisivo es el panel: diez activos (SPY, QQQ, XLF, DIA, XLK, XLE, ROKU, SMCI, MARA, UNG), elegidos para cubrir distintos grados de \emph{leverage effect}. Sobre ellos se repite la cadena de SPY y se agregan los resultados. Al apilar el panel, el rescate de riesgo que en un activo no alcanzaba significancia la alcanza.
 
 \section{El rescate en el panel}
 \label{sec:panel-agregado}
 
-El fallo del agente es general, no propio de SPY. Sobre el panel acierta menos de la mitad de las direcciones en siete de los diez activos, y donde lo supera lo hace por poco y con un Sharpe pobre. Ese es el punto de partida que STRATA corrige.
+El fallo del agente es general, no propio de SPY: sobre el panel acierta menos de la mitad de las direcciones en siete de los diez activos, y donde lo supera lo hace por poco y con un Sharpe pobre. Ese es el punto de partida que STRATA corrige.
 
 \subsection{La compuerta de régimen y la activación de detectores}
 \label{sec:panel-gate}
 
-Los tres detectores no se activan por igual. RAM domina en todo el panel, como en SPY; PSA y GSO se disparan poco, porque el agente mantiene posiciones casi constantes y sus \emph{scores} rara vez cruzan los umbrales. La Tabla~\ref{tab:mp-gate} recoge la tasa de intervención por activo y la compuerta de régimen: en los días en que RAM dispara, seguir el signo del régimen supera en acierto a seguir al agente en \textbf{seis de los diez} activos. La tasa de intervención crece con la discrepancia entre la apuesta del agente y el signo del régimen, en una relación casi lineal (Figura~\ref{fig:mp-gate-ram}; activo a activo en la Figura~\ref{fig:mp-activacion-panel} del Anexo~\ref{anx:figuras}).
+Los tres detectores no se activan por igual: RAM domina en todo el panel y PSA y GSO apenas disparan, porque el agente mantiene posiciones casi constantes (Figura~\ref{fig:mp-activacion-panel}). La supervisión recae, como en SPY, sobre el canal del régimen.
 
-\begin{table}[htbp]
-\centering
-\caption{Activación de RAM y compuerta de régimen por activo (OOS completo del panel). ``Tasa interv.'' es la fracción de días en que RAM dispara; ``discrepancia'' es la fracción de días en que la apuesta del agente choca con el signo del régimen; ``gate RAM'' indica si, en los días de disparo, seguir el régimen supera en acierto a seguir al agente. PSA y GSO disparan de forma marginal en todo el panel.}
-\label{tab:mp-gate}
-\begin{tabular}{lrrl}
-\toprule
-Activo & Tasa interv.\ (RAM) & Discrepancia agente$\leftrightarrow$régimen & Gate RAM \\
-\midrule
-SPY  & $0{,}302$ & $0{,}601$ & régimen $>$ agente \\
-QQQ  & $0{,}197$ & $0{,}526$ & régimen $>$ agente \\
-XLF  & $0{,}549$ & $0{,}720$ & régimen $>$ agente \\
-DIA  & $0{,}343$ & $0{,}603$ & agente $>$ régimen \\
-XLK  & $0{,}095$ & $0{,}372$ & agente $>$ régimen \\
-XLE  & $0{,}596$ & $0{,}781$ & régimen $>$ agente \\
-ROKU & $0{,}710$ & $0{,}823$ & régimen $>$ agente \\
-SMCI & $0{,}018$ & $0{,}120$ & régimen $>$ agente \\
-MARA & $0{,}415$ & $0{,}666$ & agente $>$ régimen \\
-UNG  & $0{,}078$ & $0{,}169$ & agente $>$ régimen \\
-\bottomrule
-\end{tabular}
-\end{table}
+La intervención de RAM no es arbitraria: su frecuencia crece casi linealmente con la discrepancia entre la apuesta del agente y el signo del régimen (Figura~\ref{fig:mp-gate-ram}). Donde RAM dispara, seguir el régimen supera en acierto a seguir al agente en \textbf{seis de los diez} activos.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.60\textwidth]{figuras/cap4_gate_ram}
-\caption{Compuerta de régimen sobre el panel: tasa de intervención de RAM frente a la discrepancia media entre la apuesta del agente y el signo del régimen, un punto por activo. La relación es casi recta (Pearson $r = 0{,}93$, $p < 0{,}001$): cuanto más se aleja el agente del estado del mercado, con más frecuencia actúa la regla.}
+\begin{subfigure}[t]{0.52\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figuras/cap4_activacion_panel}
+\caption{Tasa de disparo de RAM, PSA y GSO y de intervención de la regla, activo a activo. RAM domina en todo el panel y los otros dos apenas se encienden.}
+\label{fig:mp-activacion-panel}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.44\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figuras/cap4_gate_ram}
+\caption{Tasa de intervención de RAM frente a la discrepancia media agente$\leftrightarrow$régimen, un punto por activo. La relación es casi recta (Pearson $r = 0{,}93$, $p < 0{,}001$).}
 \label{fig:mp-gate-ram}
+\end{subfigure}
+\caption{La compuerta de régimen sobre el panel: activación de los detectores (izquierda) y dependencia de la intervención con la discrepancia (derecha).}
+\label{fig:mp-activacion-gate}
 \end{figure}
 
 \subsection{Accuracy por activo: dónde se supera a la trivial}
 \label{sec:panel-accuracy}
 
-La Tabla~\ref{tab:mp-accuracy} cruza los diez activos con las seis estrategias en accuracy direccional. La mejor derivada de STRATA mejora al agente en los \textbf{diez de diez} activos, con una mejora media de $+0{,}086$; supervisar no empeora en ninguno. La estrategia ganadora cambia de un activo a otro: en unos domina la regla y en otros el aprendiz, según la naturaleza del activo.
+El mapa de calor de la Figura~\ref{fig:mp-heatmap} cruza los diez activos con las seis estrategias en accuracy. La mejor derivada de STRATA mejora al agente en los \textbf{diez de diez} activos, con una mejora media de $+0{,}086$, y supera a las dos referencias triviales en cuatro: SPY y MARA por AutoML, SMCI y UNG por M10. En los seis restantes la trivial aguanta; en índices muy direccionales como XLK la clase mayoritaria del pasado supera $0{,}64$ y ninguna derivada se le acerca.
 
-\begin{table}[htbp]
-\centering
-\caption{Accuracy direccional por activo y estrategia (ventana desplegable, \texttt{signal\_lag}${}=1$). En negrita, la mejor derivada de STRATA (M8/M10/AutoML) cuando supera a las dos referencias triviales (ZeroR y B\&H) en ese activo. ZeroR y B\&H comparten valor salvo cuando difieren.}
-\label{tab:mp-accuracy}
-\begin{tabular}{lrrrrrr}
-\toprule
-Activo & M5 & M8 & M10 & AutoML & ZeroR & B\&H \\
-\midrule
-SPY  & $0{,}366$ & $0{,}442$ & $0{,}494$ & $\mathbf{0{,}574}$ & $0{,}566$ & $0{,}566$ \\
-QQQ  & $0{,}418$ & $0{,}486$ & $0{,}522$ & $0{,}534$ & $0{,}590$ & $0{,}590$ \\
-XLF  & $0{,}429$ & $0{,}502$ & $0{,}526$ & $0{,}510$ & $0{,}538$ & $0{,}538$ \\
-DIA  & $0{,}440$ & $0{,}484$ & $0{,}468$ & $0{,}520$ & $0{,}552$ & $0{,}556$ \\
-XLK  & $0{,}510$ & $0{,}470$ & $0{,}542$ & $0{,}590$ & $0{,}641$ & $0{,}641$ \\
-XLE  & $0{,}448$ & $0{,}528$ & $0{,}508$ & $0{,}532$ & $0{,}565$ & $0{,}565$ \\
-ROKU & $0{,}444$ & $0{,}528$ & $0{,}508$ & $0{,}544$ & $0{,}548$ & $0{,}548$ \\
-SMCI & $0{,}484$ & $0{,}496$ & $\mathbf{0{,}552}$ & $0{,}472$ & $0{,}516$ & $0{,}484$ \\
-MARA & $0{,}528$ & $0{,}528$ & $0{,}532$ & $\mathbf{0{,}544}$ & $0{,}532$ & $0{,}468$ \\
-UNG  & $0{,}510$ & $0{,}502$ & $\mathbf{0{,}518}$ & $0{,}482$ & $0{,}449$ & $0{,}486$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-En cuatro activos una derivada de STRATA supera en punto a las dos referencias triviales a la vez: SPY y MARA por AutoML, SMCI y UNG por M10 (Tabla~\ref{tab:mp-accuracy}, celdas en negrita). En los seis restantes la trivial aguanta; en índices muy direccionales como XLK la clase mayoritaria del pasado se va por encima de $0{,}64$ y ninguna derivada se le acerca.
-
-Estas ventajas son reales en punto pero nominales. Con del orden de doscientos cincuenta días por activo y una ganadora que cambia de activo en activo, se seleccionan a posteriori, y ninguna supera a ZeroR con significancia: el McNemar pareado de AutoML frente a ZeroR sobre SPY da $p = 0{,}90$, sin potencia para separarlos. El mapa completo está en la Figura~\ref{fig:mp-heatmap}, con solo cuatro celdas de derivada del lado favorable, y el reparto de aciertos y fallos en la Figura~\ref{fig:anx-confusion-panel}. El resultado que supera un test está en el riesgo, no en el acierto frente a la trivial.
+Esas ventajas son reales en punto pero nominales: con unos doscientos cincuenta días por activo y una ganadora que cambia de activo en activo, se seleccionan a posteriori y ninguna supera a ZeroR con significancia (McNemar AutoML vs ZeroR sobre SPY, $p = 0{,}90$). El reparto de aciertos y fallos por activo está en la Figura~\ref{fig:anx-confusion-panel} del Anexo~\ref{anx:figuras}. El resultado que sí supera un test está en el riesgo, no en el acierto frente a la trivial.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.62\textwidth]{figuras/cap4_heatmap_accuracy}
+\includegraphics[width=0.56\textwidth]{figuras/cap4_heatmap_accuracy}
 \caption{Mapa de calor de la accuracy direccional por activo (filas) y estrategia (columnas), centrado en $0{,}5$: el color mide la distancia a una referencia trivial. Verde marca accuracy por encima de la trivial del activo, rojo por debajo. La mejor derivada de STRATA supera a las dos triviales solo en SPY, SMCI, MARA y UNG; en los demás la trivial aguanta. Victorias nominales (n${}\approx 250$, a posteriori).}
 \label{fig:mp-heatmap}
 \end{figure}
@@ -86,46 +53,29 @@ Estas ventajas son reales en punto pero nominales. Con del orden de doscientos c
 \subsection{Pooled: el rescate en riesgo}
 \label{sec:panel-pooled}
 
-El intervalo del $\Delta$Sharpe sobre SPY no se separaba del cero por falta de potencia, no de señal. La agregación lo resuelve: si la supervisión rescata por el mismo mecanismo en activos distintos, apilar sus días multiplica la muestra. Se apilan los días de los diez activos (\emph{pooled-10}, $n = 2493$ días) y se mide el $\Delta$Sharpe pareado frente a M5 día a día, cada comparación sobre el mismo día y el mismo activo.
+El intervalo del $\Delta$Sharpe sobre SPY no se separaba del cero por falta de potencia, no de señal. La agregación lo resuelve: si la supervisión rescata por el mismo mecanismo en activos distintos, apilar sus días multiplica la muestra. Se apilan los días de los diez activos (\emph{pooled-10}, $n = 2493$ días) y se mide el $\Delta$Sharpe pareado frente a M5, cada comparación sobre el mismo día y el mismo activo.
 
 La validez del agregado depende del remuestreo. Extraer días sueltos trataría la serie como independiente, y no lo es: los retornos de días vecinos se parecen y el intervalo se estrecharía de forma artificial. Por eso se emplea el \emph{bootstrap} estacionario \cite{politis1994}, que toma tramos con inicio al azar y longitud variable de media $\sqrt{n}$, de modo que los días vecinos se remuestrean juntos y el intervalo recoge la dependencia temporal real.
 
-El resultado lo reúne la Tabla~\ref{tab:mp-pooled}: las tres estrategias supervisadas dejan un $\Delta$Sharpe positivo cuyo límite inferior queda por encima de cero, la afirmación que SPY no sostenía en solitario.
-
-\begin{table}[htbp]
-\centering
-\caption{Rescate en riesgo agregado (\emph{pooled-10}, $n = 2493$ días): $\Delta$Sharpe de cada estrategia supervisada frente al agente M5, con intervalo de confianza al $95\%$ por \emph{bootstrap} estacionario de bloque medio $\sqrt{n}$ (Politis y Romano 1994). Los tres intervalos excluyen el cero.}
-\label{tab:mp-pooled}
-\begin{tabular}{lrc}
-\toprule
-Estrategia & $\Delta$Sharpe & IC$_{95}$ \\
-\midrule
-M8 (regla)            & $+0{,}60$ & $[0{,}05,\ 1{,}22]$ \\
-M10 (meta-learner)    & $+1{,}12$ & $[0{,}39,\ 1{,}84]$ \\
-\textbf{AutoML} (H2O) & $\mathbf{+1{,}08}$ & $[0{,}40,\ 1{,}85]$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Hay un orden entre ellas (Figura~\ref{fig:mp-forest}): la regla queda con su límite inferior pegado al borde mientras los dos aprendices guardan holgura, de modo que el rescate de riesgo es más firme en los aprendices, aunque ninguno cruza el cero.
+El resultado lo reúne la Figura~\ref{fig:mp-forest}: las tres estrategias supervisadas dejan un $\Delta$Sharpe positivo (M8 $+0{,}60$, M10 $+1{,}12$, AutoML $+1{,}08$) cuyo intervalo al $95\%$ excluye el cero, la afirmación que SPY no sostenía en solitario. Hay además un orden: la regla queda con el límite inferior pegado al borde mientras los dos aprendices guardan holgura, de modo que el rescate de riesgo es más firme en los aprendices.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.60\textwidth]{figuras/cap4_forest_pooled}
-\caption{Diagrama de bosque del $\Delta$Sharpe \emph{pooled-10} frente al agente M5, con intervalo al $95\%$ (\emph{bootstrap} estacionario, Politis y Romano 1994). La línea vertical marca el cero. Los tres intervalos excluyen el cero; la regla M8 con el límite inferior más cerca del borde y los aprendices M10 y AutoML con más holgura.}
+\includegraphics[width=0.55\textwidth]{figuras/cap4_forest_pooled}
+\caption{Diagrama de bosque del $\Delta$Sharpe \emph{pooled-10} ($n = 2493$ días) frente al agente M5, con intervalo al $95\%$ (\emph{bootstrap} estacionario de bloque medio $\sqrt{n}$, Politis y Romano 1994). La línea vertical marca el cero. Los tres intervalos excluyen el cero: M8 $+0{,}60\ [0{,}05,\,1{,}22]$, M10 $+1{,}12\ [0{,}39,\,1{,}84]$, AutoML $+1{,}08\ [0{,}40,\,1{,}85]$; la regla M8 con el límite inferior más cerca del borde y los aprendices con más holgura.}
 \label{fig:mp-forest}
 \end{figure}
 
-El agregado tiene un matiz. El \emph{pooled} apila los días de los diez activos como si fueran independientes, y no lo son: la correlación cruzada entre índices es alta (SPY y QQQ por encima de $0{,}9$), lo que reduce el tamaño de muestra efectivo y deja el intervalo algo optimista. El bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua parte del efecto al remuestrear bloques contiguos.
+El agregado tiene un matiz: el \emph{pooled} apila los días de los diez activos como si fueran independientes, y no lo son. La correlación cruzada entre índices es alta (SPY y QQQ por encima de $0{,}9$), lo que reduce el tamaño de muestra efectivo y deja el intervalo algo optimista; el bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua parte del efecto al remuestrear bloques contiguos.
 
-En términos económicos, una derivada de STRATA supera al pasivo en Sharpe en cuatro activos: SPY, SMCI, MARA y UNG (Figura~\ref{fig:mp-equity-panel} del Anexo~\ref{anx:figuras}). En SMCI, MARA y UNG el pasivo pierde o ronda el cero y la derivada obtiene un Sharpe positivo al posicionarse de forma defensiva, sin estar largo en una subida. En SPY el periodo fue alcista y el activo es mayormente beta de mercado, de modo que el Sharpe positivo refleja sobre todo la exposición al índice.
+En términos económicos, una derivada de STRATA supera al pasivo en Sharpe en cuatro activos: SPY, SMCI, MARA y UNG (Figura~\ref{fig:mp-equity-panel} del Anexo~\ref{anx:figuras}). En SMCI, MARA y UNG el pasivo pierde o ronda el cero y la derivada obtiene un Sharpe positivo al posicionarse de forma defensiva. En SPY el periodo fue alcista y el activo es mayormente beta de mercado, de modo que el Sharpe positivo refleja sobre todo la exposición al índice.
 
 \subsection{Equivalencia: el aprendiz recupera STRATA y supera a la regla}
 \label{sec:panel-tost}
 
-El aprendiz se apoya en los detectores de STRATA. Las cuotas de Shapley \cite{lundberg2017} miden cuánto del juicio del aprendiz descansa en cada bloque de características; la de las \emph{features} de STRATA supera la mitad en los \textbf{diez de diez} activos, con una media de $0{,}66$. El aprendiz no genera una señal nueva: recupera los detectores definidos a mano y los pondera por encima de las características del agente.
+El aprendiz se apoya en los detectores de STRATA. Las cuotas de Shapley \cite{lundberg2017} miden cuánto de su juicio descansa en cada bloque de características; la de las \emph{features} de STRATA supera la mitad en los \textbf{diez de diez} activos, con media $0{,}66$. El aprendiz no genera una señal nueva: recupera los detectores definidos a mano y los pondera por encima de las características del agente.
 
-Apoyarse en STRATA no implica replicar la regla. El contraste lo da el TOST de Schuirmann \cite{schuirmann1987}: a diferencia de un test de superioridad, parte de que las dos estrategias son distintas y solo concede equivalencia si la evidencia de parecido es fuerte, exigiendo rechazar por los dos lados. La Tabla~\ref{tab:mp-tost} lo aplica al aprendiz frente a la regla M8. En accuracy no hay equivalencia y el aprendiz domina: M10 y AutoML superan a la regla con un intervalo al $90\%$ por encima de cero. En Sharpe el test es no concluyente: las estrategias son indistinguibles en riesgo. La causa está en la forma de cada estrategia: la regla M8 es una compuerta fija sobre el régimen, mientras el aprendiz modela interacciones no lineales entre régimen y agente que la regla no alcanza, y de ahí obtiene el punto extra de accuracy.
+Apoyarse en STRATA no implica replicar la regla. El contraste lo da el TOST de Schuirmann \cite{schuirmann1987}: a diferencia de un test de superioridad, parte de que las dos estrategias son distintas y solo concede equivalencia si la evidencia de parecido es fuerte. La Tabla~\ref{tab:mp-tost} lo aplica al aprendiz frente a la regla M8. En accuracy no hay equivalencia y el aprendiz domina: M10 y AutoML superan a la regla con intervalo al $90\%$ por encima de cero. En Sharpe el test es no concluyente: las estrategias son indistinguibles en riesgo. La causa está en la forma de cada una: la regla M8 es una compuerta fija sobre el régimen, mientras el aprendiz modela interacciones no lineales entre régimen y agente que la regla no alcanza, y de ahí saca el punto extra de accuracy.
 
 \begin{table}[htbp]
 \centering
@@ -141,7 +91,7 @@ AutoML vs M8  & $+0{,}034\ [+0{,}010,\ +0{,}056]$ & no concluyente & \\
 \end{tabular}
 \end{table}
 
-El aprendiz queda caracterizado por dos hechos contrastados: se apoya en STRATA, con cuota SHAP mayoritaria en los diez activos, y supera ligeramente a la regla en accuracy sin distinguirse de ella en riesgo (diagrama $2\times 2$ en la Figura~\ref{fig:mp-tost} del Anexo~\ref{anx:figuras}). La Tabla~\ref{tab:mp-capas} resume el reparto sobre el panel (su lectura por detector, en la Figura~\ref{fig:mp-capas} del Anexo~\ref{anx:figuras}).
+El aprendiz queda caracterizado por dos hechos: se apoya en STRATA, con cuota SHAP mayoritaria en los diez activos, y supera ligeramente a la regla en accuracy sin distinguirse en riesgo (Figura~\ref{fig:mp-tost} del Anexo~\ref{anx:figuras}). La Tabla~\ref{tab:mp-capas} resume el reparto sobre el panel (su lectura por detector, en la Figura~\ref{fig:mp-capas} del capítulo~\ref{cap:spy}).
 
 \begin{table}[htbp]
 \centering
@@ -163,7 +113,7 @@ Significancia accuracy (McNemar) & al borde & significativa \\
 \subsection{Complementariedad por régimen}
 \label{sec:panel-regimen}
 
-El rescate aparece en los dos regímenes, también en el bajista, que es el peligroso. Se parte el panel por régimen y se mide el rescate en cada mitad con el McNemar \emph{pooled} de la estrategia superior frente al agente, con corrección de Holm para las comparaciones múltiples \cite{holm1979}. En alcista los dos aprendices rescatan de forma significativa y la regla M8 queda al borde; en bajista los tres pasan, con la regla holgadamente dentro (Tabla~\ref{tab:mp-regimen}).
+El rescate aparece en los dos regímenes, también en el bajista, que es el peligroso. Se parte el panel por régimen y se mide en cada mitad con el McNemar \emph{pooled} de la estrategia superior frente al agente, con corrección de Holm \cite{holm1979}. En alcista los dos aprendices rescatan de forma significativa y la regla M8 queda al borde; en bajista los tres pasan, con la regla holgadamente dentro (Tabla~\ref{tab:mp-regimen}).
 
 \begin{table}[htbp]
 \centering
@@ -181,58 +131,49 @@ McNemar bajista (Holm $p$) & $0{,}0092$ & $0{,}0268$ & $0{,}0017$ \\
 \end{tabular}
 \end{table}
 
-Los dos aprendices no rescatan igual en cada régimen: M10 protege más en alcista, AutoML más en bajista (Figura~\ref{fig:mp-did} del Anexo~\ref{anx:figuras}). Un test de diferencia en diferencias, pre-registrado, contrasta si ese reparto es real: compara la diferencia de $\Delta$Sharpe entre los dos aprendices entre los dos regímenes, de modo que cualquier efecto común se cancela y queda solo la complementariedad. El $\Delta\Delta$Sharpe \emph{pooled} excluye el cero (Tabla~\ref{tab:mp-regimen}): la complementariedad por régimen es significativa sobre el panel. El rescate en acierto también lo es en los dos regímenes (Figura~\ref{fig:anx-mcnemar}).
+Los dos aprendices no rescatan igual en cada régimen: M10 protege más en alcista, AutoML más en bajista (Figura~\ref{fig:mp-did} del Anexo~\ref{anx:figuras}). Un test de diferencia en diferencias, pre-registrado, contrasta si ese reparto es real: compara la diferencia de $\Delta$Sharpe entre los dos aprendices entre los dos regímenes, de modo que cualquier efecto común se cancela. El $\Delta\Delta$Sharpe \emph{pooled} excluye el cero (Tabla~\ref{tab:mp-regimen}, Figura~\ref{fig:anx-did}): la complementariedad por régimen es significativa sobre el panel. El rescate en acierto también lo es en los dos regímenes (Figura~\ref{fig:anx-mcnemar} del Anexo~\ref{anx:figuras}).
 
-La falsación pre-registrada se resuelve en el panel. Sobre SPY aislado, en régimen bajista la regla M8 se invierte: en sus cincuenta días bajistas el $\Delta$Sharpe es $-1{,}49$, la regla daña en vez de rescatar. Sobre los diez activos el rescate por régimen es significativo en bajista, y la complementariedad DiD lo es en \emph{pooled} aunque no en SPY aislado: el fenómeno es de panel. Resta explicar el reparto por activo, que depende de la naturaleza del activo.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.60\textwidth]{figuras/cap4_anexo_did}
+\caption{Diferencia en diferencias de la complementariedad por régimen: $\Delta\Delta$Sharpe \emph{pooled-10} de M10 frente a AutoML entre mercado alcista y bajista, con su intervalo al $95\%$. El intervalo excluye el cero ($+1{,}37$, $p = 0{,}008$): la complementariedad es significativa sobre el panel, no en SPY solo.}
+\label{fig:anx-did}
+\end{figure}
+
+La falsación pre-registrada se resuelve en el panel. Sobre SPY aislado, en régimen bajista la regla M8 se invierte: en sus cincuenta días bajistas el $\Delta$Sharpe es $-1{,}49$, la regla daña en vez de rescatar. Sobre los diez activos el rescate por régimen es significativo en bajista, y la complementariedad DiD lo es en \emph{pooled} aunque no en SPY: el fenómeno es de panel. Resta explicar el reparto por activo, que depende de su naturaleza.
 
 \section{El patrón: ley del leverage y clustering}
 \label{sec:panel-patron}
 
 % Clustering = EXPLORATORIO (n=10).
 
-El canal que rescata cada activo cambia de uno a otro. La propiedad que ordena el rescate del aprendiz es el \emph{leverage effect}, y un \emph{clustering} sin etiquetas recupera los mismos grupos que esa propiedad define. Con diez activos es una regularidad empírica, no un teorema.
+El canal que rescata cada activo cambia de uno a otro. La propiedad que ordena el rescate del aprendiz es el \emph{leverage effect}, y un \emph{clustering} sin etiquetas recupera los mismos grupos que esa propiedad define. Con diez activos es una regularidad empírica, no un teorema. El panel se separa en bloques de naturaleza distinta (Figura~\ref{fig:mp-naturaleza-bloques}), materia prima de la ley y del agrupamiento que siguen.
 
 \subsection{La ley del \emph{leverage}}
 \label{sec:panel-ley}
 
-Los diez activos no son intercambiables (Figura~\ref{fig:mp-naturaleza} del Anexo~\ref{anx:figuras}): difieren en \emph{leverage}, en su fracción de días en Crisis, en el sesgo del agente y en volatilidad.
-
 El rescate del aprendiz en accuracy escala con el \emph{leverage effect} del activo. El rescate se define como $\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$ en accuracy y la naturaleza del activo como la correlación de Black, $\mathrm{leverage\_corr} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, negativa cuando una caída eleva la volatilidad del día siguiente (\cite{black1976}; \cite{christie1982}).
 
-Las dos magnitudes covarían: cuanto más negativo es el \emph{leverage} de un activo, mayor es el rescate del aprendiz en accuracy (Tabla~\ref{tab:mp-ley}, Figura~\ref{fig:mp-scatter}). Nueve de los diez activos la siguen; ROKU es la única excepción, con \emph{leverage} casi nulo y rescate alto. El mecanismo es el de la Sección~\ref{sec:panel-pooled}: cuando el régimen es direccional, la regla disciplina el riesgo y el aprendiz dispone de margen para afinar la dirección; cuando el régimen no informa el signo, el aprendiz rescata por otra vía y la ganancia se estrecha.
+Las dos magnitudes covarían: cuanto más negativo es el \emph{leverage}, mayor es el rescate del aprendiz en accuracy (Figura~\ref{fig:mp-scatter}). Nueve de los diez activos la siguen; ROKU es la excepción, con \emph{leverage} casi nulo y rescate alto. El mecanismo es el de la Sección~\ref{sec:panel-pooled}: cuando el régimen es direccional, la regla disciplina el riesgo y el aprendiz afina la dirección; cuando el régimen no informa el signo, el aprendiz rescata por otra vía y la ganancia se estrecha.
 
 Con diez activos el contraste tiene poca potencia, de modo que el resultado se presenta como tendencia significativa al $\alpha = 0{,}10$ fijado por adelantado, no como ley exacta (Pearson $r = -0{,}56$, $p = 0{,}093$). Su alcance es acotado: ordena el rescate del \emph{aprendiz}, no el de la regla, que no se deja predecir por la naturaleza del activo.
 
-\begin{table}[htbp]
-\centering
-\caption{Ley del \emph{leverage}: correlación de Black y rescate del aprendiz por activo (panel de diez), ordenados por \emph{leverage} creciente. Rescate ${}= \max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$ en accuracy. Nueve de los diez siguen la tendencia (a más \emph{leverage} negativo, más rescate); ROKU es la excepción. Sobre los diez: Pearson $r = -0{,}56$ ($p = 0{,}093$), Spearman $\rho = -0{,}59$ ($p = 0{,}074$); tendencia significativa al $\alpha = 0{,}10$ pre-registrado.}
-\label{tab:mp-ley}
-\begin{tabular}{lrrl}
-\toprule
-Activo & \texttt{leverage\_corr} & Rescate aprendiz & \\
-\midrule
-DIA  & $-0{,}112$ & $0{,}080$ & \\
-SPY  & $-0{,}110$ & $0{,}207$ & \\
-QQQ  & $-0{,}092$ & $0{,}116$ & \\
-XLF  & $-0{,}091$ & $0{,}097$ & \\
-XLE  & $-0{,}089$ & $0{,}085$ & \\
-XLK  & $-0{,}086$ & $0{,}080$ & \\
-MARA & $-0{,}059$ & $0{,}016$ & \\
-SMCI & $-0{,}004$ & $0{,}068$ & \\
-ROKU & $+0{,}003$ & $0{,}100$ & (excepción) \\
-UNG  & $+0{,}041$ & $0{,}008$ & \\
-\midrule
-\emph{leverage} fuerte (media) & & $0{,}097$ & \\
-\emph{leverage} débil (media)  & & $0{,}059$ & \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.60\textwidth]{figuras/cap4_scatter_leverage}
-\caption{Rescate del aprendiz en accuracy frente al \emph{leverage} del activo, sobre los diez. Cada punto es un activo; el eje horizontal es la correlación de Black $\operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1}-\mathrm{RV}^{21}_t)$, el vertical el rescate $\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$. La recta de regresión baja con el \emph{leverage}: a más \emph{leverage} negativo, más rescate (Pearson $r = -0{,}56$, $p = 0{,}093$; tendencia significativa al $\alpha = 0{,}10$ pre-registrado). Nueve de los diez la siguen; ROKU, señalado, es la excepción.}
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figuras/naturaleza_bloques}
+\caption{Naturaleza de los diez activos por bloques (índices de \emph{leverage} fuerte, \emph{leverage} invertido y volátiles), con sus rasgos de \emph{leverage}, fracción en Crisis y sesgo del agente. Esa heterogeneidad es la que ordena el rescate.}
+\label{fig:mp-naturaleza-bloques}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figuras/cap4_scatter_leverage}
+\caption{Rescate del aprendiz ($\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$) frente al \emph{leverage} de Black, un punto por activo. La recta baja: a más \emph{leverage} negativo, más rescate (Pearson $r = -0{,}56$, $p = 0{,}093$). Nueve de los diez la siguen; ROKU es la excepción.}
 \label{fig:mp-scatter}
+\end{subfigure}
+\caption{La ley del \emph{leverage}: la naturaleza por bloques del panel (izquierda) ordena el rescate del aprendiz en accuracy (derecha).}
+\label{fig:mp-naturaleza-scatter}
 \end{figure}
 
 \subsection{Clustering: la naturaleza separa los grupos}
@@ -240,11 +181,29 @@ UNG  & $+0{,}041$ & $0{,}008$ & \\
 
 La misma estructura aparece sin etiquetas. Cada activo se describe por cinco rasgos de naturaleza (\emph{leverage}, retorno medio en Crisis, fracción de días en Crisis, volatilidad OOS y sesgo direccional del agente) y se agrupa con cuatro métodos —$k$-medias \cite{macqueen1967,lloyd1982}, enlace de Ward \cite{ward1963}, mezcla gaussiana \cite{dempster1977} y \emph{clustering} espectral \cite{ng2002spectral}— sin emplear ninguna métrica de rescate.
 
-Los cuatro coinciden en una partición unánime y bien separada (Tabla~\ref{tab:mp-cluster}): con tres grupos, el índice de Rand ajustado entre cualquier par de métodos vale uno \cite{hubert1985}. Cada grupo trae asociado un canal de rescate distinto: los índices de \emph{leverage} fuerte y los volátiles, rescatados por AutoML, y los de \emph{leverage} invertido, por M10. Los perfiles de accuracy y Sharpe por grupo están en la Figura~\ref{fig:anx-grupos}.
+Los cuatro coinciden en una partición unánime y bien separada (Tabla~\ref{tab:mp-cluster}): con tres grupos, el índice de Rand ajustado entre cualquier par de métodos vale uno \cite{hubert1985}. Cada grupo trae asociado un canal de rescate distinto: los índices de \emph{leverage} fuerte y los volátiles, por AutoML, y los de \emph{leverage} invertido, por M10. Los perfiles de accuracy y Sharpe por grupo (Figura~\ref{fig:anx-grupos}) confirman que cada bloque se rescata por su canal, coherente con su naturaleza.
 
-La geometría lo confirma. Al proyectar la naturaleza de los diez sobre sus dos primeras componentes principales, el primer eje recupera casi exactamente el \emph{leverage} ($r = 0{,}84$ entre PC1 y \texttt{leverage\_corr}, Figura~\ref{fig:mp-pca}): sin etiquetas de rescate, el \emph{clustering} ordena los activos por el mismo eje que la ley de la Sección~\ref{sec:panel-ley}. La Figura~\ref{fig:mp-casos} del Anexo~\ref{anx:figuras} ilustra dos casos: XLE, rescatado por el régimen, y MARA, por la vía del \emph{leverage} invertido.
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[t]{0.50\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figuras/cap4_anexo_grupos}
+\caption{Accuracy y Sharpe medios por estrategia dentro de cada grupo. Cada grupo se rescata por un canal distinto, coherente con su naturaleza.}
+\label{fig:anx-grupos}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.46\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figuras/cap4_pca_clusters}
+\caption{Proyección sobre las dos primeras componentes principales (partición unánime, Rand $= 1{,}0$). El primer eje recupera el \emph{leverage} ($r = 0{,}84$ entre PC1 y \texttt{leverage\_corr}).}
+\label{fig:mp-pca}
+\end{subfigure}
+\caption{Agrupamiento de la naturaleza de los diez activos: pago del \emph{clustering} (izquierda) y geometría que recupera el \emph{leverage} (derecha).}
+\label{fig:mp-grupos-pca}
+\end{figure}
 
-Con diez activos esto es exploratorio: el clustering describe, no confirma. El cluster predice el \emph{tipo} de canal que rescata cada grupo, no el modelo exacto que ganará por activo, que puede cambiar dentro de un mismo grupo. Se deja para líneas futuras.
+La geometría lo confirma. Al proyectar la naturaleza de los diez sobre sus dos primeras componentes principales, el primer eje recupera casi exactamente el \emph{leverage} ($r = 0{,}84$ entre PC1 y \texttt{leverage\_corr}, Figura~\ref{fig:mp-pca}): sin etiquetas de rescate, el \emph{clustering} ordena los activos por el mismo eje que la ley de la Sección~\ref{sec:panel-ley}. La Figura~\ref{fig:mp-casos} del Anexo~\ref{anx:figuras} ilustra dos casos, XLE y MARA.
+
+Con diez activos esto es exploratorio: el clustering describe, no confirma. Predice el \emph{tipo} de canal que rescata cada grupo, no el modelo exacto que ganará por activo, que puede cambiar dentro de un grupo. Se deja para líneas futuras.
 
 \begin{table}[htbp]
 \centering
@@ -261,23 +220,23 @@ C2 volátiles (ROKU, MARA)                 & $-0{,}028$ & AutoML \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.60\textwidth]{figuras/cap4_pca_clusters}
-\caption{Proyección de la naturaleza de los diez activos sobre sus dos primeras componentes principales. Cada punto es un activo, coloreado por su cluster ($K=3$, partición unánime de los cuatro métodos, Rand $= 1{,}0$). El primer eje recupera el \emph{leverage} ($r = 0{,}84$ entre PC1 y \texttt{leverage\_corr}): el clustering ordena los activos, sin etiquetas de rescate, por el mismo eje que la ley del \emph{leverage}. La leyenda marca el mejor canal de cada grupo (C0/C2 AutoML, C1 M10).}
-\label{fig:mp-pca}
-\end{figure}
-
 \section{Robustez}
 \label{sec:panel-robustez}
 
-El rescate no depende de una elección afortunada. Se mantiene al mover la ventana de calibración de los detectores (Figura~\ref{fig:mp-robustez-calib} del Anexo~\ref{anx:figuras}) y aguanta en el panel por tres vías a la vez: la importancia de STRATA es estable en el tiempo, el rescate sobrevive a distintas particiones y se sostiene partido por régimen (Figura~\ref{fig:mp-robustez-panel} del Anexo~\ref{anx:figuras}).
+El rescate no depende de una elección afortunada. Se mantiene al mover la ventana de calibración (Figura~\ref{fig:mp-robustez-calib}) y aguanta en el panel por tres vías a la vez (Figura~\ref{fig:mp-robustez-panel}): la importancia de STRATA es estable en el tiempo, el rescate sobrevive a distintas particiones y se sostiene partido por régimen.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.60\textwidth]{figuras/cap4_robustez_panel}
+\caption{Robustez del rescate en el panel por tres vías: cuota de importancia rodante en el tiempo, fracción de ventanas con rescate por activo y McNemar partido por régimen. El rescate aguanta en las tres, no es un artefacto de una ventana ni de un régimen.}
+\label{fig:mp-robustez-panel}
+\end{figure}
 
 \section{Alcance y limitaciones}
 \label{sec:panel-limites}
 \label{sec:panel-lim-tests}
 
-Cuatro resultados del capítulo quedan por debajo del umbral de significancia. La Tabla~\ref{tab:mp-limites} los reúne con su contraste y su veredicto. El de mayor peso: la ventaja sobre la trivial es nominal. La regla, además, se invierte en SPY-bajista, una falsación pre-registrada que la agregación del panel resuelve.
+Cuatro resultados del capítulo quedan por debajo del umbral de significancia (Tabla~\ref{tab:mp-limites}). El de mayor peso: la ventaja sobre la trivial es nominal. La regla, además, se invierte en SPY-bajista, una falsación pre-registrada que la agregación del panel resuelve.
 
 \begin{table}[htbp]
 \centering
@@ -298,4 +257,4 @@ La naturaleza define grupos de activos & Consenso de cuatro métodos, Rand $= 1{
 \end{tabular}
 \end{table}
 
-El límite común es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La pregunta con la que abrimos queda respondida: lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar.
+El límite común es la ventana corta: con $n \approx 250$ días, la significancia plena frente a la trivial está fuera de alcance por potencia, no por ausencia de señal. La pregunta inicial queda respondida: lo que en SPY no alcanzaba significancia en solitario la alcanza al agregar.

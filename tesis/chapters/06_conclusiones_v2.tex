@@ -1,56 +1,48 @@
 \chapter{Conclusiones y trabajo futuro}
 \label{cap:conclusiones}
 
-Un agente LLM de trading decide la dirección y el tamaño de cada posición y, sin supervisión, pierde dinero y acierta la dirección menos de la mitad de las veces. Este trabajo demuestra que una capa de supervisión estadística externa, construida con modelos clásicos, corrige ese fallo en tiempo de ejecución.
+Un agente LLM de trading decide dirección y tamaño de cada posición y, sin supervisión, pierde dinero y acierta menos de la mitad de las veces. Este trabajo demuestra que una capa de supervisión estadística externa, con modelos clásicos, corrige ese fallo en tiempo de ejecución.
 
 \section{Revisión de los objetivos}
 \label{sec:conc-objetivos}
 
 Los seis objetivos del Capítulo~\ref{cap:objetivos} quedan resueltos.
-
 \begin{enumerate}
-  \item \textbf{Formalizar los detectores y su protocolo.} El Capítulo~\ref{cap:strata} define RAM, PSA y GSO sobre un HMM, un BOCPD y un GARCH, junto con la capa de intervención y el protocolo de medición causal sin fuga.
-  \item \textbf{Probar el rescate.} El rescate se confirma en acierto direccional, con el McNemar pareado frente al agente, y en riesgo, con un $\Delta$Sharpe agregado cuyo intervalo excluye el cero (Sección~\ref{sec:panel-pooled}). La hipótesis nula se rechaza.
+  \item \textbf{Formalizar los detectores y su protocolo.} El Capítulo~\ref{cap:strata} define RAM, PSA y GSO sobre un HMM, un BOCPD y un GARCH, con la intervención y el protocolo de medición causal sin fuga.
+  \item \textbf{Probar el rescate.} Se confirma en acierto direccional (McNemar pareado frente al agente) y en riesgo ($\Delta$Sharpe agregado cuyo intervalo excluye el cero, Sección~\ref{sec:panel-pooled}). La hipótesis nula se rechaza.
   \item \textbf{Atribuir el efecto.} Sobre SPY el rescate se concentra en el canal de régimen (Sección~\ref{sec:spy-rescate}); sobre el panel, la naturaleza del activo determina qué capa rescata (Sección~\ref{sec:panel-patron}).
-  \item \textbf{Comprobar si el aprendiz recupera STRATA.} El meta-learner se apoya en los detectores, con cuota de Shapley mayoritaria, y supera marginalmente a la regla en acierto sin distinguirse de ella en riesgo (Sección~\ref{sec:panel-tost}); el criterio de fracaso pre-registrado no se cumple.
-  \item \textbf{Comparar con la referencia trivial.} Ninguna estrategia supera a la referencia trivial con significancia: la ventaja en acierto existe en punto, pero es nominal por potencia muestral (Sección~\ref{sec:panel-accuracy}).
-  \item \textbf{Delimitar el alcance.} El rescate se debilita en los activos de \emph{leverage} débil, donde el régimen pierde su contenido direccional; esa misma propiedad ordena dónde la supervisión rinde más (Sección~\ref{sec:panel-patron}).
+  \item \textbf{Comprobar si el aprendiz recupera STRATA.} El meta-learner se apoya en los detectores, con cuota de Shapley mayoritaria, y supera marginalmente a la regla en acierto sin distinguirse en riesgo (Sección~\ref{sec:panel-tost}); el fracaso no se cumple.
+  \item \textbf{Comparar con la referencia trivial.} Ninguna estrategia la supera con significancia: la ventaja en acierto es nominal por potencia (Sección~\ref{sec:panel-accuracy}).
+  \item \textbf{Delimitar el alcance.} El rescate se debilita en los activos de \emph{leverage} débil, donde el régimen pierde contenido direccional; esa propiedad ordena dónde la supervisión rinde más (Sección~\ref{sec:panel-patron}).
 \end{enumerate}
 
 \section{Aportaciones}
 \label{sec:conc-aportaciones}
 
-El trabajo deja tres aportaciones.
-
-La primera es metodológica: un protocolo para supervisar a un agente opaco con estadística clásica, interpretable y falsable. Lo componen tres detectores ortogonales (HMM, GARCH, BOCPD), una calibración cerrada sobre el histórico antes de ver la evaluación, dos ventanas sin solape con \texttt{signal\_lag} contra el \emph{look-ahead} y un contraste pareado que no descansa en un solo test. El protocolo es aplicable a otros agentes, modelos y mercados.
-
-La segunda es empírica: una capa de supervisión clásica rescata a un agente perdedor en acierto y en riesgo.
-
-La tercera es un hallazgo: la \emph{ley del leverage}. El apalancamiento del activo ordena la intensidad del rescate del aprendiz, lo que acota los casos en que la supervisión aporta más y abre una línea de investigación más enfocada.
+El trabajo deja tres aportaciones. La primera es metodológica: un protocolo para supervisar a un agente opaco con estadística clásica, interpretable y falsable, con tres detectores ortogonales (HMM, GARCH, BOCPD), calibración cerrada antes de ver la evaluación, dos ventanas sin solape con \texttt{signal\_lag} contra el \emph{look-ahead} y un contraste pareado que no descansa en un solo test; es aplicable a otros agentes, modelos y mercados. La segunda es empírica: una capa de supervisión clásica rescata a un agente perdedor en acierto y en riesgo. La tercera es un hallazgo, la \emph{ley del leverage}: el apalancamiento del activo ordena la intensidad del rescate del aprendiz y acota dónde la supervisión aporta más.
 
 \section{Limitaciones}
 \label{sec:conc-limitaciones}
 
-La limitación principal es el tamaño de la muestra. El agente solo existe tras el corte de conocimiento del modelo de lenguaje, de modo que la evaluación se reduce a unos doscientos cincuenta días por activo: la significancia plena frente a una referencia trivial queda fuera por potencia, la ventaja en acierto es nominal y el rescate de riesgo se sostiene en el agregado, no en cada activo. Las dos regularidades de patrón, la ley del \emph{leverage} y el agrupamiento por naturaleza, se contrastan sobre diez puntos. El estudio emplea un único agente y una única ventana fuera de muestra.
+La limitación principal es el tamaño de la muestra. El agente solo existe tras el corte de conocimiento del modelo de lenguaje, de modo que la evaluación se reduce a unos doscientos cincuenta días por activo: la significancia plena frente a una referencia trivial queda fuera por potencia, la ventaja en acierto es nominal y el rescate de riesgo se sostiene en el agregado, no en cada activo. Las dos regularidades de patrón, la ley del \emph{leverage} y el agrupamiento por naturaleza, se contrastan sobre diez puntos, y el estudio emplea un único agente y una única ventana fuera de muestra.
 
-El tamaño del panel es la segunda limitación. Con diez activos, los contrastes entre activos tienen poca potencia. Ampliarlo la reforzaría, pero cada activo nuevo exige generar las decisiones del agente con modelos de lenguaje de pago y reentrenar el esquema completo, un coste que fijó el panel en diez.
+El panel es la segunda limitación: con diez activos los contrastes entre activos tienen poca potencia. Ampliarlo la reforzaría, pero cada activo nuevo exige generar las decisiones del agente con modelos de pago y reentrenar el esquema, un coste que fijó el panel en diez.
 
 \section{Trabajo futuro}
 \label{sec:conc-futuro}
 
 Cada límite abre una continuación.
-
 \begin{enumerate}
-  \item \textbf{Más potencia.} Una muestra mayor, en horizonte o en número de activos y sin réplicas sintéticas, llevaría la ventaja en acierto a significancia plena y la ley del \emph{leverage} de tendencia a ley.
-  \item \textbf{Ensemble enrutado por régimen.} El aprendiz que protege mejor cambia con el régimen; un supervisor que se elige según el estado del mercado, en vez de fijarse de antemano, es la continuación natural.
-  \item \textbf{Otros agentes, modelos y mercados.} Repetir el esquema separaría lo propio de STRATA de lo propio de este agente y pondría a prueba la ley del \emph{leverage} fuera del panel.
-  \item \textbf{Intervención graduada.} Entre registrar y sustituir queda atenuar la posición de forma continua, no explorada en este trabajo.
-  \item \textbf{Detectores más ricos.} Calibrar la confianza declarada del agente, o añadir detectores sobre otras dimensiones del mercado, ampliaría la cobertura más allá del régimen.
-  \item \textbf{Validación prospectiva.} El siguiente paso es dejar correr la supervisión en sombra, sin capital real, sobre los datos que van llegando, y comprobar si fuera del \emph{backtest} se sostiene lo medido.
-  \item \textbf{De la supervisión al alfa.} En algunos activos una derivada de STRATA supera al pasivo en Sharpe yendo defensiva en el momento correcto (Sección~\ref{sec:panel-limites}); es un punto de partida, con contraste pre-registrado y muestra suficiente, para una estrategia de alfa direccional.
+  \item \textbf{Más potencia.} Una muestra mayor llevaría la ventaja en acierto a significancia plena y la ley del \emph{leverage} de tendencia a ley.
+  \item \textbf{Ensemble enrutado por régimen.} El aprendiz que protege mejor cambia con el régimen; un supervisor elegido según el estado del mercado es la continuación natural.
+  \item \textbf{Otros agentes, modelos y mercados.} Repetir el esquema separaría lo propio de STRATA de lo de este agente y probaría la ley del \emph{leverage} fuera del panel.
+  \item \textbf{Intervención graduada.} Entre registrar y sustituir queda atenuar la posición de forma continua.
+  \item \textbf{Detectores más ricos.} Calibrar la confianza declarada del agente, o añadir detectores sobre otras dimensiones, ampliaría la cobertura.
+  \item \textbf{Validación prospectiva.} Dejar correr la supervisión en sombra, sin capital real, y comprobar si se sostiene fuera del \emph{backtest}.
+  \item \textbf{De la supervisión al alfa.} En algunos activos una derivada de STRATA supera al pasivo en Sharpe yendo defensiva a tiempo (Sección~\ref{sec:panel-limites}): base para una estrategia de alfa direccional con contraste pre-registrado.
 \end{enumerate}
 
 \section{Conclusión}
 \label{sec:conc-cierre}
 
-Los agentes LLM ya deciden sobre capital real sin señalar cuándo fallan. Este trabajo no propone un modelo más potente, sino una capa que lo supervisa: tres detectores estadísticos clásicos, calibrados de antemano y contrastados con tests pareados, corrigen al agente cuando contradice al mercado y exponen por qué lo hacen. Dentro de los límites de la muestra, la supervisión no supera al mercado de forma significativa, pero convierte en fiable a un agente que por sí solo no lo era, y una sola propiedad del activo, su apalancamiento, anticipa cuándo y cómo.
+Los agentes LLM ya deciden sobre capital real sin señalar cuándo fallan. Este trabajo no propone un modelo más potente, sino una capa que lo supervisa: tres detectores estadísticos clásicos, calibrados de antemano y contrastados con tests pareados, corrigen al agente cuando contradice al mercado y exponen por qué. Dentro de los límites de la muestra no bate al mercado de forma significativa, pero convierte en fiable a un agente que por sí solo no lo era, y una sola propiedad del activo, su apalancamiento, anticipa cuándo y cómo.

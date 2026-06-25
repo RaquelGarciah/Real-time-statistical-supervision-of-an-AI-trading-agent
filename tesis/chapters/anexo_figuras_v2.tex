@@ -8,13 +8,6 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.80\textwidth]{figuras/cap4_anexo_regimen_direccion}
-\caption{Matriz régimen $\times$ dirección sobre SPY, en calibración y fuera de muestra. El régimen coincide con la caída del mismo día, pero no anticipa el signo del siguiente: el \emph{leverage} que explota RAM es contemporáneo, no predictivo.}
-\label{fig:anx-regimen-dir}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
 \includegraphics[width=0.80\textwidth]{figuras/cap4_anexo_psa_gso}
 \caption{Scores de PSA y GSO frente a su umbral ex ante, junto al sesgo casi constante del agente. Los dos detectores rara vez cruzan el umbral porque el agente apenas cambia de posición: están dormidos sobre este activo, no rotos.}
 \label{fig:anx-psa-gso}
@@ -36,9 +29,16 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.72\textwidth]{figuras/cap4_anexo_confusion_m10_regimen}
-\caption{Acierto del agente (M5) y del aprendiz (M10) por régimen, sobre SPY. El aprendiz corrige sobre todo donde el agente más se equivoca.}
-\label{fig:anx-confusion-m10}
+\includegraphics[width=0.78\textwidth]{figuras/cap4_confusion_spy_6}
+\caption{Matrices de confusión de las seis estrategias sobre SPY, dirección predicha frente a la real. Enseñan de dónde sale el acierto de cada una, no solo su porcentaje: el agente carga el error en una clase y las derivadas de STRATA lo reparten mejor.}
+\label{fig:mp-confusion-spy6}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.74\textwidth]{figuras/cap4_sensibilidad_umbrales}
+\caption{Sensibilidad de la accuracy al umbral de decisión sobre SPY: M8 frente a $\tau$ del detector RAM y M10 frente a su umbral de probabilidad. Las dos curvas son planas en una meseta alrededor del valor canónico (marcado), señal de robustez y no de ajuste a un punto.}
+\label{fig:mp-sensibilidad}
 \end{figure}
 
 \section{Panel de diez activos}
@@ -53,51 +53,9 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.78\textwidth]{figuras/cap4_anexo_did}
-\caption{Contraste de diferencia en diferencias de la complementariedad por régimen: $\Delta\Delta$Sharpe \emph{pooled-10} de M10 frente a AutoML entre mercado alcista y bajista, con su intervalo al $95\%$. El intervalo excluye el cero ($+1{,}37$, $p = 0{,}008$): la complementariedad es significativa sobre el panel, no en SPY solo.}
-\label{fig:anx-did}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
 \includegraphics[width=0.78\textwidth]{figuras/cap4_anexo_mcnemar}
 \caption{$p$ de McNemar del rescate frente al agente, por estrategia y régimen, con el nivel $\alpha = 0{,}10$ marcado. El rescate en acierto es significativo en los dos regímenes.}
 \label{fig:anx-mcnemar}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/cap4_anexo_grupos}
-\caption{Accuracy y Sharpe medios por estrategia dentro de cada grupo del clustering. Cada grupo se rescata por un canal distinto, coherente con su naturaleza.}
-\label{fig:anx-grupos}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.74\textwidth]{figuras/cap4_scores_detectores}
-\caption{Distribución de los \emph{scores} de RAM, PSA y GSO sobre el OOS de SPY, con su umbral de disparo marcado (RAM $\tau = 0{,}50$, PSA $P_{95} = 0{,}023$, GSO $P_{95} = 2{,}371$). El \emph{score} de RAM es bimodal y cruza el umbral con frecuencia; los de PSA y GSO se acumulan muy por debajo del suyo, de ahí que apenas disparen.}
-\label{fig:mp-scores-detectores}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.7\textwidth]{figuras/cap4_confusion_spy}
-\caption{Matriz de confusión de la intervención sobre SPY: dirección del agente (M5) frente a dirección tras intervenir (M8), sobre las $121$ intervenciones. La diagonal de rescate ($71$ aciertos de la intervención cuando el agente fallaba) supera a la de daño ($50$).}
-\label{fig:mp-confusion-spy}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.74\textwidth]{figuras/cap4_sensibilidad_umbrales}
-\caption{Sensibilidad de la accuracy al umbral de decisión sobre SPY: M8 frente a $\tau$ del detector RAM y M10 frente a su umbral de probabilidad. Las dos curvas son planas en una meseta alrededor del valor canónico (marcado), señal de robustez y no de ajuste a un punto.}
-\label{fig:mp-sensibilidad}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.82\textwidth]{figuras/cap4_activacion_panel}
-\caption{Tasa de disparo de RAM, PSA y GSO y tasa de intervención de la regla, activo a activo. RAM domina en todo el panel y los otros dos apenas se encienden: la supervisión recae, como en SPY, sobre el canal del régimen.}
-\label{fig:mp-activacion-panel}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -109,37 +67,9 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.74\textwidth]{figuras/cap4_atribucion_capas}
-\caption{Reparto de funciones entre las dos capas. A la izquierda, atribución del P\&L de rescate por detector sobre SPY: el canal de régimen (RAM) concentra el $100\%$, PSA y GSO aportan cero. A la derecha, evolución diaria del rescate de la regla (riesgo, $\Delta$Sharpe acumulado) frente al del aprendiz (accuracy, aciertos acumulados sobre el agente): cada serie sube por un eje distinto.}
-\label{fig:mp-capas}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.82\textwidth]{figuras/cap4_naturaleza_panel}
-\caption{Naturaleza de los diez activos en cuatro rasgos: \emph{leverage} de Black, fracción de días en Crisis, sesgo direccional del agente y volatilidad. Es la materia prima de la ley del \emph{leverage} y del agrupamiento: esa heterogeneidad es la que ordena el rescate.}
-\label{fig:mp-naturaleza}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_casos}
 \caption{Dos casos trabajados, uno por canal. A la izquierda, XLE (\emph{leverage} fuerte): el régimen es direccional y la regla rescata el riesgo del agente. A la derecha, MARA (\emph{leverage} invertido): el régimen no informa el signo y el aprendiz rescata por la vía del sesgo del agente cruzado con el régimen. Cada panel muestra la dirección del agente, la del supervisor que rescata y el régimen vigente.}
 \label{fig:mp-casos}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.74\textwidth]{figuras/cap4_robustez_calib}
-\caption{Robustez a la ventana de calibración: el rescate se mantiene al desplazar el periodo con el que se cierran los umbrales de los detectores. El resultado no cuelga de una calibración concreta.}
-\label{fig:mp-robustez-calib}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/cap4_robustez_panel}
-\caption{Robustez del rescate en el panel por tres vías: cuota de importancia rodante en el tiempo, fracción de ventanas con rescate por activo y McNemar partido por régimen. El rescate aguanta en las tres, no es un artefacto de una ventana ni de un régimen.}
-\label{fig:mp-robustez-panel}
 \end{figure}
 
 \begin{figure}[htbp]
