@@ -8,6 +8,13 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 
 \begin{figure}[htbp]
 \centering
+\includegraphics[width=0.80\textwidth]{figuras/cap4_anexo_regimen_direccion}
+\caption{Matriz régimen $\times$ dirección sobre SPY, en calibración y fuera de muestra. El régimen coincide con la caída del mismo día pero no anticipa el signo del siguiente: el \emph{leverage} que explota RAM es contemporáneo, no predictivo.}
+\label{fig:anx-regimen-dir}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
 \includegraphics[width=0.80\textwidth]{figuras/cap4_anexo_psa_gso}
 \caption{Scores de PSA y GSO frente a su umbral ex ante, junto al sesgo casi constante del agente. Los dos detectores rara vez cruzan el umbral porque el agente apenas cambia de posición: están dormidos sobre este activo, no rotos.}
 \label{fig:anx-psa-gso}
@@ -46,23 +53,9 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\textwidth]{figuras/cap4_anexo_confusion_panel}
-\caption{Matrices de confusión de la mejor derivada de STRATA en cada activo. Enseñan el reparto de aciertos y fallos detrás de cada accuracy del panel.}
-\label{fig:anx-confusion-panel}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
 \includegraphics[width=0.78\textwidth]{figuras/cap4_anexo_mcnemar}
 \caption{$p$ de McNemar del rescate frente al agente, por estrategia y régimen, con el nivel $\alpha = 0{,}10$ marcado. El rescate en acierto es significativo en los dos regímenes.}
 \label{fig:anx-mcnemar}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.78\textwidth]{figuras/cap4_equity_panel}
-\caption{Curvas de capital por activo (un euro inicial), con la mejor derivada de STRATA destacada frente a las referencias. En cuatro activos una derivada supera al pasivo en Sharpe: SPY, SMCI, MARA y UNG. En SMCI/MARA/UNG el pasivo pierde o ronda el cero y la derivada obtiene Sharpe positivo al posicionarse de forma defensiva; en SPY la ventaja es sobre todo beta de mercado en un periodo alcista. }
-\label{fig:mp-equity-panel}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -79,9 +72,3 @@ Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargar
 \label{fig:mp-tost}
 \end{figure}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.58\textwidth]{figuras/cap4_did_regimen}
-\caption{Complementariedad de los supervisores por régimen: $\Delta$Sharpe de M8, M10 y AutoML frente al agente, en mercado alcista y bajista. M10 rescata más en alcista, AutoML más en bajista. El contraste formal de ese reparto (diferencia en diferencias, $\Delta\Delta$Sharpe $= +1{,}37$, $p = 0{,}008$) está en la Figura~\ref{fig:anx-did}.}
-\label{fig:mp-did}
-\end{figure}

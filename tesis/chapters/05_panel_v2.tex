@@ -41,7 +41,14 @@ La intervención de RAM no es arbitraria: su frecuencia crece casi linealmente c
 
 El mapa de calor de la Figura~\ref{fig:mp-heatmap} cruza los diez activos con las seis estrategias en accuracy. La mejor derivada de STRATA mejora al agente en los \textbf{diez de diez} activos, con una mejora media de $+0{,}086$, y supera a las dos referencias triviales en cuatro: SPY y MARA por AutoML, SMCI y UNG por M10. En los seis restantes la trivial aguanta; en índices muy direccionales como XLK la clase mayoritaria del pasado supera $0{,}64$ y ninguna derivada se le acerca.
 
-Esas ventajas son reales en punto pero nominales: con unos doscientos cincuenta días por activo y una ganadora que cambia de activo en activo, se seleccionan a posteriori y ninguna supera a ZeroR con significancia (McNemar AutoML vs ZeroR sobre SPY, $p = 0{,}90$). El reparto de aciertos y fallos por activo está en la Figura~\ref{fig:anx-confusion-panel} del Anexo~\ref{anx:figuras}. El resultado que sí supera un test está en el riesgo, no en el acierto frente a la trivial.
+Esas ventajas son reales en punto pero nominales: con unos doscientos cincuenta días por activo y una ganadora que cambia de activo en activo, se seleccionan a posteriori y ninguna supera a ZeroR con significancia (McNemar AutoML vs ZeroR sobre SPY, $p = 0{,}90$). El reparto de aciertos y fallos por activo está en la Figura~\ref{fig:anx-confusion-panel}. El resultado que sí supera un test está en el riesgo, no en el acierto frente a la trivial.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.74\textwidth]{figuras/cap4_anexo_confusion_panel}
+\caption{Matrices de confusión de la mejor derivada de STRATA en cada activo: el reparto de aciertos y fallos detrás de cada accuracy del panel.}
+\label{fig:anx-confusion-panel}
+\end{figure}
 
 \begin{figure}[htbp]
 \centering
@@ -68,7 +75,14 @@ El resultado lo reúne la Figura~\ref{fig:mp-forest}: las tres estrategias super
 
 El agregado tiene un matiz: el \emph{pooled} apila los días de los diez activos como si fueran independientes, y no lo son. La correlación cruzada entre índices es alta (SPY y QQQ por encima de $0{,}9$), lo que reduce el tamaño de muestra efectivo y deja el intervalo algo optimista; el bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua parte del efecto al remuestrear bloques contiguos.
 
-En términos económicos, una derivada de STRATA supera al pasivo en Sharpe en cuatro activos: SPY, SMCI, MARA y UNG (Figura~\ref{fig:mp-equity-panel} del Anexo~\ref{anx:figuras}). En SMCI, MARA y UNG el pasivo pierde o ronda el cero y la derivada obtiene un Sharpe positivo al posicionarse de forma defensiva. En SPY el periodo fue alcista y el activo es mayormente beta de mercado, de modo que el Sharpe positivo refleja sobre todo la exposición al índice.
+En términos económicos, una derivada de STRATA supera al pasivo en Sharpe en cuatro activos: SPY, SMCI, MARA y UNG (Figura~\ref{fig:mp-equity-panel}). En SMCI, MARA y UNG el pasivo pierde o ronda el cero y la derivada obtiene un Sharpe positivo al posicionarse de forma defensiva. En SPY el periodo fue alcista y el activo es mayormente beta de mercado, de modo que el Sharpe positivo refleja sobre todo la exposición al índice.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.70\textwidth]{figuras/cap4_equity_panel}
+\caption{Curvas de capital por activo (un euro inicial), con la mejor derivada de STRATA destacada frente a las referencias. En SPY, SMCI, MARA y UNG una derivada supera al pasivo en Sharpe.}
+\label{fig:mp-equity-panel}
+\end{figure}
 
 \subsection{Equivalencia: el aprendiz recupera STRATA y supera a la regla}
 \label{sec:panel-tost}
@@ -131,13 +145,13 @@ McNemar bajista (Holm $p$) & $0{,}0092$ & $0{,}0268$ & $0{,}0017$ \\
 \end{tabular}
 \end{table}
 
-Los dos aprendices no rescatan igual en cada régimen: M10 protege más en alcista, AutoML más en bajista (Figura~\ref{fig:mp-did} del Anexo~\ref{anx:figuras}). Un test de diferencia en diferencias, pre-registrado, contrasta si ese reparto es real: compara la diferencia de $\Delta$Sharpe entre los dos aprendices entre los dos regímenes, de modo que cualquier efecto común se cancela. El $\Delta\Delta$Sharpe \emph{pooled} excluye el cero (Tabla~\ref{tab:mp-regimen}, Figura~\ref{fig:anx-did}): la complementariedad por régimen es significativa sobre el panel. El rescate en acierto también lo es en los dos regímenes (Figura~\ref{fig:anx-mcnemar} del Anexo~\ref{anx:figuras}).
+Los dos aprendices no rescatan igual en cada régimen: M10 protege más en alcista, AutoML más en bajista (Figura~\ref{fig:mp-did}). Un test de diferencia en diferencias, pre-registrado, contrasta si ese reparto es real: el $\Delta\Delta$Sharpe \emph{pooled} entre los dos aprendices y los dos regímenes vale $+1{,}37$ (IC$_{95}$ $[0{,}20,\ 2{,}60]$, $p = 0{,}008$) y excluye el cero, de modo que la complementariedad por régimen es significativa sobre el panel (Tabla~\ref{tab:mp-regimen}). El rescate en acierto es significativo en los dos regímenes, alcista y bajista (Figura~\ref{fig:anx-mcnemar} del Anexo~\ref{anx:figuras}).
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.60\textwidth]{figuras/cap4_anexo_did}
-\caption{Diferencia en diferencias de la complementariedad por régimen: $\Delta\Delta$Sharpe \emph{pooled-10} de M10 frente a AutoML entre mercado alcista y bajista, con su intervalo al $95\%$. El intervalo excluye el cero ($+1{,}37$, $p = 0{,}008$): la complementariedad es significativa sobre el panel, no en SPY solo.}
-\label{fig:anx-did}
+\includegraphics[width=0.55\textwidth]{figuras/cap4_did_regimen}
+\caption{Complementariedad de los supervisores por régimen: $\Delta$Sharpe de M8, M10 y AutoML frente al agente, en mercado alcista y bajista. M10 rescata más en alcista, AutoML más en bajista; el contraste formal de ese reparto es la diferencia en diferencias ($\Delta\Delta$Sharpe $= +1{,}37$, $p = 0{,}008$).}
+\label{fig:mp-did}
 \end{figure}
 
 La falsación pre-registrada se resuelve en el panel. Sobre SPY aislado, en régimen bajista la regla M8 se invierte: en sus cincuenta días bajistas el $\Delta$Sharpe es $-1{,}49$, la regla daña en vez de rescatar. Sobre los diez activos el rescate por régimen es significativo en bajista, y la complementariedad DiD lo es en \emph{pooled} aunque no en SPY: el fenómeno es de panel. Resta explicar el reparto por activo, que depende de su naturaleza.

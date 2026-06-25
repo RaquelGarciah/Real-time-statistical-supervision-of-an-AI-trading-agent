@@ -26,26 +26,15 @@ El \emph{leverage} de un activo se mide con la correlación de Black, $\mathrm{l
 \label{fig:mp-regimenes-spy}
 \end{figure}
 
-Esa coincidencia contemporánea se ve en la matriz régimen$\times$dirección (Figura~\ref{fig:anx-regimen-dir}): el régimen acierta el signo del mismo día, pero la fracción de días al alza del siguiente ronda $0{,}5$ en todos los regímenes, también en Crisis. RAM explota una asociación contemporánea, no una capacidad de anticipar el signo de mañana.
+Esa coincidencia contemporánea se ve en la matriz régimen$\times$dirección (Figura~\ref{fig:anx-regimen-dir} del Anexo~\ref{anx:figuras}): el régimen acierta el signo del mismo día, pero la fracción de días al alza del siguiente ronda $0{,}5$ en todos los regímenes, también en Crisis. RAM explota una asociación contemporánea, no una capacidad de anticipar el signo de mañana.
 
 Los tres detectores miran dimensiones ortogonales de la decisión del agente. RAM comprueba si la dirección de la apuesta concuerda con el régimen vigente: su \emph{score} es la probabilidad que el HMM pone en que el agente apuesta contra el régimen, y dispara cuando $\mathrm{RAM}_t \ge \tau = 0{,}50$. PSA vigila con BOCPD si el agente cambia de criterio de forma estructural \cite{adams2007}. GSO contrasta el tamaño de la posición con la volatilidad del GARCH \cite{bollerslev1986}. Cuando RAM dispara, la intervención reorienta la posición al signo del régimen, fijado por un prior calibrado por activo a partir de la media del retorno de cada estado, nunca por una regla del tipo ``Crisis implica corto'' escrita a mano. La Figura~\ref{fig:mp-anatomia} sigue ese flujo en un día.
 
 \begin{figure}[htbp]
 \centering
-\begin{subfigure}[t]{0.46\textwidth}
-\centering
-\includegraphics[width=\textwidth]{figuras/cap4_anexo_regimen_direccion}
-\caption{Matriz régimen $\times$ dirección, en calibración y fuera de muestra. El régimen coincide con la caída del mismo día pero no anticipa el signo del siguiente: el \emph{leverage} que explota RAM es contemporáneo, no predictivo.}
-\label{fig:anx-regimen-dir}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.50\textwidth}
-\centering
-\includegraphics[width=\textwidth]{figuras/cap4_anatomia_dia}
-\caption{Anatomía de un día: la decisión del agente entra en RAM, que la compara con el régimen filtrado; si choca y el \emph{score} supera $\tau = 0{,}50$, la intervención la reorienta y el resultado se evalúa contra el retorno del día siguiente.}
+\includegraphics[width=0.56\textwidth]{figuras/cap4_anatomia_dia}
+\caption{Anatomía de un día de intervención sobre SPY: la decisión del agente entra en RAM, que la compara con el régimen filtrado; si choca y el \emph{score} supera $\tau = 0{,}50$, la intervención la reorienta y el resultado se evalúa contra el retorno del día siguiente.}
 \label{fig:mp-anatomia}
-\end{subfigure}
-\caption{El canal de régimen sobre SPY: su carácter contemporáneo (izquierda) y el flujo de la intervención de un día (derecha).}
-\label{fig:mp-regimen-anatomia}
 \end{figure}
 
 Sobre SPY actúa una sola supervisión (Tabla~\ref{tab:mp-detectores}). RAM dispara casi un tercio de los días y acierta más al intervenir que el agente al que corrige; PSA dispara dos días y GSO ninguno, porque el agente mantiene una posición casi constante y sus \emph{scores} de cambio y de tamaño quedan por debajo de los umbrales. PSA y GSO son detectores inertes como reglas sobre este activo. Todo el rescate acumulado sale de los días en que RAM dispara.
@@ -144,7 +133,7 @@ Sobre un único activo, el intervalo de confianza del $\Delta$Sharpe de la regla
 \section{El rescate sobre SPY}
 \label{sec:spy-rescate}
 
-Sobre SPY el régimen (Sección~\ref{sec:spy-anatomia}) es el único canal que rescata, y el aprendiz no gana por otra vía. La ablación lo confirma: al quitar PSA y GSO y reentrenar, la accuracy de AutoML baja (Tabla~\ref{tab:mp-ablacion}). Aunque esos dos detectores casi nunca disparen como reglas, sus \emph{scores} continuos llevan información que el modelo aprovecha (PSA y GSO permanecen inactivos porque el agente apenas cambia de posición, Figura~\ref{fig:anx-psa-gso}; el régimen de RAM es contemporáneo, no predictivo, Figura~\ref{fig:anx-regimen-dir}).
+Sobre SPY el régimen (Sección~\ref{sec:spy-anatomia}) es el único canal que rescata, y el aprendiz no gana por otra vía. La ablación lo confirma: al quitar PSA y GSO y reentrenar, la accuracy de AutoML baja (Tabla~\ref{tab:mp-ablacion}). Aunque esos dos detectores casi nunca disparen como reglas, sus \emph{scores} continuos llevan información que el modelo aprovecha (PSA y GSO permanecen inactivos porque el agente apenas cambia de posición, Figura~\ref{fig:anx-psa-gso}; el régimen de RAM es contemporáneo, no predictivo, Figura~\ref{fig:anx-regimen-dir} del Anexo~\ref{anx:figuras}).
 
 Los valores de Shapley \cite{lundberg2017} lo confirman: STRATA aporta solo siete de las veintidós características y se lleva más de la mitad del peso. La cuota va etiquetada con su modelo y ventana, porque no son el mismo objeto: sobre el ensemble M10 ($n = 251$) vale $0{,}71$; sobre el \emph{leader} de AutoML ($n = 401$), $0{,}565$ por árbol y $0{,}564$ por permutación. En todos supera la mitad: el aprendiz coloca los detectores por delante de las características del agente. Cómo usa cada señal y la estabilidad de ese apoyo están en las Figuras~\ref{fig:anx-shap-dep} y~\ref{fig:anx-shap-rodante} del Anexo~\ref{anx:figuras}. El aprendiz corrige justo donde el agente más falla (Figura~\ref{fig:anx-confusion-m10}).
 
