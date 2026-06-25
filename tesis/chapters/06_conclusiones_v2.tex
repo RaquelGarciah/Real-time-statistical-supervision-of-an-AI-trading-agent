@@ -3,13 +3,13 @@
 
 Empezamos con un problema concreto (capítulo~\ref{cap:introduccion}): un agente LLM decide con dinero real y pierde. Sobre SPY acierta el signo del día siguiente el $0{,}366$ de las veces, por debajo de una moneda, y mil euros se quedan en setecientos. La pregunta era si una capa de supervisión estadística externa, hecha con modelos clásicos, podía rescatarlo mientras decide. La respuesta es sí.
 
-Cerramos revisando los objetivos del capítulo:
+Cerramos revisando los objetivos del trabajo, uno a uno.
 
 \section{Revisión de los objetivos}
 \label{sec:conc-objetivos}
 
 \textbf{Formalizar los tres detectores y su protocolo.}
-Lo hicimos en el capítulo~\ref{cap:strata}. STRATA descansa en tres modelos clásicos: un HMM de tres estados para el régimen, un BOCPD para el cambio estructural y un GARCH para la volatilidad, con una capa que registra, atenúa o sustituye la decisión del agente. El protocolo consiste en calibrar una sola vez, cerramos los umbrales antes de mirar la evaluación y mantenemos dos ventanas de evaluación, una con burn in y otra sin, que nunca se mezclan, con la posición de un día enfrentada al retorno del siguiente. Sobre esa base medimos todo lo demás.
+Lo hicimos en el capítulo~\ref{cap:strata}. STRATA descansa en tres modelos clásicos: un HMM de tres estados para el régimen, un BOCPD para el cambio estructural y un GARCH para la volatilidad, con una capa que registra, atenúa o sustituye la decisión del agente. El protocolo pesa tanto como los detectores: calibramos una sola vez, cerramos los umbrales antes de mirar la evaluación y mantenemos dos ventanas que nunca se mezclan, una con \emph{burn-in} y otra sin él, con la posición de un día enfrentada al retorno del siguiente. Sobre esa base medimos todo lo demás.
 
 \textbf{Probar si la supervisión rescata al agente.}
 Es el objetivo central, y el resultado más significativo. El rescate aparece en los dos ejes. En acierto, el McNemar pareado frente al agente lo confirma sobre SPY (AutoML $p = 0{,}0002$, M10 $p = 0{,}0074$, M8 $p = 0{,}051$) y aguanta partido por régimen, en alcista y en bajista, con corrección de Holm. La mejor derivada mejora al agente en los diez activos, con $+0{,}086$ de media en acierto. En riesgo, la prueba llega al agregar: sobre los diez activos ($n = 2493$ días), el $\Delta$Sharpe \emph{pooled} frente al agente es $+0{,}60$ para la regla, $+1{,}12$ para M10 y $+1{,}08$ para AutoML, y los tres intervalos al $95\%$ excluyen el cero (Sección~\ref{sec:panel-pooled}). Lo que un activo solo no sostenía, lo sostiene el panel. La hipótesis nula queda rechazada.
@@ -18,15 +18,13 @@ Es el objetivo central, y el resultado más significativo. El rescate aparece en
 Queríamos saber por qué funciona. El rescate se lee detector a detector. Sobre SPY actúa un único canal, el del régimen: RAM concentra el $100\%$ del P\&L de rescate y los otros dos quedan inertes como reglas (Sección~\ref{sec:spy-rescate}). El panel repite el patrón: cuando RAM dispara, seguir el régimen bate a seguir al agente en seis de los diez activos, y la tasa de intervención sube con la discrepancia entre la apuesta del agente y el régimen casi en línea recta (Pearson $r = 0{,}93$). Aparecen dos capas con trabajos distintos: la regla protege el riesgo, el aprendiz afina el acierto, y la naturaleza del activo decide cuál pesa más.
 
 \textbf{Comprobar si el aprendiz redescubre STRATA.}
-Nos preuntamos si el aprendiz ganara por su cuenta, ignorando los detectores y concluimos que efectivamente se apoya en ellos. Su cuota de Shapley supera la mitad en los diez activos (media $0{,}66$) y la ablación lo degrada, AutoML cae de $0{,}574$ a $0{,}550$ al quitar PSA y GSO, así que el criterio de fracaso que fijamos por adelantado no se cumple (Sección~\ref{sec:panel-tost}). Tampoco se limita a copiar la regla: la supera en acierto por un margen pequeño pero medible (TOST de Schuirmann, M10 $+0{,}021$ con IC$_{90}$ $[0{,}001,\ 0{,}039]$; AutoML $+0{,}034$ con $[0{,}010,\ 0{,}056]$) y empata con ella en riesgo. Las señales que diseñamos a mano son el núcleo del valor; el aprendiz las pule.
+Nos preguntamos si el aprendiz ganaría por su cuenta, ignorando los detectores, y vimos que se apoya en ellos. Su cuota de Shapley supera la mitad en los diez activos (media $0{,}66$) y la ablación lo degrada, AutoML cae de $0{,}574$ a $0{,}550$ al quitar PSA y GSO, así que el criterio de fracaso que fijamos por adelantado no se cumple (Sección~\ref{sec:panel-tost}). Tampoco se limita a copiar la regla: la supera en acierto por un margen pequeño pero medible (TOST de Schuirmann, M10 $+0{,}021$ con IC$_{90}$ $[0{,}001,\ 0{,}039]$; AutoML $+0{,}034$ con $[0{,}010,\ 0{,}056]$) y empata con ella en riesgo. Las señales que diseñamos a mano son el núcleo del valor; el aprendiz solo las exprime en el margen.
 
 \textbf{Comprobar si se bate a la referencia trivial.}
-Ninguna derivada de STRATA bate a la trivial con significancia. La ventaja en acierto existe en punto, pero la ventana es corta y el test no la separa: el McNemar de AutoML frente a ZeroR sobre SPY da $p = 0{,}902$ (Sección~\ref{sec:panel-accuracy}). Un matiz a favor es que el Sharpe de AutoML sobre SPY sí sobrevive a la deflación por número de pruebas (DSR $= 0{,}924$). Es un listón que nos pusimos y no hemos conseguido alcanzar. Es un límite de muestra, no un fallo del mecanismo, y no toca al resultado central: el agente, no el mercado.
+Ninguna derivada de STRATA bate a la trivial con significancia. La ventaja en acierto existe en punto, pero la ventana es corta y el test no la separa: el McNemar de AutoML frente a ZeroR sobre SPY da $p = 0{,}902$ (Sección~\ref{sec:panel-accuracy}). Un matiz a favor es que el Sharpe de AutoML sobre SPY sí sobrevive a la deflación por número de pruebas (DSR $= 0{,}924$). Es un listón que nos pusimos y no hemos conseguido alcanzar. Es un límite de muestra, no un fallo del mecanismo, y no toca al resultado central: el listón era el agente, no el mercado.
 
 \textbf{Delimitar el alcance honesto.}
-Quedan dos límites medidos:
-    1. No batimos a la referencia trivial con significancia. El McNemar de la mejor derivada frente a ZeroR no la separa ($p = 0{,}90$ sobre SPY), así que la ventaja en acierto es real en punto pero nominal en el test. 
-    2. No es un limite puntual, es una regla en potencia. El \emph{leverage} del activo está relacionado con el rescate del activo. Cuanto más fuerte sea este índice, más rescata el aprendiz ($r = -0{,}56$ sobre los diez activos, significativa al $\alpha = 0{,}10$ que fijamos por adelantado; $0{,}097$ de rescate medio en los de \emph{leverage} fuerte frente a $0{,}059$ en los débiles), y donde el \emph{leverage} no existe el régimen pierde su contenido direccional y el mecanismo se debilita. 
+Quedan dos límites, los dos medidos. El primero: no batimos a la referencia trivial con significancia, así que la ventaja en acierto es real en punto pero nominal en el test. El segundo no es un fallo suelto, es una regularidad: el rescate se debilita en los activos de \emph{leverage} débil, donde el régimen pierde su contenido direccional. Y esa misma propiedad, el \emph{leverage}, es la que ordena dónde la supervisión rinde más (Sección~\ref{sec:conc-ley}): el límite y el hallazgo son la misma cosa.
 
 \section{La ley del leverage}
 \label{sec:conc-ley}
@@ -36,45 +34,21 @@ El rescate no es uniforme, hemos visto que depende de la naturaleza de los activ
 \section{Aportaciones}
 \label{sec:conc-aportaciones}
 
-La aportación central es metodológica: un protocolo de supervisión sobre un agente opaco que es interpretable, calibrado antes de mirar la evaluación y contrastado con tests pareados y sus intervalos. Cada decisión de diseño se apoya en un mecanismo o en la literatura, cada cifra se traza a su fichero, y pre-registramos hasta las condiciones de fracaso, como la inversión de la regla en SPY-bajista ($\Delta$Sharpe $= -1{,}49$) que el panel resuelve (Sección~\ref{sec:panel-limites}). La aportación empírica es doble: una capa de supervisión clásica rescata a un agente perdedor en acierto y en riesgo, y el apalancamiento del activo ordena qué canal lo rescata.
+Tenemos tres aportaciones principales.
 
-\section{Aportaciones}
-\label{sec:conc-aportaciones}
+La primera es metodológica: hemos diseñado un protocolo para supervisar a un agente opaco con estadística clásica, interpretable y falsable. Tres detectores ortogonales (HMM, GARCH, BOCPD), una calibración cerrada sobre el histórico antes de ver la evaluación, dos ventanas que nunca se mezclan con \texttt{signal\_lag} para descartar el look-ahead, y un esquema de contraste pareado que no se apoya en un solo test. Un protocolo que podría servir para auditar otros agentes, otros modelos y otros mercados.
 
-Dejamos dos aportaciones. 
-La primera es metodológica: un protocolo para supervisar a un agente opaco que es interpretable y exigente a la vez. Se calibra antes de ver la evaluación, se contrasta con tests pareados y sus intervalos, cada decisión de diseño se apoya en un mecanismo o en la literatura, y cada cifra se traza a su fichero. Pre-registramos las condiciones de fracaso: la regla se invierte en SPY-bajista ($\Delta$Sharpe $= -1{,}49$), una falsación anotada por adelantado que el panel resuelve (Sección~\ref{sec:panel-limites}). 
-La segunda es empírica: una capa de estadística clásica rescata a un agente perdedor en acierto y en riesgo, y una sola propiedad del activo, su apalancamiento, que ordena qué canal lo rescata. Una prueba el resultado y la otra lo explica. 
+La segunda es empírica: demostramos, con el protocolo anterior, que una capa de supervisión clásica rescata a un agente perdedor en acierto y en riesgo.
 
-\section{Aportaciones}
-\label{sec:conc-aportaciones}
-
-La aportación metodológica es un protocolo de supervisión estadística reproducible que : tres detectores ortogonales formalizados sobre HMM, GARCH y BOCPD, calibración cerrada sobre histórico antes de mirar la evaluación, doble ventana de medición con \texttt{signal\_lag} configurada para evitar look-ahead, una capa de intervención de tres modos cuya elección se justifica empíricamente y el consiguiente esquema de contraste pareado que combina McNemar, bootstrap estacionario, Sharpe deflactado y TOST de equivalencia para validar lo definido.
-
-La aportación empírica en: una capa de supervisión clásica rescata al agente en acierto y en riesgo: el McNemar pareado lo separa con significancia sobre SPY, y el $\Delta$Sharpe \emph{pooled-10} excluye el cero para los tres supervisores, con M10 y AutoML sobrevivientes a la corrección de Bonferroni. El rescate es interpretable: el P\&L de la intervención sobre SPY sale entero del canal de régimen, y un meta-learner libre redescubre las señales de STRATA en lugar de prescindir de ellas, con cuota de Shapley superior a $0{,}5$ en los diez de diez activos del panel. Las dos capas se reparten el trabajo: el aprendiz supera a la regla en acierto sin distinguirse en riesgo (TOST), y los dos aprendices se complementan por régimen con un contraste de diferencia en diferencias significativo lo que nos sugiere que la complementariedad no es ruido sino estructura.
-
-La tercera aportación es la \emph{ley del leverage}, el patrón propio del trabajo que además se confirma sin etiquetas. Y podría abrir futuras líneas de investigación que prueben el rescate sólo en estos hasta convertirlo en una regla ad-hoc y podriamos llegar a tener una cierta confianza de saber lo que va a pasar si usamos nuestro metodo ahi, lo que haría de este trabajo un descubrimiento muy rico
+La tercera es un hallazgo: la \emph{ley del leverage}, hemos visto que el apalancamiento está relacionado con el rescate de nuestro sistema. Hemos descubierto, de forma marginal, de qué depende que la supervisión funcione. Esto abre una línea de investigación más enfocada, más prometedora y con más valor que podría acotar los casos de aplicabilidad.
 
 
 \section{Limitaciones}
 \label{sec:conc-limitaciones}
 
-La limitación principal es el tamaño de la muestra. El agente solo existe tras el corte de conocimiento del modelo de lenguaje, lo que hace que la evaluación se queea en unos doscientos cincuenta días por activo y la significancia plena frente a una referencia exigente queda fuera por potencia. Por eso la ventaja sobre lo trivial es nominal y el rescate de riesgo vive en el agregado, no en cada activo. Las dos regularidades de patrón, la ley del \emph{leverage} y el agrupamiento por naturaleza, quedan al borde de su contraste sobre diez puntos. Y trabajamos con un único agente y una única ventana fuera de muestra.
+La limitación principal es el tamaño de la muestra. El agente solo existe tras el corte de conocimiento del modelo de lenguaje, lo que hace que la evaluación se quede en unos doscientos cincuenta días por activo y la significancia plena frente a una referencia exigente queda fuera por potencia. Por eso la ventaja sobre lo trivial es nominal y el rescate de riesgo vive en el agregado, no en cada activo. Las dos regularidades de patrón, la ley del \emph{leverage} y el agrupamiento por naturaleza, quedan al borde de su contraste sobre diez puntos. Y trabajamos con un único agente y una única ventana fuera de muestra.
 
-Otra limitación que ha afectado al desarrollo es el tamaño del panel. Con diez activos, los contrastes entre activos, como la ley del \emph{leverage}, tienen poca potencia. Ampliarlo la reforzaría y sería la mejor alternativa para ofrecer un mejor análisis, pero cada activo nuevo exige generar las decisiones del agente mediante modelos de lenguaje de pago y reentrenar todo el esquema, un coste económico que nos llevó a fijar el panel en número muy reducido.
-
-
-\section{Aportaciones}
-\label{sec:conc-aportaciones}
-
-Quedan tres aportaciones, y ninguna se agota en una cifra ya vista.
-
-La primera es metodológica: hemos diseñado un protocolo para supervisar a un agente opaco con estadística clásica, interpretable y falsable. Tres detectores ortogonales (HMM, GARCH, BOCPD), una calibración cerrada sobre el histórico antes de ver la evaluación, dos ventanas que nunca se mezclan con \texttt{signal\_lag} para descartar el look-ahead, y un esquema de contraste pareado que no se apoya en un solo test. Un protocolo que podría servir para auditar otros agentes, otros modelos y otros mercados.
-
-La segunda es empírica: una capa de supervisión clásica rescata al agente en acierto y en riesgo definida y validada siguiendo el protocolo.
-
-La tercera es un hallazgo: la \emph{ley del leverage}, hemos visto que el apalancamiento está relacionado con el rescate de nuestro sistema. Hemos descubierto, de forma marginal, de qué depende que la supervisión funcione. Esto abre una linea de investigación más enfocada, más prometedora y con más valor que podría acotar los casos de aplicabilidad.
-
-
+Otra limitación que ha afectado al desarrollo es el tamaño del panel. Con diez activos, los contrastes entre activos, como la ley del \emph{leverage}, tienen poca potencia. Ampliarlo la reforzaría y sería la mejor vía para un análisis más sólido, pero cada activo nuevo exige generar las decisiones del agente mediante modelos de lenguaje de pago y reentrenar todo el esquema, un coste económico que nos llevó a fijar el panel en diez activos.
 
 \section{Trabajo futuro}
 \label{sec:conc-futuro}
@@ -87,14 +61,13 @@ Cada límite nos lleva a una continuación.
   \item \textbf{Otros agentes, modelos y mercados.} Repetir el esquema separaría lo propio de STRATA de lo propio de este agente, y pondría a prueba la ley del \emph{leverage} fuera del panel.
   \item \textbf{Intervención graduada.} Entre registrar y sustituir queda atenuar la posición de forma continua, que no exploramos.
   \item \textbf{Detectores más ricos.} Calibrar la confianza declarada del agente, o sumar detectores sobre otros ejes del mercado, ampliaría la cobertura más allá del régimen.
-  \item \textbf{Validación prospectiva.} Este trabajo define y valida el modelo que sostiene la herramienta que motiva la introducción, el siguiente paso sería una evaluación prospectiva: dejar correr para un número significativo de activos la supervisión sobre los datos que van llegando y comprobar si fuera del backtest se sostiene lo que aquí medimos.   
+  \item \textbf{Validación prospectiva.} Este trabajo define y valida el modelo que sostiene la herramienta que motiva la introducción; el siguiente paso sería una evaluación prospectiva: dejar correr la supervisión sobre los datos que van llegando, en sombra y sin capital real, y comprobar si fuera del backtest se sostiene lo que aquí medimos.
   \item \textbf{De la supervisión al alfa.} En algunos activos una derivada de STRATA supera al pasivo en Sharpe yendo defensiva en el momento correcto (Sección~\ref{sec:panel-limites}). Es una señal nominal y leída a posteriori, pero un punto de partida para construir, con contraste pre-registrado y muestra suficiente, una estrategia que genere alfa direccional.
 \end{enumerate}
 
 \section{Conclusión}
 \label{sec:conc-cierre}
 
-Un agente ya está decidiendo sobre dinero real sin saber cuándo ni por qué falla. Frente a esto, este trabajo no añade otro modelo más potente: propone una manera de vigilarlo. Tres detectores estadísticos clásicos, calibrados de antemano y contrastados con tests pareados, corrigen al agente cuando contradice al mercado y dejan ver por qué lo hacen. El resultado es claro, aunque las limitaciones ya mencionadas piden contrastarlo sobre una muestra mayor: no batimos al mercado de forma significativa, sin embargo una supervisión determinista y transparente vuelve fiable, dentro de esos límites, a un agente que por sí solo no lo era, y una sola propiedad del activo, su apalancamiento, anticipa cuándo y cómo. 
+Los agentes ya están decidiendo sobre dinero real sin saber cuándo ni por qué fallan. Frente a eso, este trabajo no añade otro modelo más potente: propone una manera de vigilarlo. Tres detectores estadísticos clásicos, calibrados de antemano y contrastados con tests pareados, corrigen al agente cuando contradice al mercado y dejan ver por qué lo hacen. El resultado es claro, aunque sus límites piden contrastarlo sobre una muestra mayor: no batimos al mercado de forma significativa, pero una supervisión determinista y transparente vuelve fiable, dentro de esos límites, a un agente que por sí solo no lo era, y una sola propiedad del activo, su apalancamiento, anticipa cuándo y cómo.
 
-Y para concluir, tras haber hecho esta investigación puedo confirmar que en estos momentos en los que delegamos cada vez más en sistemas que no entendemos, la mejor manera de supervisar a una IA opaca no es otra IA, sino una evaluación determinista, transparente y con un contraste que pueda fallar. 
-
+Y una última idea, después de esta investigación: en un tiempo en que delegamos cada vez más en sistemas que no entendemos, para supervisar a una IA opaca lo mejor no es otra IA, sino una evaluación determinista, transparente y con un contraste que pueda fallar.

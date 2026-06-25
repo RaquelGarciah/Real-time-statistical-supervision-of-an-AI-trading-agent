@@ -396,9 +396,8 @@ def f4_11():
     reg = BBC["por_regimen"]["POOLED10"]
     pares = ["M8_vs_M5", "M10_vs_M5", "AutoML_vs_M5"]
     nice = {"M8_vs_M5": "M8", "M10_vs_M5": "M10", "AutoML_vs_M5": "AutoML"}
-    fig, axes = plt.subplots(1, 2, figsize=(13, 3.8))
-    # panel izq: ΔSharpe por régimen (barras alcista/bajista)
-    ax = axes[0]
+    fig, ax = plt.subplots(figsize=(7.5, 3.8))
+    # ΔSharpe por régimen (barras alcista/bajista) frente a M5
     x = np.arange(len(pares))
     w = 0.38
     alc = [reg["alcista"]["contrastes"][p]["delta_sharpe"] for p in pares]
@@ -413,23 +412,28 @@ def f4_11():
     ax.set_ylabel("ΔSharpe vs M5")
     ax.yaxis.set_major_formatter(_coma)
     ax.legend(fontsize=8)
-    # panel der: DiD pooled-10 (M10−AutoML: alcista − bajista) = +1,37
-    ax2 = axes[1]
-    d = REGDID["POOLED10"]
-    col = "#27ae60" if d["ci95_low"] > 0 else "#c0392b"
-    ax2.plot([d["ci95_low"], d["ci95_high"]], [0, 0], color=col, lw=3)
-    ax2.plot(d["did_point"], 0, "o", color=col, ms=10, zorder=4)
-    ax2.axvline(0, color="k", lw=.8)
-    ax2.set_yticks([0])
-    ax2.set_yticklabels(["DiD pooled-10"])
-    ax2.set_ylim(-1, 1)
-    ax2.text(d["did_point"], 0.25,
-             f"ΔΔSharpe = {_c(d['did_point'])}\nIC95 [{_c(d['ci95_low'])}, {_c(d['ci95_high'])}]  p = {_c(d['p_one_sided_did_gt_0'], 3)}",
-             ha="center", va="bottom", fontsize=9)
-    ax2.set_xlabel("DiD de Sharpe (M10 − AutoML: alcista − bajista)")
-    ax2.xaxis.set_major_formatter(_coma)
     fig.tight_layout()
     _save(fig, "cap4_did_regimen")
+
+
+def n17_anexo_did():
+    # Panel del DiD pooled-10 (M10−AutoML: alcista − bajista) = +1,37, antes a la derecha de F4.11
+    fig, ax = plt.subplots(figsize=(7.5, 2.6))
+    d = REGDID["POOLED10"]
+    col = "#27ae60" if d["ci95_low"] > 0 else "#c0392b"
+    ax.plot([d["ci95_low"], d["ci95_high"]], [0, 0], color=col, lw=3)
+    ax.plot(d["did_point"], 0, "o", color=col, ms=10, zorder=4)
+    ax.axvline(0, color="k", lw=.8)
+    ax.set_yticks([0])
+    ax.set_yticklabels(["DiD pooled-10"])
+    ax.set_ylim(-1, 1)
+    ax.text(d["did_point"], 0.25,
+            f"ΔΔSharpe = {_c(d['did_point'])}\nIC95 [{_c(d['ci95_low'])}, {_c(d['ci95_high'])}]  p = {_c(d['p_one_sided_did_gt_0'], 3)}",
+            ha="center", va="bottom", fontsize=9)
+    ax.set_xlabel("DiD de Sharpe (M10 − AutoML: alcista − bajista)")
+    ax.xaxis.set_major_formatter(_coma)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_did")
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -1063,10 +1067,10 @@ if __name__ == "__main__":
         fn()
     print("Hecho: 15 figuras cap4_*.pdf")
     print("\nGenerando las 16 figuras nuevas (cuerpo + anexo)")
-    for fn in (n1_anatomia_dia, n2_confusion_spy_6, n3_activacion_panel, n4_naturaleza_panel,
-               n5_robustez_calib, n6_robustez_panel, n7_anexo_confusion_panel, n8_anexo_ablacion,
+    for fn in (n2_confusion_spy_6, n3_activacion_panel, n4_naturaleza_panel,
+               n5_robustez_calib, n6_robustez_panel, n7_anexo_confusion_panel,
                n9_anexo_shap_dependency, n10_anexo_shap_cuota, n11_anexo_shap_rodante,
                n12_anexo_regimen_direccion, n13_anexo_grupos, n14_anexo_psa_gso,
-               n15_anexo_confusion_m10_regimen, n16_anexo_mcnemar):
+               n15_anexo_confusion_m10_regimen, n16_anexo_mcnemar, n17_anexo_did):
         fn()
-    print("Hecho: 16 figuras nuevas cap4_*.pdf")
+    print("Hecho: figuras nuevas cap4_*.pdf")

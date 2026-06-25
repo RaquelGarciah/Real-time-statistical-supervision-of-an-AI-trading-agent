@@ -300,19 +300,10 @@ El tamaño del panel hace que esto sea exploratorio: con diez activos el cluster
 
 \begin{table}[htbp]
 \centering
-\caption{Clustering de la naturaleza de los diez activos (cinco rasgos: \emph{leverage}, retorno medio en Crisis, fracción en Crisis, volatilidad OOS, sesgo del agente). Arriba, calidad por método con $K = 3$: silueta y Rand ajustado frente a $k$-medias. Abajo, perfil de cada cluster (\emph{leverage} medio) y su mejor canal de rescate. Consenso unánime entre los cuatro métodos (Rand $= 1{,}0$).}
+\caption{Perfil de los tres grupos del \emph{clustering} de la naturaleza de los diez activos (cinco rasgos: \emph{leverage}, retorno medio en Crisis, fracción en Crisis, volatilidad OOS, sesgo del agente): \emph{leverage} medio de cada grupo y su mejor canal de rescate. Los cuatro métodos coinciden en esta misma partición (Rand $= 1{,}0$, silueta $0{,}55$).}
 \label{tab:mp-cluster}
-\begin{tabular}{lrr}
+\begin{tabular}{lrl}
 \toprule
-Método ($K=3$) & Silueta & Rand vs $k$-medias \\
-\midrule
-$k$-medias       & $0{,}55$ & $1{,}0$ \\
-Ward             & $0{,}55$ & $1{,}0$ \\
-Mezcla gaussiana & $0{,}55$ & $1{,}0$ \\
-Espectral        & $0{,}55$ & $1{,}0$ \\
-\midrule
-\multicolumn{3}{l}{\emph{Perfil de cluster (naturaleza media y mejor canal)}} \\
-\midrule
 Cluster & \emph{leverage} medio & Mejor canal \\
 \midrule
 C0 índices (SPY, QQQ, XLF, DIA, XLK, XLE) & $-0{,}097$ & AutoML \\
