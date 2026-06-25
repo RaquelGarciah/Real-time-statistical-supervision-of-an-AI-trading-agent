@@ -69,63 +69,28 @@ objeto central del caso de estudio, que se desarrollará en el capítulo~\ref{ca
 \subsection{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
 
-RAM quiere saber una cosa muy concreta: si la dirección de la apuesta del agente encaja con el estado en que está el mercado. Para ello necesita primero una lectura del estado, y la lectura nace de la idea de que el mercado no se comporta siempre igual, sino que atraviesa fases distintas, calma, estrés, crisis, que no vemos directamente pero podemos inferir de los retornos. El modelo oculto de Markov gaussiano formaliza esa lectura del estado latente.
-
-\subsubsection{Cambio de régimen en series financieras}
-\label{sec:hmm-regimen}
-
-Un único modelo con parámetros constantes describe mal una serie financiera larga. Un mercado en tendencia alcista tranquila y un mercado en plena caída no comparten ni media ni volatilidad de los retornos, y forzar un solo conjunto de parámetros para ambos promedia dos comportamientos que conviene separar. La alternativa clásica es admitir que la serie atraviesa distintos \emph{regímenes}, cada uno con su propia ley de probabilidad, y que el régimen vigente cambia en el tiempo de forma no observable directamente. Hamilton formalizó esta idea para series económicas mediante un proceso de Markov sobre los estados no observados \cite{hamilton1989}: el régimen sigue una cadena de Markov y, condicionado a él, la serie observada se distribuye según los parámetros de ese régimen.
-
-En el caso que nos ocupa interpretamos los regímenes como estados de mercado: un régimen de \emph{Calma}, con retornos de media ligeramente positiva y volatilidad baja; un régimen de \emph{Estrés}, intermedio; y un régimen de \emph{Crisis}, con volatilidad alta y retorno medio negativo. Esta lectura puede cambiar según el activo, como se discute en la Sección~\ref{sec:hmm-K}.
+RAM necesita una lectura del estado de mercado. Esa lectura nace de la idea de que el mercado no se comporta siempre igual, sino que atraviesa fases distintas —calma, estrés, crisis— que no se observan pero se infieren de los retornos. Hamilton formalizó esta idea para series económicas mediante un proceso de Markov sobre estados no observados \cite{hamilton1989}: el régimen sigue una cadena de Markov y, condicionado a él, la serie observada se distribuye según los parámetros de ese régimen. Interpretamos los tres regímenes como \emph{Calma} (media ligeramente positiva, volatilidad baja), \emph{Estrés} (intermedio) y \emph{Crisis} (volatilidad alta, media negativa).
 
 \subsubsection{Definición del HMM gaussiano}
 \label{sec:hmm-def}
 
-Un \emph{modelo oculto de Markov} (HMM) consta de una secuencia de estados ocultos y una secuencia de observaciones generadas por esos estados \cite{rabiner1989, cappe2005}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$, con $K$ el número de regímenes. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden: dado el estado en $t$, el estado en $t+1$ no depende del pasado anterior,
-\[
-\Prob(z_{t+1} = j \mid z_t = i, z_{t-1}, \dots, z_1) = \Prob(z_{t+1} = j \mid z_t = i).
-\]
-Recogemos estas probabilidades en la \emph{matriz de transición} $A \in \mathbb{R}^{K \times K}$, de entradas
-\[
-A_{ij} = \Prob(z_{t+1} = j \mid z_t = i), \qquad A_{ij} \ge 0, \quad \sum_{j=1}^{K} A_{ij} = 1 \;\;\forall i,
-\]
-y la ley del estado inicial en la \emph{distribución inicial} $\pi = (\pi_1, \dots, \pi_K)$ con $\pi_k = \Prob(z_1 = k)$ y $\sum_k \pi_k = 1$.
-
-El estado no se observa; lo que se observa es $x_t$, el vector de características del día $t$ (en nuestro caso, el log-retorno y la volatilidad realizada $\mathrm{RV}_t$ con ventana de $21$ días). Suponemos \emph{emisiones gaussianas}: condicionada al régimen $k$, la observación es normal multivariante,
-
+Un \emph{modelo oculto de Markov} (HMM) consta de una cadena de estados ocultos y una secuencia de observaciones que esos estados generan \cite{rabiner1989, cappe2005}. Sea $z_t \in \{1, \dots, K\}$ el estado oculto (el régimen) en el día $t$. La sucesión $\{z_t\}$ es una cadena de Markov homogénea de primer orden, con \emph{matriz de transición} $A_{ij} = \Prob(z_{t+1} = j \mid z_t = i)$ ($A_{ij}\ge 0$, $\sum_j A_{ij}=1$) y \emph{distribución inicial} $\pi_k = \Prob(z_1 = k)$. El estado no se observa; lo observado es $x_t$, el vector de características del día $t$ (el log-retorno y la volatilidad realizada $\mathrm{RV}_t$ con ventana de $21$ días). Suponemos \emph{emisiones gaussianas},
 \[
 x_t \mid z_t = k \;\sim\; \mathcal{N}(\muk, \Sigma_k),
+\qquad b_k(x) = \mathcal{N}(x \mid \muk, \Sigma_k),
 \]
-con $\muk$ el vector de medias del régimen $k$ y $\Sigma_k$ su matriz de covarianzas. Escribimos la densidad de emisión como
-\[
-b_k(x) \;=\; \mathcal{N}(x \mid \muk, \Sigma_k).
-\]
-El modelo asume dos hipótesis de independencia condicional, palanca de toda derivación posterior. La observación de cada día depende solo del estado de ese día,
+y dos hipótesis de independencia condicional, palanca de toda derivación posterior: la observación de cada día depende solo del estado de ese día,
 \[
 \Prob(x_t \mid z_t, z_{t-1}, \dots, z_1, x_{t-1}, \dots, x_1) = \Prob(x_t \mid z_t) = b_{z_t}(x_t),
 \tag{$\ast$}
 \]
-y la dinámica de los estados es markoviana de primer orden.
+y la dinámica de los estados es markoviana de primer orden. El conjunto de parámetros es $\lambda = (A, \pi, \{\muk, \Sigma_k\}_{k=1}^{K})$, y la verosimilitud observada marginaliza sobre las trayectorias ocultas, $\Prob(x_{1:T} \mid \lambda) = \sum_{z_{1:T}} \Prob(x_{1:T}, z_{1:T} \mid \lambda)$. Esta suma recorre $K^T$ trayectorias; el algoritmo \emph{forward} la calcula en tiempo lineal en $T$.
 
-El conjunto de parámetros es $\lambda = (A, \pi, \{\muk, \Sigma_k\}_{k=1}^{K})$. Para una secuencia observada $x_{1:T} = (x_1, \dots, x_T)$ y una trayectoria oculta $z_{1:T}$, la probabilidad conjunta se factoriza según el grafo del modelo:
-\[
-\Prob(x_{1:T}, z_{1:T} \mid \lambda)
-= \pi_{z_1}\, b_{z_1}(x_1) \prod_{t=2}^{T} A_{z_{t-1} z_t}\, b_{z_t}(x_t).
-\]
-La verosimilitud de los datos observados se obtiene marginalizando sobre todas las trayectorias ocultas posibles,
-\[
-\Prob(x_{1:T} \mid \lambda) = \sum_{z_{1:T}} \Prob(x_{1:T}, z_{1:T} \mid \lambda).
-\]
-Esta suma recorre $K^T$ trayectorias, así que evaluarla término a término es inviable salvo para $T$ minúsculos. El algoritmo \emph{forward} la calcula en tiempo lineal en $T$.
-
-\subsubsection{Algoritmo forward}
+\subsubsection{Algoritmo forward y filtrado causal}
 \label{sec:hmm-forward}
+\label{sec:hmm-filtrado}
 
-Definimos la \emph{variable forward}
-\[
-\alpha_t(k) \;=\; \Prob(x_{1:t},\, z_t = k \mid \lambda),
-\]
-la masa de probabilidad conjunta que el modelo asigna a la trayectoria de observaciones hasta $t$ y al hecho de estar en el régimen $k$ precisamente en ese instante. La verosimilitud completa se recupera de ella sin más que marginalizar el último estado: $\Prob(x_{1:T} \mid \lambda) = \sum_{k} \alpha_T(k)$. Lo que vuelve tratable el cálculo, y se demuestra en cualquier tratamiento del HMM \cite{rabiner1989,bishop2006}, es que $\alpha_t$ puede obtenerse por recursión.
+La \emph{variable forward} $\alpha_t(k) = \Prob(x_{1:t},\, z_t = k \mid \lambda)$ recupera la verosimilitud completa por marginalización, $\Prob(x_{1:T} \mid \lambda) = \sum_{k} \alpha_T(k)$, y admite una recursión que evita la suma exponencial \cite{rabiner1989, bishop2006}.
 
 \begin{proposicion}[Recursión forward]
 \label{prop:forward}
@@ -135,18 +100,9 @@ Para $t \ge 1$ se tiene la inicialización $\alpha_1(k) = \pi_k\, b_k(x_1)$ y, p
 \]
 \end{proposicion}
 
-La inicialización es inmediata por la definición de $\alpha_1$ y la independencia condicional $(\ast)$; el paso recursivo se obtiene introduciendo el estado anterior $z_t$ por marginalización y separando la última observación $x_{t+1}$ con la regla del producto. El desarrollo está en el Anexo~\ref{anx:forward}.
+La demostración está en el Anexo~\ref{anx:forward}. La recursión reduce el coste de $K^T$ a $\mathcal{O}(T K^2)$; en la práctica se trabaja en escala logarítmica para evitar el desbordamiento numérico.
 
-La recursión reduce el coste de $K^T$ a $\mathcal{O}(T K^2)$ operaciones: en cada paso se actualizan $K$ variables y cada una suma sobre $K$ términos. En la práctica los $\alpha_t(k)$ decaen exponencialmente con $t$ y se trabaja con su logaritmo o con una normalización por paso para evitar el desbordamiento numérico, pero la estructura de la recursión es la enunciada.
-
-\subsubsection{Posterior filtrado frente a posterior suavizado}
-\label{sec:hmm-filtrado}
-
-La variable forward responde a una probabilidad conjunta, pero lo que interesa para decidir es la probabilidad del régimen \emph{dado} lo observado. Definimos el \emph{posterior filtrado}
-\[
-\gammaf(k) \;=\; \Prob(z_t = k \mid x_{1:t}),
-\]
-la probabilidad de estar en el régimen $k$ en el instante $t$ condicionada únicamente a las observaciones disponibles hasta ese instante. Se obtiene normalizando la variable forward sobre los estados \cite{rabiner1989, bishop2006}.
+Para decidir interesa la probabilidad del régimen \emph{dado} lo observado, el \emph{posterior filtrado} $\gammaf(k) = \Prob(z_t = k \mid x_{1:t})$, que se obtiene normalizando la variable forward \cite{rabiner1989, bishop2006}.
 
 \begin{proposicion}[Filtrado a partir del forward]
 \label{prop:filtrado}
@@ -156,179 +112,83 @@ Para todo $t \ge 1$ y todo $k$,
 \]
 \end{proposicion}
 
-Basta dividir la probabilidad conjunta $\alpha_t(k) = \Prob(x_{1:t}, z_t = k)$ por la marginal $\Prob(x_{1:t}) = \sum_j \alpha_t(j)$. El adjetivo \emph{filtrado} es preciso, y su consecuencia es el eje de toda la memoria.
-
 \begin{corolario}[Causalidad del filtrado]
 \label{cor:causal}
 Para cada $t$, el posterior filtrado $\gammaf$ es función únicamente de las observaciones $x_{1:t}$. En particular, puede calcularse en tiempo real el día $t$ sin recurrir a ninguna observación posterior.
 \end{corolario}
 
-El argumento es inductivo sobre $t$, apoyado en que la recursión forward construye cada $\alpha_t$ a partir de $\alpha_{t-1}$ y de $x_t$; el desarrollo de ambas pruebas está en el Anexo~\ref{anx:filtrado}. Esa causalidad es lo que permite usar el filtrado en producción: cada día STRATA estima el régimen con lo que ya conoce.
+La demostración de ambos está en el Anexo~\ref{anx:filtrado}. Esa causalidad es lo que permite usar el filtrado en producción. Contrasta con el \emph{posterior suavizado} $\Prob(z_t = k \mid x_{1:T})$, que condiciona sobre la secuencia completa y se calcula con el algoritmo forward-backward \cite{baum1970, rabiner1989}: estima mejor el régimen pasado porque incorpora lo ocurrido después, pero por eso mismo introduciría \emph{look-ahead} en una decisión. Por tanto \textbf{STRATA usa exclusivamente el posterior filtrado $\gammaf$}, nunca el suavizado: solo así, por el Corolario~\ref{cor:causal}, el sistema es reproducible en tiempo real.
 
-Esto contrasta con el \emph{posterior suavizado}
-\[
-\Prob(z_t = k \mid x_{1:T}),
-\]
-que condiciona sobre la secuencia completa hasta el final $T$, incluyendo $x_{t+1:T}$. El suavizado es una estimación mejor del régimen pasado precisamente porque incorpora lo que ocurrió después: el conocimiento del futuro afina el juicio sobre el presente. Se calcula con el algoritmo forward-backward, que combina la variable forward con una variable backward que recorre la secuencia en sentido inverso \cite{baum1970, rabiner1989}. Esa misma virtud lo descalifica para nuestro uso. Emplear el suavizado dentro de un sistema de decisión introduciría \emph{look-ahead}: la decisión del día $t$ quedaría contaminada por información de días posteriores que en operativa real no se conocen. Por esta razón, \textbf{STRATA usa exclusivamente el posterior filtrado $\gammaf$}, nunca el suavizado: solo así, por el Corolario~\ref{cor:causal}, el sistema es reproducible en tiempo real.
-
-\subsubsection{Estimación: el algoritmo de Baum-Welch (EM)}
+\subsubsection{Estimación, trayectoria óptima y número de estados}
 \label{sec:hmm-em}
+\label{sec:hmm-viterbi}
+\label{sec:hmm-K}
 
-Hasta aquí se ha supuesto conocido el conjunto de parámetros $\lambda$. En la práctica $\lambda$ debe estimarse a partir de los datos, y como los estados $z_{1:T}$ no se observan no puede maximizarse la verosimilitud directamente. El algoritmo de Baum-Welch resuelve esto como una instancia del esquema de esperanza-maximización (EM): alterna una estimación de los estados ocultos con una reestimación de los parámetros, de forma que la verosimilitud observada no decrece en cada iteración \cite{baum1970, dempster1977}.
-
-En el \emph{paso E} (esperanza) se calculan, con los parámetros actuales, los posteriores de los estados y de las transiciones, esto es, el posterior suavizado puntual $\Prob(z_t = k \mid x_{1:T})$ y el de pares $\Prob(z_t = i, z_{t+1} = j \mid x_{1:T})$, ambos obtenidos con el algoritmo forward-backward. Aquí sí se emplea el suavizado, y es legítimo: el ajuste del modelo se hace una sola vez, fuera de línea, sobre el periodo de calibración completo, no como parte de una decisión en tiempo real. La causalidad solo se exige en la fase de explotación, donde rige el filtrado.
-
-En el \emph{paso M} (maximización) se reestiman los parámetros maximizando la esperanza calculada en el paso E, lo que da fórmulas cerradas: la distribución inicial y la matriz de transición se actualizan como frecuencias esperadas, y las medias y covarianzas de cada régimen como promedios ponderados por el posterior del estado. Las fórmulas de actualización están en el Anexo~\ref{anx:em-pasos}. Lo que justifica el procedimiento es que ningún paso empeora el ajuste.
+Los parámetros $\lambda$ se estiman por el algoritmo de Baum-Welch, instancia del esquema esperanza-maximización (EM) \cite{baum1970, dempster1977}. El paso E calcula los posteriores suavizados de estados y transiciones con el forward-backward —legítimo aquí, porque el ajuste se hace una sola vez fuera de línea sobre la calibración, no en una decisión en tiempo real—, y el paso M reestima los parámetros con fórmulas cerradas (Anexo~\ref{anx:em-pasos}): la distribución inicial y la matriz de transición como frecuencias esperadas, las medias y covarianzas como promedios ponderados por el posterior del estado.
 
 \begin{lema}[Monotonía de EM]
 \label{lem:em}
-Sea $\lambda'$ el conjunto de parámetros que produce un paso de EM a partir de $\lambda$. Entonces la verosimilitud observada no decrece:
-\[
-\Prob(x_{1:T} \mid \lambda') \;\ge\; \Prob(x_{1:T} \mid \lambda).
-\]
+Sea $\lambda'$ el conjunto de parámetros que produce un paso de EM a partir de $\lambda$. Entonces la verosimilitud observada no decrece, $\Prob(x_{1:T} \mid \lambda') \ge \Prob(x_{1:T} \mid \lambda)$.
 \end{lema}
 
-La demostración se encuentra en el Anexo~\ref{anx:demostraciones}.
-
-El algoritmo itera los pasos E y M hasta que la verosimilitud se estabiliza. Su convergencia a un punto estacionario de la verosimilitud, bajo condiciones de regularidad, es un resultado clásico de la teoría de EM \cite{dempster1977}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla y de partir de una inicialización razonable.
-
-\subsubsection{El algoritmo de Viterbi}
-\label{sec:hmm-viterbi}
-
-El filtrado y el suavizado responden a una pregunta puntual: cuál es la probabilidad del régimen \emph{en un instante dado}. Una pregunta distinta es cuál es la \emph{trayectoria} de estados más probable en su conjunto, esto es, la secuencia $z_{1:T}^{\ast}$ que maximiza la probabilidad conjunta a posteriori,
-\[
-z_{1:T}^{\ast} = \arg\max_{z_{1:T}} \Prob(z_{1:T} \mid x_{1:T}, \lambda).
-\]
-Esto es el estimador MAP de la trayectoria completa, y lo resuelve el algoritmo de Viterbi mediante programación dinámica, con una recursión análoga a la del forward que sustituye la suma sobre estados por un máximo \cite{viterbi1967}; su desarrollo está en el Anexo~\ref{anx:viterbi}. La distinción importa, y no es un detalle menor: encadenar los modos del filtrado instante a instante, $\arg\max_k \gammaf(k)$ para cada $t$, no produce en general la misma secuencia que Viterbi, porque la concatenación de óptimos puntuales puede dar una trayectoria que la matriz de transición considera improbable o incluso imposible. Viterbi optimiza la trayectoria como un todo y respeta las transiciones. En esta memoria el detector de régimen se apoya en el filtrado puntual por la exigencia de causalidad de la Sección~\ref{sec:hmm-filtrado}; Viterbi se usa de forma auxiliar para la lectura interpretativa de la secuencia de regímenes sobre el periodo de calibración, donde la trayectoria global es lo que se quiere visualizar.
-
-\subsubsection{Selección del número de estados}
-\label{sec:hmm-K}
-
-Un valor demasiado pequeño no distingue estados de mercado realmente diferentes; uno demasiado grande sobreajusta y fragmenta la serie en regímenes sin contenido interpretable, además de multiplicar los parámetros a estimar. El criterio que seguimos combina dos exigencias. La primera es estadística: para cada candidato de $K$ se ajusta el HMM sobre el tramo de entrenamiento y se evalúa la \emph{log-verosimilitud held-out}
-\[
-\ell_{\mathrm{val}}(K) = \sum_{t \in \mathrm{val}} \log \Prob\big(x_t \mid x_{1:t-1},\, \hat{\lambda}_K\big),
-\]
-con $\hat{\lambda}_K$ el modelo de $K$ estados ajustado en el entrenamiento, sobre un tramo de validación posterior en el tiempo, nunca solapado con el de entrenamiento, de modo que la comparación respeta el orden temporal de la serie y no premia el sobreajuste \cite{rabiner1989}. La segunda es de interpretabilidad: los regímenes resultantes deben admitir una lectura económica clara y estable. Esta decisión se desarrolla en el capítulo siguiente; podemos anticipar que la combinación de ambos criterios fija $K = 3$ como la calibración de referencia del método, con los tres estados ya descritos: calma, estrés y crisis.
+La demostración está en el Anexo~\ref{anx:em}. El óptimo alcanzado es local y depende de la inicialización, de ahí la importancia de fijar la semilla. Una pregunta distinta al filtrado puntual es la \emph{trayectoria} de estados más probable, $z_{1:T}^{\ast} = \arg\max_{z_{1:T}} \Prob(z_{1:T} \mid x_{1:T}, \lambda)$, que resuelve el algoritmo de Viterbi por programación dinámica, con una recursión análoga a la del forward que sustituye la suma por un máximo \cite{viterbi1967} (Anexo~\ref{anx:viterbi}). Encadenar los modos del filtrado, $\arg\max_k \gammaf(k)$, no da en general la misma secuencia que Viterbi, que respeta las transiciones de $A$. El detector de régimen se apoya en el filtrado puntual por la exigencia de causalidad; Viterbi se usa de forma auxiliar para la lectura interpretativa sobre la calibración. El número de estados se fija combinando la log-verosimilitud held-out sobre un tramo de validación posterior en el tiempo \cite{rabiner1989} con la exigencia de interpretabilidad económica; ambos criterios fijan $K = 3$ como calibración de referencia, con los estados calma, estrés y crisis. Esta decisión se desarrolla en el capítulo siguiente.
 
 \subsection{Volatilidad condicional: ARCH y GARCH(1,1)-t}
 \label{sec:garch}
 
 GSO se ocupa del tamaño de la apuesta, y para juzgarlo necesita una medida de cuánto se mueve el mercado ahora mismo. El HMM reparte la volatilidad en unos pocos estados discretos, una lectura útil pero gruesa: dentro de un mismo régimen, la dispersión de los retornos sube y baja de forma continua. El modelo GARCH captura justamente esa volatilidad que cambia día a día, y es el que alimenta a GSO.
 
-\subsubsection{Series temporales y heterocedasticidad condicional}
+\subsubsection{Heterocedasticidad condicional y modelo GARCH$(1,1)$-$t$}
 \label{sec:garch-intro}
-
-Una serie de retornos financieros es una realización de un \emph{proceso estocástico} en tiempo discreto: una sucesión de variables aleatorias $\{\reglog\}_{t \ge 1}$ indexada por el tiempo. Modelarla es describir su ley conjunta, que la regla de la cadena factoriza en un producto de distribuciones condicionales,
-\[
-\Prob\big(r^{\log}_{1:T}\big) \;=\; \prod_{t=1}^{T} \Prob\big(\reglog \mid \mathcal{F}_{t-1}\big),
-\]
-donde $\mathcal{F}_{t-1}$ es la \emph{filtración}, la $\sigma$-álgebra generada por el pasado hasta $t-1$. Modelar las distribuciones condicionales es, por tanto, modelar la conjunta, y es lo que da pie a la verosimilitud condicional de la Sección~\ref{sec:garch-mv}. El objeto central son su media y su varianza condicionales, $\E[\reglog \mid \mathcal{F}_{t-1}]$ y $\Var(\reglog \mid \mathcal{F}_{t-1})$, frente a sus versiones \emph{incondicionales} $\E[\reglog]$ y $\Var(\reglog)$, que no dependen del instante $t$ y nos dan información del comportamiento de la serie \cite{hamilton1994, tsay2010}.
-
-El punto de partida más simple es el \emph{ruido blanco}: una sucesión de media cero, varianza constante e incorrelada a todo rezago. No tiene estructura explotable en sus dos primeros momentos, y un modelo de varianza condicional constante homocedástico hereda esa rigidez. Pero incorrelación no es independencia: un proceso puede ser ruido blanco y, aun así, guardar estructura temporal en momentos de orden superior. Es lo que muestran las regularidades empíricas de la Sección~\ref{sec:preliminares}: el signo de los retornos es casi impredecible (poca autocorrelación en niveles), mientras que su \emph{magnitud} se agrupa en el tiempo, de modo que la varianza condicional depende del pasado. Esta \emph{heterocedasticidad condicional} es la diferencia entre incorrelación e independencia que los modelos ARCH explotan \cite{cont2001}.
-
-Modelaremos el retorno como $\reglog = \mu + \epsilon_t$, separando la media de la \emph{innovación} $\epsilon_t = \sigmat\, \eta_t$, con $\eta_t$ un ruido i.i.d. y toda la dinámica de interés en la varianza condicional $\Var(\epsilon_t \mid \mathcal{F}_{t-1}) = \sigmat^2$. Como en niveles los retornos son prácticamente incorrelados, la tomamos constante así la riqueza del modelo vivirá en $\sigmat^2$. La innovación resultante es una \emph{diferencia de martingala}, $\E[\epsilon_t \mid \mathcal{F}_{t-1}] = 0$: incorrelada, pero no independiente.
-
-Dos nociones de estacionariedad recorren el capítulo. Un proceso con segundo momento finito es \emph{estacionario en covarianza} (o débilmente estacionario) si su media es constante y su autocovarianza $\operatorname{Cov}(r^{\log}_{t},\, r^{\log}_{t+h})$ depende solo del desfase $h$ y no de $t$; es \emph{estrictamente estacionario} si la ley conjunta de cualquier bloque $(r^{\log}_{t_1}, \dots, r^{\log}_{t_k})$ es invariante frente a una traslación común de los índices \cite{brockwell1991}. Bajo segundo momento finito la estricta implica la débil. La estacionariedad en covarianza es la que caracteriza el Teorema~\ref{teo:garch-estac}: modelar la varianza condicional como variable en el tiempo es compatible con que el proceso siga siendo estacionario en covarianza, pues su varianza \emph{incondicional} se mantiene constante siempre que los parámetros cumplan la condición $\alpha+\beta<1$ de ese teorema, aunque la \emph{condicional} fluctúe día a día.
-
-\subsubsection{De ARCH a GARCH}
 \label{sec:garch-arch}
+\label{sec:garch-t}
 
-El HMM reparte la volatilidad entre unos pocos estados discretos, cada uno con su covarianza $\Sigma_k$ constante. Esa descripción es útil para clasificar el mercado en regímenes, pero es gruesa: dentro de un mismo régimen la dispersión de los retornos no es fija, sino que sube y baja de forma continua. El agrupamiento de volatilidad descrito entre las regularidades empíricas de la Sección~\ref{sec:preliminares} pide un modelo en el que la varianza de hoy dependa explícitamente de lo agitado que haya estado el pasado reciente. Ese es el cometido de la familia ARCH/GARCH.
+Una serie de retornos es una realización de un proceso estocástico cuya ley conjunta factoriza en distribuciones condicionales sobre la filtración $\mathcal{F}_{t-1}$ \cite{hamilton1994, tsay2010}. Las regularidades empíricas de la Sección~\ref{sec:preliminares} muestran que el signo de los retornos es casi impredecible mientras su magnitud se agrupa en el tiempo: la varianza condicional depende del pasado. Esta \emph{heterocedasticidad condicional} —la diferencia entre incorrelación e independencia— es lo que los modelos ARCH explotan \cite{cont2001}. Modelamos el retorno como $\reglog = \mu + \epsilon_t$ con innovación $\epsilon_t = \sigmat\, \eta_t$, $\eta_t$ i.i.d. de media $0$ y varianza $1$; tomamos $\mu$ constante porque en niveles los retornos son incorrelados, y dejamos toda la dinámica en $\sigmat^2 = \Var(\epsilon_t \mid \mathcal{F}_{t-1})$. Distinguimos dos nociones de estacionariedad: la \emph{estacionariedad en covarianza}, que exige media y autocovarianzas invariantes en el tiempo, y la \emph{estricta}, invariancia de la ley conjunta de cualquier bloque frente a traslación \cite{brockwell1991}.
 
-Engle introdujo el modelo \emph{ARCH} (heterocedasticidad condicional autorregresiva) para capturar precisamente este fenómeno \cite{engle1982}. La idea es hacer que la varianza de la innovación $\epsilon_t = \reglog - \mu$ de la subsección anterior sea función de los errores recientes al cuadrado. En un ARCH de orden $q$, ARCH($q$), la varianza condicional de la innovación, que denotamos $\sigma_t^2$, se escribe
-\[
-\sigma_t^2 \;=\; \omega + \sum_{i=1}^{q} \alpha_i\, \epsilon_{t-i}^2,
-\qquad \omega > 0, \quad \alpha_i \ge 0,
-\]
-con la convención $\epsilon_t = \sigma_t\, \eta_t$, donde $\eta_t$ es un ruido i.i.d. de media $0$ y varianza $1$ que se especifica más abajo. Denotamos por $\mathcal{F}_t = \sigma(\epsilon_s : s \le t)$ la filtración generada por las innovaciones hasta $t$. Que $\sigma_t^2$ sea \emph{condicional} significa que es la varianza de $\epsilon_t$ dada $\mathcal{F}_{t-1}$: es $\mathcal{F}_{t-1}$-medible, depende solo del pasado y no del propio $\epsilon_t$. Un error grande en cualquiera de los $q$ días anteriores eleva $\sigma_t^2$, lo que reproduce el agrupamiento: tras un golpe, la volatilidad esperada sube.
-
-La limitación práctica de ARCH es que reproducir la persistencia observada en los datos exige un orden $q$ alto, y con él muchos parámetros $\alpha_i$ que estimar, lo que vuelve el modelo inestable y propenso a violar las restricciones de no negatividad. Bollerslev resolvió esta cuestión generalizando el modelo: el \emph{GARCH} (ARCH generalizado) añade a la recursión términos de la propia varianza condicional pasada, de modo que la persistencia se consigue con pocos parámetros \cite{bollerslev1986}. El modelo elegido será el GARCH$(1,1)$, la versión más sencilla, la que consigue esa persistencia con menos parámetros, y la más extendida en finanzas. Definimos
-\[
-\epsilon_t \;=\; \sigmat\, \eta_t, \qquad \eta_t \;\text{i.i.d.}, \quad \E[\eta_t] = 0, \quad \Var(\eta_t) = 1,
-\]
-y la recursión de la varianza condicional
+Engle introdujo el \emph{ARCH} haciendo la varianza función de los errores recientes al cuadrado \cite{engle1982}, pero reproducir la persistencia observada exigía orden alto y muchos parámetros. Bollerslev lo generalizó al \emph{GARCH}, que añade la propia varianza pasada y logra la persistencia con pocos parámetros \cite{bollerslev1986}. Adoptamos el GARCH$(1,1)$,
 \begin{equation}
 \label{eq:garch11}
 \sigmat^2 \;=\; \omega + \alpha\, \epsilon_{t-1}^2 + \beta\, \sigma_{t-1}^2,
-\qquad \omega > 0, \quad \alpha \ge 0, \quad \beta \ge 0.
+\qquad \omega > 0, \quad \alpha \ge 0, \quad \beta \ge 0,
 \end{equation}
-La varianza de hoy se compone de tres términos: un suelo constante $\omega$, la sorpresa del día anterior $\epsilon_{t-1}^2$ (término ARCH, peso $\alpha$) y la propia varianza del día anterior $\sigma_{t-1}^2$ (término GARCH, peso $\beta$). El último es el que aporta memoria larga con un solo parámetro: $\sigma_{t-1}^2$ ya resume todo el pasado, así que arrastrarla evita tener que sumar muchos rezagos de $\epsilon^2$. La cantidad $\sigmat = \sqrt{\sigmat^2}$ es la \emph{volatilidad condicional}, la desviación típica de la innovación dada la información hasta $t-1$, y es la que utiliza el detector GSO de la Parte B. Las cifras de volatilidad se reportan \emph{anualizadas}. La razón es que la volatilidad diaria es un número pequeño y poco intuitivo, mientras que la escala anual es la que se usa en finanzas para comparar activos y leer el riesgo. Para pasar de la diaria a la anual multiplicamos $\sigmat$ por $\sqrt{252}$: como las varianzas de días aproximadamente independientes se suman, la desviación típica crece con la raíz del número de días, y el año bursátil tiene unos $252$.
+suma de un suelo $\omega$, la sorpresa del día anterior (término ARCH, peso $\alpha$) y la varianza del día anterior (término GARCH, peso $\beta$), que aporta memoria larga con un solo parámetro. La \emph{volatilidad condicional} $\sigmat = \sqrt{\sigmat^2}$ es la que alimenta a GSO. Las cifras se reportan \emph{anualizadas}, multiplicando $\sigmat$ por $\sqrt{252}$.
 
-\subsubsection{Estacionariedad y varianza incondicional}
+Como las colas pesadas son una de las regularidades empíricas y un GARCH gaussiano genera colas demasiado finas, tomamos $\eta_t$ con distribución $t$ de Student estandarizada de $\nu$ grados de libertad ($\nu>2$ para que exista la varianza), siguiendo a Bollerslev \cite{bollerslev1987}. Cuanto menor es $\nu$, más pesadas son las colas; en el límite $\nu \to \infty$ se recupera el caso gaussiano. Esta es la especificación GARCH$(1,1)$-$t$ que usa la memoria.
+
+\subsubsection{Estacionariedad y estimación}
 \label{sec:garch-estac}
+\label{sec:garch-mv}
 
-La recursión \eqref{eq:garch11} solo define un proceso bien comportado bajo una condición sobre los parámetros. El siguiente resultado la caracteriza y, de paso, da la varianza a largo plazo del proceso.
+La recursión \eqref{eq:garch11} solo define un proceso bien comportado bajo una condición sobre los parámetros, que el siguiente resultado caracteriza dando además la varianza a largo plazo.
 
 \begin{teorema}[Estacionariedad en covarianza del GARCH$(1,1)$]
 \label{teo:garch-estac}
-Sea $\{\epsilon_t\}$ el proceso definido por $\epsilon_t = \sigmat \eta_t$ con $\{\eta_t\}$ i.i.d. de media $0$ y varianza $1$ y la recursión \eqref{eq:garch11}, con $\omega > 0$, $\alpha \ge 0$, $\beta \ge 0$. Entonces $\{\epsilon_t\}$ admite una solución estacionaria en covarianza con varianza incondicional finita si y solo si
-\[
-\alpha + \beta < 1,
-\]
-y en ese caso la varianza incondicional vale
+Sea $\{\epsilon_t\}$ el proceso definido por $\epsilon_t = \sigmat \eta_t$ con $\{\eta_t\}$ i.i.d. de media $0$ y varianza $1$ y la recursión \eqref{eq:garch11}, con $\omega > 0$, $\alpha \ge 0$, $\beta \ge 0$. Entonces $\{\epsilon_t\}$ admite una solución estacionaria en covarianza con varianza incondicional finita si y solo si $\alpha + \beta < 1$, y en ese caso
 \[
 \Var(\epsilon_t) \;=\; \frac{\omega}{1 - \alpha - \beta}.
 \]
 \end{teorema}
 
-La demostración se encuentra en el Anexo~\ref{anx:demostraciones}.
+La demostración está en el Anexo~\ref{anx:garch-estac}. La suma $\alpha + \beta$ mide la \emph{persistencia} de la volatilidad; en series diarias se estima cerca de $1$. El caso límite $\alpha + \beta = 1$ define el modelo \emph{IGARCH} \cite{englebollerslev1986}, de varianza incondicional infinita y choque permanente, en cuya frontera el Teorema~\ref{teo:garch-estac} deja de garantizar estacionariedad en covarianza. Esta se distingue de la estacionariedad estricta, que se cumple bajo la condición más débil $\E[\log(\alpha \eta_t^2+\beta)]<0$ \cite{nelson1990}.
 
-La suma $\alpha + \beta$ mide la \emph{persistencia} de la volatilidad: cuán despacio se reabsorbe un golpe. Cuando $\alpha + \beta$ está cerca de $1$, la varianza incondicional $\omega/(1-\alpha-\beta)$ explota y los choques tardan muchísimo en disiparse; en series financieras diarias es habitual estimar valores muy próximos a la unidad, signo de volatilidad muy persistente. El caso límite $\alpha + \beta = 1$ define el modelo \emph{IGARCH} (GARCH integrado) \cite{englebollerslev1986}, en el que la varianza incondicional ya no es finita y un choque tiene efecto permanente sobre la volatilidad esperada, de forma análoga a una raíz unitaria en la media. En esa frontera el Teorema~\ref{teo:garch-estac} deja de garantizar estacionariedad en covarianza, y la interpretación de $\sigmat$ como fluctuación alrededor de un nivel de largo plazo se pierde. Distinguimos esta estacionariedad en covarianza, que exige $\alpha+\beta<1$, de la estacionariedad estricta, que se cumple bajo la condición más débil $\E[\log(\alpha \eta_t^2+\beta)]<0$ \cite{nelson1990}.
-
-\subsubsection{Innovaciones Student-t}
-\label{sec:garch-t}
-
-Falta especificar la ley del ruido $\eta_t$. La elección más simple, $\eta_t \sim \mathcal{N}(0,1)$, reproduce el agrupamiento de volatilidad pero subestima la frecuencia de los movimientos extremos: incluso con varianza variable, un GARCH gaussiano genera colas demasiado finas frente a las que muestran los retornos reales. Como las colas pesadas eran una de las regularidades empíricas de la Sección~\ref{sec:preliminares}, el ruido necesita colas más anchas. Bollerslev propuso sustituir la normal por una $t$ de Student estandarizada \cite{bollerslev1987}.
-
-Tomamos entonces $\eta_t$ i.i.d. con distribución $t$ de Student de $\nu$ grados de libertad, reescalada para tener varianza unidad,
-\[
-\eta_t \;\sim\; t_\nu \;\text{estandarizada}, \qquad \E[\eta_t] = 0, \quad \Var(\eta_t) = 1, \quad \nu > 2.
-\]
-El parámetro $\nu$, los \emph{grados de libertad}, controla el grosor de las colas: cuanto menor es $\nu$, más probabilidad acumula la distribución en los extremos y más frecuentes son los retornos atípicos. La restricción $\nu > 2$ es necesaria para que la varianza exista y el reescalado a varianza unidad tenga sentido. En el límite $\nu \to \infty$ la $t$ de Student converge a la normal estándar, de modo que el GARCH$(1,1)$ gaussiano queda como caso particular del GARCH$(1,1)$-$t$; estimar $\nu$ finito y pequeño indica, dentro del modelo, que las innovaciones estandarizadas tienen colas más pesadas que la gaussiana. Esta es la especificación que se usa en la memoria y la que abrevia el rótulo GARCH$(1,1)$-$t$.
-
-
-\subsubsection{Estimación por máxima verosimilitud}
-\label{sec:garch-mv}
-
-Los parámetros $\theta = (\omega, \alpha, \beta, \nu)$ se estiman por máxima verosimilitud condicional. Con $f_\nu$ la densidad de la $t$ de Student estandarizada de $\nu$ grados de libertad, la log-verosimilitud de la muestra $\epsilon_{1:T}$, dado un valor inicial $\sigma_1^2$, suma las contribuciones diarias
+Los parámetros $\theta = (\omega, \alpha, \beta, \nu)$ se estiman por máxima verosimilitud condicional, maximizando numéricamente sobre $\omega>0$, $\alpha,\beta\ge 0$, $\alpha+\beta<1$, $\nu>2$ la log-verosimilitud
 \[
 \ell(\theta) \;=\; \sum_{t=1}^{T} \left[\, \log f_\nu\!\left(\frac{\epsilon_t}{\sigmat}\right) - \log \sigmat \,\right],
 \]
-donde cada $\sigmat$ sale de la recursión \eqref{eq:garch11} y el término $-\log\sigmat$ es el jacobiano del cambio de variable $\eta_t \mapsto \epsilon_t = \sigmat\eta_t$ (derivación en el Anexo~\ref{anx:garch-mv}). No hay solución cerrada: se maximiza $\ell(\theta)$ numéricamente sobre $\omega>0$, $\alpha,\beta\ge 0$, $\alpha+\beta<1$, $\nu>2$.
-
-Bajo especificación correcta, la estacionariedad del Teorema~\ref{teo:garch-estac} y condiciones de regularidad ($\nu>4$ para el cuarto momento y un óptimo interior), $\hat\theta$ es consistente y asintóticamente normal, con matriz de covarianzas el inverso de la información de Fisher \cite{francqzakoian2019}. Esa normalidad se degrada cuando $\alpha+\beta\to 1$ con el régimen IGARCH, lo que tenemos presente al interpretar los intervalos de confianza de $\hat\alpha$ y $\hat\beta$.
+con $f_\nu$ la densidad de la $t$ estandarizada, cada $\sigmat$ de la recursión \eqref{eq:garch11} y $-\log\sigmat$ el jacobiano del cambio de variable $\eta_t \mapsto \epsilon_t$ (derivación en el Anexo~\ref{anx:garch-mv}). Bajo especificación correcta y condiciones de regularidad, $\hat\theta$ es consistente y asintóticamente normal, con covarianza el inverso de la información de Fisher \cite{francqzakoian2019}; esa normalidad se degrada cuando $\alpha+\beta\to 1$, lo que tenemos presente al interpretar los intervalos de confianza de $\hat\alpha$ y $\hat\beta$.
 
 \subsection{Detección bayesiana de puntos de cambio (BOCPD)}
 \label{sec:bocpd}
 
-PSA es el detector que mira al agente en lugar de al mercado. Su pregunta es si el agente ha roto con su manera habitual de operar, y la responde estimando día a día cuánto tiempo lleva bajo el mismo patrón; cuando esa cuenta se reinicia, ha habido una ruptura. La detección bayesiana de puntos de cambio formaliza ese conteo del tiempo bajo un mismo patrón.
+PSA es el detector que mira al agente en lugar de al mercado. Su pregunta es si el agente ha roto con su manera habitual de operar, y la responde estimando día a día cuánto tiempo lleva bajo el mismo patrón; cuando esa cuenta se reinicia, ha habido una ruptura.
 
-\subsubsection{Run-length y detección online}
+\subsubsection{Run-length y recursión de Adams--MacKay}
 \label{sec:bocpd-runlength}
-
-Los dos modelos anteriores miran el mercado. El detector que ahora se introduce mira al \emph{agente}: vigila si la serie de decisiones (en concreto, el tamaño de las posiciones que va tomando) sufre una ruptura estructural, un cambio de comportamiento que no se explica como fluctuación dentro del mismo patrón. El instrumento es la detección bayesiana de puntos de cambio online de Adams y MacKay \cite{adams2007}.
-
-Sea $x_{1:t}$ la secuencia observada hasta el día $t$, donde aquí $x_t$ es la magnitud que se vigila (el tamaño de la posición del agente). Un \emph{punto de cambio} marca el instante en que cambian los parámetros que generan la serie; dentro de cada segmento delimitado por dos de ellos, esos parámetros se mantienen fijos. Adoptamos el \emph{modelo de particiones por producto} \cite{adams2007}: los segmentos que delimitan los puntos de cambio son independientes entre sí y, dentro de cada uno, las observaciones son i.i.d. según el modelo del segmento. Esta hipótesis, análoga a la independencia condicional $(\ast)$ del HMM, es la que sostiene la recursión que sigue. La variable central es la \emph{run-length} $r_t$, los días que el segmento actual lleva sin ruptura:
-\[
-r_t \in \{0, 1, 2, \dots\}, \qquad
-r_t = 0 \;\Leftrightarrow\; \text{hay un punto de cambio en } t,
-\]
-y $r_t = r$ indica que el día actual y los $r$ días previos se atribuyen al mismo segmento, todavía sin ruptura. La run-length crece de uno en uno mientras no hay cambio ($r_t = r_{t-1} + 1$) y se reinicia a $0$ cuando lo hay.
-
-La distinción entre detección \emph{online} y \emph{offline} es decisiva. Un detector \emph{offline} dispone de toda la serie $x_{1:T}$ y localiza los cambios mirando hacia delante y hacia atrás; es más preciso, pero no es causal. Un detector \emph{online} estima la run-length usando únicamente $x_{1:t}$, la información disponible en el instante $t$, sin asomarse al futuro. El método de Adams y MacKay es online por construcción: en cada día actualiza la distribución de $r_t$ a partir de la del día anterior y de la nueva observación. Esta causalidad es exactamente la que exige el detector PSA, igual que el filtrado del HMM frente al suavizado: una alarma de cambio de comportamiento del agente solo es legítima si pudo emitirse el mismo día, sin conocer lo que el agente hizo después.
-
-\subsubsection{Recursión de la distribución de run-length}
 \label{sec:bocpd-recursion}
 
-El objetivo es calcular, de forma online, la distribución posterior de la run-length, $\Prob(r_t \mid x_{1:t})$. Se obtiene normalizando la conjunta $\Prob(r_t, x_{1:t})$, que admite una recursión. Necesitamos dos ingredientes. El primero es la \emph{función de hazard} $H(r)$, la probabilidad de que se produzca un cambio dado que el tramo actual lleva ya $r$ pasos sin él,
-\[
-H(r) \;=\; \Prob(r_t = 0 \mid r_{t-1} = r - 1),
-\]
-que gobierna la frecuencia a priori de los puntos de cambio. El segundo es la \emph{predictiva posterior} del modelo de observación dentro de un tramo: dado que la run-length actual es $r_{t-1} = r$, la densidad del nuevo dato condicionada a las observaciones de ese mismo tramo,
-\[
-\pi^{(r)}_{\mathrm{pred}} \;=\; \Prob\big(x_t \mid r_{t-1} = r,\, x_{1:t-1}\big),
-\]
-que se calcula con las observaciones acumuladas desde el último reinicio. Con estos dos elementos derivamos la recursión \cite{adams2007}.
+El instrumento es la detección bayesiana de puntos de cambio online de Adams y MacKay \cite{adams2007}, aplicada a la serie del tamaño de las posiciones del agente. Un \emph{punto de cambio} marca el instante en que cambian los parámetros que generan la serie. Adoptamos el \emph{modelo de particiones por producto} \cite{adams2007}: los segmentos entre puntos de cambio son independientes y, dentro de cada uno, las observaciones son i.i.d. —hipótesis análoga a la independencia condicional $(\ast)$ del HMM—. La variable central es la \emph{run-length} $r_t \in \{0,1,2,\dots\}$, los días que el segmento actual lleva sin ruptura: crece de uno en uno mientras no hay cambio ($r_t = r_{t-1}+1$) y se reinicia a $0$ cuando lo hay. El método es \emph{online} por construcción: estima $r_t$ usando solo $x_{1:t}$, sin asomarse al futuro, exactamente la causalidad que exige PSA, igual que el filtrado frente al suavizado en el HMM.
+
+El objetivo es la posterior $\Prob(r_t \mid x_{1:t})$, que normaliza una conjunta con recursión. Necesita dos ingredientes: la \emph{función de hazard} $H(r) = \Prob(r_t = 0 \mid r_{t-1} = r-1)$, frecuencia a priori de los cambios, y la \emph{predictiva posterior} $\pi^{(r)}_{\mathrm{pred}} = \Prob(x_t \mid r_{t-1} = r,\, x_{1:t-1})$ del dato nuevo dentro del tramo en curso.
 
 \begin{proposicion}[Recursión de Adams--MacKay]
 \label{prop:bocpd}
@@ -348,20 +208,9 @@ La posterior de la run-length se recupera normalizando,
 \]
 \end{proposicion}
 
-La demostración se encuentra en el Anexo~\ref{anx:demostraciones}.
+La demostración está en el Anexo~\ref{anx:bocpd}. La recursión es enteramente causal —$\Prob(r_t, x_{1:t})$ se construye desde $\Prob(r_{t-1}, x_{1:t-1})$ y $x_t$—, por lo que sirve para PSA; en la práctica se trunca el soporte de $r_t$ descartando las run-lengths de probabilidad despreciable, lo que acota el coste sin alterar la inferencia.
 
-La recursión es enteramente causal: $\Prob(r_t, x_{1:t})$ se construye a partir de $\Prob(r_{t-1}, x_{1:t-1})$ y de la observación $x_t$, sin recurrir a ningún dato posterior. Por eso sirve para PSA. El soporte de $r_t$ crece un paso en cada iteración, así que en la práctica se trunca la distribución descartando las run-lengths cuya probabilidad cae por debajo de un umbral, lo que mantiene el coste acotado sin alterar de forma apreciable la inferencia.
-
-\subsubsection{Función de hazard y predictiva conjugada}
-\label{sec:bocpd-hazard}
-
-Para cerrar el modelo hay que fijar la función de hazard y la predictiva. La elección estándar para la hazard es la \emph{constante},
-\[
-H(r) = \frac{1}{\lambda}, \qquad \lambda > 0,
-\]
-independiente de $r$. Bajo esta elección la dinámica de la run-length carece de memoria: la probabilidad de que el segmento actual termine en el paso siguiente es siempre $1/\lambda$, sea cual sea el tiempo que lleve vigente. La longitud de cada segmento queda entonces distribuida como una geométrica de parámetro $1/\lambda$ y media $\lambda$ pasos. El parámetro $\lambda$ codifica, por tanto, la escala temporal esperada entre rupturas y es el único hiperparámetro de la dinámica.
-
-La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación dentro de un tramo en una familia exponencial con su \emph{previa conjugada}: la posterior de los parámetros del tramo pertenece entonces a la misma familia que la previa, y la predictiva del dato nuevo tiene expresión analítica que se actualiza de forma incremental al llegar cada observación. Esta conjugación es lo que hace que la recursión de la Proposición~\ref{prop:bocpd} sea barata de evaluar día a día. El modelo de observación concreto de PSA forma parte de la calibración de los detectores. Como contexto, el trabajo de Fearnhead sobre inferencia exacta para modelos multipunto desarrolla los métodos de cálculo de estas distribuciones predictivas y de la partición en tramos sobre los que se apoya el enfoque online \cite{fearnhead2006}.
+Para cerrar el modelo fijamos la hazard \emph{constante} $H(r) = 1/\lambda$: la dinámica de la run-length carece de memoria y la longitud de cada segmento es geométrica de media $\lambda$ pasos, único hiperparámetro de la dinámica. La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación del tramo en una familia exponencial con su \emph{previa conjugada}, lo que da una predictiva analítica que se actualiza de forma incremental y abarata la recursión de la Proposición~\ref{prop:bocpd}; el trabajo de Fearnhead sobre inferencia exacta multipunto desarrolla estos cálculos \cite{fearnhead2006}.
 
 \subsection{STRATA aplicado: construcción, calibración y umbrales}
 \label{sec:strata-aplicado}
@@ -414,7 +263,7 @@ Sobre los datos estudiados, GSO rara vez supera la severidad media: el tamaño q
 \subsubsection{PSA: coherencia temporal del agente}
 \label{sec:strata-psa}
 
-PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente, con una función de hazard constante $H = 1/\lambda$, $\lambda = 250$, que fija a priori la escala temporal entre rupturas en un año bursátil, unos $250$ días de mercado (la media de la geométrica de la Sección~\ref{sec:bocpd-hazard}); es una escala interpretable, un cambio esperado al año, fijada a mano y sin optimizar contra el periodo de evaluación.
+PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición del agente, con una función de hazard constante $H = 1/\lambda$, $\lambda = 250$, que fija a priori la escala temporal entre rupturas en un año bursátil, unos $250$ días de mercado (la media de la geométrica de la Sección~\ref{sec:bocpd-recursion}); es una escala interpretable, un cambio esperado al año, fijada a mano y sin optimizar contra el periodo de evaluación.
 
 \begin{definicion}[PSA score]
 \label{def:psa}
@@ -450,7 +299,7 @@ El GSO acota la magnitud a la banda de volatilidad; el RAM, cuando $\mathrm{RAM}
 \section{Estrategias supervisadas: M8, M10 y AutoML}
 \label{sec:strata-estrategias}
 
-La regla M8 combina las tres señales con umbrales fijos, elegidos de antemano. La pregunta natural es si una combinación \emph{aprendida} de esas mismas señales lo haría mejor: en lugar de fijar los umbrales a mano, un modelo puede estimar de los datos cómo pesar la información del agente y de STRATA para anticipar la dirección del día siguiente. Esa es la estrategia M10, y su generalización mediante búsqueda automatizada de modelos es la estrategia AutoML. Ambas se apoyan en el aprendizaje supervisado por árboles potenciados, que esta sección desarrolla con el mismo nivel de detalle que los modelos de los detectores, porque son el objeto central del capítulo de resultados y porque la objeción natural del tribunal (¿el modelo supervisado bate a STRATA o solo la redescubre?) exige tenerlos bien especificados.
+La regla M8 combina las tres señales con umbrales fijos, elegidos de antemano. La pregunta natural es si una combinación \emph{aprendida} de esas mismas señales lo haría mejor: en lugar de fijar los umbrales a mano, un modelo puede estimar de los datos cómo pesar la información del agente y de STRATA para anticipar la dirección del día siguiente. Esa es la estrategia M10, y su generalización mediante búsqueda automatizada de modelos es la estrategia AutoML.
 
 \subsection{El problema de aprendizaje supervisado}
 \label{sec:sup-problema}
@@ -463,66 +312,22 @@ de modo que el problema es de clasificación binaria causal: a partir de $\mathb
 \[
 w_t = \operatorname{sign}\!\big(p(\mathbf{x}_t) - \tfrac{1}{2}\big),
 \]
-larga si el modelo da más de un medio a la subida y corta en caso contrario. Esta capa de segundo nivel, que aprende sobre las salidas de un primer nivel (el agente) en lugar de sobre los precios crudos, es un \emph{meta-learner} en el sentido de López de Prado \cite{lopezdeprado2018}.
+larga si el modelo da más de un medio a la subida y corta en caso contrario. Esta capa de segundo nivel, que aprende sobre las salidas de un primer nivel (el agente) en lugar de sobre los precios crudos, es un \emph{meta-learner} en el sentido de López de Prado \cite{lopezdeprado2018}. El ajuste minimiza la entropía cruzada (\emph{pérdida logística}), verosimilitud negativa del modelo de Bernoulli. La familia de funciones $p(\cdot)$ que adoptamos es la de los árboles de decisión potenciados.
 
-El ajuste minimiza la entropía cruzada (o \emph{pérdida logística}) sobre el conjunto de entrenamiento $\{(\mathbf{x}_i, y_i)\}_{i=1}^{n}$,
-\[
-L = -\sum_{i=1}^{n} \big[\, y_i \log p(\mathbf{x}_i) + (1 - y_i) \log\big(1 - p(\mathbf{x}_i)\big) \,\big],
-\]
-que es la verosimilitud negativa del modelo de Bernoulli y penaliza con dureza la confianza mal puesta. La familia de funciones $p(\cdot)$ que adoptamos es la de los árboles de decisión potenciados, que describimos a continuación de lo simple a lo compuesto.
-
-\subsection{Árboles de decisión}
+\subsection{De los árboles al meta-learner M10}
 \label{sec:sup-arboles}
-
-La pieza elemental es el árbol de decisión, una función constante a trozos sobre una partición del espacio de características en regiones rectangulares \cite{hastie2009}. Un árbol con $T$ hojas que inducen una partición $\{R_1, \dots, R_T\}$ de $\mathbb{R}^d$ se escribe
-\[
-h(\mathbf{x}) = \sum_{j=1}^{T} w_j\, \indic{\mathbf{x} \in R_j},
-\]
-donde $w_j$ es el valor asignado a la hoja $j$. Las regiones se construyen de forma recursiva y voraz: en cada nodo se elige la variable y el punto de corte que más reducen una medida de impureza, y se repite sobre los dos hijos hasta un criterio de parada. Un árbol aislado tiene poco sesgo pero mucha varianza, y su frontera escalonada rara vez generaliza bien por sí sola; la potencia aparece al combinar muchos árboles, que es lo que hacen el \emph{boosting} y el apilamiento de las secciones siguientes.
-
-\subsection{Gradient boosting}
 \label{sec:sup-gbm}
-
-El \emph{gradient boosting} construye un predictor aditivo como suma de árboles ajustados en etapas \cite{friedman2001}. Partiendo de un valor inicial $F_0$, en la etapa $m$ se añade un árbol $h_m$ y se actualiza
-\[
-F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu\, \gamma_m\, h_m(\mathbf{x}),
-\]
-con $\nu \in (0,1]$ la tasa de aprendizaje (\emph{shrinkage}). La idea de Friedman es interpretar el ajuste como un descenso de gradiente en el espacio de funciones: el árbol $h_m$ se ajusta a los \emph{pseudo-residuos}, el gradiente negativo de la pérdida evaluado en el modelo actual,
-\[
-r_{im} = -\left[\frac{\partial L\big(y_i, F(\mathbf{x}_i)\big)}{\partial F(\mathbf{x}_i)}\right]_{F = F_{m-1}},
-\]
-y el paso $\gamma_m$ se fija por minimización unidimensional de la pérdida en esa dirección. En el caso logístico que usamos, esos pseudo-residuos tienen forma cerrada, por la proposición de los pseudo-residuos del boosting logístico (Anexo~\ref{anx:gbm-residuo}).
-
-Así, cada árbol corrige el error de probabilidad acumulado por los anteriores. El \emph{shrinkage} $\nu$ y el submuestreo de filas y columnas en cada etapa (\emph{stochastic gradient boosting}) regularizan el ajuste y reducen el sobreajuste \cite{friedman2001, hastie2009}.
-
-\subsection{XGBoost y el meta-learner M10}
 \label{sec:sup-xgboost}
 
-XGBoost es una realización de gradient boosting que añade una regularización explícita sobre la complejidad de cada árbol y usa la curvatura de la pérdida, no solo su gradiente \cite{chen2016}. El objetivo de la etapa $t$, al incorporar el árbol $f_t(\mathbf{x}) = w_{q(\mathbf{x})}$ definido por su estructura $q$ y sus pesos de hoja $w$, es
-\[
-\mathcal{L}^{(t)} = \sum_{i=1}^{n} l\big(y_i, \widehat{y}_i^{(t-1)} + f_t(\mathbf{x}_i)\big) + \Omega(f_t),
-\qquad
-\Omega(f) = \gamma\, T + \tfrac{1}{2}\lambda \sum_{j=1}^{T} w_j^2,
-\]
-donde $\gamma$ penaliza el número de hojas y $\lambda$ la magnitud de los pesos. Desarrollando la pérdida hasta segundo orden en torno a la predicción acumulada, con gradiente $g_i = \partial_{\widehat{y}}\, l(y_i, \widehat{y}_i^{(t-1)})$ y hessiana $h_i = \partial^2_{\widehat{y}}\, l(y_i, \widehat{y}_i^{(t-1)})$, el problema por hoja se vuelve cuadrático y admite solución cerrada para los pesos de hoja y para la ganancia de cada división, que es el criterio con el que se eligen los cortes, por la proposición de los pesos óptimos y la ganancia de una división (Anexo~\ref{anx:xgb}).
+La pieza elemental es el \emph{árbol de decisión}, función constante a trozos sobre una partición rectangular del espacio de características \cite{hastie2009}; aislado tiene poco sesgo pero mucha varianza. El \emph{gradient boosting} construye un predictor aditivo como suma de árboles ajustados en etapas, cada uno al gradiente negativo de la pérdida (los \emph{pseudo-residuos}) sobre el modelo acumulado \cite{friedman2001}; para la pérdida logística esos residuos tienen forma cerrada (Anexo~\ref{anx:gbm-residuo}). \emph{XGBoost} es la realización que añade regularización explícita sobre la complejidad de cada árbol y usa la curvatura de la pérdida, lo que da solución cerrada para los pesos de hoja y para la ganancia de cada división, criterio con el que se eligen los cortes \cite{chen2016} (Anexo~\ref{anx:xgb}).
 
-El \emph{meta-learner} M10 del trabajo es XGBoost con esta especificación y los hiperparámetros fijados en la calibración: trescientos árboles de profundidad cuatro, tasa de aprendizaje $\nu = 0{,}05$, submuestreo de filas y columnas al ochenta por ciento, regularización $\lambda = 1$ y pérdida logística. Para rebajar la varianza del estimador, M10 promedia diez ajustes que solo difieren en la semilla de aleatorización,
-\[
-\bar{p}(\mathbf{x}) = \frac{1}{B}\sum_{b=1}^{B} p^{(b)}(\mathbf{x}), \qquad B = 10,
-\]
-una forma de agregación cuya reducción de varianza es la del promediado de predictores \cite{breiman1996, hastie2009}: si los $B$ ajustes tienen varianza $\tau^2$ y correlación media $\varrho$, la varianza del promedio es $\varrho\,\tau^2 + (1-\varrho)\,\tau^2/B$, menor que $\tau^2$ siempre que la correlación no sea perfecta. La posición de M10 es $w_t = \operatorname{sign}\!\big(\bar{p}(\mathbf{x}_t) - \tfrac{1}{2}\big)$. El entrenamiento sigue el protocolo \emph{walk-forward} de la Sección~\ref{sec:cpcv-walkforward}, con ventana expandible y embargo $1$: cada modelo aprende solo del pasado y predice el tramo siguiente.
+El \emph{meta-learner} M10 es XGBoost con hiperparámetros fijados en la calibración (trescientos árboles de profundidad cuatro, tasa de aprendizaje $\nu = 0{,}05$, submuestreo de filas y columnas al ochenta por ciento, regularización $\lambda = 1$, pérdida logística). Para rebajar la varianza promedia $B=10$ ajustes que solo difieren en la semilla, $\bar{p}(\mathbf{x}) = \tfrac{1}{B}\sum_b p^{(b)}(\mathbf{x})$, agregación cuya reducción de varianza es la del promediado de predictores \cite{breiman1996, hastie2009}. Su posición es $w_t = \operatorname{sign}\!\big(\bar{p}(\mathbf{x}_t) - \tfrac{1}{2}\big)$, y se entrena con el \emph{walk-forward} de la Sección~\ref{sec:cpcv-walkforward}, con ventana expandible y embargo $1$.
 
-\subsection{Apilamiento y super learner}
+\subsection{Apilamiento y búsqueda automatizada AutoML}
 \label{sec:sup-stacking}
-
-El apilamiento (\emph{stacking}) combina varios modelos base entrenando un segundo modelo, el \emph{meta-learner}, sobre las predicciones que aquellos hacen fuera de muestra por validación cruzada \cite{wolpert1992}. Entrenar el meta-learner sobre predicciones \emph{out-of-fold}, y no sobre las del propio ajuste, evita que un modelo base que sobreajusta arrastre al combinador. El \emph{super learner} es la formalización de esta idea por van der Laan, Polley y Hubbard \cite{vanderlaan2007}. El meta-learner busca la combinación convexa de los modelos base que minimiza el riesgo de validación cruzada, y goza de una propiedad oráculo: asintóticamente, su riesgo es tan bueno como el del mejor de los modelos base, o el de su mejor combinación, sin conocerlo de antemano. Esta es exactamente la pieza \emph{StackedEnsemble} que la búsqueda automatizada de la siguiente sección apila sobre sus modelos base.
-
-\subsection{Búsqueda automatizada: H2O AutoML}
 \label{sec:sup-automl}
 
-La estrategia AutoML relaja la elección de la familia del modelo: en vez de fijar XGBoost de antemano, deja que una búsqueda automatizada entrene y compare modelos de varias familias y devuelva el mejor. Usamos AutoML de la librería de python H2o, restringido a tres familias por activo: árboles potenciados (GBM), XGBoost y el apilamiento (StackedEnsemble) sobre los anteriores. Cada modelo se evalúa por validación cruzada purgada (la $K$-\emph{fold} con \emph{fold\_column} y embargo de la Sección~\ref{sec:cpcv}), y se usará como métrica de éxito AUC. La posición de AutoML es, igual que la de M10, $w_t = \operatorname{sign}\!\big(p_1(\mathbf{x}_t) - \tfrac{1}{2}\big)$, con $p_1$ la probabilidad del modelo elegido por AutoML, y se reentrena con el mismo \emph{walk-forward} causal.
-
-Para hacer esta búsqueda reproducible y defendible se acota por número fijo de modelos y semilla fija, no por presupuesto de tiempo. El papel metodológico de AutoML es servir de control de universalidad (Capítulo~\ref{cap:panel}): si ni siquiera una búsqueda sobre varias familias bate de forma robusta a las referencias triviales, se refuerza la conclusión de que la señal aprovechable ya está capturada con independencia de la familia de modelos elegida.
+El \emph{apilamiento} (\emph{stacking}) combina varios modelos base entrenando un segundo modelo sobre sus predicciones fuera de muestra \cite{wolpert1992}; el \emph{super learner} de van der Laan, Polley y Hubbard formaliza esta idea y goza de una propiedad oráculo asintótica \cite{vanderlaan2007}. Es la pieza \emph{StackedEnsemble} que apila la búsqueda automatizada. La estrategia AutoML relaja la elección de familia: en vez de fijar XGBoost, una búsqueda automatizada entrena y compara modelos de varias familias y devuelve el mejor. Usamos H2O AutoML, restringido por activo a GBM, XGBoost y StackedEnsemble, evaluando cada modelo por validación cruzada purgada (la $K$-fold con embargo de la Sección~\ref{sec:cpcv}) y eligiendo el \emph{leader} por AUC; su posición es $w_t = \operatorname{sign}\!\big(p_1(\mathbf{x}_t) - \tfrac{1}{2}\big)$, reentrenada con el mismo walk-forward causal. La búsqueda se acota por número fijo de modelos y semilla fija, no por presupuesto de tiempo, para que sea reproducible. Su papel metodológico es servir de control de universalidad (Capítulo~\ref{cap:panel}): si ni una búsqueda sobre varias familias bate de forma robusta a las referencias triviales, la señal aprovechable ya está capturada con independencia de la familia de modelos.
 
 \subsection{Estrategias}
 \label{sec:estrategias-catalogo}
@@ -549,167 +354,58 @@ Las dos últimas son las referencias frente a las que cualquier estrategia con p
 
 \subsection{Métricas de evaluación}
 \label{sec:metricas}
-
-Para juzgar si una estrategia lo hace bien no basta con mirar cuánto gana: hay que poner el rendimiento en relación con el riesgo asumido. Las métricas que siguen enriquecen la lectura de los resultados, pero ninguna prueba nada por sí sola: la prueba estadística del trabajo descansa en los contrastes de la Sección~\ref{sec:tests}.
-
-\subsubsection{Acierto direccional y matriz de confusión}
 \label{sec:metricas-direccional}
-
-La métrica primaria de este trabajo es el acierto direccional. Una estrategia produce cada día una posición $w_t$ y se mide contra el retorno del día siguiente $\rnext$; acierta cuando la dirección apostada coincide con la realizada. La \emph{accuracy direccional} es la fracción de días en que ambos signos concuerdan,
-\[
-\mathrm{Acc} \;=\; \frac{1}{n} \sum_{t} \mathbf{1}\big\{\operatorname{sign}(w_t) = \operatorname{sign}(\rnext)\big\}.
-\]
-Mide la habilidad de la decisión sin pasar por la economía: cuánto del tiempo la apuesta acierta el signo del mercado.
-
-El acierto diario se ordena en una \emph{matriz de confusión} $2\times 2$ que cruza lo apostado con lo ocurrido. Tomando la apuesta larga como clase positiva, un día puede ser verdadero positivo (larga y sube), verdadero negativo (corta y baja), falso positivo (larga y baja) o falso negativo (corta y sube). La accuracy es la masa de la diagonal, $(\mathrm{TP}+\mathrm{TN})/n$. Del lado largo leemos también la \emph{precisión}, $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, la fracción de apuestas alcistas que aciertan, y el \emph{recall}, $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, la fracción de subidas que la estrategia capta. El objeto sobre el que operan los contrastes de la Sección~\ref{sec:tests} es más fino que estos escalares: es el \emph{vector diario} de acierto/fallo $a_t = \mathbf{1}\{\operatorname{sign}(w_t) = \operatorname{sign}(\rnext)\} \in \{0,1\}$, que alineado día a día entre dos estrategias da los pares sobre los que trabajan el sign test y McNemar.
-
-Cuando la estrategia emite una probabilidad $p_1(\mathbf{x}_t)$ de subida antes de umbralizarla, disponemos de una métrica que no depende del umbral: el \emph{AUC}, área bajo la curva ROC \cite{hanley1982, fawcett2006}. La curva recorre todos los umbrales y, en cada uno, anota cuántas subidas reales capta frente a cuántas bajadas confunde con subidas. Su área responde a una pregunta directa: tomados al azar un día de subida y uno de bajada, con qué frecuencia el modelo da mayor $p_1$ al primero. Un área de $0{,}5$ es puro azar; una de $1$, un ordenamiento perfecto. La búsqueda automatizada de la Sección~\ref{sec:sup-automl} elige su \emph{leader} por este criterio.
-
-Dos referencias triviales fijan el listón de toda accuracy, ya definidas en el catálogo de estrategias (Definición~\ref{def:estrategias}). \emph{ZeroR} predice la clase mayoritaria del pasado estricto: su accuracy es la frecuencia de la dirección dominante, el techo que se alcanza sin información alguna. \emph{B\&H} (comprar y mantener) mide la exposición pasiva al activo. Una estrategia con pretensión de habilidad ha de batir a las dos, no solo a la moneda equilibrada.
-
-\subsubsection{El ratio de Sharpe}
 \label{sec:economia-sharpe}
-
-Las métricas de riesgo trabajan sobre los retornos diarios de la estrategia, $g_t = w_t \cdot \rnext$, el resultado causal de aplicar la posición de $t$ al movimiento de $t+1$. La más extendida es el \emph{ratio de Sharpe}, la recompensa por unidad de variabilidad que introdujo Sharpe \cite{sharpe1966, sharpe1994}: el cociente entre el retorno medio y su desviación típica,
-\[
-\mathrm{SR} \;=\; \frac{\bar{g}}{\hat{\sigma}_g}, \qquad \bar{g} = \frac{1}{n}\sum_t g_t, \quad \hat{\sigma}_g^2 = \frac{1}{n-1}\sum_t (g_t - \bar{g})^2.
-\]
-Cuanto retorno extrae la estrategia por cada punto de volatilidad que soporta. Como en la Sección~\ref{sec:garch}, las cifras se reportan anualizadas, multiplicando el ratio diario por $\sqrt{252}$, la escala con que las desviaciones de días aproximadamente independientes acumulan a lo largo del año bursátil. Un Sharpe alto señala una estrategia que gana de forma estable; uno negativo, que pierde de media.
-
-\subsubsection{Drawdown máximo y Calmar}
 \label{sec:economia-otros}
 
-El Sharpe penaliza por igual la volatilidad al alza y a la baja, pero quien arriesga capital teme sobre todo las rachas malas. La \emph{máxima caída} (\emph{maximum drawdown}) las captura. Sobre la curva de capital acumulado $V_t = \prod_{s \le t}(1 + g_s)$, es la mayor pérdida relativa desde un máximo previo hasta un mínimo posterior,
-\[
-\mathrm{maxDD} \;=\; \max_{t}\, \frac{\max_{s \le t} V_s - V_t}{\max_{s \le t} V_s} \;\ge\; 0,
-\]
-una cantidad no negativa que lee el peor tramo de la historia: cuánto habría perdido quien entró justo en el peor momento \cite{magdonismail2004}. Es la medida de riesgo que más pesa en la lectura de los resultados del panel.
+Las métricas enriquecen la lectura de los resultados, pero ninguna prueba nada por sí sola: la prueba descansa en los contrastes de la Sección~\ref{sec:tests}. La métrica primaria es el \emph{acierto direccional}: la posición $w_t$ acierta cuando su signo coincide con el de $\rnext$, y la \emph{accuracy} es la fracción de días en que concuerdan, $\mathrm{Acc} = \tfrac{1}{n}\sum_t \mathbf{1}\{\operatorname{sign}(w_t) = \operatorname{sign}(\rnext)\}$. El acierto diario se ordena en una \emph{matriz de confusión} $2\times 2$ (verdaderos/falsos positivos y negativos sobre la apuesta larga como clase positiva), de la que se leen también la \emph{precisión} y el \emph{recall}. El objeto sobre el que operan los contrastes es más fino: el \emph{vector diario} de acierto/fallo $a_t = \mathbf{1}\{\operatorname{sign}(w_t) = \operatorname{sign}(\rnext)\} \in \{0,1\}$, que alineado entre dos estrategias da los pares del sign test y McNemar. Cuando hay probabilidad $p_1(\mathbf{x}_t)$ antes de umbralizar, el \emph{AUC} —área bajo la curva ROC \cite{hanley1982, fawcett2006}— mide, sin depender del umbral, con qué frecuencia el modelo da mayor $p_1$ a un día de subida que a uno de bajada ($0{,}5$ es azar, $1$ ordenamiento perfecto); la búsqueda automatizada elige su \emph{leader} por este criterio. Dos referencias triviales fijan el listón (Definición~\ref{def:estrategias}): \emph{ZeroR}, la frecuencia de la dirección dominante, techo alcanzable sin información, y \emph{B\&H}, la exposición pasiva. Una estrategia con pretensión de habilidad ha de batir a las dos.
 
-El \emph{ratio de Calmar} relaciona el rendimiento con esa peor caída \cite{young1991}: el rendimiento anualizado dividido por la máxima caída,
-\[
-\mathrm{Calmar} \;=\; \frac{\text{rendimiento anualizado}}{\mathrm{maxDD}}.
-\]
-El Sharpe divide por la volatilidad media; el Calmar, por el peor tramo, de modo que es sensible al episodio más adverso y no solo a la dispersión típica. Un activo de Sharpe razonable pero con un desplome puntual severo recibe un Calmar bajo, lo que lo delata como peligroso.
+Las métricas de riesgo trabajan sobre los retornos diarios causales $g_t = w_t \cdot \rnext$. El \emph{ratio de Sharpe} \cite{sharpe1966, sharpe1994} es el cociente $\mathrm{SR} = \bar{g}/\hat{\sigma}_g$ entre retorno medio y desviación típica, anualizado multiplicando por $\sqrt{252}$. El Sharpe penaliza por igual la volatilidad al alza y a la baja; la \emph{máxima caída} (\emph{maximum drawdown}) captura las rachas malas, la mayor pérdida relativa desde un máximo previo sobre la curva de capital $V_t = \prod_{s \le t}(1 + g_s)$ \cite{magdonismail2004}, y es la medida de riesgo que más pesa en el panel. El \emph{ratio de Calmar} relaciona el rendimiento anualizado con esa peor caída \cite{young1991}, sensible al episodio más adverso y no solo a la dispersión típica.
 
 \subsection{Validación}
 \label{sec:cpcv}
-
-Un backtest sobre datos pasados no vale nada si su evaluación usó, aunque sea de forma sutil, información que no estaba disponible al decidir. Esa contaminación se conoce como \emph{look-ahead}; las salvaguardas que la impiden son necesarias para que las cifras del capítulo de resultados sean fiables. La regla es la misma siempre: solo se usa información del pasado y del presente, nunca del futuro.
-
-\subsubsection{Causalidad: la regla signal\_lag=1}
 \label{sec:cpcv-causalidad}
-
-La Sección~\ref{sec:preliminares} fijó esta regla; aquí vemos por qué es condición de ausencia de fuga. La posición $w_t$ se decide con la información disponible hasta el cierre del día $t$. El retorno de ese mismo día, $r_t$, ya se ha producido cuando se decide: forma parte de la información que entra en la decisión. Contabilizar la ganancia como $w_t \cdot r_t$ sería, por tanto, estimar la posición con un movimiento que ya se conocía al tomarla, permitiendo que la decisión mire su propio resultado. Es \emph{look-ahead} y produce backtests artificialmente buenos que se desploman en operativa real.
-
-La regla correcta, que en el código lleva el nombre \texttt{signal\_lag=1}, es contabilizar la posición de $t$ contra el retorno del día siguiente:
-\[
-\text{resultado del día} \;=\; w_t \cdot \rnext.
-\]
-La posición se fija en $t$ y se evalúa con el primer retorno que aún no se conocía, el de $t+1$. Encaja con el filtrado causal de la Sección~\ref{sec:hmm-filtrado}: el régimen $\gammaf$ que alimenta la decisión en $t$ se calcula solo con $x_{1:t}$, y la decisión resultante se enfrenta a $\rnext$. Esta construcción es la recomendada en la literatura sobre evaluación de estrategias financieras, que insiste en alinear el etiquetado de cada decisión con el horizonte en el que se materializa su resultado \cite{lopezdeprado2018}.
-
-\subsubsection{Validación walk-forward (rolling-origin)}
 \label{sec:cpcv-walkforward}
-
-La convención \texttt{signal\_lag=1} asegura la causalidad de una decisión aislada, pero el meta-learner del caso de estudio \emph{aprende} de los datos, y validar un modelo que aprende necesita un protocolo que reproduzca cómo se usaría si queremos llevarlo a producción. El que adoptamos es el \emph{walk-forward} de origen rodante (\emph{rolling-origin}), el estándar para evaluar predicción sobre series temporales \cite{tashman2000, bergmeir2018}: el modelo se entrena solo con el pasado, predice un tramo futuro, y la ventana de entrenamiento avanza en el tiempo repitiendo el ciclo.
-
-Se reserva un \emph{periodo de arranque} (\emph{burn-in}) inicial, que sirve para el primer entrenamiento y no se puntúa. A partir de ahí, cada cierto número de días el modelo se reentrena con \emph{toda} la información disponible hasta esa fecha y predice el bloque siguiente, estrictamente futuro respecto al entrenamiento. Como la ventana se expande y nunca retrocede, ninguna predicción usa datos posteriores al día en que se emite. El protocolo es causal por construcción y \emph{desplegable}, porque reproduce lo que se haría en la realidad: reentrenar de forma periódica y operar hacia delante. El burn-in y la frecuencia de reentreno se calibran en el caso de estudio.
-
-\subsubsection{Purga y embargo}
 \label{sec:cpcv-purga}
-
-Reentrenar sobre el pasado y predecir el futuro no basta cuando la etiqueta de un día se define sobre un horizonte que se solapa con el bloque de evaluación. La \emph{purga} corrige ese solape \cite{lopezdeprado2018}: retira del entrenamiento toda observación cuyo horizonte de etiquetado, el día $t+1$ al que apunta su retorno, caiga dentro del tramo evaluado. Si la dejáramos, el modelo aprendería en parte de los mismos días sobre los que luego se le mide. 
-
-Los retornos contiguos están autocorrelados, de modo que una muestra de entrenamiento inmediatamente anterior al test, aunque su etiqueta no solape, comparte estructura con las primeras muestras evaluadas. El \emph{embargo} la corta descartando además los $h$ días posteriores a cada bloque de test antes de readmitir muestras al entrenamiento \cite{lopezdeprado2018}. En este trabajo el horizonte de la etiqueta es de un solo día, la dirección de $\rnext$, así que un día de separación elimina el único solape posible: fijamos $h = 1$. Un embargo mayor descartaría información válida sin ganar protección.
-
-\subsubsection{Por qué no validación cruzada convencional. CPCV}
 \label{sec:cpcv-cpcv}
-
-Barajar los pliegues al azar rompe el orden del tiempo. La validación cruzada $K$-\emph{fold} convencional reparte las muestras sin mirar la fecha, de modo que un pliegue de entrenamiento puede contener días posteriores a los del pliegue de test: el modelo aprende del futuro y se evalúa sobre el pasado. Esa fuga infla las métricas y no se reproduce en operativa real. Ningún resultado del trabajo descansa sobre la $K$-fold barajada.
-
-La forma correcta de cortar los pliegues en el tiempo es la \emph{validación cruzada combinatoria purgada} (CPCV), que combina los pliegues de forma exhaustiva y aplica a cada combinación la purga y el embargo de la subsección anterior \cite[sec.~7.4]{lopezdeprado2018}. De ella tomamos dos formas concretas. El meta-learner se valida con el walk-forward desplegable de la Sección~\ref{sec:cpcv-walkforward}, que con horizonte de etiqueta uno y origen rodante es la versión que reproduce el despliegue en el tiempo. La búsqueda automatizada valida internamente con una \emph{$K$-fold purgada}: parte los pliegues por una columna temporal y les aplica embargo, no los baraja al azar. La $K$-fold sin purgar aparece una sola vez en el trabajo, deliberadamente, como contraejemplo que mide el sesgo que introduce.
-
-\subsubsection{Agregación pooled y su alcance}
 \label{sec:cpcv-pooled}
 
-El caso de estudio se construye sobre un activo, pero la prueba dura del rescate de riesgo necesita más muestra de la que da uno solo. La \emph{agregación pooled} apila las series diarias pareadas de los diez activos del panel —las dos estrategias que se comparan, alineadas día a día— en una sola serie de $n \approx 2493$ días, sobre la que se calcula un único estadístico con su intervalo de confianza. Frente a diez contrastes por activo, uno sobre el conjunto: multiplica el tamaño de muestra y, con él, la potencia para distinguir del cero un efecto que en un activo aislado queda dentro del ruido. Es lo que llamamos \emph{pooled-10}, el agregado sobre el que se prueba el rescate de riesgo.
+Un backtest no vale nada si su evaluación usa información no disponible al decidir (\emph{look-ahead}). La regla es siempre la misma: solo pasado y presente, nunca futuro.
 
-El precio de apilar es que los diez activos no son del todo independientes, de modo que el intervalo de confianza pooled pide cautela; lo discutimos donde se usa, al interpretar el panel (Capítulo~\ref{cap:panel}).
+La posición $w_t$ se decide con la información hasta el cierre de $t$, cuando el retorno $r_t$ ya se conoce; contabilizar $w_t \cdot r_t$ dejaría a la decisión mirar su propio resultado. La regla correcta, que en el código lleva el nombre \texttt{signal\_lag=1}, contabiliza la posición de $t$ contra el retorno del día siguiente, $w_t \cdot \rnext$, alineando el etiquetado de cada decisión con el horizonte en que se materializa \cite{lopezdeprado2018}. Encaja con el filtrado causal de la Sección~\ref{sec:hmm-filtrado}: el régimen $\gammaf$ que alimenta la decisión en $t$ se calcula solo con $x_{1:t}$.
+
+La convención \texttt{signal\_lag=1} asegura la causalidad de una decisión aislada, pero el meta-learner \emph{aprende} y validarlo exige un protocolo desplegable. Adoptamos el \emph{walk-forward} de origen rodante (\emph{rolling-origin}), estándar para predicción sobre series temporales \cite{tashman2000, bergmeir2018}: tras un \emph{burn-in} inicial que no se puntúa, cada cierto número de días el modelo se reentrena con toda la información disponible hasta la fecha y predice el bloque siguiente, estrictamente futuro. La ventana se expande y nunca retrocede, así que es causal por construcción y reproduce lo que se haría en la realidad. Cuando la etiqueta se define sobre un horizonte que se solapa con el bloque de evaluación, la \emph{purga} retira del entrenamiento las observaciones cuyo horizonte cae dentro del tramo evaluado, y el \emph{embargo} descarta además los $h$ días posteriores para cortar la autocorrelación de retornos contiguos \cite{lopezdeprado2018}. Como el horizonte de la etiqueta es de un solo día, fijamos $h=1$: un día de separación elimina el único solape posible, y un embargo mayor descartaría información válida sin ganar protección.
+
+Barajar los pliegues al azar rompe el orden del tiempo: la $K$-fold convencional puede meter en entrenamiento días posteriores al test, fuga que infla las métricas y no se reproduce en operativa real. Ningún resultado descansa sobre la $K$-fold barajada. La forma correcta es la \emph{validación cruzada combinatoria purgada} (CPCV), que combina los pliegues y les aplica purga y embargo \cite[sec.~7.4]{lopezdeprado2018}; de ella tomamos el walk-forward desplegable para el meta-learner y una \emph{$K$-fold purgada} (partida por columna temporal con embargo, no barajada) para la validación interna de la búsqueda automatizada. La $K$-fold sin purgar aparece una sola vez, deliberadamente, como contraejemplo que mide el sesgo que introduce.
+
+Finalmente, la prueba dura del rescate de riesgo necesita más muestra de la que da un activo. La \emph{agregación pooled} apila las series diarias pareadas de los diez activos del panel en una sola serie de $n \approx 2493$ días, sobre la que se calcula un único estadístico con su intervalo de confianza: multiplica el tamaño de muestra y, con él, la potencia para distinguir del cero un efecto que en un activo aislado queda dentro del ruido. Es el \emph{pooled-10}. El precio de apilar es que los diez activos no son del todo independientes, de modo que el intervalo de confianza pooled pide cautela; lo discutimos al interpretar el panel (Capítulo~\ref{cap:panel}).
 
 \subsection{Contraste de hipótesis}
 \label{sec:tests}
 
-La economía ilustra; la prueba vive aquí. Cada pregunta del trabajo tiene su contraste, con su hipótesis nula explícita y su estadístico. Los agrupamos por la pregunta que responden, de la dirección al riesgo y de la multiplicidad a la equivalencia, y cerramos con las herramientas de interpretabilidad y de agrupamiento que sostienen la parte de mecanismo.
+La economía ilustra; la prueba vive aquí. Cada pregunta del trabajo tiene su contraste, con su hipótesis nula explícita y su estadístico. La Tabla~\ref{tab:tests} los reúne, agrupados por la pregunta que responden: de la dirección al riesgo, de la multiplicidad a la equivalencia, y las herramientas de interpretabilidad y agrupamiento que sostienen la parte de mecanismo.
 
-\subsubsection{Dirección: signo, McNemar y permutación por bloques}
-\label{sec:tests-sign}
+El acierto direccional se contrasta contra el azar con el \emph{sign test} sobre el vector diario $a_t$ (con \emph{intervalo de Wilson} para la proporción), y entre dos estrategias con el \emph{test de McNemar} sobre los días discordantes, $\chi^2 = (b-c)^2/(b+c)$ con su versión binomial exacta cuando los discordantes son pocos; la \emph{permutación por bloques} contiguos respeta la autocorrelación al construir el nulo. El rescate de riesgo se mide sobre la diferencia de Sharpe pareada $\Delta\mathrm{SR}$: como no hay fórmula cerrada fiable bajo dependencia temporal, su intervalo sale del \emph{bootstrap estacionario} en bloques de longitud geométrica de media $\sqrt{n}$, y el \emph{Deflated Sharpe Ratio} depura el Sharpe de la inflación por número de configuraciones ensayadas y colas anchas. La multiplicidad se controla con la corrección de \emph{Holm}, que ordena los $p$-valores y compara el $i$-ésimo contra $\alpha/(m-i+1)$. La equivalencia, cuando la pregunta es si dos estrategias son prácticamente iguales, se prueba con el \emph{TOST}, que invierte la carga tomando como nula $|\Delta| \ge \delta$ y solo concluye equivalencia si el intervalo de la diferencia cae entero en $[-\delta,+\delta]$. La asociación de la ley del leverage, con $n=10$ activos, se mide con \emph{Pearson} y \emph{Spearman} al nivel pre-registrado $\alpha = 0{,}10$, reportada como tendencia. La complementariedad por régimen se aísla con un contraste propio de \emph{diferencia en diferencias}, $\Delta\Delta\mathrm{SR} = (\mathrm{SR}^{A}_{\text{alza}} - \mathrm{SR}^{B}_{\text{alza}}) - (\mathrm{SR}^{A}_{\text{baja}} - \mathrm{SR}^{B}_{\text{baja}})$, con intervalo por el mismo bootstrap. La interpretabilidad atribuye la predicción del aprendiz a cada feature con los \emph{valores de Shapley} (TreeSHAP para los ensembles de árboles) y define la \emph{cuota STRATA} $= \big(\sum_{j \in \text{STRATA}} \overline{|\mathrm{SHAP}_j|}\big) / \big(\sum_{j} \overline{|\mathrm{SHAP}_j|}\big)$, fracción de importancia de las siete features de los detectores, confirmada de forma agnóstica con la \emph{importancia por permutación}. El agrupamiento de los activos del panel usa cuatro algoritmos de familias distintas y juzga la partición con \emph{silueta}, \emph{índice de Rand ajustado} (consenso entre métodos) y \emph{PCA} para leer el factor que separa los grupos, con el \emph{BIC} fijando el número de componentes.
 
-Bajo la hipótesis nula de no-habilidad, cada acierto diario es una Bernoulli de parámetro $0{,}5$ y el número total de aciertos sigue una binomial. El \emph{sign test} contrasta la accuracy observada contra ese $0{,}5$ y rechaza cuando el exceso de aciertos es improbable bajo el azar \cite{conover1999}; los días sin movimiento ($\rnext = 0$), de medida prácticamente nula en retornos diarios, se descartan del conteo. Lo acompañamos con el \emph{intervalo de Wilson} para la proporción de acierto, que se comporta bien con muestras moderadas y cerca de los extremos, donde el intervalo normal ingenuo falla. Con este contraste medimos la primera afirmación del trabajo, que el agente acierta por debajo del azar.
-
-La pregunta pareada es si una estrategia acierta más que otra sobre los mismos días. La responde el \emph{test de McNemar}, que mira solo los días en que ambas discrepan \cite{mcnemar1947}. Sean $b$ los días en que la primera acierta y la segunda falla, y $c$ los del caso opuesto; los días en que las dos coinciden, acierten o fallen a la vez, no dicen nada sobre cuál es mejor. Bajo la nula de igual habilidad, $b$ y $c$ se reparten por igual, y
-\[
-\chi^2 \;=\; \frac{(b - c)^2}{b + c}
-\]
-sigue asintóticamente una $\chi^2_1$. Cuando los discordantes son pocos usamos la versión exacta, una binomial de parámetro $\tfrac{1}{2}$ sobre los $b + c$ pares. McNemar es el test central de accuracy: con él contrastamos si una derivada de STRATA rescata al agente.
-
-El sign test y McNemar tratan los días como intercambiables, y los aciertos de una serie financiera están autocorrelados. Para un nulo que respete esa estructura permutamos bloques contiguos de aciertos en lugar de días sueltos, lo que preserva la dependencia temporal local al construir la distribución del estadístico. La \emph{permutación por bloques} da un $p$ más conservador y más fiel a la serie, y blinda el rescate por sub-ventana y por régimen frente a la autocorrelación.
-
-\subsubsection{Riesgo: bootstrap estacionario y Sharpe deflactado}
-\label{sec:tests-bootstrap}
-
-El rescate de riesgo se mide sobre la diferencia de Sharpe pareada entre dos estrategias, $\Delta\mathrm{SR}$. No hay fórmula cerrada fiable para su distribución bajo dependencia temporal, así que la estimamos por remuestreo. El \emph{bootstrap estacionario} de Politis y Romano remuestrea la serie en bloques contiguos de longitud aleatoria geométrica de media $\sqrt{n}$, lo que reproduce la autocorrelación de los retornos y mantiene estacionaria la serie remuestreada \cite{politis1994}. De cada réplica recalculamos $\Delta\mathrm{SR}$; el conjunto de réplicas da la distribución de la que tomamos los intervalos percentiles. Un intervalo que excluye el cero señala un rescate de riesgo distinguible de cero.
-
-Un Sharpe alto obtenido tras probar muchas variantes puede ser un artefacto de la búsqueda. El \emph{Deflated Sharpe Ratio} cuantifica ese riesgo \cite{bailey2014}. Penaliza el Sharpe observado en función de cuántas configuraciones se ensayaron y de que los retornos tengan colas más anchas que la gaussiana, lo que vuelve más ruidoso al estimador de Sharpe de lo que sugiere su error estándar. La cifra que devuelve es una probabilidad de habilidad genuina, ya depurada de la inflación por búsqueda. Un Sharpe que sobrevive a la deflación es habilidad; uno que cae con ella, suerte de búsqueda.
-
-\subsubsection{Multiplicidad: Bonferroni y Holm}
-\label{sec:tests-multiplicidad}
-
-Contrastamos varias estrategias contra el mismo agente, y probar $m$ hipótesis al nivel $\alpha$ infla la probabilidad de que alguna resulte significativa por azar. Las correcciones por multiplicidad controlan la \emph{tasa de error por familia}, la probabilidad de al menos un falso positivo en el conjunto. La de \emph{Bonferroni} es la más simple: exige $p < \alpha/m$ en cada contraste, o equivalentemente ensancha cada intervalo de confianza al nivel $1 - \alpha/m$ \cite{bonferroni1936}. Es conservadora pero transparente, y la usamos como referencia para introducir su versión más potente.
-
-La corrección de \emph{Holm} alcanza el mismo control con más potencia \cite{holm1979}. Ordena los $p$-valores de menor a mayor, $p_{(1)} \le \dots \le p_{(m)}$, y compara el $i$-ésimo contra el umbral $\alpha/(m - i + 1)$, deteniéndose en el primer no rechazo. Solo el contraste más extremo paga el factor pleno $m$; los siguientes se relajan. Así Holm rechaza al menos tanto como Bonferroni sin perder la garantía. Con él reportamos el rescate por régimen, donde se contrasta más de una estrategia a la vez.
-
-\subsubsection{Equivalencia: el TOST}
-\label{sec:tests-tost}
-
-Los contrastes anteriores buscan diferencias; a veces la pregunta es la contraria, si dos estrategias son \emph{prácticamente iguales}. No rechazar la nula de igualdad no demuestra equivalencia, porque puede deberse a falta de potencia. El contraste correcto invierte la carga de la prueba: es el \emph{TOST} (\emph{two one-sided tests}) de Schuirmann \cite{schuirmann1987}. Se fija de antemano un margen de equivalencia $\delta$ y se toma como hipótesis nula que la diferencia cae \emph{fuera} de $[-\delta, +\delta]$,
-\[
-H_0:\ |\Delta| \ge \delta \qquad\text{frente a}\qquad H_1:\ |\Delta| < \delta.
-\]
-Rechazarla obliga a descartar activamente las dos desviaciones relevantes, la inferior a $-\delta$ y la superior a $+\delta$. Solo si el intervalo de confianza de la diferencia aterriza por completo entre $-\delta$ y $+\delta$ concluimos equivalencia. La similitud se convierte así en un criterio activo que hay que ganar. Lo aplicamos a la pregunta de si el aprendiz redescubre o bate a la regla M8.
-
-\subsubsection{Asociación: Pearson y Spearman}
-\label{sec:tests-asociacion}
-
-La ley del \emph{leverage} relaciona dos magnitudes continuas por activo: el rescate de accuracy del aprendiz y la firma del leverage effect. Para medir esa asociación usamos dos coeficientes de correlación. El de \emph{Pearson} cuantifica la relación lineal; el de \emph{Spearman}, la monótona, calculando Pearson sobre los rangos, lo que lo hace robusto a valores atípicos y a no linealidades que conserven el orden. El $p$-valor de cada uno sale del estadístico
-\[
-t \;=\; r \sqrt{\frac{n - 2}{1 - r^2}},
-\]
-que bajo la nula de correlación nula sigue una $t$ de Student con $n - 2$ grados de libertad. La $p$ depende de $n$, y la muestra de esta ley es pequeña: $n = 10$ activos. Por eso fijamos de antemano el nivel $\alpha = 0{,}10$, pre-registrado, y reportamos la asociación como tendencia. Con diez puntos no perseguimos $p < 0{,}05$, que ese tamaño no sostiene.
-
-\subsubsection{Complementariedad: diferencia en diferencias}
-\label{sec:tests-did}
-
-La última pregunta sobre el reparto de funciones es si dos aprendices rescatan en regímenes distintos: si uno aporta más en mercado alcista y el otro en bajista. Un solo $\Delta$Sharpe no la responde, porque mezcla el efecto del aprendiz con el del régimen. La aislamos con un contraste de \emph{diferencia en diferencias} (DiD): tomamos la diferencia de Sharpe de cada aprendiz frente al agente en cada régimen y comparamos esas diferencias entre regímenes,
-\[
-\Delta\Delta\mathrm{SR} \;=\; \big(\mathrm{SR}^{A}_{\text{alza}} - \mathrm{SR}^{B}_{\text{alza}}\big) - \big(\mathrm{SR}^{A}_{\text{baja}} - \mathrm{SR}^{B}_{\text{baja}}\big).
-\]
-Un $\Delta\Delta\mathrm{SR}$ distinto de cero indica que el reparto de fuerzas entre los dos aprendices cambia con el régimen, esto es, que se complementan. Su intervalo de confianza sale del bootstrap estacionario de la Sección~\ref{sec:tests-bootstrap}. Es un contraste propio sobre nuestras series pareadas, pre-registrado; toma el nombre del estimador de tratamiento de la econometría, pero no su maquinaria de identificación.
-
-\subsubsection{Interpretabilidad: valores de Shapley e importancia por permutación}
-\label{sec:tests-shap}
-
-La objeción central al aprendiz es si bate a STRATA o solo la redescubre. Para responderla atribuimos su predicción a cada característica de entrada con los \emph{valores de Shapley}, que cuantifican la contribución de cada variable promediada sobre todos los subconjuntos posibles de predictores; es la idea que la teoría de juegos cooperativos de Shapley formalizó para repartir con justicia el resultado entre los jugadores \cite{lundberg2017}. Para los ensembles de árboles del trabajo, TreeSHAP explota la estructura del árbol para evitar la enumeración: en lugar de recalcular la contribución sobre cada subconjunto de variables, recorre los nodos una vez por observación y acumula los valores de Shapley en ese mismo recorrido, con un coste polinómico en el tamaño del árbol \cite{lundberg2020}. Definimos la \emph{cuota STRATA} como la fracción de importancia que se llevan las siete features de los detectores,
-\[
-\text{cuota STRATA} \;=\; \frac{\sum_{j \in \text{STRATA}} \overline{|\mathrm{SHAP}_j|}}{\sum_{j} \overline{|\mathrm{SHAP}_j|}},
-\]
-el cociente entre la importancia media absoluta de las features de STRATA y la del total de las veintidós. Una cuota superior a un medio dice que el aprendiz se apoya mayoritariamente en las señales de los detectores.
-
-Como verificación agnóstica al modelo añadimos la \emph{importancia por permutación} \cite{breiman2001}: se permuta al azar una característica, rompiendo su relación con la etiqueta, y se mide cuánto se degrada la métrica de validación; la caída es la importancia de esa variable. No depende de la estructura interna del modelo, y confirma desde fuera el reparto que da SHAP. Los dos métodos coinciden en señalar las features de STRATA como las informativas.
-
-\subsubsection{Agrupamiento: silueta, Rand y PCA}
-\label{sec:tests-clustering}
-
-La parte exploratoria del panel pregunta si la naturaleza de los activos forma grupos. Agrupamos los diez activos por sus rasgos con cuatro algoritmos de familias distintas: $k$-medias \cite{macqueen1967}, el enlace aglomerativo de Ward \cite{ward1963}, las mezclas gaussianas \cite{dempster1977} y el clustering espectral \cite{ng2002spectral}. Que partan de principios distintos es lo que hace informativo su acuerdo.
-
-Juzgamos la partición con tres herramientas. La \emph{silueta} mide, para cada activo, su cohesión con el propio grupo frente a su separación del más cercano, en una escala de $-1$ a $1$; una media alta indica grupos compactos y bien separados. El \emph{BIC} (criterio de información bayesiano) fija el número de grupos y de componentes en las mezclas gaussianas, penalizando la verosimilitud por el número de parámetros para no partir la muestra en más grupos de los que sostiene \cite{schwarz1978}. El \emph{índice de Rand ajustado} compara dos particiones corregido por la concordancia que se esperaría al azar: vale $1$ cuando coinciden y ronda $0$ cuando no se parecen más que por casualidad \cite{hubert1985}. Un Rand de $1$ entre los cuatro métodos es un consenso fuerte. Por último, el \emph{PCA} (análisis de componentes principales) proyecta los rasgos sobre las direcciones de máxima varianza \cite{jolliffe2002}, lo que deja leer en pocos ejes el factor que separa los grupos.
+\begin{table}[htbp]
+\centering
+\caption{Contrastes y herramientas del trabajo, por la pregunta que responden.}
+\label{tab:tests}
+\small
+\begin{tabular}{p{0.22\textwidth} p{0.42\textwidth} l}
+\toprule
+\textbf{Pregunta} & \textbf{Test / herramienta} & \textbf{Referencia} \\
+\midrule
+Dirección & Sign test (e intervalo de Wilson); McNemar pareado; permutación por bloques & \cite{conover1999, mcnemar1947} \\
+Riesgo & Bootstrap estacionario sobre $\Delta\mathrm{SR}$; Deflated Sharpe Ratio & \cite{politis1994, bailey2014} \\
+Multiplicidad & Corrección de Holm & \cite{holm1979} \\
+Equivalencia & TOST (\emph{two one-sided tests}) & \cite{schuirmann1987} \\
+Asociación & Pearson (lineal) y Spearman (monótona) & \\
+Complementariedad & Diferencia en diferencias ($\Delta\Delta\mathrm{SR}$) & \\
+Interpretabilidad & Valores de Shapley (TreeSHAP); importancia por permutación & \cite{lundberg2017, lundberg2020, breiman2001} \\
+Agrupamiento & Silueta; índice de Rand ajustado; PCA ($k$-medias, Ward, mezclas gaussianas, espectral; BIC) & \cite{macqueen1967, ward1963, dempster1977, ng2002spectral, schwarz1978, hubert1985, jolliffe2002} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Con la maquinaria de detección, intervención, aprendizaje y medición ya fijada, el capítulo siguiente lleva STRATA al caso de SPY y mide, paso a paso, si rescata al agente que pierde.
