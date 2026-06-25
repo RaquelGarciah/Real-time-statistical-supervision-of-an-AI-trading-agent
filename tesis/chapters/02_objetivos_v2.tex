@@ -1,32 +1,32 @@
 \chapter{Objetivos}
 \label{cap:objetivos}
 
-Queremos abordar el siguiente problema: un agente LLM que decide de manera indeterminística sobre nuestro dinero pierde la dirección y el capital, y lo hace de forma sistemática. Este capítulo concreta qué se propone el trabajo frente a ese problema y cómo lo pone a prueba.
+Este capítulo formula la hipótesis del trabajo y la descompone en objetivos contrastables.
 
 \section{Hipótesis}
 \label{sec:obj-hipotesis}
 
-Nos preguntamos si una capa de supervisión estadística externa puede rescatar a un agente LLM cuando pierde. La formulamos como una afirmación que puede refutarse:
+La hipótesis del trabajo es una afirmación refutable sobre si una capa de supervisión estadística externa rescata a un agente LLM cuando pierde:
 
 \begin{quote}
 Filtrar o atenuar las decisiones de un agente LLM de trading con detectores estadísticos clásicos rescata al agente de forma significativa cuando este pierde dinero y acierta la dirección menos de la mitad de las veces.
 \end{quote}
 
-La hipótesis nula es que la supervisión no cambia nada: las decisiones supervisadas no se distinguen de las del agente solo, ni en acierto direccional ni en riesgo. Para poder rechazarla fijamos de antemano el contraste de cada nivel y un criterio de fracaso, de modo que un resultado contrario refute la hipótesis en lugar de maquillarla.
+La hipótesis nula es que la supervisión no cambia nada: las decisiones supervisadas no se distinguen de las del agente solo, ni en acierto direccional ni en riesgo. Para rechazarla se fija de antemano el contraste de cada nivel y un criterio de fracaso, de modo que un resultado contrario refute la hipótesis en lugar de maquillarla.
 
 \section{Objetivo general}
 \label{sec:obj-general}
 
-Demostrar, con rigor estadístico, que supervisar en tiempo de ejecución las decisiones de un agente LLM de trading con detectores estadísticos clásicos rescata al agente cuando pierde, y caracterizar cuándo y por qué funciona. 
+Demostrar que supervisar en tiempo de ejecución las decisiones de un agente LLM de trading con detectores estadísticos clásicos rescata al agente cuando pierde, y caracterizar cuándo y por qué funciona.
 
 \section{Objetivos específicos}
 \label{sec:obj-especificos}
 
 \begin{enumerate}
   \item Formalizar los tres detectores clásicos sobre los que se apoya STRATA, el régimen con un HMM, el cambio estructural con BOCPD y la volatilidad con un GARCH, junto con el protocolo de medición causal y sin fuga que los evalúa. El capítulo~\ref{cap:strata} se ocupa de ello.
-  \item Probar si esa supervisión rescata al agente cuando pierde. Lo medimos con contrastes pareados, en acierto direccional (McNemar y \emph{sign test}) y en riesgo ($\Delta$Sharpe con \emph{bootstrap}), primero sobre SPY y después sobre el panel de diez activos.
+  \item Probar si esa supervisión rescata al agente cuando pierde. Se mide con contrastes pareados, en acierto direccional (McNemar y \emph{sign test}) y en riesgo ($\Delta$Sharpe con \emph{bootstrap}), primero sobre SPY y después sobre el panel de diez activos.
   \item Atribuir el efecto a cada detector y entender en qué activos funciona la supervisión, desde la anatomía de una intervención hasta el patrón que liga la naturaleza del activo con el canal que lo rescata.
-  \item Comprobar si un meta-learner libre redescubre las señales de STRATA en lugar de prescindir de ellas. Lo contrastamos por dos vías: la atribución, con valores de Shapley y ablación, y la equivalencia frente a la regla.
+  \item Comprobar si un meta-learner libre recupera las señales de STRATA en lugar de prescindir de ellas. Se contrasta por dos vías: la atribución, con valores de Shapley y ablación, y la equivalencia frente a la regla.
   \item Ver si alguna estrategia derivada de STRATA bate en acierto direccional a la referencia trivial, comprar y mantener o la clase mayoritaria del pasado.
   \item Delimitar con honestidad el alcance de la técnica, declarando con el mismo rigor lo que aporta y lo que no: ni gana a una referencia trivial ni mantiene su mecanismo en los activos de apalancamiento débil.
 \end{enumerate}
