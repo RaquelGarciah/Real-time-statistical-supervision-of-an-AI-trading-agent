@@ -1,0 +1,80 @@
+\chapter{Figuras complementarias}
+\label{anx:figuras}
+
+Este anexo reúne las figuras que respaldan afirmaciones del cuerpo sin recargarlo. Cada una se cita en su sitio; aquí se agrupan por lo que sostienen: primero el mecanismo sobre SPY, después el panel.
+
+\section{Mecanismo sobre SPY}
+\label{anx:fig-spy}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.80\textwidth]{figuras/cap4_anexo_regimen_direccion}
+\caption{Matriz régimen $\times$ dirección sobre SPY, en calibración y fuera de muestra. El régimen coincide con la caída del mismo día, pero no anticipa el signo del siguiente: el \emph{leverage} que explota RAM es contemporáneo, no predictivo.}
+\label{fig:anx-regimen-dir}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.80\textwidth]{figuras/cap4_anexo_psa_gso}
+\caption{Scores de PSA y GSO frente a su umbral ex ante, junto al sesgo casi constante del agente. Los dos detectores rara vez cruzan el umbral porque el agente apenas cambia de posición: están dormidos sobre este activo, no rotos.}
+\label{fig:anx-psa-gso}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/cap4_anexo_shap_dependency}
+\caption{Dependencia SHAP de las señales de STRATA en el aprendiz: cómo cambia su contribución al variar cada \emph{score}. El modelo no las usa de forma plana, las modula según el régimen.}
+\label{fig:anx-shap-dep}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.74\textwidth]{figuras/cap4_anexo_shap_rodante}
+\caption{Cuota de importancia de las señales de STRATA a lo largo del tiempo, por reentreno. Se mantiene mayoritaria en toda la ventana: el aprendiz se apoya en STRATA de forma estable, no en un tramo afortunado.}
+\label{fig:anx-shap-rodante}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{figuras/cap4_anexo_confusion_m10_regimen}
+\caption{Acierto del agente (M5) y del aprendiz (M10) por régimen, sobre SPY. El aprendiz corrige sobre todo donde el agente más se equivoca.}
+\label{fig:anx-confusion-m10}
+\end{figure}
+
+\section{Panel de diez activos}
+\label{anx:fig-panel}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{figuras/cap4_anexo_confusion_panel}
+\caption{Matrices de confusión de la mejor derivada de STRATA en cada activo. Enseñan el reparto de aciertos y fallos detrás de cada accuracy del panel.}
+\label{fig:anx-confusion-panel}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{figuras/cap4_anexo_ablacion}
+\caption{Accuracy del aprendiz con tres conjuntos de características: solo las del agente, solo las de STRATA y las veintidós juntas. Quitar STRATA degrada al modelo, prueba de que se apoya en sus señales.}
+\label{fig:anx-ablacion}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figuras/cap4_anexo_shap_cuota}
+\caption{Cuota de importancia de las señales de STRATA por activo y caída de accuracy al ablacionarlas. Supera la mitad en los diez activos: el aprendiz redescubre los detectores en todo el panel.}
+\label{fig:anx-shap-cuota}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{figuras/cap4_anexo_mcnemar}
+\caption{$p$ de McNemar del rescate frente al agente, por estrategia y régimen, con el nivel $\alpha = 0{,}10$ marcado. El rescate en acierto es significativo en los dos regímenes.}
+\label{fig:anx-mcnemar}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/cap4_anexo_grupos}
+\caption{Accuracy y Sharpe medios por estrategia dentro de cada grupo del clustering. Cada grupo se rescata por un canal distinto, coherente con su naturaleza.}
+\label{fig:anx-grupos}
+\end{figure}

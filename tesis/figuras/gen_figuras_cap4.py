@@ -63,6 +63,15 @@ CONF = _load("outputs/experiments/confusion_panel.json")
 IANA = _load("outputs/experiments/spy_intervention_anatomy.json")
 GATE = _load("outputs/experiments/spy_panel_gate_descriptive.json")
 LEV10 = _load("outputs/experiments/leverage_law_panel10.json")  # F4.13: ley leverage sobre los 10
+# --- JSON adicionales para las 16 figuras nuevas (cuerpo + anexo) ---
+PANROB = _load("outputs/experiments/panel_robustness.json")              # rodante + val/test + bull/bear (panel 10)
+CALW = _load("outputs/experiments/calib_window_panel.json")             # robustez a la ventana de calibración
+SPYME = _load("outputs/experiments/spy_mechanism_extras.json")          # SPY: daily + SHAP dependency + cuota rodante
+THR = _load("cache/models/strata_thresholds.json")                      # umbrales ex-ante PSA/GSO (calib 2000–2024-09)
+DETABL = _load("outputs/experiments/detector_ablation_panel.json")      # activación detectores (10) + ablación M10 (SPY)
+AABL = _load("outputs/experiments/automl_ablation_detectors.json")["ablacion_automl_spy"]  # ablación AutoML (SPY)
+CL10PA = CL10["por_activo"]                                             # cuota SHAP por activo (panel 10)
+CL10PROF = CL10["perfiles_k3"]["kmeans"]                                # perfiles por grupo (clustering canónico 10)
 
 PANEL10 = ["SPY", "QQQ", "XLF", "DIA", "XLK", "XLE", "ROKU", "SMCI", "MARA", "UNG"]
 DPA = DP["por_activo"]
@@ -568,9 +577,496 @@ def f4_15():
     _save(fig, "cap4_casos")
 
 
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  16 FIGURAS NUEVAS — cuerpo (1–6) y anexo (7–16) del Capítulo 4            ║
+# ║  Misma estética: _save / _c / _coma / COL / REGCOL. Sin título embebido.  ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+_REGUP = lambda s: "LARGO ▲" if s > 0 else ("CORTO ▼" if s < 0 else "NEUTRAL")
+_REGCL = lambda s: "#27ae60" if s > 0 else ("#c0392b" if s < 0 else "#bbb")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N1 — cap4_anatomia_dia : anatomía de un día ACERTADO y uno FALLIDO + balance
+# Builder ≈L259-L315 (diagrama de flujo agente→STRATA→resultado de los dos casos)
+# Fuente: spy_intervention_anatomy.json (caso_acierto, caso_fallo, balance)
+# ════════════════════════════════════════════════════════════════════════════
+def n1_anatomia_dia():
+    ca, cf = IANA["caso_acierto"], IANA["caso_fallo"]
+    ba = IANA["balance_intervenciones"]
+
+    def _flow(ax, c, tag):
+        ax.set_xlim(0, 10)
+        ax.set_ylim(0, 10)
+        ax.axis("off")
+        ax.set_title(f"{tag} · {c['fecha']} · régimen {c['regimen']} · RAM = {_c(c['ram_score'])}", fontsize=10)
+        # 1) agente (M5) + votos de las 5 personalidades
+        ax.text(1.6, 7.6, "AGENTE (M5)", ha="center", fontsize=8, color="#555")
+        ax.text(1.6, 6.7, _REGUP(c["agente_M5"]), ha="center", fontsize=12, fontweight="bold",
+                color="white", bbox=dict(boxstyle="round", fc=_REGCL(c["agente_M5"]), ec="k"))
+        for i, (_p, s) in enumerate(c["votos_personalidades"].items()):
+            ax.scatter(0.5 + i * 0.55, 5.4, s=90, color=_REGCL(s), edgecolor="k", lw=.4)
+        ax.text(1.6, 4.7, "votos 5 pers.", ha="center", fontsize=6.5, color="#888")
+        # 2) RAM voltea -> STRATA (M8)
+        ax.annotate("", xy=(4.6, 6.7), xytext=(2.9, 6.7), arrowprops=dict(arrowstyle="-|>", lw=2, color="#2c3e50"))
+        ax.text(3.75, 7.2, "RAM voltea", ha="center", fontsize=7, color="#2c3e50")
+        ax.text(6.1, 7.6, "STRATA (M8)", ha="center", fontsize=8, color="#555")
+        ax.text(6.1, 6.7, _REGUP(c["STRATA_M8"]), ha="center", fontsize=12, fontweight="bold",
+                color="white", bbox=dict(boxstyle="round", fc=_REGCL(c["STRATA_M8"]), ec="k"))
+        # 3) resultado al día siguiente
+        ax.annotate("", xy=(8.4, 6.7), xytext=(7.3, 6.7), arrowprops=dict(arrowstyle="-|>", lw=2, color="#2c3e50"))
+        mk, mkc = ("✓", "#27ae60") if c["M8_acierta"] else ("✗", "#c0392b")
+        ax.text(9.2, 6.7, mk, ha="center", va="center", fontsize=26, color=mkc, fontweight="bold")
+        ax.bar(9.2, c["r_next"] * 30, width=0.7, bottom=3.0, color=_REGCL(c["verdad"]), edgecolor="k")
+        ax.text(9.2, 2.3, f"r_next\n{_c(c['r_next'] * 100, 1)} %", ha="center", fontsize=8)
+
+    fig, axes = plt.subplots(1, 2, figsize=(13, 3.8))
+    _flow(axes[0], ca, "ACIERTO")
+    _flow(axes[1], cf, "FALLO")
+    fig.text(0.5, 0.01,
+             f"Balance de las {ba['n_intervenciones']} intervenciones: M8 acierta {_c(ba['acc_M8_en_intervencion'] * 100, 0)} % "
+             f"vs agente {_c(ba['acc_M5_en_intervencion'] * 100, 0)} % · "
+             f"{ba['intervenciones_acertadas']} aciertan / {ba['intervenciones_fallidas']} fallan",
+             ha="center", fontsize=9)
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
+    _save(fig, "cap4_anatomia_dia")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N2 — cap4_confusion_spy_6 : matrices de confusión SPY de las 6 estrategias
+# Builder ≈L483-L497. Fuente: confusion_panel.json (spy_por_estrategia)
+# ════════════════════════════════════════════════════════════════════════════
+def n2_confusion_spy_6():
+    spc = CONF["spy_por_estrategia"]
+    fig, axes = plt.subplots(2, 3, figsize=(11, 6))
+    axes = axes.ravel()
+    for ax, s in zip(axes, ["M5", "M8", "M10", "AutoML", "ZeroR", "B&H"]):
+        cm = spc[s]
+        M = np.array([[cm["TP"], cm["FP"]], [cm["FN"], cm["TN"]]])
+        ax.imshow(M, cmap="Blues")
+        ax.set_title(f"{s}\nacc = {_c(cm['accuracy'])}", fontsize=9)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["real ↑", "real ↓"], fontsize=8)
+        ax.set_yticks([0, 1])
+        ax.set_yticklabels(["pred L", "pred S"], fontsize=8)
+        ax.grid(False)
+        for i in range(2):
+            for j in range(2):
+                ax.text(j, i, M[i, j], ha="center", va="center", fontsize=11,
+                        color="white" if M[i, j] > M.max() * 0.6 else "black")
+    fig.tight_layout()
+    _save(fig, "cap4_confusion_spy_6")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N3 — cap4_activacion_panel : tasa de disparo RAM/PSA/GSO + intervención M8 (panel 10)
+# Builder ≈L665-L678. Fuente: detector_ablation_panel.json (activacion_panel)
+# ════════════════════════════════════════════════════════════════════════════
+def n3_activacion_panel():
+    act = DETABL["activacion_panel"]
+    A = pd.DataFrame(act).T.loc[PANEL10]
+    fig, ax = plt.subplots(figsize=(11, 3.6))
+    x = np.arange(len(PANEL10))
+    w = 0.25
+    ax.bar(x - w, A["RAM"], w, color="#2c7fb8", label="RAM (régimen)")
+    ax.bar(x, A["PSA"], w, color="#7d3c98", label="PSA (cambio opinión)")
+    ax.bar(x + w, A["GSO"], w, color="#c0392b", label="GSO (volatilidad)")
+    ax.set_xticks(x)
+    ax.set_xticklabels(PANEL10, rotation=45)
+    ax.set_ylabel("tasa de disparo (OOS)")
+    ax.yaxis.set_major_formatter(_coma)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    _save(fig, "cap4_activacion_panel")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N4 — cap4_naturaleza_panel : naturaleza de los 10 activos (2×2)
+# Builder ≈L710-L723. Fuente: strategy_clustering15.json -> nat por activo (NAT)
+# ════════════════════════════════════════════════════════════════════════════
+def n4_naturaleza_panel():
+    fig, axes = plt.subplots(2, 2, figsize=(13, 6.4))
+    axes = axes.ravel()
+    specs = [("leverage_corr", "Leverage de Black (corr. retorno–vol.; < 0 = estándar)", "#2c7fb8"),
+             ("oos_crisis_frac", "Fracción de días en Crisis (OOS)", "#c0392b"),
+             ("agent_short_frac", "Sesgo corto del agente (frac. días corto)", "#9e9e9e"),
+             ("oos_vol", "Volatilidad media OOS (σ GARCH anualizada)", "#7d3c98")]
+    order = sorted(PANEL10, key=lambda a: NAT[a]["leverage_corr"])
+    for ax, (key, ttl, c) in zip(axes, specs):
+        ax.bar(order, [NAT[a][key] for a in order], color=c)
+        ax.set_title(ttl, fontsize=9.5)
+        ax.tick_params(axis="x", rotation=45, labelsize=8)
+        ax.yaxis.set_major_formatter(_coma)
+        if key == "leverage_corr":
+            ax.axhline(0, color="k", lw=.6)
+    fig.tight_layout()
+    _save(fig, "cap4_naturaleza_panel")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N5 — cap4_robustez_calib : robustez a la ventana de calibración (M10 acc)
+# Builder ≈L1405-L1426. Fuente: calib_window_panel.json (por_activo)
+# ════════════════════════════════════════════════════════════════════════════
+def n5_robustez_calib():
+    ca = CALW["por_activo"]
+    rows = []
+    for tk, ws in ca.items():
+        for w in ws:
+            if "m10_acc" in w:
+                rows.append({"activo": tk, "inicio_calib": w["start"], "M10_acc": w["m10_acc"]})
+    RC = pd.DataFrame(rows)
+    piv = RC.pivot(index="activo", columns="inicio_calib", values="M10_acc")
+    fig, ax = plt.subplots(figsize=(8, 3.8))
+    for tk in piv.index:
+        ax.plot([s[:4] for s in piv.columns], piv.loc[tk].values, marker="o", label=tk)
+    ax.axhline(0.5, color="k", ls=":", lw=.8, label="azar (0,5)")
+    ax.set_xlabel("inicio de la ventana de calibración")
+    ax.set_ylabel("accuracy de M10 (OOS fijo)")
+    ax.yaxis.set_major_formatter(_coma)
+    ax.legend(fontsize=8, ncol=2)
+    fig.tight_layout()
+    _save(fig, "cap4_robustez_calib")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N6 — cap4_robustez_panel : robustez de panel (rodante / val-test / por régimen)
+# Builder ≈L1213-L1252. Fuente: panel_robustness.json
+# ════════════════════════════════════════════════════════════════════════════
+def n6_robustez_panel():
+    PR = PANROB["por_activo"]
+    fig, axes = plt.subplots(1, 3, figsize=(16, 3.8))
+    # (a) accuracy rodante SPY: agente vs mejor STRATA vs trivial
+    sp = PR["SPY"]["rolling"]
+    xs = pd.to_datetime(sp["dates"])
+    axes[0].plot(xs, sp["serie"]["m5"], color=COL["M5"], lw=1.4, label="M5 (agente)")
+    axes[0].plot(xs, sp["serie"][sp["mejor_strata"]], color="#27ae60", lw=1.4, label=f"mejor STRATA ({sp['mejor_strata']})")
+    axes[0].plot(xs, sp["serie"][sp["trivial"]], color=COL["ZeroR"], lw=1.4, label=f"trivial ({sp['trivial']})")
+    axes[0].axhline(0.5, color="k", ls=":", lw=.8)
+    axes[0].set_ylabel(f"accuracy rodante (ventana {sp['ventana']} d)")
+    axes[0].yaxis.set_major_formatter(_coma)
+    axes[0].legend(fontsize=7)
+    # (b) fracción de ventanas rodantes en que la mejor STRATA bate al agente, por activo
+    fr = {a: PR[a]["rolling"]["frac_ventanas_mejorSTRATA_gt_M5"] for a in PANEL10}
+    axes[1].bar(list(fr), list(fr.values()), color=["#27ae60" if v >= 0.5 else "#bbb" for v in fr.values()])
+    axes[1].axhline(0.5, color="k", ls="--", lw=.8)
+    axes[1].set_ylabel("frac. ventanas: mejor STRATA > agente")
+    axes[1].yaxis.set_major_formatter(_coma)
+    axes[1].tick_params(axis="x", rotation=45, labelsize=8)
+    # (c) McNemar del rescate por régimen (pooled 10): alcista vs bajista
+    pt = PANROB["pooled_bullbear"]["tests"]
+    labs = list(pt)
+    nice = [k.replace("_xgb", "").replace("_vs_m5", "").replace("_", " ") for k in labs]
+    pv = [pt[k]["mcnemar_p"] for k in labs]
+    axes[2].bar(range(len(labs)), pv, color=["#27ae60" if pt[k]["sig_0.10"] else "#c0392b" for k in labs])
+    axes[2].axhline(0.10, color="k", ls="--", lw=.8, label="α = 0,10")
+    axes[2].set_xticks(range(len(labs)))
+    axes[2].set_xticklabels(nice, rotation=40, ha="right", fontsize=7)
+    axes[2].set_ylabel("p de McNemar (rescate vs M5)")
+    axes[2].yaxis.set_major_formatter(_coma)
+    axes[2].legend(fontsize=8)
+    fig.tight_layout()
+    _save(fig, "cap4_robustez_panel")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N7 — cap4_anexo_confusion_panel : matrices de confusión panel (mejor STRATA, 2×5)
+# Builder ≈L820-L833. Fuente: confusion_panel.json (panel_mejor_strata)
+# ════════════════════════════════════════════════════════════════════════════
+def n7_anexo_confusion_panel():
+    pc = CONF["panel_mejor_strata"]
+    fig, axes = plt.subplots(2, 5, figsize=(15, 6))
+    axes = axes.ravel()
+    for ax, tk in zip(axes, PANEL10):
+        cm = pc[tk]
+        M = np.array([[cm["TP"], cm["FP"]], [cm["FN"], cm["TN"]]])
+        ax.imshow(M, cmap="Blues")
+        ax.set_title(f"{tk} · {cm['estrategia']}\nacc = {_c(cm['accuracy'])}", fontsize=9)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["↑", "↓"], fontsize=8)
+        ax.set_yticks([0, 1])
+        ax.set_yticklabels(["L", "S"], fontsize=8)
+        ax.grid(False)
+        for i in range(2):
+            for j in range(2):
+                ax.text(j, i, M[i, j], ha="center", va="center", fontsize=10,
+                        color="white" if M[i, j] > M.max() * 0.6 else "black")
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_confusion_panel")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N8 — cap4_anexo_ablacion : ablación de features (agente-15 / STRATA-7 / 22) M10 y AutoML
+# Builder ≈L401-L424. Fuente: detector_ablation_panel.json + automl_ablation_detectors.json
+# ════════════════════════════════════════════════════════════════════════════
+def n8_anexo_ablacion():
+    ab = DETABL["ablacion_m10_spy"]
+    zeror = PAN["SPY"]["table"]["zeror"]["accuracy"]
+    sets = ["solo agente (15)", "solo STRATA (7)", "ALL22 (canónico)"]
+    m10v = [ab[s]["accuracy"] for s in sets]
+    amlv = [AABL[s]["accuracy"] for s in sets]
+    fig, ax = plt.subplots(figsize=(8.5, 4))
+    x = np.arange(len(sets))
+    w = 0.38
+    ax.bar(x - w / 2, m10v, w, color="#1a5276", edgecolor="k", lw=.8, label="M10 (XGBoost, params fijos)")
+    ax.bar(x + w / 2, amlv, w, color="#16a085", edgecolor="k", lw=.8, label="AutoML (H2O, el ganador)")
+    ax.axhline(0.5, color="k", ls="--", lw=.8, label="azar (0,5)")
+    ax.axhline(zeror, color="#e67e22", ls=":", lw=1.4, label=f"ZeroR = {_c(zeror, 3)}")
+    for i in range(len(sets)):
+        ax.text(i - w / 2, m10v[i] + 0.003, _c(m10v[i], 3), ha="center", fontsize=8)
+        ax.text(i + w / 2, amlv[i] + 0.003, _c(amlv[i], 3), ha="center", fontsize=8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(["solo agente", "solo STRATA", "las 22"])
+    ax.set_ylim(0.40, 0.62)
+    ax.set_ylabel("accuracy (OOS desplegable)")
+    ax.yaxis.set_major_formatter(_coma)
+    ax.legend(fontsize=7.5, ncol=2)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_ablacion")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N9 — cap4_anexo_shap_dependency : cómo USA el modelo cada señal STRATA (color=régimen)
+# Builder ≈L600-L613. Fuente: spy_mechanism_extras.json (shap_dependency)
+# ════════════════════════════════════════════════════════════════════════════
+def n9_anexo_shap_dependency():
+    dep = SPYME["shap_dependency"]
+    feats = list(dep)
+    fig, axes = plt.subplots(1, len(feats), figsize=(4.3 * len(feats), 3.4))
+    for ax, f in zip(axes, feats):
+        xs = np.array(dep[f]["x"])
+        sh = np.array(dep[f]["shap"])
+        rg = np.array(dep[f]["regime"])
+        for k in (0, 1, 2):
+            m = rg == k
+            if m.any():
+                ax.scatter(xs[m], sh[m], s=18, color=REGCOL[k], alpha=.7, label=REGNAME[k])
+        ax.axhline(0, color="k", lw=.5)
+        ax.set_xlabel(f)
+        ax.set_ylabel("SHAP (→ prob. subida)")
+        ax.set_title(f, fontsize=9)
+        ax.xaxis.set_major_formatter(_coma1)
+        ax.yaxis.set_major_formatter(_coma)
+    axes[-1].legend(fontsize=7)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_shap_dependency")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N10 — cap4_anexo_shap_cuota : cuota SHAP de STRATA por activo (+ ablación) en el panel
+# Builder ≈L745-L776. Fuente: decision_automl_prep.json (ablation + shap por activo)
+# ════════════════════════════════════════════════════════════════════════════
+def n10_anexo_shap_cuota():
+    cuota = {a: DPA[a]["shap"]["cuota_strata"] for a in PANEL10}
+    dacc = {a: DPA[a]["ablation"]["d_acc_strata"] for a in PANEL10}
+    order = sorted(PANEL10, key=lambda a: cuota[a])
+    fig, axes = plt.subplots(1, 2, figsize=(13, 3.8))
+    # izq: cuota SHAP de STRATA por activo
+    axes[0].bar(order, [cuota[a] for a in order], color="#16a085", edgecolor="k", lw=.4)
+    axes[0].axhline(0.5, color="k", ls="--", lw=.8, label="50 %")
+    for i, a in enumerate(order):
+        axes[0].text(i, cuota[a] + 0.01, _c(cuota[a]), ha="center", fontsize=7)
+    axes[0].set_ylim(0, 1)
+    axes[0].set_ylabel("cuota SHAP de las features STRATA")
+    axes[0].yaxis.set_major_formatter(_coma)
+    axes[0].tick_params(axis="x", rotation=45, labelsize=8)
+    axes[0].legend(fontsize=8)
+    # der: ablación — Δaccuracy al añadir STRATA al vector del agente
+    oa = sorted(PANEL10, key=lambda a: dacc[a])
+    axes[1].barh(oa, [dacc[a] for a in oa],
+                 color=["#27ae60" if dacc[a] > 0 else "#c0392b" for a in oa], edgecolor="k", lw=.4)
+    axes[1].axvline(0, color="k", lw=.6)
+    axes[1].set_xlabel("Δaccuracy al añadir STRATA (las 22 − agente-15)")
+    axes[1].xaxis.set_major_formatter(_coma)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_shap_cuota")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N11 — cap4_anexo_shap_rodante : cuota SHAP rodante (estabilidad temporal)
+# Builder ≈L859-L869. Fuente: spy_mechanism_extras.json (shap_rolling)
+# ════════════════════════════════════════════════════════════════════════════
+def n11_anexo_shap_rodante():
+    cu = SPYME["shap_rolling"]["cuota_strata"]
+    fig, ax = plt.subplots(figsize=(8, 3.2))
+    ax.plot(range(len(cu)), cu, "o-", color="#2c7fb8")
+    ax.axhline(float(np.mean(cu)), color="#c0392b", ls="--", lw=1, label=f"media {_c(float(np.mean(cu)))}")
+    ax.axhline(0.5, color="k", ls=":", lw=.8, label="0,5")
+    ax.set_ylim(0, 1)
+    ax.set_xlabel("reentreno walk-forward")
+    ax.set_ylabel("cuota STRATA en |SHAP|")
+    ax.yaxis.set_major_formatter(_coma)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_shap_rodante")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N12 — cap4_anexo_regimen_direccion : régimen × dirección (calib y OOS)
+# leverage contemporáneo (mismo día) sí; predicción (mañana ≈ 0,5) no.
+# Builder ≈L443-L454. Fuente: regime_direction_table.json (SPY)
+# ════════════════════════════════════════════════════════════════════════════
+def n12_anexo_regimen_direccion():
+    fig, axes = plt.subplots(1, 2, figsize=(11, 3.4))
+    rgs = ["Calma", "Estrés", "Crisis"]
+    for ax, win, ttl in [(axes[0], "calib", "Calibración (n grande)"), (axes[1], "oos", "OOS")]:
+        d = RDT["SPY"][win]
+        same = [d[r]["ret_mismo_dia"] for r in rgs]
+        nxt = [d[r]["frac_sube_sig"] for r in rgs]
+        x = np.arange(3)
+        ax2 = ax.twinx()
+        b1 = ax.bar(x - 0.2, same, 0.4, color="#2c7fb8", label="ret. mismo día (leverage)")
+        b2 = ax2.bar(x + 0.2, nxt, 0.4, color="#c0392b", label="frac. sube día sig.")
+        ax2.axhline(0.5, color="k", ls=":", lw=.8)
+        ax2.set_ylim(0.3, 0.7)
+        ax.set_xticks(x)
+        ax.set_xticklabels(rgs)
+        ax.set_title(ttl, fontsize=9)
+        ax.axhline(0, color="k", lw=.5)
+        ax.set_ylabel("ret. mismo día", color="#2c7fb8")
+        ax2.set_ylabel("frac. sube mañana", color="#c0392b")
+        ax.yaxis.set_major_formatter(_coma)
+        ax2.yaxis.set_major_formatter(_coma)
+        if win == "calib":
+            ax.legend([b1, b2], ["ret. mismo día (leverage)", "frac. sube día sig."], fontsize=7, loc="upper right")
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_regimen_direccion")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N13 — cap4_anexo_grupos : perfil por grupo del clustering (accuracy y Sharpe medios)
+# Builder ≈L1086-L1119. Fuente: cluster_panel10.json (perfiles_k3.kmeans)
+# Subfigura más informativa: accuracy y Sharpe medios por estrategia, por grupo.
+# ════════════════════════════════════════════════════════════════════════════
+def n13_anexo_grupos():
+    prof = CL10PROF
+    groups = list(prof)
+    ss = ["M5", "M8", "M10", "AutoML", "ZeroR", "B&H"]
+    fig, axes = plt.subplots(2, len(groups), figsize=(14, 6.4), sharey="row")
+    for j, g in enumerate(groups):
+        # fila 0: accuracy media
+        am = prof[g]["acc_media"]
+        vals = [am[s] for s in ss]
+        axes[0, j].bar(ss, vals, color=[COL[s] for s in ss], edgecolor="k", lw=.4)
+        axes[0, j].axhline(0.5, color="k", ls="--", lw=.8)
+        best = prof[g]["mejor_acc_no_trivial"]
+        axes[0, j].text(ss.index(best), am[best] + 0.004, "★", ha="center", color="#c0392b", fontsize=12)
+        axes[0, j].set_title(f"{g}: {', '.join(prof[g]['activos'])}\nlev = {_c(prof[g]['naturaleza_media']['leverage_corr'])} "
+                             f"vol = {_c(prof[g]['naturaleza_media']['oos_vol'])}", fontsize=8)
+        axes[0, j].tick_params(axis="x", rotation=45, labelsize=7)
+        axes[0, j].yaxis.set_major_formatter(_coma)
+        # fila 1: Sharpe medio
+        sm = prof[g]["sharpe_media"]
+        sv = [sm[s] for s in ss]
+        axes[1, j].bar(ss, sv, color=[COL[s] for s in ss], edgecolor="k", lw=.4)
+        axes[1, j].axhline(0, color="k", lw=.8)
+        bs = prof[g]["mejor_sharpe_no_trivial"]
+        axes[1, j].text(ss.index(bs), sm[bs] + 0.04, "★", ha="center", color="#c0392b", fontsize=12)
+        axes[1, j].tick_params(axis="x", rotation=45, labelsize=7)
+        axes[1, j].yaxis.set_major_formatter(_coma)
+    axes[0, 0].set_ylabel("accuracy media")
+    axes[1, 0].set_ylabel("Sharpe medio")
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_grupos")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N14 — cap4_anexo_psa_gso : PSA/GSO dormidos (scores OOS vs umbral ex-ante + sesgo agente)
+# Builder ≈L331-L362. Fuente: detector_analysis_SPY.json (scores) + mechanism_panel.json
+# ════════════════════════════════════════════════════════════════════════════
+def n14_anexo_psa_gso():
+    sc = DET["scores"]
+    thr = sc["umbrales"]
+    shorts = {a: MECH[a]["agente_frac_corto"] for a in PANEL10}
+    fig, axes = plt.subplots(1, 3, figsize=(15, 3.4))
+    # PSA y GSO: dónde caen los scores OOS frente al umbral ex-ante (calibrado con crisis)
+    for ax, key, name, p95, p99 in [(axes[0], "psa_score", "PSA", thr["PSA_p95"], thr["PSA_p99"]),
+                                    (axes[1], "gso_score", "GSO", thr["GSO_p95"], thr["GSO_p99"])]:
+        ax.hist(sc[key], bins=30, color="#7d3c98", alpha=.7)
+        ax.axvline(p95, color="k", ls="--", lw=1, label=f"P95 = {_c(p95, 3 if name == 'PSA' else 2)}")
+        ax.axvline(p99, color="k", ls=":", lw=1, label=f"P99 = {_c(p99, 2)}")
+        ax.set_xlabel(f"{name} score (OOS SPY)")
+        ax.set_ylabel("nº de días")
+        ax.set_yscale("log")
+        ax.legend(fontsize=8)
+        ax.xaxis.set_major_formatter(_coma1)
+    # sesgo persistente del agente: PSA (cambio estructural) no tiene qué detectar
+    order = sorted(PANEL10, key=lambda a: shorts[a])
+    axes[2].bar(order, [shorts[a] for a in order], color="#9e9e9e")
+    axes[2].axhline(0.5, color="k", ls="--", lw=.8, label="0,5 (sin sesgo)")
+    axes[2].set_ylim(0, 1)
+    axes[2].set_ylabel("fracción de días CORTO")
+    axes[2].yaxis.set_major_formatter(_coma)
+    axes[2].tick_params(axis="x", rotation=45, labelsize=8)
+    axes[2].legend(fontsize=8)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_psa_gso")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N15 — cap4_anexo_confusion_m10_regimen : acierto M5 vs M10 por régimen (SPY)
+# Builder ≈L581-L598. Fuente: spy_mechanism_extras.json (daily)
+# ════════════════════════════════════════════════════════════════════════════
+def n15_anexo_confusion_m10_regimen():
+    d = SPYME["daily"]
+    reg = np.array(d["regime"])
+    truth = np.array(d["truth"])
+    cm5 = (np.array(d["m5_pos"]) == truth)
+    cm10 = (np.array(d["m10_pos"]) == truth)
+    rows = []
+    for k in (0, 1, 2):
+        msk = reg == k
+        if msk.sum() >= 1:
+            rows.append({"régimen": REGNAME[k], "n": int(msk.sum()),
+                         "acc_M5": float(cm5[msk].mean()), "acc_M10": float(cm10[msk].mean())})
+    RM = pd.DataFrame(rows)
+    fig, ax = plt.subplots(figsize=(7, 3.4))
+    x = np.arange(len(RM))
+    ax.bar(x - 0.2, RM["acc_M5"], 0.4, color=COL["M5"], label="M5 (agente)")
+    ax.bar(x + 0.2, RM["acc_M10"], 0.4, color=COL["M10"], label="M10 (aprendiz)")
+    ax.axhline(0.5, color="k", ls=":", lw=.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{r['régimen']}\n(n = {r['n']})" for _, r in RM.iterrows()])
+    ax.set_ylabel("accuracy")
+    ax.yaxis.set_major_formatter(_coma)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_confusion_m10_regimen")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N16 — cap4_anexo_mcnemar : McNemar del rescate (p por estrategia, pooled 10)
+# Builder ≈L1246-L1249. Fuente: panel_robustness.json (pooled_bullbear.tests)
+# ════════════════════════════════════════════════════════════════════════════
+def n16_anexo_mcnemar():
+    pt = PANROB["pooled_bullbear"]["tests"]
+    labs = list(pt)
+    nice = [k.replace("_xgb", "").replace("_vs_m5", "").replace("_", " ") for k in labs]
+    pv = [pt[k]["mcnemar_p"] for k in labs]
+    fig, ax = plt.subplots(figsize=(9, 3.6))
+    ax.bar(range(len(labs)), pv, color=["#27ae60" if pt[k]["sig_0.10"] else "#c0392b" for k in labs])
+    ax.axhline(0.10, color="k", ls="--", lw=.8, label="α = 0,10")
+    for i, p in enumerate(pv):
+        ax.text(i, p + 0.002, _c(p, 3), ha="center", fontsize=8)
+    ax.set_xticks(range(len(labs)))
+    ax.set_xticklabels(nice, rotation=30, ha="right", fontsize=8)
+    ax.set_ylabel("p de McNemar (rescate vs M5)")
+    ax.yaxis.set_major_formatter(_coma)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    _save(fig, "cap4_anexo_mcnemar")
+
+
 if __name__ == "__main__":
     print("Generando las 15 figuras del Capítulo 4 en", FIGDIR)
     for fn in (f4_1, f4_2, f4_3, f4_4, f4_5, f4_6, f4_7, f4_8,
                f4_9, f4_10, f4_11, f4_12, f4_13, f4_14, f4_15):
         fn()
     print("Hecho: 15 figuras cap4_*.pdf")
+    print("\nGenerando las 16 figuras nuevas (cuerpo + anexo)")
+    for fn in (n1_anatomia_dia, n2_confusion_spy_6, n3_activacion_panel, n4_naturaleza_panel,
+               n5_robustez_calib, n6_robustez_panel, n7_anexo_confusion_panel, n8_anexo_ablacion,
+               n9_anexo_shap_dependency, n10_anexo_shap_cuota, n11_anexo_shap_rodante,
+               n12_anexo_regimen_direccion, n13_anexo_grupos, n14_anexo_psa_gso,
+               n15_anexo_confusion_m10_regimen, n16_anexo_mcnemar):
+        fn()
+    print("Hecho: 16 figuras nuevas cap4_*.pdf")
