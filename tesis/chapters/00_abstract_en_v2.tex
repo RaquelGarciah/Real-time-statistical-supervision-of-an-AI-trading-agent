@@ -1,8 +1,12 @@
+\renewcommand{\abstractname}{Abstract}
 \begin{abstract}
-
-This work designs STRATA, a statistical runtime-supervision layer for an LLM trading agent, a response to the growing reliance on non-deterministic methods for decisions that move real money. The agent, a replica of AI Hedge Fund with five investor personalities, chooses a direction and a size for each asset and day, and out of sample it loses money: on SPY it gets the sign of the next day's return right on only $36.6\%$ of the days, below a coin toss, and an initial \euro{}1000 ends at \euro{}700. STRATA audits each decision in runtime with three orthogonal classical detectors (a hidden Markov regime model, a Bayesian change-point detector and a GARCH volatility band) and overrides it when it contradicts an explicit model of the market. With paired statistical tests we ask whether this supervision rescues the agent, in directional accuracy and in risk; we attribute the effect to each detector; and we check whether a free meta-learner rediscovers STRATA's signals instead of discarding them. The rescue is statistically significant and its mechanics are interpretable. Beating a passive benchmark was never the aim, and STRATA does not achieve it: its scope is supervision, not alpha, and that boundary is left as future work.
-
-
-\medskip
-\noindent\textbf{Keywords:} runtime supervision, LLM trading agent, hidden Markov model, GARCH, change-point detection, meta-labeling.
-\end{abstract}
+    Large language model agents already make investment decisions, and they are not deterministic: faced with the same question they can answer differently, and they fail without warning. When real money is at stake, that is a problem. This work studies one such agent, a replica of AI Hedge Fund with five investor personalities that chooses a direction and a size for each asset and each day. Out of sample it loses: on SPY it gets the next day's direction right on only $36.6\%$ of the days, below a coin toss, and an initial \euro{}1000 ends at \euro{}700.
+    
+    We design STRATA, a statistical layer that supervises the agent in runtime. STRATA audits every decision with three orthogonal classical detectors, a hidden Markov regime model, a Bayesian change-point detector and a GARCH volatility band, and overrides the decision when it contradicts an explicit model of the market. We test the supervision with paired statistics on three questions: whether it rescues the agent in directional accuracy and in risk, which detector drives the effect, and whether a free meta-learner rediscovers STRATA's signals instead of discarding them.
+    
+    The rescue is statistically significant and its mechanics are interpretable. Across a panel of ten assets we find a pattern that maps where the approach is worth applying: the stronger an asset's leverage effect, the more the supervision rescues, and the regime rule leads on broad indices while the meta-learner leads on the rest. Its scope is supervision, not alpha and that boundary is left as future work.
+    
+    \medskip
+    \noindent\textbf{Keywords:} runtime supervision, LLM trading agent, hidden Markov model, GARCH, change-point detection, meta-labeling, leverage effect.
+    \end{abstract}
+    
