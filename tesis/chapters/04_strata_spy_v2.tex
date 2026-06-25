@@ -11,13 +11,9 @@ El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde d
 \section{La intervención en detalle}
 \label{sec:spy-anatomia}
 
-El protocolo se fija primero. Con \texttt{signal\_lag}${}=1$ (capítulo~\ref{cap:strata}), la posición del día $t$ se enfrenta al retorno del día $t+1$, nunca al del propio día. Los detectores se calibran una sola vez sobre 2000-01-01 a 2024-09-30 y sus umbrales se cierran antes de ver la evaluación, que arranca el 2024-10-01, ya pasado el corte de conocimiento del modelo de lenguaje.
+El caso de SPY aplica el protocolo de evaluación causal del Capítulo~\ref{cap:strata} (Sección~\ref{sec:strata-protocolo}): calibración cerrada hasta 2024-09, evaluación OOS desde 2024-10 y \texttt{signal\_lag}${}=1$. Sobre SPY, la ventana OOS completa tiene $n = 401$ días y la desplegable, tras el \emph{burn-in}, $n = 251$.
 
-Conviven dos ventanas que no se mezclan. El OOS completo ($n = 401$) sirve a las estrategias que no entrenan: el agente, la regla y las dos triviales. La ventana desplegable ($n = 251$) es la que queda tras un arranque de ciento cincuenta días de \emph{walk-forward} de origen rodante, y la emplean las estrategias que reentrenan a diario, con embargo${}=1$ \cite{tashman2000,lopezdeprado2018}.
-
-Los tres detectores se apoyan en modelos clásicos calibrados en esa ventana. El régimen lo da un HMM gaussiano de tres estados ($K = 3$, etiquetados Calma, Estrés y Crisis), fijado por una selección de modelo ex ante \cite{rabiner1989}. La volatilidad la sigue un GARCH(1,1) de innovaciones $t$ de Student, cuya cola pesada recoge los movimientos extremos que una normal subestima \cite{bollerslev1987}. El cambio estructural lo vigila un BOCPD en línea \cite{adams2007}. Sus umbrales de disparo son cuantiles de la calibración.
-
-El \emph{leverage} de un activo se mide con la correlación de Black, $\mathrm{lev} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, entre el retorno de hoy y el cambio de la volatilidad realizada a veintiún días: negativa cuando una caída eleva la volatilidad del día siguiente. La Figura~\ref{fig:mp-regimenes-spy} representa los tres regímenes sobre el precio de SPY; es descriptiva, decodificada con el camino de Viterbi (Anexo~\ref{anx:viterbi}), que RAM no usa para evitar el \emph{look-ahead}. Con un matiz: en la calibración el retorno del mismo día baja con el régimen, pero la fracción de días al alza del siguiente ronda $0{,}5$ incluso en Crisis. El régimen separa por volatilidad y coincide con la caída del mismo día; no anticipa el signo del siguiente.
+El régimen de SPY tiene contenido direccional por el \emph{leverage effect} del índice (Sección~\ref{sec:strata-ram}). La Figura~\ref{fig:mp-regimenes-spy} lo representa sobre el precio; es descriptiva, decodificada con el camino de Viterbi (Anexo~\ref{anx:viterbi}), mientras que RAM usa el filtrado causal. Con un matiz: el régimen coincide con la caída del mismo día pero no anticipa el signo del siguiente, la fracción de días al alza ronda $0{,}5$ incluso en Crisis.
 
 \begin{figure}[htbp]
 \centering
@@ -32,7 +28,7 @@ Los tres detectores miran dimensiones ortogonales de la decisión del agente. RA
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.56\textwidth]{figuras/cap4_anatomia_dia}
+\includegraphics[width=0.78\textwidth]{figuras/cap4_anatomia_dia}
 \caption{Anatomía de un día de intervención sobre SPY: la decisión del agente entra en RAM, que la compara con el régimen filtrado; si choca y el \emph{score} supera $\tau = 0{,}50$, la intervención la reorienta y el resultado se evalúa contra el retorno del día siguiente.}
 \label{fig:mp-anatomia}
 \end{figure}
@@ -56,7 +52,7 @@ GSO (volatilidad) & $0{,}0\%$ & --- & --- & $0{,}000$ \\
 
 Cuando RAM está alto, seguir el régimen supera en acierto a seguir al agente; cuando está bajo, la ventaja se diluye y la intervención no se activa (Figura~\ref{fig:mp-scores-detectores}). El detector actúa como una compuerta de régimen: deja pasar la decisión del agente salvo cuando choca con el régimen, y solo entonces la corrige. En SPY esa compuerta es todo el mecanismo de la regla.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
 \centering
 \begin{subfigure}[t]{0.56\textwidth}
 \centering
@@ -135,15 +131,7 @@ Sobre un único activo, el intervalo de confianza del $\Delta$Sharpe de la regla
 
 Sobre SPY el régimen (Sección~\ref{sec:spy-anatomia}) es el único canal que rescata, y el aprendiz no gana por otra vía. La ablación lo confirma: al quitar PSA y GSO y reentrenar, la accuracy de AutoML baja (Tabla~\ref{tab:mp-ablacion}). Aunque esos dos detectores casi nunca disparen como reglas, sus \emph{scores} continuos llevan información que el modelo aprovecha (PSA y GSO permanecen inactivos porque el agente apenas cambia de posición, Figura~\ref{fig:anx-psa-gso}; el régimen de RAM es contemporáneo, no predictivo, Figura~\ref{fig:anx-regimen-dir} del Anexo~\ref{anx:figuras}).
 
-Los valores de Shapley \cite{lundberg2017} lo confirman: STRATA aporta solo siete de las veintidós características y se lleva más de la mitad del peso. La cuota va etiquetada con su modelo y ventana, porque no son el mismo objeto: sobre el ensemble M10 ($n = 251$) vale $0{,}71$; sobre el \emph{leader} de AutoML ($n = 401$), $0{,}565$ por árbol y $0{,}564$ por permutación. En todos supera la mitad: el aprendiz coloca los detectores por delante de las características del agente. Cómo usa cada señal y la estabilidad de ese apoyo están en las Figuras~\ref{fig:anx-shap-dep} y~\ref{fig:anx-shap-rodante} del Anexo~\ref{anx:figuras}. El aprendiz corrige justo donde el agente más falla (Figura~\ref{fig:anx-confusion-m10}).
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.60\textwidth]{figuras/cap4_anexo_confusion_m10_regimen}
-\caption{Acierto del agente (M5) y del aprendiz (M10) por régimen, sobre SPY. El aprendiz corrige sobre todo donde el agente más se equivoca.}
-\label{fig:anx-confusion-m10}
-\end{figure}
-
+Los valores de Shapley \cite{lundberg2017} lo confirman: STRATA aporta solo siete de las veintidós características y se lleva más de la mitad del peso. La cuota va etiquetada con su modelo y ventana, porque no son el mismo objeto: sobre el ensemble M10 ($n = 251$) vale $0{,}71$; sobre el \emph{leader} de AutoML ($n = 401$), $0{,}565$ por árbol y $0{,}564$ por permutación. En todos supera la mitad: el aprendiz coloca los detectores por delante de las características del agente. Cómo usa cada señal y la estabilidad de ese apoyo están en las Figuras~\ref{fig:anx-shap-dep} y~\ref{fig:anx-shap-rodante} del Anexo~\ref{anx:figuras}. El aprendiz corrige justo donde el agente más falla (Figura~\ref{fig:anx-confusion-m10} del Anexo~\ref{anx:figuras}).
 
 \begin{table}[htbp]
 \centering
@@ -163,20 +151,13 @@ Las dos capas no rescatan por el mismo eje (Figura~\ref{fig:mp-capas}). Todo el 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.56\textwidth]{figuras/cap4_atribucion_capas}
+\includegraphics[width=0.74\textwidth]{figuras/cap4_atribucion_capas}
 \caption{Reparto de funciones entre las dos capas. A la izquierda, atribución del P\&L de rescate por detector sobre SPY: el canal de régimen (RAM) concentra el $100\%$, PSA y GSO aportan cero. A la derecha, evolución diaria del rescate de la regla (riesgo, $\Delta$Sharpe acumulado) frente al del aprendiz (accuracy, aciertos acumulados sobre el agente): cada serie sube por un eje distinto.}
 \label{fig:mp-capas}
 \end{figure}
 
 La objeción más natural es que los umbrales se eligieran para que el resultado saliera bien. El barrido completo lo descarta (Figura~\ref{fig:mp-sensibilidad} del Anexo~\ref{anx:figuras}): la accuracy apenas se mueve alrededor del valor canónico, ni al variar el umbral $\tau$ de RAM en M8 ni el de decisión del meta-learner. El resultado descansa sobre una meseta estable, no sobre un punto afortunado.
 
-La robustez alcanza también a la ventana con que se calibran los detectores (Figura~\ref{fig:mp-robustez-calib}): al desplazar el periodo de calibración, el rescate se mantiene.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.55\textwidth]{figuras/cap4_robustez_calib}
-\caption{Robustez a la ventana de calibración: el rescate se mantiene al desplazar el periodo con el que se cierran los umbrales de los detectores. El resultado no cuelga de una calibración concreta.}
-\label{fig:mp-robustez-calib}
-\end{figure}
+La robustez alcanza también a la ventana con que se calibran los detectores: al desplazar el periodo de calibración, el rescate se mantiene (Figura~\ref{fig:mp-robustez-calib} del Anexo~\ref{anx:figuras}).
 
 Sobre SPY el mecanismo es transparente: el agente sin supervisión pierde con holgura, la intervención por régimen lo corrige de forma significativa, la derivada aprendida supera a la trivial en este punto apoyándose en STRATA, y todo descansa sobre una meseta robusta de umbrales. A nivel de un único activo, la corrección de riesgo no alcanza significancia y la ventaja sobre la trivial es nominal. El rescate fuera de SPY se prueba sobre el panel de diez activos.

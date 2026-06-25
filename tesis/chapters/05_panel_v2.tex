@@ -41,20 +41,20 @@ La intervención de RAM no es arbitraria: su frecuencia crece casi linealmente c
 
 El mapa de calor de la Figura~\ref{fig:mp-heatmap} cruza los diez activos con las seis estrategias en accuracy. La mejor derivada de STRATA mejora al agente en los \textbf{diez de diez} activos, con una mejora media de $+0{,}086$, y supera a las dos referencias triviales en cuatro: SPY y MARA por AutoML, SMCI y UNG por M10. En los seis restantes la trivial aguanta; en índices muy direccionales como XLK la clase mayoritaria del pasado supera $0{,}64$ y ninguna derivada se le acerca.
 
-Esas ventajas son reales en punto pero nominales: con unos doscientos cincuenta días por activo y una ganadora que cambia de activo en activo, se seleccionan a posteriori y ninguna supera a ZeroR con significancia (McNemar AutoML vs ZeroR sobre SPY, $p = 0{,}90$). El reparto de aciertos y fallos por activo está en la Figura~\ref{fig:anx-confusion-panel}. El resultado que sí supera un test está en el riesgo, no en el acierto frente a la trivial.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{figuras/cap4_heatmap_accuracy}
+\caption{Mapa de calor de la accuracy direccional por activo (filas) y estrategia (columnas), centrado en $0{,}5$: el color mide la distancia a una referencia trivial. Verde marca accuracy por encima de la trivial del activo, rojo por debajo. La mejor derivada de STRATA supera a las dos triviales solo en SPY, SMCI, MARA y UNG; en los demás la trivial aguanta. Victorias nominales (n${}\approx 250$, a posteriori).}
+\label{fig:mp-heatmap}
+\end{figure}
+
+Esas ventajas son reales en punto pero nominales: con unos doscientos cincuenta días por activo y una ganadora que cambia de activo en activo, se seleccionan a posteriori y ninguna supera a ZeroR con significancia (McNemar AutoML vs ZeroR sobre SPY, $p = 0{,}90$). El reparto de aciertos y fallos por activo está en la Figura~\ref{fig:anx-confusion-panel}: el agente concentra el fallo en una clase y las derivadas lo reparten mejor. El resultado que sí supera un test está en el riesgo, no en el acierto frente a la trivial.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.74\textwidth]{figuras/cap4_anexo_confusion_panel}
 \caption{Matrices de confusión de la mejor derivada de STRATA en cada activo: el reparto de aciertos y fallos detrás de cada accuracy del panel.}
 \label{fig:anx-confusion-panel}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.56\textwidth]{figuras/cap4_heatmap_accuracy}
-\caption{Mapa de calor de la accuracy direccional por activo (filas) y estrategia (columnas), centrado en $0{,}5$: el color mide la distancia a una referencia trivial. Verde marca accuracy por encima de la trivial del activo, rojo por debajo. La mejor derivada de STRATA supera a las dos triviales solo en SPY, SMCI, MARA y UNG; en los demás la trivial aguanta. Victorias nominales (n${}\approx 250$, a posteriori).}
-\label{fig:mp-heatmap}
 \end{figure}
 
 \subsection{Pooled: el rescate en riesgo}
