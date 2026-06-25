@@ -35,7 +35,11 @@
 ## Énfasis y prioridades
 *Qué pesa más o menos, con qué liderar, qué desarrollar y qué acortar.*
 
-_(vacío)_
+- **Regla:** No subas el límite "no genera alfa / no significativo / dónde no funciona" a bandera en intros, cierres de sección o titulares. Encuadra por lo que STRATA SÍ aporta (rescata al agente y disciplina su riesgo); la honestidad sobre el límite va como nota breve y secundaria DENTRO de la frase, nunca como su remate principal ni como apertura. Honesto siempre —no se oculta—, pero no se le regala munición al tribunal subiendo la debilidad a primer plano: eso vive en la sección de límites, no en el arco de valor.
+  - Énfasis · Prioridad alta · Visto 2x (rechazó dos rewrites por subir "no alfa/dónde no llega"; + directiva previa "lo llevas demasiado a la bandera") · 2026-06-25
+  - Ejemplo: «Su listón es el propio agente, no el mercado: … con la honestidad de señalar dónde no llega.» → «STRATA rescata al agente que pierde y disciplina su riesgo, honesta sobre dónde funciona y dónde no.»
+  - Fuente de encuadre: `MARCO_PRACTICO_CONTEXTO.md §I` (honestidad técnica en los límites §VIII, no en el titular).
+  - Afecta a: redactor-tesis · estilo-raquel · narrativa-coherencia
 
 ---
 
@@ -48,8 +52,9 @@ _(vacío)_
   - Ejemplo (cap. 2): «una capa de auditoría que no reemplaza al agente, sino que lo corrige…» → «una capa de auditoría que corrige al agente cuando…»
   - Afecta a: redactor-tesis · estilo-raquel
 
-- **Regla:** Elimina los meta-comentarios sobre la propia redacción ("Insistimos en esta distinción a lo largo de la memoria", "conviene subrayar/recordar/enunciar que", "cabe destacar/mencionar", "es importante señalar", "es esencial que", "como veremos"). El énfasis va DENTRO de la frase ("lo decisivo es", "esto subraya", "merece atención"), nunca anunciándolo. Enuncia la idea una sola vez, directa; si se va a repetir, que se repita sin anunciarlo. El andamiaje no es solo verbal: quita también los cross-refs `\ref` puestos de pasada ("se justifica en detalle en la Sección~X") cuando no aportan en ese punto.
-  - Estilo · Prioridad alta (orden de exclusión: no metas estas frases) · Visto 6x · 2026-06-18
+- **Regla:** Elimina los meta-comentarios sobre la propia redacción ("Insistimos en esta distinción a lo largo de la memoria", "conviene subrayar/recordar/enunciar que", "cabe destacar/mencionar", "es importante señalar", "es esencial que", "como veremos") y las muletillas que anuncian la estructura del enunciado ("en orden", "a continuación", "en lo que sigue"). El énfasis va DENTRO de la frase ("lo decisivo es", "esto subraya", "merece atención"), nunca anunciándolo. Enuncia la idea una sola vez, directa; si se va a repetir, que se repita sin anunciarlo. El andamiaje no es solo verbal: quita también los cross-refs `\ref` puestos de pasada ("se justifica en detalle en la Sección~X") cuando no aportan en ese punto.
+  - Estilo · Prioridad alta (orden de exclusión: no metas estas frases) · Visto 7x · 2026-06-18, 2026-06-25
+  - Ejemplo (cap. 4): «La respuesta es, en orden, el aprendiz rescata…» → «La respuesta es: el aprendiz rescata…» (edición directa de Raquel)
   - Ejemplo: «Insistimos en esta distinción a lo largo de la memoria: STRATA no predice el retorno, sino que mide…» → «STRATA no predice el retorno: mide en qué grado…»
   - Afecta a: redactor-tesis · estilo-raquel · detector-ia
   - Lista completa de prohibidos y sus reformulaciones: `tesis_assets/conectores_raquel.md` (sección «Prohibidos»).
@@ -57,6 +62,11 @@ _(vacío)_
 - **Regla:** No abras un bloque con una frase de marco grandilocuente ("Las tres líneas anteriores se rozan, pero no se han combinado del modo que aquí se propone", "Esa es la propuesta del trabajo") ni lo cierres con un meta-comentario sobre el estatus de lo que vas a demostrar ("Hasta qué punto se consigue no se adelanta aquí como propiedad demostrada"). Entra directo a la idea, con ritmo de frase variado (corta + larga), y deja que los resultados hablen en su sitio.
   - Estilo / anti-IA · Prioridad media · Visto 1x · 2026-06-18
   - Ejemplo: «Las tres líneas anteriores se rozan, pero no se han combinado del modo que aquí se propone. … Esa es la propuesta del trabajo: … Hasta qué punto se consigue … no se adelanta aquí como propiedad demostrada.» → «Ninguno de los tres enfoques combina supervisión de régimen, coherencia temporal y volatilidad sobre un mismo agente. STRATA añade esa capa de auditoría…»
+  - Afecta a: redactor-tesis · estilo-raquel · detector-ia
+
+- **Regla:** En los remates de intro o de sección, evita la tripleta de verbos en paralelo ("rescata… disciplina… dibuja…") que crea ritmo uniforme de tell-IA: funde a dos o rompe la simetría. Y nada de metáforas literarias floja para un cierre técnico ("dibuja", "pinta", "ilumina", "retrata"): di la acción plana. Remate afirmativo y concreto.
+  - Estilo · Prioridad tentativa · Visto 1x · 2026-06-25
+  - Ejemplo: «STRATA rescata al agente que pierde, disciplina su riesgo y dibuja con honestidad dónde funciona.» → «STRATA rescata al agente que pierde y disciplina su riesgo, honesta sobre dónde funciona y dónde no.»
   - Afecta a: redactor-tesis · estilo-raquel · detector-ia
 
 - **Regla:** No repitas la coletilla de causalidad ("en ningún paso entra información posterior a $t$", "no usa observaciones futuras", "para no incurrir en fuga") cada vez que aparece un detector o una variante. La causalidad se establece UNA vez en su sitio (la prueba del filtrado y la sección de validación sin fuga); después se da por sentada salvo que aporte algo nuevo.
@@ -141,3 +151,4 @@ _(vacío)_
 - 2026-06-17 · creación (estructura vacía; sistema de aprendizaje montado).
 - 2026-06-18 · cap. 2: nueva regla de Citas (verificar antes de descartar; mención genérica si la fuente no se sostiene); nueva regla anti-IA (apertura grandilocuente / cierre meta); refuerzos: «no es X sino Y» media→alta (2x), redundancia local media→alta (3x, enunciado ampliado), meta-comentarios 4x→5x.
 - 2026-06-18 · cap. 3 (ediciones directas de Raquel): nueva regla de concreción (nombrar el objeto, no etiqueta vaga; media, 2x); nueva regla de primera persona del plural uniforme (decisión de Raquel; supersede el "recojo" singular); nueva regla de frase corta/hablada (tentativa); refuerzo meta-comentarios 5x→6x (incluye quitar cross-refs `\ref` puestos de pasada). Arranque "Y así" y coma de empalme = licencias puntuales, no reglas.
+- 2026-06-25 · cap. 4 (intro, sesión consejero): primera regla de **Énfasis** (no subir el límite "no alfa/dónde no funciona" a bandera en intros/cierres; alta, 2x); nueva regla de estilo de remate (sin tripleta de verbos, sin metáfora floja; tentativa, 1x); refuerzo meta-comentarios 6x→7x (añade "en orden" y muletillas que anuncian estructura). Registro crudo en `correcciones/cap4.md`. Pendiente: `barrido-retroactivo` sobre lo ya escrito para la regla de énfasis y la de tripletas.

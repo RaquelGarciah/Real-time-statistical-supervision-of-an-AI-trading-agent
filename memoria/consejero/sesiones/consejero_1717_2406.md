@@ -265,3 +265,218 @@ Antes de darte el visto bueno, déjame confirmar una cosa clave: **qué decodifi
 
 Ojo, Raquel — antes de que muevas: Viterbi **no se usa solo para pintar la figura**. Déjame confirmar el segundo uso, que es el importante.
 
+#### [2054] Consejero
+
+Confirmado, y el matiz importa. Esto es lo que hace el código:
+
+- **RAM en vivo** usa la **probabilidad filtrada causal** `predict_proba_filtered` ([core/hmm.py:178](core/hmm.py#L178)) — forward, fila $t$ depende solo del pasado. **No usa Viterbi.**
+- **El prior régimen→dirección** sale del **signo de la media de emisión $\mu_k$** del HMM (lo dice tu propio cap. 3, [03_marco_teorico.tex:583](tesis/chapters/03_marco_teorico.tex#L583)), no de etiquetar días con Viterbi.
+- **Viterbi** (`predict_states`, [core/hmm.py:157](core/hmm.py#L157)) aparece en el pipeline canónico para **pintar el camino de regímenes** de la figura ([export_figs_cap4.py:162](experiments/export_figs_cap4.py#L162)).
+
+Tu instinto es correcto: **en el entregable, Viterbi es descriptivo**. Moverlo a anexos y mencionarlo aquí es buena estructura — el cuerpo del cap. 3 se queda con la maquinaria causal (forward), y Viterbi vive donde de verdad se usa.
+
+**Pero aprovecha el movimiento para blindar un flanco de look-ahead.** El trazo de la figura es una decodificación **retrospectiva sobre toda la serie** (Viterbi mira el futuro). Si no lo dices, un tribunal ve "régimen vigente cada día" y supone que el detector conoce el régimen con visión de futuro. Conviértelo en fortaleza diciéndolo explícito. Frase para insertar aquí:
+
+```latex
+La Figura~\ref{fig:mp-regimenes-spy} muestra los tres regímenes pintados sobre el precio de SPY. El trazo emplea el camino de máxima verosimilitud de Viterbi (Anexo~\ref{anx:viterbi}), una decodificación retrospectiva sobre toda la serie; el detector RAM no lo usa: en tiempo real lee la probabilidad filtrada causal del estado, que nunca mira el futuro.
+```
+
+Dos avisos:
+- Crea el `\label{anx:viterbi}` en el anexo cuando muevas el contenido; si no, saldrá `??` al compilar.
+- Verifica si `regime_direction_table.json` (fuente de la figura y de las cifras del párrafo siguiente) se construye con `predict_states`. Si es así, di que Viterbi es la **decodificación descriptiva** (figura + tabla de regímenes), no *solo* la figura — para no quedarte corta. ¿Te confirmo cómo se genera ese JSON?
+
+#### [0354] Raquel
+
+con todos los cambios que he hecho ya tienes que saber todo de mi, ya tienes que poder corregir cosas que suenan a ia por ejemplo ( Es el caballo de batalla) expresiones asi nunca las usaria, esas cosas suenan a ia. asi que pofavor hazme una revisión en todos los documentos _v2 para buscar cosas que yo no pondría
+
+#### [0354] Consejero
+
+Sí. Llevas razón: a estas alturas ya tengo tu voz. *«El caballo de batalla»*, las metáforas de manual, los meta-comentarios — fuera. Hago la pasada por todos los `_v2`. Primero cargo tus reglas para no marcar a ojo, luego barro.
+
+#### [0355] Consejero
+
+Tengo tus reglas. Cazo los tells idiomáticos en los siete `_v2` de una pasada — metáforas de manual, meta-comentarios, *«no es X sino Y»*, cierres floridos:
+
+#### [0355] Consejero
+
+Dos confirmados en esta pasada (los de `apilar` son falsos positivos — la `r` de "a-pilar"):
+- **03:659** *«Es el caballo de batalla del riesgo en el panel»* — el que señalaste.
+- **04:48** *«Que RAM acierte al intervenir no es casualidad»* — mismo tipo de muletilla.
+
+Segunda pasada, ahora metáforas-verbo, *« sino »* y cierres floridos:
+
+#### [0356] Consejero
+
+Una más, para cerrar el barrido (metáforas de maquinaria/paisaje y conectores-etiqueta en arranque):
+
+#### [0357] Consejero
+
+Barrido completo de los siete `_v2`. Lo agrupo por confianza. **No toco nada todavía** — tú eliges qué cae.
+
+### 🔴 Firmes: expresiones que no son tu voz
+
+| # | Sitio | Tu texto | Cambio |
+|---|---|---|---|
+| 1 | [03:659](tesis/chapters/03_como_funciona_strata_v2.tex#L659) | «Es el **caballo de batalla** del riesgo en el panel» | «Es el contraste que usamos para todo el riesgo del panel: pooled-10, estratos por régimen y diferencia en diferencias.» |
+| 2 | [04:48](tesis/chapters/04_strata_spy_v2.tex#L48) | «Que RAM acierte al intervenir **no es casualidad**» | «La Figura~\ref{...} muestra por qué RAM acierta al intervenir.» |
+
+### 🟠 Patrón repetido: «dibuja» (7 veces) — tu propia regla lo veta
+
+Es el tell más extendido. *«Nada de metáforas literarias para algo técnico: di la acción plana»* (`correcciones_aprendidas`, 2026-06-25). Lo usas como verbo-comodín en cap. 5 sobre todo:
+
+- [05:272](tesis/chapters/05_panel_v2.tex#L272) (título) «la naturaleza **dibuja** los grupos» → «la naturaleza **separa** los grupos»
+- [05:112](tesis/chapters/05_panel_v2.tex#L112) «La Figura **dibuja** los intervalos» → «**muestra**»
+- [05:207](tesis/chapters/05_panel_v2.tex#L207) «La Figura la **dibuja**» → «lo **muestra**»
+- [05:225](tesis/chapters/05_panel_v2.tex#L225) «que esa propiedad **dibuja**» → «que esa propiedad **marca**»
+- [05:275](tesis/chapters/05_panel_v2.tex#L275) «los bloques que el rescate **dibuja**» → «que el rescate **define**»
+- [06:24](tesis/chapters/06_conclusiones_v2.tex#L24) «**dibuja** la misma estructura» → «**reproduce** la misma estructura»
+- [03:711](tesis/chapters/03_como_funciona_strata_v2.tex#L711) «la naturaleza **dibuja** grupos» → «**forma** grupos»
+
+### 🟡 Verbo florido: «descansa sobre»
+
+- [04:145](tesis/chapters/04_strata_spy_v2.tex#L145) «**descansa sobre** una meseta estable»
+- [04:155](tesis/chapters/04_strata_spy_v2.tex#L155) «todo **descansa sobre** una meseta robusta»
+
+«Meseta» se queda (es el término estándar de un barrido plano); lo florido es *descansa sobre* → «se mantiene en». 
+
+### ⚪ Mecánico (no es IA, pero está roto) — [04:20](tesis/chapters/04_strata_spy_v2.tex#L20)
+
+Al pegar mi frase de Viterbi quedó: *«Esto es **escriptivo**, empleamos…»* (typo → «descriptivo»), `look ahead` sin formato, y dos frases pegadas sin punto (*«…del estado.Una precisión…»*). Lo dejo limpio si quieres.
+
+---
+
+### Dos cosas que considero y **NO marco** (para que conste que las miré):
+
+- **«compuerta»** (RAM como gate, ~6 veces): es término técnico **preciso** y consistente con tu variable `gate RAM`. No es tell de IA. Lo dejaría salvo que a ti te canse.
+- **«no es X **sino** Y»** (en 03:12, 03:64, 03:72, 03:236, 03:381, 02:23): tu regla los veta, pero casi todos son contrastes definitorios limpios («no el precio sino su variación»), no el «no es un fallo sino un hallazgo» que de verdad te molesta. El único que reescribiría por torpe es [03:64](tesis/chapters/03_como_funciona_strata_v2.tex#L64) («no aplica umbrales fijos sino que es un modelo…»). El resto, tu decisión.
+
+---
+
+¿Aplico el **lote firme + el de «dibuja»** (9 cambios, todos seguros) y te dejo lo amarillo/sino para que decidas? ¿O prefieres que para una pasada más fina —longitud de frase, ratio de conectores— lance a **`estilo-raquel`** contra los `_v2` (te pido luz verde antes)?
+
+#### [0401] Raquel
+
+si.
+
+#### [0401] Consejero
+
+Aplico los 9 cambios seguros (los dos idiomas + el lote «dibuja»).
+
+#### [0401] Consejero
+
+Necesito abrir los ficheros con la tool de lectura antes de editarlos. Los leo y aplico.
+
+#### [0401] Consejero
+
+Veo que ya quitaste tú misma el «caballo de batalla» (03:659) y el «no es casualidad» (04:48) — perfecto, esos dos ya están. Me quedan los «dibuja». Aplico 03:711 y 06:24, y leo el cap. 5 para los otros cinco.
+
+#### [0402] Consejero
+
+Título 05:272 ya lo arreglaste tú. Aplico los cuatro «dibuja» restantes del cap. 5:
+
+#### [0402] Consejero
+
+Listo. **Lote «dibuja» completo** — los 7 fuera (3 los habías quitado tú: el «caballo de batalla», el «no es casualidad» y el título de §clustering; los otros 4 los acabo de aplicar). Ahora cap. 5 dice *muestra / marca*, cap. 6 *reproduce*, cap. 3 *forma*.
+
+Nota menor: en cap. 5 quedan dos «marca» a ~50 líneas (225 y 275); distinta subsección, no chirría, pero si quieres varío uno a «define».
+
+**Queda pendiente de tu decisión** (te lo dejé sin tocar):
+- 🟡 **«descansa sobre»** en [04:145](tesis/chapters/04_strata_spy_v2.tex#L145) y [04:155](tesis/chapters/04_strata_spy_v2.tex#L155) → «se mantiene en».
+- ⚪ **Lío mecánico de [04:20](tesis/chapters/04_strata_spy_v2.tex#L20)** (typo «escriptivo», `look ahead` sin formato, dos frases pegadas) — del Viterbi que pegaste.
+- **«no es X sino Y»**: solo reescribiría [03:64](tesis/chapters/03_como_funciona_strata_v2.tex#L64) por torpe; el resto son contrastes limpios, tú decides.
+
+¿Te limpio el 04:20 y el «descansa sobre» también, o lo dejas para ti? Y sigue en pie lo de lanzar **`estilo-raquel`** para la pasada fina (longitud de frase, ratio de conectores) si la quieres — pido luz verde antes.
+
+#### [0403] Raquel
+
+La purga no agota la fuga, anetdótico, estratos: todas las csi siempre las palabras raras son ia
+
+#### [0404] Consejero
+
+Captado: **palabra rara = IA**, y los aforismos ingeniosos tipo *«La purga no agota la fuga»* (juego purga/fuga) son lo más IA de todo. Tu regla de vocabulario llano es prioridad alta. Leo el contexto de esa frase y barro vocabulario rebuscado en todos los `_v2`.
+
+#### [0404] Consejero
+
+La frase que seleccionaste (line 622) ya no está ahí — el fichero se ha movido. La busco, y rehago el grep de vocabulario sin que el filtro me oculte hits:
+
+#### [0405] Consejero
+
+Casi todo limpio: el único «raro» de mi lista que aparece es **anecdótica** (03:202). Tu *«purga no agota la fuga»* ya no está (alguien la quitó). Busco «estratos» y un par más que encajan en tu queja:
+
+#### [0405] Consejero
+
+«estratos» ya no aparece en los `_v2` (debía de ser del 03:659 viejo que tú editaste). Lo que sí queda:
+
+**Aplico ya** (lo nombraste tú):
+- [03:202](tesis/chapters/03_como_funciona_strata_v2.tex#L202) «no **anecdótica**» → «no un detalle menor».
+
+#### [0406] Consejero
+
+Hecho. Resumen del barrido de vocabulario:
+
+- ✅ **anecdótica** (03:202) → «no es un detalle menor».
+- ✅ **«La purga no agota la fuga»** y **«estratos»** — ya no existen en los `_v2`.
+
+**Quedan dos, tu decisión** (no son latinajos, por eso no los toco sin preguntarte):
+- **«contundente»** — [05:53](tesis/chapters/05_panel_v2.tex#L53) «La primera lectura es contundente» → «clara» / «rotunda». Suena un poco a titular de prensa.
+- **«holgura»** — aparece 5 veces ([04:155](tesis/chapters/04_strata_spy_v2.tex#L155), [05:112](tesis/chapters/05_panel_v2.tex#L112), [05:117](tesis/chapters/05_panel_v2.tex#L117), [05:348](tesis/chapters/05_panel_v2.tex#L348), [06:13](tesis/chapters/06_conclusiones_v2.tex#L13)), siempre «con holgura / con más holgura». La palabra es correcta, pero repetirla 5 veces canta; podría variar a «con margen / de sobra» en alguna.
+
+Un apunte de método: tu criterio *«palabra rara = IA»* ya vive como regla de vocabulario llano en `correcciones_aprendidas`, pero puedo afinarla con estos ejemplos concretos (anecdótica, contundente) vía `aprendiz-correcciones` para que la próxima redacción ni las proponga — ¿lo lanzo? Y dime si quieres que cambie «contundente» y varíe algún «holgura».
+
+#### [0548] Raquel
+
+Lectura sin contraste asociado. BUSCA FRASES SIMILARES A ESTA, QUE ME QUEDEN EN EVIDENCIA
+
+#### [0549] Consejero
+
+Entiendo: *«Lectura sin contraste asociado»* te deja expuesta — es un fragmento telegráfico, sin verbo, que además admite a pelo que algo no tiene test detrás. Justo lo que tu regla prohíbe: no le regales munición cruda al tribunal. Veo el contexto exacto y busco las hermanas de esa frase.
+
+#### [0549] Consejero
+
+Confirmado lo que pasa en [05:130](tesis/chapters/05_panel_v2.tex#L130): *«Lectura sin contraste asociado.»* va **pegada al final del caption** (sin espacio: «…alcista.Lectura…»), sin verbo, y **repite** lo que el cuerpo ya dijo en [05:125](tesis/chapters/05_panel_v2.tex#L125) («queda como lectura, no como afirmación»). Es un cartelito de IA que además grita la debilidad. Busco sus hermanas — fragmentos telegráficos y admisiones crudas:
+
+#### [0552] Consejero
+
+Encontradas. Distingo dos cosas, porque no todas se arreglan igual.
+
+### Las hermanas gemelas de tu frase (fragmento sin verbo, cartel de IA)
+
+Son las que de verdad te dejan en evidencia: etiquetas telegráficas pegadas a un caption.
+
+| Sitio | Frase | Problema |
+|---|---|---|
+| [05:130](tesis/chapters/05_panel_v2.tex#L130) | «…periodo alcista.**Lectura sin contraste asociado.**» | Sin verbo, sin espacio, y **repite** el cuerpo (05:125 ya lo dice framed). |
+| [05:84](tesis/chapters/05_panel_v2.tex#L84) | «**Victorias nominales (n≈250, a posteriori).**» | Mismo patrón: coletilla sin verbo al final del caption, soltando la debilidad a pelo. |
+
+**Arreglo:** un caption no lleva veredictos crudos. En 05:130 **borro el cartelito** (el matiz «sin contraste» ya vive, bien encuadrado, en el cuerpo 05:125). En 05:84 lo convierto en frase: «Las cuatro victorias son nominales: la ventana ronda los 250 días y la ganadora se elige a posteriori.»
+
+### El párrafo que grita el límite — [05:79](tesis/chapters/05_panel_v2.tex#L79)
+
+No es telegráfico, pero es el que más munición regala, y encima **en negrita**:
+
+> «…son nominales. **Ninguna bate a ZeroR con significancia**… el límite es que no sobrevive a un test.»
+
+Tu regla ALTA: honesta sí, pero el límite **no se titula ni se pone en negrita**. La negrita sobre la debilidad es justo lo contrario. Propongo **quitar la negrita** y encuadrar: liderar con el valor (la victoria en punto) y dejar el «no llega a significativa» como cláusula secundaria dentro de la frase, no como remate en bold.
+
+### Lo que NO marco (para que conste)
+
+La **tabla de veredictos** (05:329–345) está llena de fragmentos («Tendencia al α=0,10; no p<0,05»), pero ahí son **celdas de tabla**: el formato pide fragmento, no es tell. Y las admisiones del cuerpo (05:123, 05:125, 06:47) son honestidad legítima bien encuadrada — se quedan.
+
+---
+
+¿Aplico lo seguro ya — **borrar el cartel de 05:130** (y arreglar el espacio) y **quitar la negrita de 05:79**— y te dejo propuesto el reframe de 05:84 y del párrafo 79 para que lo apruebes? También puedo seguir el barrido del mismo patrón en cap. 4 y 6 si quieres la pasada completa.
+
+#### [0613] Raquel
+
+busca la palabra anécdota o anecdotico  y remplazala
+
+#### [0613] Consejero
+
+Solo queda una (la de 03:202 ya la cambié antes): [05:227](tesis/chapters/05_panel_v2.tex#L227) «el rescate deja de ser **una anécdota** de SPY». La leo y la sustituyo.
+
+#### [0614] Consejero
+
+Hecho. «una anécdota de SPY» → «un resultado aislado de SPY». 
+
+Ya no queda ninguna «anécdota / anecdótico» en toda la tesis (las dos que había: esta y la de 03:202, las dos fuera).
+

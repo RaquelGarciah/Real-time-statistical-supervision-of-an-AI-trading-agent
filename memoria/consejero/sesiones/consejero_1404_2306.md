@@ -153,3 +153,82 @@ Ya tengo el cuadro completo. Esto es lo que pasa:
 - **`REQUERIDAS_cap4.md` es el contrato**: 15 figuras nuevas (F4.1–F4.15), cada una con su JSON. Las 12 que hay en `tesis/figuras/` son **de la era SMCI y el propio contrato dice que NO sirven**.
 - Existe el generador **`experiments/export_figs_cap4.py`**. Déjame ver si ya produce los nombres nuevos o sigue en los viejos:
 
+#### [0739] Consejero
+
+Aquí está la causa raíz, y no es trivial:
+
+**El generador `export_figs_cap4.py` está desfasado**: sigue produciendo los 12 nombres viejos (era SMCI), no los 15 que el cap. 4 reescrito hoy referencia. Por eso ninguna figura nueva existe → compile FATAL.
+
+Lo bueno: **los 12 JSON canónicos que piden las figuras nuevas existen todos**. La pega: según `REQUERIDAS_cap4.md`, **F4.12 (panel derecho, timeline) y F4.15 (casos XLE/MARA) no salen de JSON** — necesitan datos a nivel notebook.
+
+Así que hay dos cosas distintas, y conviene no mezclarlas:
+
+**1. Desbloquear el compile YA** (1 min, cero riesgo): genero un PDF *placeholder* "FIGURA PENDIENTE" y lo copio a los 15 nombres. La memoria compila, ves el PDF y lees toda la prosa del cap. 4 con marcadores donde irán las figuras. No toca nada del `.tex` ni de los datos.
+
+**2. Generar las 15 figuras de verdad** (trabajo de construcción, no de consejera): reescribir `export_figs_cap4.py` a los 15 nombres nuevos leyendo los JSON canónicos, con paleta única y coma decimal. 12/15 salen directas del JSON; las otras 3 (F4.12-dcha, F4.15) hay que sacarlas del notebook. Esto es del flujo constructor del notebook, y antes de lanzarlo te pregunto.
+
+Mi recomendación: **hago el (1) ahora** para que tengas PDF y puedas seguir revisando prosa, y el (2) lo planificamos aparte (puedo empezar yo el script de las 12 directas, o enrutarlo al constructor del notebook). 
+
+¿Te genero los placeholders y te dejo el PDF compilando?
+
+#### [2258] Raquel
+
+vale ya has ido viendo el tipo de cambios que he hecho guardalos, ya habrás encontrado el patron para hacer cambios como si fuera yo. documenta todo
+
+#### [2259] Consejero
+
+Entendido. Te registro las correcciones que has hecho y destilo el patrón en regla, para escribir como tú de aquí en adelante. Pero lo hago con rigor: capturo solo lo que **veo de verdad** en tus ediciones, no me invento un patrón grande con pocas muestras. Primero reúno la evidencia exacta:
+
+#### [2259] Consejero
+
+git diff sale vacío (un watcher de autosave ya commiteó tus ediciones; lo confirmo luego). No importa: tengo tus cambios de esta sesión vistos directamente. Déjame ver el formato del registro para escribir igual que `cap2`/`cap3`:
+
+#### [2300] Consejero
+
+Tengo el formato. Antes de escribir, leo el resto de `correcciones_aprendidas.md` (el canónico de reglas) para no duplicar y saber dónde insertar:
+
+#### [2300] Consejero
+
+Tengo todo el corpus y el formato. Esta sesión deja cuatro cosas documentables. Las escribo en los dos sitios que manda el sistema: el registro crudo (`correcciones/cap4.md`) y las reglas destiladas en el canónico (`correcciones_aprendidas.md`). Voy.
+
+**1) Registro crudo — `memoria/correcciones/cap4.md`:**
+
+#### [2301] Consejero
+
+**2) Reglas destiladas — `correcciones_aprendidas.md`:**
+
+La sección de Énfasis estaba vacía; tu corrección de hoy es justo de énfasis y es prioridad alta (regla inmediata). La añado:
+
+#### [2301] Consejero
+
+Refuerzo la regla de meta-comentarios existente con el caso "en orden" (6x → 7x):
+
+#### [2301] Consejero
+
+Y una regla tentativa nueva (vista 1x) para los remates de sección, que captura lo del trío de verbos y la metáfora floja:
+
+#### [2301] Consejero
+
+Cierro con la entrada en el histórico del fichero:
+
+#### [2302] Consejero
+
+Documentado todo. Resumen de lo que queda guardado:
+
+**Registro crudo** — [memoria/correcciones/cap4.md](memoria/correcciones/cap4.md) (nuevo): las 4 cosas de esta sesión con su «antes → después».
+
+**Reglas destiladas** — [memoria/correcciones_aprendidas.md](memoria/correcciones_aprendidas.md), tres movimientos:
+
+| Regla | Tipo | Prioridad | Visto |
+|---|---|---|---|
+| No subir el límite "no alfa / dónde no funciona" a **bandera** en intros/cierres — honesto pero como nota secundaria, no titular | Énfasis (estrena la sección, estaba vacía) | **alta** (inmediata) | 2x |
+| Remates sin **tripleta de verbos** ni metáfora floja ("dibuja") — afirmativo y plano | Estilo | tentativa | 1x |
+| Meta-andamiaje: añadido **"en orden"** y muletillas que anuncian estructura | Estilo (refuerzo) | alta | 6x → **7x** |
+
+El patrón de fondo que extraje de tu voz, por si lo quieres en una línea: **entras directa (dos puntos, sin "en orden"), rematas por lo que la cosa SÍ hace, y la honestidad la dices —pero pequeña, nunca de bandera.** Eso es lo que aplicaré al escribir como tú.
+
+Dos cosas antes de seguir:
+
+1. La regla de énfasis es nueva y **fuerte**: conviene que `barrido-retroactivo` barra lo ya escrito (intros de cap. 4 y 5, conclusiones) por si en algún cierre subí el "no alfa" a primer plano. ¿Lo lanzo?
+2. Esto son cinco ficheros tocados (cap4.md nuevo + correcciones_aprendidas + tus ediciones del .tex). ¿Quieres que lo **commitee** (atómico, en `feat/quant-validation-panel`), o lo dejas para el watcher?
+

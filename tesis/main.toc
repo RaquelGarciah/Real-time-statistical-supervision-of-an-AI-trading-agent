@@ -1,99 +1,108 @@
 \babel@toc {spanish}{}\relax 
 \contentsline {chapter}{\numberline {1}Introducción}{4}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Estado del arte}{6}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Agentes LLM para decisiones financieras}{6}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Supervisión en tiempo de ejecución de sistemas ML y agentes}{7}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Régimen de mercado y gestión de riesgo como capa de control}{8}{section.2.3}%
-\contentsline {section}{El hueco que llena STRATA}{8}{section*.2}%
-\contentsline {chapter}{\numberline {3}Marco teórico}{9}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Preliminares y notación}{9}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Agentes de trading basados en modelos de lenguaje}{10}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Modelos de lenguaje}{11}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}De modelo a agente}{11}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}La arquitectura multiagente del fondo}{12}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}La salida del agente}{12}{subsection.3.2.4}%
-\contentsline {section}{\numberline {3.3}STRATA a nivel técnico}{13}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Modelos de cambio de régimen: HMM gaussiano}{14}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Cambio de régimen en series financieras}{14}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Definición del HMM gaussiano}{14}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Algoritmo forward}{15}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {3.4.4}Posterior filtrado frente a posterior suavizado}{16}{subsection.3.4.4}%
-\contentsline {subsection}{\numberline {3.4.5}Estimación: el algoritmo de Baum-Welch (EM)}{17}{subsection.3.4.5}%
-\contentsline {subsection}{\numberline {3.4.6}El algoritmo de Viterbi}{19}{subsection.3.4.6}%
-\contentsline {subsection}{\numberline {3.4.7}Selección del número de estados}{19}{subsection.3.4.7}%
-\contentsline {section}{\numberline {3.5}Volatilidad condicional: ARCH y GARCH(1,1)-t}{20}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Series temporales y heterocedasticidad condicional}{20}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}De ARCH a GARCH}{21}{subsection.3.5.2}%
-\contentsline {subsection}{\numberline {3.5.3}Estacionariedad y varianza incondicional}{22}{subsection.3.5.3}%
-\contentsline {subsection}{\numberline {3.5.4}Innovaciones Student-t}{24}{subsection.3.5.4}%
-\contentsline {subsection}{\numberline {3.5.5}Estimación por máxima verosimilitud}{24}{subsection.3.5.5}%
-\contentsline {section}{\numberline {3.6}Detección bayesiana de puntos de cambio (BOCPD)}{25}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Run-length y detección online}{25}{subsection.3.6.1}%
-\contentsline {subsection}{\numberline {3.6.2}Recursión de la distribución de run-length}{26}{subsection.3.6.2}%
-\contentsline {subsection}{\numberline {3.6.3}Función de hazard y predictiva conjugada}{27}{subsection.3.6.3}%
-\contentsline {section}{\numberline {3.7}STRATA aplicado: construcción, calibración y umbrales}{28}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}Datos y calibración}{28}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}RAM: desajuste entre régimen y acción}{28}{subsection.3.7.2}%
-\contentsline {subsection}{\numberline {3.7.3}GSO: tamaño compatible con la volatilidad}{29}{subsection.3.7.3}%
-\contentsline {subsection}{\numberline {3.7.4}PSA: coherencia temporal del agente}{30}{subsection.3.7.4}%
-\contentsline {subsection}{\numberline {3.7.5}La capa de intervención}{30}{subsection.3.7.5}%
-\contentsline {section}{\numberline {3.8}Estrategias supervisadas: aprendizaje sobre las señales}{30}{section.3.8}%
-\contentsline {subsection}{\numberline {3.8.1}El problema de aprendizaje supervisado}{31}{subsection.3.8.1}%
-\contentsline {subsection}{\numberline {3.8.2}Árboles de decisión}{31}{subsection.3.8.2}%
-\contentsline {subsection}{\numberline {3.8.3}Gradient boosting}{32}{subsection.3.8.3}%
-\contentsline {subsection}{\numberline {3.8.4}XGBoost y el meta-learner M10}{33}{subsection.3.8.4}%
-\contentsline {subsection}{\numberline {3.8.5}Apilamiento y super learner}{34}{subsection.3.8.5}%
-\contentsline {subsection}{\numberline {3.8.6}Búsqueda automatizada: H2O AutoML}{34}{subsection.3.8.6}%
-\contentsline {subsection}{\numberline {3.8.7}Catálogo de estrategias}{35}{subsection.3.8.7}%
-\contentsline {section}{\numberline {3.9}Métricas de evaluación}{35}{section.3.9}%
-\contentsline {subsection}{\numberline {3.9.1}Acierto direccional y matriz de confusión}{35}{subsection.3.9.1}%
-\contentsline {subsection}{\numberline {3.9.2}El ratio de Sharpe}{36}{subsection.3.9.2}%
-\contentsline {subsection}{\numberline {3.9.3}Drawdown máximo y Calmar}{36}{subsection.3.9.3}%
-\contentsline {section}{\numberline {3.10}Validación}{37}{section.3.10}%
-\contentsline {subsection}{\numberline {3.10.1}Causalidad: la regla signal\_lag=1}{37}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}Validación walk-forward (rolling-origin)}{38}{subsection.3.10.2}%
-\contentsline {subsection}{\numberline {3.10.3}Purga y embargo}{38}{subsection.3.10.3}%
-\contentsline {subsection}{\numberline {3.10.4}Por qué no validación cruzada convencional. CPCV}{38}{subsection.3.10.4}%
-\contentsline {subsection}{\numberline {3.10.5}Agregación pooled y su alcance}{39}{subsection.3.10.5}%
-\contentsline {section}{\numberline {3.11}Contraste de hipótesis}{39}{section.3.11}%
-\contentsline {subsection}{\numberline {3.11.1}Dirección: signo, McNemar y permutación por bloques}{39}{subsection.3.11.1}%
-\contentsline {subsection}{\numberline {3.11.2}Riesgo: bootstrap estacionario y Sharpe deflactado}{40}{subsection.3.11.2}%
-\contentsline {subsection}{\numberline {3.11.3}Multiplicidad: Bonferroni y Holm}{40}{subsection.3.11.3}%
-\contentsline {subsection}{\numberline {3.11.4}Equivalencia: el TOST}{41}{subsection.3.11.4}%
-\contentsline {subsection}{\numberline {3.11.5}Asociación: Pearson y Spearman}{41}{subsection.3.11.5}%
-\contentsline {subsection}{\numberline {3.11.6}Complementariedad: diferencia en diferencias}{41}{subsection.3.11.6}%
-\contentsline {subsection}{\numberline {3.11.7}Interpretabilidad: valores de Shapley e importancia por permutación}{42}{subsection.3.11.7}%
-\contentsline {subsection}{\numberline {3.11.8}Agrupamiento: silueta, Rand y PCA}{42}{subsection.3.11.8}%
-\contentsline {chapter}{\numberline {4}Marco práctico: ¿aporta valor supervisar a un agente LLM?}{43}{chapter.4}%
-\contentsline {section}{\numberline {4.1}SPY: cómo opera STRATA, paso a paso}{43}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Protocolo y calibración ex ante}{44}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Los tres detectores y la intervención}{46}{subsection.4.1.2}%
-\contentsline {subsection}{\numberline {4.1.3}Anatomía de la intervención y elección del modo}{46}{subsection.4.1.3}%
-\contentsline {subsection}{\numberline {4.1.4}Las seis estrategias: accuracy, riesgo y la trivial}{48}{subsection.4.1.4}%
-\contentsline {subsection}{\numberline {4.1.5}Robustez del caso SPY: ablación y anti-tuning}{50}{subsection.4.1.5}%
-\contentsline {section}{\numberline {4.2}Panel multi-activo: rescate pareado, agregado y por régimen}{50}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}El agente en el panel y la activación de detectores}{51}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Accuracy por activo y estrategia: dónde se bate a la trivial}{53}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Pooled-10: el rescate en riesgo}{55}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}El aprendiz redescubre STRATA y bate a la regla}{56}{subsection.4.2.4}%
-\contentsline {subsection}{\numberline {4.2.5}Robustez por régimen: bull, bear y complementariedad}{59}{subsection.4.2.5}%
-\contentsline {section}{\numberline {4.3}Patrones del rescate. Clustering}{60}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Dos supervisores, dos funciones}{60}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}La ley del \emph {leverage}}{61}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Clustering: la naturaleza dibuja los grupos}{64}{subsection.4.3.3}%
-\contentsline {section}{\numberline {4.4}Límites y futuras líneas de investigación}{65}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Qué no sobrevive a un test}{65}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Desplegabilidad}{67}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Alcance y líneas futuras}{68}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {5}Conclusiones}{70}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Respuesta a la hipótesis: veredicto en tres niveles}{70}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Nivel estadístico: el rescate sobrevive al test}{70}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Nivel mecánico: el rescate se lee por dentro}{71}{subsection.5.1.2}%
-\contentsline {subsection}{\numberline {5.1.3}Nivel de universalidad: el aprendiz se apoya en STRATA}{71}{subsection.5.1.3}%
-\contentsline {subsection}{\numberline {5.1.4}Veredicto consolidado}{72}{subsection.5.1.4}%
-\contentsline {section}{\numberline {5.2}El patrón que ordena el rescate: la ley del leverage}{72}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Aportaciones}{72}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Limitaciones}{73}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Líneas futuras}{73}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Cierre}{74}{section.5.6}%
-\contentsline {chapter}{Bibliografía}{75}{chapter*.4}%
+\contentsline {section}{\numberline {1.1}Problema. Motivación}{4}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Propuesta: supervisión estadística externa}{4}{section.1.2}%
+\contentsline {chapter}{\numberline {2}Objetivos}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Hipótesis}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Objetivo general}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Objetivos específicos}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Plan de trabajo}{7}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Estado del arte}{8}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Agentes LLM en finanzas}{8}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Supervisión en tiempo de ejecución}{9}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Régimen de mercado y leverage effect}{9}{section.3.3}%
+\contentsline {chapter}{\numberline {4}Fundamentos teóricos y diseño de STRATA}{10}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Los detectores: RAM, PSA y GSO}{10}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Preliminares y notación}{10}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}La salida del agente}{11}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}STRATA a nivel técnico}{12}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Modelos de cambio de régimen: HMM gaussiano}{13}{subsection.4.1.4}%
+\contentsline {subsubsection}{Cambio de régimen en series financieras}{13}{section*.2}%
+\contentsline {subsubsection}{Definición del HMM gaussiano}{13}{section*.3}%
+\contentsline {subsubsection}{Algoritmo forward}{14}{section*.5}%
+\contentsline {subsubsection}{Posterior filtrado frente a posterior suavizado}{15}{section*.6}%
+\contentsline {subsubsection}{Estimación: el algoritmo de Baum-Welch (EM)}{16}{section*.7}%
+\contentsline {subsubsection}{El algoritmo de Viterbi}{16}{section*.8}%
+\contentsline {subsubsection}{Selección del número de estados}{17}{section*.9}%
+\contentsline {subsection}{\numberline {4.1.5}Volatilidad condicional: ARCH y GARCH(1,1)-t}{17}{subsection.4.1.5}%
+\contentsline {subsubsection}{Series temporales y heterocedasticidad condicional}{17}{section*.10}%
+\contentsline {subsubsection}{De ARCH a GARCH}{18}{section*.11}%
+\contentsline {subsubsection}{Estacionariedad y varianza incondicional}{19}{section*.12}%
+\contentsline {subsubsection}{Innovaciones Student-t}{20}{section*.13}%
+\contentsline {subsubsection}{Estimación por máxima verosimilitud}{20}{section*.14}%
+\contentsline {subsection}{\numberline {4.1.6}Detección bayesiana de puntos de cambio (BOCPD)}{21}{subsection.4.1.6}%
+\contentsline {subsubsection}{Run-length y detección online}{21}{section*.15}%
+\contentsline {subsubsection}{Recursión de la distribución de run-length}{22}{section*.16}%
+\contentsline {subsubsection}{Función de hazard y predictiva conjugada}{23}{section*.17}%
+\contentsline {subsection}{\numberline {4.1.7}STRATA aplicado: construcción, calibración y umbrales}{23}{subsection.4.1.7}%
+\contentsline {subsubsection}{Datos y calibración}{23}{section*.18}%
+\contentsline {subsubsection}{RAM: desajuste entre régimen y acción}{23}{section*.19}%
+\contentsline {subsubsection}{GSO: tamaño compatible con la volatilidad}{24}{section*.20}%
+\contentsline {subsubsection}{PSA: coherencia temporal del agente}{25}{section*.21}%
+\contentsline {subsubsection}{La capa de intervención}{25}{section*.22}%
+\contentsline {section}{\numberline {4.2}Estrategias supervisadas: M8, M10 y AutoML}{26}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}El problema de aprendizaje supervisado}{26}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Árboles de decisión}{27}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Gradient boosting}{27}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}XGBoost y el meta-learner M10}{27}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Apilamiento y super learner}{28}{subsection.4.2.5}%
+\contentsline {subsection}{\numberline {4.2.6}Búsqueda automatizada: H2O AutoML}{28}{subsection.4.2.6}%
+\contentsline {subsection}{\numberline {4.2.7}Estrategias}{29}{subsection.4.2.7}%
+\contentsline {section}{\numberline {4.3}Protocolo de evaluación}{29}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Métricas de evaluación}{29}{subsection.4.3.1}%
+\contentsline {subsubsection}{Acierto direccional y matriz de confusión}{29}{section*.23}%
+\contentsline {subsubsection}{El ratio de Sharpe}{30}{section*.24}%
+\contentsline {subsubsection}{Drawdown máximo y Calmar}{31}{section*.25}%
+\contentsline {subsection}{\numberline {4.3.2}Validación}{31}{subsection.4.3.2}%
+\contentsline {subsubsection}{Causalidad: la regla signal\_lag=1}{31}{section*.26}%
+\contentsline {subsubsection}{Validación walk-forward (rolling-origin)}{32}{section*.27}%
+\contentsline {subsubsection}{Purga y embargo}{32}{section*.28}%
+\contentsline {subsubsection}{Por qué no validación cruzada convencional. CPCV}{32}{section*.29}%
+\contentsline {subsubsection}{Agregación pooled y su alcance}{33}{section*.30}%
+\contentsline {subsection}{\numberline {4.3.3}Contraste de hipótesis}{33}{subsection.4.3.3}%
+\contentsline {subsubsection}{Dirección: signo, McNemar y permutación por bloques}{33}{section*.31}%
+\contentsline {subsubsection}{Riesgo: bootstrap estacionario y Sharpe deflactado}{34}{section*.32}%
+\contentsline {subsubsection}{Multiplicidad: Bonferroni y Holm}{34}{section*.33}%
+\contentsline {subsubsection}{Equivalencia: el TOST}{35}{section*.34}%
+\contentsline {subsubsection}{Asociación: Pearson y Spearman}{35}{section*.35}%
+\contentsline {subsubsection}{Complementariedad: diferencia en diferencias}{35}{section*.36}%
+\contentsline {subsubsection}{Interpretabilidad: valores de Shapley e importancia por permutación}{36}{section*.37}%
+\contentsline {subsubsection}{Agrupamiento: silueta, Rand y PCA}{36}{section*.38}%
+\contentsline {chapter}{\numberline {5}Aplicación a SPY}{37}{chapter.5}%
+\contentsline {section}{\numberline {5.1}La intervención en detalle}{37}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Comparación de las seis estrategias}{39}{section.5.2}%
+\contentsline {section}{\numberline {5.3}El rescate sobre SPY}{42}{section.5.3}%
+\contentsline {chapter}{\numberline {6}Validación sobre el panel de diez activos}{44}{chapter.6}%
+\contentsline {section}{\numberline {6.1}El rescate en el panel}{44}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}La compuerta de régimen y la activación de detectores}{44}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Accuracy por activo: dónde se bate a la trivial}{46}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Pooled: el rescate en riesgo}{47}{subsection.6.1.3}%
+\contentsline {subsection}{\numberline {6.1.4}Equivalencia: el aprendiz redescubre STRATA y bate a la regla}{48}{subsection.6.1.4}%
+\contentsline {subsection}{\numberline {6.1.5}Complementariedad: bull, bear y diferencia en diferencias}{49}{subsection.6.1.5}%
+\contentsline {section}{\numberline {6.2}El patrón: ley del leverage y clustering}{52}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}La ley del \emph {leverage}}{52}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Clustering: la naturaleza separa los grupos}{53}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Robustez}{56}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Alcance y limitaciones}{56}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Conclusiones y trabajo futuro}{58}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Revisión de los objetivos}{58}{section.7.1}%
+\contentsline {section}{\numberline {7.2}La ley del leverage}{59}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Aportaciones}{59}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Limitaciones}{60}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Trabajo futuro}{60}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Conclusión}{61}{section.7.6}%
+\contentsline {chapter}{Bibliografía}{62}{chapter*.39}%
+\contentsline {chapter}{\numberline {A}Demostraciones}{68}{appendix.Alph1}%
+\contentsline {section}{\numberline {A.1}Recursión forward del HMM}{68}{section.Alph1.1}%
+\contentsline {section}{\numberline {A.2}Filtrado y causalidad del HMM}{69}{section.Alph1.2}%
+\contentsline {section}{\numberline {A.3}Fórmulas de actualización del paso M de Baum-Welch}{69}{section.Alph1.3}%
+\contentsline {section}{\numberline {A.4}Recursión de Viterbi}{70}{section.Alph1.4}%
+\contentsline {section}{\numberline {A.5}Monotonía del algoritmo EM}{70}{section.Alph1.5}%
+\contentsline {section}{\numberline {A.6}Estacionariedad y varianza incondicional del GARCH$(1,1)$}{70}{section.Alph1.6}%
+\contentsline {section}{\numberline {A.7}Verosimilitud condicional del GARCH$(1,1)$-$t$}{72}{section.Alph1.7}%
+\contentsline {section}{\numberline {A.8}Recursión de Adams--MacKay del BOCPD}{72}{section.Alph1.8}%
+\contentsline {section}{\numberline {A.9}Pseudo-residuos del boosting logístico}{73}{section.Alph1.9}%
+\contentsline {section}{\numberline {A.10}Pesos óptimos y ganancia de una división en XGBoost}{73}{section.Alph1.10}%
+\contentsline {chapter}{\numberline {B}Figuras complementarias}{75}{appendix.Alph2}%
+\contentsline {section}{\numberline {B.1}Mecanismo sobre SPY}{75}{section.Alph2.1}%
+\contentsline {section}{\numberline {B.2}Panel de diez activos}{75}{section.Alph2.2}%
