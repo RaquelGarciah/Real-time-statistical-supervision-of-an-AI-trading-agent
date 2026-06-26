@@ -166,7 +166,7 @@ El canal que rescata cada activo cambia de uno a otro. La propiedad que ordena e
 \subsection{La ley del \emph{leverage}}
 \label{sec:panel-ley}
 
-El rescate del aprendiz en accuracy escala con el \emph{leverage effect} del activo. El rescate se define como $\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$ en accuracy y la naturaleza del activo como la correlación de Black, $\mathrm{leverage\_corr} = \operatorname{corr}(r_t,\ \mathrm{RV}^{21}_{t+1} - \mathrm{RV}^{21}_t)$, negativa cuando una caída eleva la volatilidad del día siguiente (\cite{black1976}; \cite{christie1982}).
+El rescate del aprendiz en accuracy escala con el \emph{leverage effect} del activo, medido con la correlación de Black $\mathrm{leverage\_corr}$ definida en la Sección~\ref{sec:strata-ram}. El rescate se define como $\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$ en accuracy.
 
 Las dos magnitudes covarían: cuanto más negativo es el \emph{leverage}, mayor es el rescate del aprendiz en accuracy (Figura~\ref{fig:mp-scatter}). Nueve de los diez activos la siguen; ROKU es la excepción, con \emph{leverage} casi nulo y rescate alto. El mecanismo es el de la Sección~\ref{sec:panel-pooled}: cuando el régimen es direccional, la regla disciplina el riesgo y el aprendiz afina la dirección; cuando el régimen no informa el signo, el aprendiz rescata por otra vía y la ganancia se estrecha.
 
