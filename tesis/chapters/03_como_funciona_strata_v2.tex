@@ -1,12 +1,58 @@
 \chapter{Fundamentos teóricos y diseño de STRATA}
 \label{cap:strata}
 
-Las tres líneas del capítulo anterior —agentes LLM de trading, supervisión en tiempo de ejecución y modelos clásicos de régimen y volatilidad— no se habían combinado sobre un mismo agente. Este capítulo reúne la base matemática de esa combinación y fija la notación del resto de la memoria: los tres detectores y la capa que convierte sus señales en intervención, las estrategias que aprenden sobre esas señales y el protocolo de medición del rescate. El caso de SPY, donde el sistema se pone a prueba, queda para el capítulo~\ref{cap:spy}.
+Las tres líneas del capítulo anterior —agentes LLM de trading, supervisión en tiempo de ejecución y modelos clásicos de régimen y volatilidad— no se habían combinado sobre un mismo agente. Este capítulo fija la base matemática y la notación del resto de la memoria. Presenta primero la arquitectura del supervisor, después los tres detectores y su base matemática, las estrategias que aprenden sobre sus señales y el protocolo de medición del rescate. El caso de SPY, donde el sistema se pone a prueba, queda para el capítulo~\ref{cap:spy}.
 
-\section{Los detectores: RAM, PSA y GSO}
+\section{Arquitectura de STRATA}
+\label{sec:strata-arquitectura}
+
+\subsection{Qué supervisa STRATA: la salida del agente}
+\label{sec:agente-salida}
+
+El objeto que STRATA supervisa es la decisión diaria de un agente de trading construido sobre un modelo de lenguaje. Las cinco personalidades y la arquitectura multiagente se describieron en la Sección~\ref{sec:agentes-llm}; para la capa de supervisión importa la salida: cada día, y para cada activo, el agente emite una dirección, un tamaño y la confianza con que los emite. La Sección~\ref{sec:strata-tecnico} la formaliza como una posición $w_t \in [-1, +1]$, el objeto sobre el que actúan los detectores. Las señales de las cinco personalidades reaparecen como variables de entrada del meta-learner de la Sección~\ref{sec:sup-problema}.
+
+STRATA trata al agente como una caja negra: supervisa su decisión sin abrir el modelo ni reconstruir su razonamiento. El modelo es opaco, su salida no tiene forma cerrada y su entrenamiento pudo ver parte del periodo de prueba; frente a eso, una capa externa que contrasta la decisión con un modelo explícito del mercado es más fiable que confiar en la coherencia interna del agente. El capítulo~\ref{cap:spy} documenta que esa decisión acierta la dirección menos de la mitad de los días, con un fallo sistemático y por tanto corregible desde fuera.
+
+\subsection{Arquitectura del supervisor}
+\label{sec:strata-tecnico}
+
+La Figura~\ref{fig:strata-arq} da la visión global. El agente emite una decisión diaria; los tres detectores la contrastan con un modelo estadístico del mercado; y dos capas la convierten en una posición supervisada, la regla determinista M8 y el meta-learner M10. El resto del capítulo desarrolla esa arquitectura pieza a pieza: primero los detectores, después las capas que consumen sus señales.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.56\textwidth]{figuras/strata_arquitectura}
+\caption{Arquitectura de STRATA. La decisión del agente (cinco personalidades) pasa por los tres detectores ortogonales (RAM sobre el régimen del HMM, PSA sobre el cambio estructural del BOCPD, GSO sobre la volatilidad del GARCH); sus señales alimentan la capa de intervención M8 o el meta-learner M10, que devuelven la posición supervisada.}
+\label{fig:strata-arq}
+\end{figure}
+
+Cada día, el agente toma una decisión sobre el activo, resumida en una terna: un \emph{signo} (comprar o vender), un \emph{tamaño} y una \emph{confianza}. Esa terna determina una \emph{posición} $w_t \in [-1, +1]$, donde el signo marca la dirección (larga si $w_t > 0$, corta si $w_t < 0$) y el módulo $|w_t|$ es la fracción de capital expuesta; la posición tomada en $t$ se evalúa contra $w_t \cdot \rnext$. STRATA no decide por el agente: \emph{supervisa} esa decisión. Con $\mathcal{A}$ el espacio de decisiones del agente y $\mathcal{M}_t$ la información de mercado hasta el día $t$ (resumida en $x_{1:t}$), STRATA es la aplicación
+\[
+\mathrm{STRATA}\colon \mathcal{A} \times \mathcal{M}_t \longrightarrow [0,1]^3,
+\qquad
+(w_t,\, x_{1:t}) \longmapsto \big(\mathrm{RAM}_t,\, \mathrm{PSA}_t,\, \mathrm{GSO}_t\big),
+\]
+que a partir de la decisión del agente y de una lectura estadística del mercado produce tres \emph{señales}, cada una en $[0,1]$. STRATA no predice el retorno: mide en qué grado la decisión del agente es coherente con el estado del mercado.
+
+\subsection{Los tres detectores en panorámica}
+\label{sec:strata-panorama}
+
+Cada detector cubre un eje distinto y ortogonal de la decisión (Figura~\ref{fig:strata-detectores}): RAM el régimen, con el modelo oculto de Markov; PSA el cambio estructural del agente, con detección bayesiana de puntos de cambio; y GSO el tamaño frente a la volatilidad, con el GARCH. Esa ortogonalidad hace que cada uno capte algo que los otros no.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{figuras/strata_detectores}
+\caption{Los tres detectores en panorámica. Cada uno vigila un eje distinto de la decisión del agente —régimen (RAM), cambio estructural del agente (PSA) y tamaño frente a volatilidad (GSO)—, con el modelo que lo sustenta y la condición de disparo. La señal de cada detector, en $[0,1]$, alimenta la capa de intervención.}
+\label{fig:strata-detectores}
+\end{figure}
+
+La intervención puede ir de solo registrar la señal a reducir la posición o sustituirla. Se adopta como canónica la variante más fuerte, que reorienta el signo de $w_t$ hacia el régimen cuando la incoherencia es alta; los modos intermedios se comparan sobre SPY en el capítulo~\ref{cap:spy}. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal y cuándo actúa.
+
+Conviene distinguir la capa de señales de las reglas que la consumen: STRATA produce las señales, mientras que M8 (regla de umbrales fijos) y M10 (meta-learner que las aprende) son las estrategias que las utilizan, definidas en la Sección~\ref{sec:strata-estrategias}.
+
+\section{Los detectores: modelos, señales y umbrales}
 \label{sec:strata-detectores}
 
-\subsection{Preliminares y notación}
+\subsection{Notación y convenciones temporales}
 \label{sec:preliminares}
 
 Sea $P_t > 0$ el precio de cierre del día $t$, con $t \in \{0, 1, \dots, T\}$. La cantidad relevante es su variación relativa de un día al siguiente, el \emph{log-retorno}
@@ -37,39 +83,6 @@ RV_t \;=\; \sqrt{\sum_{j=0}^{h-1} \big(r^{\log}_{t-j}\big)^2}\,,
 la raíz de la suma de cuadrados de los log-retornos de la ventana. $RV_t$ es un estimador no paramétrico de la dispersión local: crece cuando el activo encadena movimientos grandes y se reduce en los tramos planos. A diferencia de la volatilidad condicional $\sigmat$ de la Sección~\ref{sec:garch}, no presupone ningún modelo.
 
 Las series de retornos financieros no son ruido blanco gaussiano. Cont \cite{cont2001} cataloga las regularidades empíricas que motivan los modelos del resto del capítulo; tres son relevantes aquí. Primera, \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituirla por una $t$ de Student en el modelo de volatilidad. Segunda, \emph{agrupamiento de volatilidad}: los días de gran movimiento tienden a seguirse, de modo que la magnitud de los retornos está correlada en el tiempo aunque su signo apenas lo esté, y eso captura un GARCH. Tercera, \emph{poca autocorrelación} de los retornos en niveles, casi nula a partir del primer rezago, mientras que sus cuadrados o valores absolutos sí la presentan. Las tres juntas sugieren que el activo alterna entre regímenes de dinámica distinta, idea que el modelo de cambio de régimen formaliza.
-
-\subsection{La salida del agente}
-\label{sec:agente-salida}
-
-El objeto que STRATA supervisa es la decisión diaria de un agente de trading construido sobre un modelo de lenguaje. Las cinco personalidades y la arquitectura multiagente se describieron en la Sección~\ref{sec:agentes-llm}; para la capa de supervisión importa la salida: cada día, y para cada activo, el agente emite una dirección, un tamaño y la confianza con que los emite. La Sección~\ref{sec:strata-tecnico} la formaliza como una posición $w_t \in [-1, +1]$, el objeto sobre el que actúan los detectores. Las señales de las cinco personalidades reaparecen como variables de entrada del meta-learner de la Sección~\ref{sec:sup-problema}.
-
-STRATA trata al agente como una caja negra: supervisa su decisión sin abrir el modelo ni reconstruir su razonamiento. El modelo es opaco, su salida no tiene forma cerrada y su entrenamiento pudo ver parte del periodo de prueba; frente a eso, una capa externa que contrasta la decisión con un modelo explícito del mercado es más fiable que confiar en la coherencia interna del agente. El capítulo~\ref{cap:spy} documenta que esa decisión acierta la dirección menos de la mitad de los días, con un fallo sistemático y por tanto corregible desde fuera.
-
-\subsection{STRATA a nivel técnico}
-\label{sec:strata-tecnico}
-
-La Figura~\ref{fig:strata-arq} da la visión global. El agente emite una decisión diaria; los tres detectores la contrastan con un modelo estadístico del mercado; y dos capas la convierten en una posición supervisada, la regla determinista M8 y el meta-learner M10. El resto del capítulo desarrolla esa arquitectura pieza a pieza: primero los detectores, después las capas que consumen sus señales.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.60\textwidth]{figuras/strata_arquitectura}
-\caption{Arquitectura de STRATA. La decisión del agente (cinco personalidades) pasa por los tres detectores ortogonales (RAM sobre el régimen del HMM, PSA sobre el cambio estructural del BOCPD, GSO sobre la volatilidad del GARCH); sus señales alimentan la capa de intervención M8 o el meta-learner M10, que devuelven la posición supervisada.}
-\label{fig:strata-arq}
-\end{figure}
-
-Cada día, el agente toma una decisión sobre el activo, resumida en una terna: un \emph{signo} (comprar o vender), un \emph{tamaño} y una \emph{confianza}. Esa terna determina una \emph{posición} $w_t \in [-1, +1]$, donde el signo marca la dirección (larga si $w_t > 0$, corta si $w_t < 0$) y el módulo $|w_t|$ es la fracción de capital expuesta; la posición tomada en $t$ se evalúa contra $w_t \cdot \rnext$. STRATA no decide por el agente: \emph{supervisa} esa decisión. Con $\mathcal{A}$ el espacio de decisiones del agente y $\mathcal{M}_t$ la información de mercado hasta el día $t$ (resumida en $x_{1:t}$), STRATA es la aplicación
-\[
-\mathrm{STRATA}\colon \mathcal{A} \times \mathcal{M}_t \longrightarrow [0,1]^3,
-\qquad
-(w_t,\, x_{1:t}) \longmapsto \big(\mathrm{RAM}_t,\, \mathrm{PSA}_t,\, \mathrm{GSO}_t\big),
-\]
-que a partir de la decisión del agente y de una lectura estadística del mercado produce tres \emph{señales}, cada una en $[0,1]$. STRATA no predice el retorno: mide en qué grado la decisión del agente es coherente con el estado del mercado.
-
-Cada detector cubre un eje distinto. \textbf{RAM} se centra en el régimen: comprueba si la dirección de la apuesta encaja con el estado de mercado que el modelo oculto de Markov de la Sección~\ref{sec:hmm} considera vigente. \textbf{PSA} atiende al propio agente; con la detección bayesiana de puntos de cambio vigila si cambia de criterio de forma estructural, no por una fluctuación. \textbf{GSO} se ocupa del tamaño: contrasta el módulo de la posición con la volatilidad del GARCH de la Sección~\ref{sec:garch}, y salta cuando la apuesta es grande para la volatilidad del mercado. La ortogonalidad de los tres ejes hace que cada detector capte algo que los otros no.
-
-La intervención puede ir de solo registrar la señal a reducir la posición o sustituirla. Se adopta como canónica la variante más fuerte, que reorienta el signo de $w_t$ hacia el régimen cuando la incoherencia es alta; los modos intermedios se comparan sobre SPY en el capítulo~\ref{cap:spy}. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal y cuándo actúa.
-
-Conviene distinguir la capa de señales de las reglas que las consumen. STRATA designa siempre la capa que produce las señales; M8 y M10 son estrategias que la utilizan. \textbf{M8} es una regla determinista de umbrales fijos (Sección~\ref{sec:strata-intervencion}), referencia interpretable. \textbf{M10} no aplica umbrales fijos: es un modelo de segundo nivel (un \emph{meta-learner}) que toma como entradas las salidas del agente y de los detectores y aprende a combinarlas para decidir la dirección del día siguiente. Se entrena solo con el pasado y es el objeto central del caso de estudio (capítulo~\ref{cap:spy}).
 
 \subsection{Modelos de cambio de régimen: HMM gaussiano}
 \label{sec:hmm}
@@ -217,22 +230,10 @@ La demostración está en el Anexo~\ref{anx:bocpd}. La recursión es enteramente
 
 Para cerrar el modelo se fija la hazard \emph{constante} $H(r) = 1/\lambda$: la run-length carece de memoria y la longitud de cada segmento es geométrica de media $\lambda$ pasos, único hiperparámetro de la dinámica. La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación en una familia exponencial con su \emph{previa conjugada}, lo que da una predictiva analítica que se actualiza de forma incremental \cite{fearnhead2006}.
 
-\subsection{STRATA aplicado: construcción, calibración y umbrales}
+\subsection{De los modelos a los scores: RAM, PSA y GSO, y la regla M8}
 \label{sec:strata-aplicado}
 
-Cada detector produce una señal numérica que mide un tipo de incoherencia entre la decisión del agente y el estado del mercado; cuando esa señal supera un umbral, STRATA interviene.
-
-\subsubsection{Datos y calibración}
-\label{sec:strata-calib}
-
-Los tres modelos se estiman una sola vez, sobre un periodo de calibración fijo y anterior a la evaluación, y no se reentrenan. La Figura~\ref{fig:strata-timeline} resume el \emph{protocolo de evaluación causal} que sigue toda la memoria: la calibración (2000 a 2024-09) cierra parámetros y umbrales antes de ver la evaluación (2024-10 en adelante), cuyo arranque queda tras el corte de conocimiento del modelo de lenguaje, de modo que ningún parámetro de STRATA ve los datos futuros. El protocolo distingue dos ventanas de evaluación: las estrategias que no entrenan (el agente, la regla y las triviales) se miden sobre el OOS completo; las que reentrenan a diario reservan un \emph{burn-in} y se miden sobre la \emph{ventana desplegable} restante, con \emph{walk-forward} rodante y embargo $1$ (Sección~\ref{sec:cpcv}). Fijar un único periodo de calibración presupone que la estructura de la serie es razonablemente estable dentro de él, hipótesis contrastable con el test de cambios estructurales múltiples de Bai y Perron \cite{bai1998, bai2003}.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.74\textwidth]{figuras/strata_timeline}
-\caption{Protocolo causal en el tiempo. Los detectores se calibran una sola vez sobre 2000 a 2024-09 y sus umbrales se cierran ahí; la evaluación arranca en 2024-10, ya pasado el corte de conocimiento del modelo de lenguaje. Las estrategias que aprenden reservan un \emph{burn-in} de $150$ días y se reentrenan con \emph{walk-forward} rodante y embargo $1$.}
-\label{fig:strata-timeline}
-\end{figure}
+Cada detector produce una señal numérica que mide un tipo de incoherencia entre la decisión del agente y el estado del mercado; cuando esa señal supera un umbral, fijado ex ante sobre la calibración (Sección~\ref{sec:strata-calib}), STRATA interviene.
 
 \subsubsection{RAM: desajuste entre régimen y acción}
 \label{sec:strata-ram}
@@ -374,6 +375,18 @@ Las dos últimas son las referencias frente a las que toda estrategia con preten
 
 \section{Protocolo de evaluación}
 \label{sec:strata-protocolo}
+
+\subsection{Datos y calibración}
+\label{sec:strata-calib}
+
+Los tres modelos se estiman una sola vez, sobre un periodo de calibración fijo y anterior a la evaluación, y no se reentrenan. La Figura~\ref{fig:strata-timeline} resume el \emph{protocolo de evaluación causal} que sigue toda la memoria: la calibración (2000 a 2024-09) cierra parámetros y umbrales antes de ver la evaluación (2024-10 en adelante), cuyo arranque queda tras el corte de conocimiento del modelo de lenguaje, de modo que ningún parámetro de STRATA ve los datos futuros. El protocolo distingue dos ventanas de evaluación: las estrategias que no entrenan (el agente, la regla y las triviales) se miden sobre el OOS completo; las que reentrenan a diario reservan un \emph{burn-in} y se miden sobre la \emph{ventana desplegable} restante, con \emph{walk-forward} rodante y embargo $1$ (Sección~\ref{sec:cpcv}). Fijar un único periodo de calibración presupone que la estructura de la serie es razonablemente estable dentro de él, hipótesis contrastable con el test de cambios estructurales múltiples de Bai y Perron \cite{bai1998, bai2003}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.74\textwidth]{figuras/strata_timeline}
+\caption{Protocolo causal en el tiempo. Los detectores se calibran una sola vez sobre 2000 a 2024-09 y sus umbrales se cierran ahí; la evaluación arranca en 2024-10, ya pasado el corte de conocimiento del modelo de lenguaje. Las estrategias que aprenden reservan un \emph{burn-in} de $150$ días y se reentrenan con \emph{walk-forward} rodante y embargo $1$.}
+\label{fig:strata-timeline}
+\end{figure}
 
 \subsection{Métricas de evaluación}
 \label{sec:metricas}

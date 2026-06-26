@@ -1125,6 +1125,31 @@ def strata_arquitectura():
 
 
 # ════════════════════════════════════════════════════════════════════════════
+# S5 — strata_detectores : panorámica esquemática de los tres detectores
+# Para cada detector: eje · pregunta que ataca · modelo · cuándo dispara. Sin datos.
+# ════════════════════════════════════════════════════════════════════════════
+def strata_detectores():
+    fig, ax = plt.subplots(figsize=(11, 3.8))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 4.3)
+    ax.axis("off")
+    _caja(ax, 6, 3.95, 8.4, 0.6,
+          "Decisión del agente:  signo · tamaño · confianza", fc="#e8eef4", fs=9.5)
+    det = [
+        (2.0, "RAM — régimen\n\n¿la dirección concuerda\ncon el régimen?\n\nmodelo: HMM\ndispara si RAM ≥ τ", REGCOL[2]),
+        (6.0, "PSA — cambio del agente\n\n¿rompe su patrón de\nforma estructural?\n\nmodelo: BOCPD\ndispara sobre el percentil", REGCOL[1]),
+        (10.0, "GSO — volatilidad\n\n¿el tamaño cuadra\ncon la volatilidad?\n\nmodelo: GARCH\ndispara si excede la banda", REGCOL[0]),
+    ]
+    for cx, txt, base in det:
+        _flecha(ax, (6, 3.6), (cx, 3.05))
+        _caja(ax, cx, 1.95, 3.5, 2.1, txt, fc=base + "22", ec=base, fs=8.4, lw=1.6)
+        _flecha(ax, (cx, 0.9), (cx, 0.5))
+    ax.text(6, 0.22, "señal  ∈ [0, 1]  →  capa de intervención", ha="center", fontsize=8.5, color="#555")
+    fig.tight_layout()
+    _save(fig, "strata_detectores")
+
+
+# ════════════════════════════════════════════════════════════════════════════
 # S2 — strata_timeline : protocolo temporal (calibración una vez / OOS desplegable)
 # Esquemático, sin datos.
 # ════════════════════════════════════════════════════════════════════════════
@@ -1295,6 +1320,7 @@ if __name__ == "__main__":
 
     print("\nGenerando las 5 figuras de apoyo (arquitectura / protocolo / naturaleza)")
     strata_arquitectura()
+    strata_detectores()
     strata_timeline()
     strata_walkforward()
     modo = leverage_spy_vs_accion()
