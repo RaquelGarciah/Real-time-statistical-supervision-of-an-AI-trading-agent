@@ -114,7 +114,7 @@ Restando ambas descomposiciones,
 \section{Estacionariedad y varianza incondicional del GARCH$(1,1)$}
 \label{anx:garch-estac}
 
-Demostración del Teorema~\ref{teo:garch-estac} (Estacionariedad en covarianza del GARCH$(1,1)$), Sección~\ref{sec:garch-estac}.
+Demostración del Teorema~\ref{teo:garch-estac} (Estacionariedad en covarianza del GARCH$(1,1)$), Sección~\ref{sec:garch-estac}; el argumento sigue a Nelson \cite{nelson1990} y Francq y Zakoïan \cite{francqzakoian2019}.
 
 \begin{proof}
 Supongamos primero que existe una solución estacionaria en covarianza, lo que significa, en particular, que $\Var(\epsilon_t)$ es finita y no depende de $t$; la llamamos $\bar{\sigma}^2 := \Var(\epsilon_t)$. Calculamos la varianza incondicional de $\epsilon_t$ por la ley de la varianza total, usando que $\E[\epsilon_t] = 0$ (pues $\E[\epsilon_t] = \E[\sigmat]\,\E[\eta_t] = 0$, al ser $\sigmat$ función del pasado e independiente de $\eta_t$, y $\E[\eta_t]=0$):

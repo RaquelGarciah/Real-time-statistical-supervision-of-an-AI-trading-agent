@@ -160,7 +160,7 @@ La demostración de ambos está en el Anexo~\ref{anx:filtrado}. Esa causalidad p
 
 Los parámetros $\lambda$ se estiman por el algoritmo de Baum-Welch, instancia del esquema esperanza-maximización (EM) \cite{baum1970, dempster1977}. El paso E calcula los posteriores suavizados de estados y transiciones con el forward-backward —legítimo aquí, porque el ajuste se hace una sola vez fuera de línea sobre la calibración—, y el paso M reestima los parámetros con fórmulas cerradas (Anexo~\ref{anx:em-pasos}): la distribución inicial y la matriz de transición como frecuencias esperadas, medias y covarianzas como promedios ponderados por el posterior del estado.
 
-\begin{lema}[Monotonía de EM]
+\begin{lema}[Monotonía de EM \cite{dempster1977, bishop2006}]
 \label{lem:em}
 Sea $\lambda'$ el conjunto de parámetros que produce un paso de EM a partir de $\lambda$. Entonces la verosimilitud observada no decrece, $\Prob(x_{1:T} \mid \lambda') \ge \Prob(x_{1:T} \mid \lambda)$.
 \end{lema}
@@ -195,7 +195,7 @@ Como un GARCH gaussiano genera colas demasiado finas para las colas pesadas obse
 
 La recursión \eqref{eq:garch11} solo define un proceso bien comportado bajo una condición sobre los parámetros, que el siguiente resultado caracteriza dando además la varianza a largo plazo.
 
-\begin{teorema}[Estacionariedad en covarianza del GARCH$(1,1)$]
+\begin{teorema}[Estacionariedad en covarianza del GARCH$(1,1)$ \cite{bollerslev1986, nelson1990}]
 \label{teo:garch-estac}
 Sea $\{\epsilon_t\}$ el proceso definido por $\epsilon_t = \sigmat \eta_t$ con $\{\eta_t\}$ i.i.d. de media $0$ y varianza $1$ y la recursión \eqref{eq:garch11}, con $\omega > 0$, $\alpha \ge 0$, $\beta \ge 0$. Entonces $\{\epsilon_t\}$ admite una solución estacionaria en covarianza con varianza incondicional finita si y solo si $\alpha + \beta < 1$, y en ese caso
 \[
