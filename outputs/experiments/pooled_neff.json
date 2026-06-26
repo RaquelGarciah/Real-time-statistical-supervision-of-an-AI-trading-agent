@@ -1,0 +1,26 @@
+{
+ "meta": {
+  "desc": "Tamaño de muestra efectivo del pooled-10 corrigiendo por correlacion cruzada entre activos",
+  "metodo": "design effect: n_eff = N / (1 + (k-1)*rho_bar)",
+  "fuente_series": "automl_net_returns.json (retornos netos AutoML por activo, alineados por fecha comun)",
+  "nota": "rho_bar es la correlacion cruzada media de los retornos supervisados; baja porque la supervision toma posiciones distintas por activo"
+ },
+ "panel": [
+  "SPY",
+  "QQQ",
+  "XLF",
+  "DIA",
+  "XLK",
+  "XLE",
+  "ROKU",
+  "SMCI",
+  "MARA",
+  "UNG"
+ ],
+ "k": 10,
+ "N_nominal": 2493,
+ "rho_bar_cross_asset": 0.018,
+ "design_effect": 1.162,
+ "n_eff": 2141,
+ "rho_raw_index_returns_aprox": 0.9
+}

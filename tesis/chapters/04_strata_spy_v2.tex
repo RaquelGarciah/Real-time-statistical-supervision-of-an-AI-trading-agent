@@ -13,7 +13,7 @@ El agente solo (M5) acierta sobre SPY el $0{,}366$ de las direcciones y pierde d
 
 El caso de SPY aplica el protocolo de evaluación causal del Capítulo~\ref{cap:strata} (Sección~\ref{sec:strata-protocolo}): calibración cerrada hasta 2024-09, evaluación OOS desde 2024-10 y \texttt{signal\_lag}${}=1$. Sobre SPY, la ventana OOS completa tiene $n = 401$ días y la desplegable, tras el \emph{burn-in}, $n = 251$.
 
-El régimen de SPY tiene contenido direccional por el \emph{leverage effect} del índice (Sección~\ref{sec:strata-ram}). La Figura~\ref{fig:mp-regimenes-spy} lo representa sobre el precio; es descriptiva, decodificada con el camino de Viterbi (Anexo~\ref{anx:viterbi}), mientras que RAM usa el filtrado causal. Con un matiz: el régimen coincide con la caída del mismo día pero no anticipa el signo del siguiente, la fracción de días al alza ronda $0{,}5$ incluso en Crisis.
+El régimen de SPY tiene contenido direccional por el \emph{leverage effect} del índice (Sección~\ref{sec:strata-ram}). La Figura~\ref{fig:mp-regimenes-spy} lo representa sobre el precio; es descriptiva, decodificada con el camino de Viterbi (Anexo~\ref{anx:viterbi}), mientras que RAM usa el filtrado causal.
 
 \begin{figure}[htbp]
 \centering

@@ -6,7 +6,7 @@ Este anexo reúne las demostraciones y los desarrollos de los resultados enuncia
 \section{Recursión forward del HMM}
 \label{anx:forward}
 
-Desarrollo de la Proposición~\ref{prop:forward} (Recursión forward), Sección~\ref{sec:hmm-forward}.
+Desarrollo de la Proposición~\ref{prop:forward} (Recursión forward), Sección~\ref{sec:hmm-forward}; seguimos el tratamiento estándar del HMM \cite{rabiner1989, bishop2006}.
 
 \begin{proof}
 La inicialización es inmediata: $\alpha_1(k) = \Prob(x_1, z_1 = k) = \Prob(z_1 = k)\,\Prob(x_1 \mid z_1 = k) = \pi_k\, b_k(x_1)$, usando $(\ast)$ en el segundo factor.
@@ -46,7 +46,7 @@ que es lo que se quería probar.
 \section{Filtrado y causalidad del HMM}
 \label{anx:filtrado}
 
-Desarrollo de la Proposición~\ref{prop:filtrado} (Filtrado a partir del forward) y del Corolario~\ref{cor:causal} (Causalidad del filtrado), Sección~\ref{sec:hmm-filtrado}.
+Desarrollo de la Proposición~\ref{prop:filtrado} (Filtrado a partir del forward) y del Corolario~\ref{cor:causal} (Causalidad del filtrado), Sección~\ref{sec:hmm-filtrado}, según el tratamiento estándar del HMM \cite{rabiner1989, bishop2006}.
 
 \begin{proof}[Filtrado]
 Por la definición de probabilidad condicional y la de $\alpha_t$,
@@ -65,7 +65,7 @@ Por la Proposición~\ref{prop:filtrado}, $\gammaf$ se expresa a través de $\{\a
 \section{Fórmulas de actualización del paso M de Baum-Welch}
 \label{anx:em-pasos}
 
-Desarrollo de las reestimaciones del paso M del algoritmo de Baum-Welch, Sección~\ref{sec:hmm-em}. La distribución inicial y la matriz de transición se actualizan como frecuencias esperadas,
+Desarrollo de las reestimaciones del paso M del algoritmo de Baum-Welch \cite{baum1970, rabiner1989}, Sección~\ref{sec:hmm-em}. La distribución inicial y la matriz de transición se actualizan como frecuencias esperadas,
 \[
 \hat{\pi}_k = \Prob(z_1 = k \mid x_{1:T}),
 \qquad
@@ -82,7 +82,7 @@ donde la media $\hat{\mu}_k$ que interviene en $\hat{\Sigma}_k$ es la ya reestim
 \section{Recursión de Viterbi}
 \label{anx:viterbi}
 
-Desarrollo del algoritmo de Viterbi, Sección~\ref{sec:hmm-viterbi}. Si $\delta_t(j) = \max_{z_{1:t-1}} \Prob(z_{1:t-1},\, z_t = j,\, x_{1:t} \mid \lambda)$ es la probabilidad de la mejor trayectoria que termina en el estado $j$ en el instante $t$, la recursión es
+Desarrollo del algoritmo de Viterbi \cite{viterbi1967, rabiner1989}, Sección~\ref{sec:hmm-viterbi}. Si $\delta_t(j) = \max_{z_{1:t-1}} \Prob(z_{1:t-1},\, z_t = j,\, x_{1:t} \mid \lambda)$ es la probabilidad de la mejor trayectoria que termina en el estado $j$ en el instante $t$, la recursión es
 \[
 \delta_{t+1}(j) = b_j(x_{t+1}) \max_{1 \le k \le K} \delta_t(k)\, A_{kj},
 \qquad \delta_1(k) = \pi_k\, b_k(x_1),
@@ -92,7 +92,7 @@ y la trayectoria óptima se recupera memorizando en cada paso el estado $k$ que 
 \section{Monotonía del algoritmo EM}
 \label{anx:em}
 
-Demostración del Lema~\ref{lem:em} (Monotonía de EM), Sección~\ref{sec:hmm-em}.
+Demostración del Lema~\ref{lem:em} (Monotonía de EM), Sección~\ref{sec:hmm-em}, según el argumento clásico de EM \cite{dempster1977, bishop2006}.
 
 \begin{proof}
 Para cualquier parámetro $\theta$ descomponemos la log-verosimilitud observada tomando esperanza sobre $z_{1:T}$ con la ley del paso E, $\Prob(\cdot \mid x_{1:T}, \lambda)$, en la identidad $\log\Prob(x_{1:T}\mid\theta) = \log\Prob(x_{1:T}, z_{1:T}\mid\theta) - \log\Prob(z_{1:T}\mid x_{1:T}, \theta)$, cuyo miembro izquierdo no depende de $z_{1:T}$:
@@ -176,7 +176,7 @@ donde cada $\sigmat$ se obtiene recorriendo la recursión \eqref{eq:garch11} con
 \section{Recursión de Adams--MacKay del BOCPD}
 \label{anx:bocpd}
 
-Demostración de la Proposición~\ref{prop:bocpd} (Recursión de Adams--MacKay), Sección~\ref{sec:bocpd-recursion}.
+Demostración de la Proposición~\ref{prop:bocpd} (Recursión de Adams--MacKay) \cite{adams2007}, Sección~\ref{sec:bocpd-recursion}.
 
 \begin{proof}
 Partimos de la conjunta del instante $t$ e introducimos la run-length anterior marginalizando sobre sus valores posibles:

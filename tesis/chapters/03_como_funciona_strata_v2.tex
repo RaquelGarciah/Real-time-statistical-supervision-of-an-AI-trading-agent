@@ -36,7 +36,7 @@ RV_t \;=\; \sqrt{\sum_{j=0}^{h-1} \big(r^{\log}_{t-j}\big)^2}\,,
 \]
 la raíz de la suma de cuadrados de los log-retornos de la ventana. $RV_t$ es un estimador no paramétrico de la dispersión local: crece cuando el activo encadena movimientos grandes y se reduce en los tramos planos. A diferencia de la volatilidad condicional $\sigmat$ de la Sección~\ref{sec:garch}, no presupone ningún modelo.
 
-Las series de retornos financieros no son ruido blanco gaussiano. Tres regularidades empíricas \cite{cont2001} motivan los modelos del resto del capítulo. Primera, \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituirla por una $t$ de Student en el modelo de volatilidad. Segunda, \emph{agrupamiento de volatilidad}: los días de gran movimiento tienden a seguirse, de modo que la magnitud de los retornos está correlada en el tiempo aunque su signo apenas lo esté, y eso captura un GARCH. Tercera, \emph{poca autocorrelación} de los retornos en niveles, casi nula a partir del primer rezago, mientras que sus cuadrados o valores absolutos sí la presentan. Las tres juntas sugieren que el activo alterna entre regímenes de dinámica distinta, idea que el modelo de cambio de régimen formaliza.
+Las series de retornos financieros no son ruido blanco gaussiano. Cont \cite{cont2001} cataloga las regularidades empíricas que motivan los modelos del resto del capítulo; tres son relevantes aquí. Primera, \emph{colas pesadas}: los movimientos extremos son mucho más frecuentes de lo que predice una normal, lo que lleva a sustituirla por una $t$ de Student en el modelo de volatilidad. Segunda, \emph{agrupamiento de volatilidad}: los días de gran movimiento tienden a seguirse, de modo que la magnitud de los retornos está correlada en el tiempo aunque su signo apenas lo esté, y eso captura un GARCH. Tercera, \emph{poca autocorrelación} de los retornos en niveles, casi nula a partir del primer rezago, mientras que sus cuadrados o valores absolutos sí la presentan. Las tres juntas sugieren que el activo alterna entre regímenes de dinámica distinta, idea que el modelo de cambio de régimen formaliza.
 
 \subsection{La salida del agente}
 \label{sec:agente-salida}
@@ -67,7 +67,7 @@ que a partir de la decisión del agente y de una lectura estadística del mercad
 
 Cada detector cubre un eje distinto. \textbf{RAM} se centra en el régimen: comprueba si la dirección de la apuesta encaja con el estado de mercado que el modelo oculto de Markov de la Sección~\ref{sec:hmm} considera vigente. \textbf{PSA} atiende al propio agente; con la detección bayesiana de puntos de cambio vigila si cambia de criterio de forma estructural, no por una fluctuación. \textbf{GSO} se ocupa del tamaño: contrasta el módulo de la posición con la volatilidad del GARCH de la Sección~\ref{sec:garch}, y salta cuando la apuesta es grande para la volatilidad del mercado. La ortogonalidad de los tres ejes hace que cada detector capte algo que los otros no.
 
-La intervención puede ir de solo registrar la señal a reducir la posición o sustituirla. Solo se analiza la variante más fuerte, que reorienta el signo de $w_t$ hacia el régimen cuando la incoherencia es alta; los modos intermedios quedan como trabajo futuro. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal y cuándo actúa.
+La intervención puede ir de solo registrar la señal a reducir la posición o sustituirla. Se adopta como canónica la variante más fuerte, que reorienta el signo de $w_t$ hacia el régimen cuando la incoherencia es alta; los modos intermedios se comparan sobre SPY en el capítulo~\ref{cap:spy}. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal y cuándo actúa.
 
 Conviene distinguir la capa de señales de las reglas que las consumen. STRATA designa siempre la capa que produce las señales; M8 y M10 son estrategias que la utilizan. \textbf{M8} es una regla determinista de umbrales fijos (Sección~\ref{sec:strata-intervencion}), referencia interpretable. \textbf{M10} no aplica umbrales fijos: es un modelo de segundo nivel (un \emph{meta-learner}) que toma como entradas las salidas del agente y de los detectores y aprende a combinarlas para decidir la dirección del día siguiente. Se entrena solo con el pasado y es el objeto central del caso de estudio (capítulo~\ref{cap:spy}).
 
@@ -97,7 +97,7 @@ y la dinámica de los estados es markoviana de primer orden. El conjunto de par�
 
 La \emph{variable forward} $\alpha_t(k) = \Prob(x_{1:t},\, z_t = k \mid \lambda)$ recupera la verosimilitud completa por marginalización, $\Prob(x_{1:T} \mid \lambda) = \sum_{k} \alpha_T(k)$, y admite una recursión que evita la suma exponencial \cite{rabiner1989, bishop2006}.
 
-\begin{proposicion}[Recursión forward]
+\begin{proposicion}[Recursión forward \cite{rabiner1989, bishop2006}]
 \label{prop:forward}
 Para $t \ge 1$ se tiene la inicialización $\alpha_1(k) = \pi_k\, b_k(x_1)$ y, para todo $j \in \{1, \dots, K\}$,
 \[
@@ -109,7 +109,7 @@ La demostración está en el Anexo~\ref{anx:forward}. La recursión reduce el co
 
 Para decidir interesa la probabilidad del régimen \emph{dado} lo observado, el \emph{posterior filtrado} $\gammaf(k) = \Prob(z_t = k \mid x_{1:t})$, que normaliza la variable forward \cite{rabiner1989, bishop2006}.
 
-\begin{proposicion}[Filtrado a partir del forward]
+\begin{proposicion}[Filtrado a partir del forward \cite{rabiner1989, bishop2006}]
 \label{prop:filtrado}
 Para todo $t \ge 1$ y todo $k$,
 \[
@@ -156,7 +156,7 @@ Engle introdujo el \emph{ARCH} haciendo la varianza función de los errores reci
 \sigmat^2 \;=\; \omega + \alpha\, \epsilon_{t-1}^2 + \beta\, \sigma_{t-1}^2,
 \qquad \omega > 0, \quad \alpha \ge 0, \quad \beta \ge 0,
 \end{equation}
-suma de un suelo $\omega$, la sorpresa del día anterior (término ARCH, peso $\alpha$) y la varianza del día anterior (término GARCH, peso $\beta$), que aporta memoria larga con un solo parámetro. La \emph{volatilidad condicional} $\sigmat = \sqrt{\sigmat^2}$ alimenta a GSO. Las cifras se reportan \emph{anualizadas}, multiplicando $\sigmat$ por $\sqrt{252}$.
+donde $\omega$ fija un nivel de referencia, $\alpha\,\epsilon_{t-1}^2$ recoge el impacto del choque más reciente y $\beta\,\sigma_{t-1}^2$ arrastra la volatilidad del día anterior, término que dota al modelo de memoria con un solo parámetro. La \emph{volatilidad condicional} $\sigmat = \sqrt{\sigmat^2}$ alimenta a GSO. Las cifras se reportan \emph{anualizadas}, multiplicando $\sigmat$ por $\sqrt{252}$.
 
 Como un GARCH gaussiano genera colas demasiado finas para las colas pesadas observadas, $\eta_t$ se toma con distribución $t$ de Student estandarizada de $\nu$ grados de libertad ($\nu>2$ para que exista la varianza), siguiendo a Bollerslev \cite{bollerslev1987}. Cuanto menor es $\nu$, más pesadas son las colas; en el límite $\nu \to \infty$ se recupera el caso gaussiano. Esta es la especificación GARCH$(1,1)$-$t$ que emplea la memoria.
 
@@ -195,7 +195,7 @@ El instrumento es la detección bayesiana de puntos de cambio online de Adams y 
 
 El objetivo es la posterior $\Prob(r_t \mid x_{1:t})$, que normaliza una conjunta con recursión. Necesita dos ingredientes: la \emph{función de hazard} $H(r) = \Prob(r_t = 0 \mid r_{t-1} = r-1)$, frecuencia a priori de los cambios, y la \emph{predictiva posterior} $\pi^{(r)}_{\mathrm{pred}} = \Prob(x_t \mid r_{t-1} = r,\, x_{1:t-1})$ del dato nuevo dentro del tramo en curso.
 
-\begin{proposicion}[Recursión de Adams--MacKay]
+\begin{proposicion}[Recursión de Adams--MacKay \cite{adams2007}]
 \label{prop:bocpd}
 La distribución conjunta de la run-length y los datos satisface, partiendo de $\Prob(r_{t-1}, x_{1:t-1})$, los dos mensajes siguientes. El \emph{mensaje de crecimiento} (no hay cambio, $r_t = r_{t-1} + 1$):
 \[

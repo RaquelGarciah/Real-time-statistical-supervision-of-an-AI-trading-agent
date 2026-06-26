@@ -23,7 +23,7 @@ La intervención de RAM no es arbitraria: su frecuencia crece casi linealmente c
 \begin{subfigure}[t]{0.52\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figuras/cap4_activacion_panel}
-\caption{Tasa de disparo de RAM, PSA y GSO y de intervención de la regla, activo a activo. RAM domina en todo el panel y los otros dos apenas se encienden.}
+\caption {Tasa de disparo de RAM, PSA y GSO y de intervención de la regla, activo a activo. RAM domina en todo el panel y los otros dos apenas se encienden.}
 \label{fig:mp-activacion-panel}
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.44\textwidth}
@@ -62,7 +62,7 @@ Esas ventajas son reales en punto pero nominales: con unos doscientos cincuenta 
 
 El intervalo del $\Delta$Sharpe sobre SPY no se separaba del cero por falta de potencia, no de señal. La agregación lo resuelve: si la supervisión rescata por el mismo mecanismo en activos distintos, apilar sus días multiplica la muestra. Se apilan los días de los diez activos (\emph{pooled-10}, $n = 2493$ días) y se mide el $\Delta$Sharpe pareado frente a M5, cada comparación sobre el mismo día y el mismo activo.
 
-La validez del agregado depende del remuestreo. Extraer días sueltos trataría la serie como independiente, y no lo es: los retornos de días vecinos se parecen y el intervalo se estrecharía de forma artificial. Por eso se emplea el \emph{bootstrap} estacionario \cite{politis1994}, que toma tramos con inicio al azar y longitud variable de media $\sqrt{n}$, de modo que los días vecinos se remuestrean juntos y el intervalo recoge la dependencia temporal real.
+La validez del agregado depende del remuestreo. Extraer días sueltos trataría la serie como independiente, y no lo es: los retornos de días vecinos se parecen y el intervalo se estrecharía de forma artificial. Por eso se emplea el \emph{bootstrap} estacionario \cite{politis1994}: en lugar de días sueltos remuestrea bloques contiguos de longitud aleatoria con media $\sqrt{n}$, así los días vecinos viajan juntos en cada réplica y el intervalo refleja la dependencia temporal.
 
 El resultado lo reúne la Figura~\ref{fig:mp-forest}: las tres estrategias supervisadas dejan un $\Delta$Sharpe positivo (M8 $+0{,}60$, M10 $+1{,}12$, AutoML $+1{,}08$) cuyo intervalo al $95\%$ excluye el cero, la afirmación que SPY no sostenía en solitario. Hay además un orden: la regla queda con el límite inferior pegado al borde mientras los dos aprendices guardan holgura, de modo que el rescate de riesgo es más firme en los aprendices.
 
@@ -73,7 +73,7 @@ El resultado lo reúne la Figura~\ref{fig:mp-forest}: las tres estrategias super
 \label{fig:mp-forest}
 \end{figure}
 
-El agregado tiene un matiz: el \emph{pooled} apila los días de los diez activos como si fueran independientes, y no lo son. La correlación cruzada entre índices es alta (SPY y QQQ por encima de $0{,}9$), lo que reduce el tamaño de muestra efectivo y deja el intervalo algo optimista; el bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua parte del efecto al remuestrear bloques contiguos.
+El agregado tiene un matiz: el \emph{pooled} apila los días de los diez activos como si fueran independientes. Los retornos crudos de los índices sí están muy correlados (SPY y QQQ por encima de $0{,}9$), pero la supervisión decorrela las series por activo, porque cada una toma posiciones distintas: sobre los retornos supervisados la correlación cruzada media es $\bar{\rho} \approx 0{,}02$. Aplicando el factor de diseño $1 + (k-1)\bar{\rho}$ con $k = 10$, el tamaño de muestra efectivo se mantiene en $n_{\mathrm{eff}} \approx 2141$ frente al nominal $2493$, de modo que el intervalo no es materialmente optimista; el bloque medio $\sqrt{n}$ del \emph{bootstrap} amortigua además la dependencia residual.
 
 En términos económicos, una derivada de STRATA supera al pasivo en Sharpe en cuatro activos: SPY, SMCI, MARA y UNG (Figura~\ref{fig:mp-equity-panel}). En SMCI, MARA y UNG el pasivo pierde o ronda el cero y la derivada obtiene un Sharpe positivo al posicionarse de forma defensiva. En SPY el periodo fue alcista y el activo es mayormente beta de mercado, de modo que el Sharpe positivo refleja sobre todo la exposición al índice.
 
@@ -156,14 +156,14 @@ Los dos aprendices no rescatan igual en cada régimen: M10 protege más en alcis
 
 La falsación pre-registrada se resuelve en el panel. Sobre SPY aislado, en régimen bajista la regla M8 se invierte: en sus cincuenta días bajistas el $\Delta$Sharpe es $-1{,}49$, la regla daña en vez de rescatar. Sobre los diez activos el rescate por régimen es significativo en bajista, y la complementariedad DiD lo es en \emph{pooled} aunque no en SPY: el fenómeno es de panel. Resta explicar el reparto por activo, que depende de su naturaleza.
 
-\section{El patrón: ley del leverage y clustering}
+\section{El patrón: regularidad del leverage y clustering}
 \label{sec:panel-patron}
 
 % Clustering = EXPLORATORIO (n=10).
 
-El canal que rescata cada activo cambia de uno a otro. La propiedad que ordena el rescate del aprendiz es el \emph{leverage effect}, y un \emph{clustering} sin etiquetas recupera los mismos grupos que esa propiedad define. Con diez activos es una regularidad empírica, no un teorema. El panel se separa en bloques de naturaleza distinta (Figura~\ref{fig:mp-naturaleza-bloques}), materia prima de la ley y del agrupamiento que siguen.
+El canal que rescata cada activo cambia de uno a otro. La propiedad que ordena el rescate del aprendiz es el \emph{leverage effect}, y un \emph{clustering} sin etiquetas recupera los mismos grupos que esa propiedad define. Con diez activos es una regularidad empírica, no un teorema. El panel se separa en bloques de naturaleza distinta (Figura~\ref{fig:mp-naturaleza-bloques}), materia prima de la regularidad y del agrupamiento que siguen.
 
-\subsection{La ley del \emph{leverage}}
+\subsection{La regularidad del \emph{leverage}}
 \label{sec:panel-ley}
 
 El rescate del aprendiz en accuracy escala con el \emph{leverage effect} del activo, medido con la correlación de Black $\mathrm{leverage\_corr}$ definida en la Sección~\ref{sec:strata-ram}. El rescate se define como $\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$ en accuracy.
@@ -186,7 +186,7 @@ Con diez activos el contraste tiene poca potencia, de modo que el resultado se p
 \caption{Rescate del aprendiz ($\max(\mathrm{M10},\mathrm{AutoML}) - \mathrm{M5}$) frente al \emph{leverage} de Black, un punto por activo. La recta baja: a más \emph{leverage} negativo, más rescate (Pearson $r = -0{,}56$, $p = 0{,}093$). Nueve de los diez la siguen; ROKU es la excepción.}
 \label{fig:mp-scatter}
 \end{subfigure}
-\caption{La ley del \emph{leverage}: la naturaleza por bloques del panel (izquierda) ordena el rescate del aprendiz en accuracy (derecha).}
+\caption{La regularidad del \emph{leverage}: la naturaleza por bloques del panel (izquierda) ordena el rescate del aprendiz en accuracy (derecha).}
 \label{fig:mp-naturaleza-scatter}
 \end{figure}
 
@@ -215,7 +215,7 @@ Los cuatro coinciden en una partición unánime y bien separada (Tabla~\ref{tab:
 \label{fig:mp-grupos-pca}
 \end{figure}
 
-La geometría lo confirma. Al proyectar la naturaleza de los diez sobre sus dos primeras componentes principales, el primer eje recupera casi exactamente el \emph{leverage} ($r = 0{,}84$ entre PC1 y \texttt{leverage\_corr}, Figura~\ref{fig:mp-pca}): sin etiquetas de rescate, el \emph{clustering} ordena los activos por el mismo eje que la ley de la Sección~\ref{sec:panel-ley}. La Figura~\ref{fig:mp-casos} del Anexo~\ref{anx:figuras} ilustra dos casos, XLE y MARA.
+La geometría lo confirma. Al proyectar la naturaleza de los diez sobre sus dos primeras componentes principales, el primer eje recupera casi exactamente el \emph{leverage} ($r = 0{,}84$ entre PC1 y \texttt{leverage\_corr}, Figura~\ref{fig:mp-pca}): sin etiquetas de rescate, el \emph{clustering} ordena los activos por el mismo eje que la regularidad de la Sección~\ref{sec:panel-ley}. La Figura~\ref{fig:mp-casos} del Anexo~\ref{anx:figuras} ilustra dos casos, XLE y MARA.
 
 Con diez activos esto es exploratorio: el clustering describe, no confirma. Predice el \emph{tipo} de canal que rescata cada grupo, no el modelo exacto que ganará por activo, que puede cambiar dentro de un grupo. Se deja para líneas futuras.
 
