@@ -36,26 +36,30 @@ que a partir de la decisión del agente y de una lectura estadística del mercad
 \subsection{Los tres detectores en panorámica}
 \label{sec:strata-panorama}
 
-Cada detector cubre un eje distinto y ortogonal de la decisión del agente. La Tabla~\ref{tab:strata-detectores} resume qué vigila cada uno, la pregunta que responde y el modelo que lo sustenta; esa ortogonalidad hace que cada detector capte algo que los otros no.
+Cada detector cubre un eje distinto y ortogonal de la decisión del agente. La Tabla~\ref{tab:strata-detectores} resume qué vigila cada uno, la pregunta que responde, la señal que produce y el modelo que lo sustenta; esa ortogonalidad hace que cada detector capte algo que los otros no.
 
 \begin{table}[htbp]
 \centering
-\caption{Los tres detectores de STRATA: eje que vigila, pregunta que responde y modelo que lo sustenta. La señal de cada detector, en $[0,1]$, alimenta la capa de intervención.}
+\small
+\caption{Los tres detectores de STRATA: el eje que vigila cada uno, la pregunta que responde, la señal que produce y el modelo que lo sustenta. Las tres señales alimentan la capa de intervención.}
 \label{tab:strata-detectores}
-\begin{tabular}{@{}l p{3.3cm} p{6.2cm} l@{}}
+\begin{tabular}{@{}l p{2.4cm} p{4.0cm} p{3.2cm} p{2.3cm}@{}}
 \toprule
-Detector & Eje & Pregunta & Modelo \\
+Detector & Eje & Pregunta & Señal de salida & Modelo \\
 \midrule
 RAM & Régimen de mercado &
 ¿La dirección de la apuesta encaja con el régimen vigente? &
+$\mathrm{RAM}_t$: probabilidad de apostar contra el régimen &
 HMM gaussiano (3 estados) \\
 \addlinespace
 PSA & Coherencia temporal del agente &
 ¿Acaba de romper estructuralmente su patrón de \emph{sizing}? &
+$\mathrm{PSA}_t$: probabilidad de ruptura reciente &
 BOCPD \emph{online} \\
 \addlinespace
 GSO & Volatilidad del mercado &
 ¿El tamaño de la apuesta cabe en la banda compatible con la volatilidad? &
+$\mathrm{GSO}_t$: exceso de tamaño sobre la banda &
 GARCH(1,1)-$t$ \\
 \bottomrule
 \end{tabular}
@@ -426,7 +430,7 @@ Las métricas de riesgo trabajan sobre los retornos diarios causales $g_t = w_t 
 
 Un backtest no vale si su evaluación usa información no disponible al decidir (\emph{look-ahead}): solo pasado y presente, nunca futuro. La posición $w_t$ se decide con la información hasta el cierre de $t$, cuando $r_t$ ya se conoce; contabilizar $w_t \cdot r_t$ dejaría a la decisión mirar su propio resultado. La regla correcta, \texttt{signal\_lag=1} en el código, contabiliza la posición de $t$ contra el retorno del día siguiente, $w_t \cdot \rnext$ \cite{lopezdeprado2018}. Encaja con el filtrado causal de la Sección~\ref{sec:hmm-filtrado}: el régimen $\gammaf$ que alimenta la decisión en $t$ se calcula solo con $x_{1:t}$.
 
-La convención asegura la causalidad de una decisión aislada, pero el meta-learner \emph{aprende} y validarlo exige un protocolo desplegable. Se adopta el \emph{walk-forward} de origen rodante (\emph{rolling-origin}), estándar para series temporales \cite{tashman2000, bergmeir2018}: tras un \emph{burn-in} que no se puntúa, cada cierto número de días el modelo se reentrena con toda la información hasta la fecha y predice el bloque siguiente, estrictamente futuro. La ventana se expande y nunca retrocede, causal por construcción. Cuando la etiqueta se solapa con el bloque de evaluación, la \emph{purga} retira las observaciones cuyo horizonte cae en él, y el \emph{embargo} descarta los $h$ días posteriores para cortar la autocorrelación de retornos contiguos \cite{lopezdeprado2018}. Como el horizonte es de un solo día, se fija $h=1$: elimina el único solape posible, y un embargo mayor descartaría información válida. La Figura~\ref{fig:strata-wf} muestra el esquema.
+La convención asegura la causalidad de una decisión aislada, pero el meta-learner \emph{aprende} y validarlo exige un protocolo desplegable. Se adopta el \emph{walk-forward} de origen rodante (\emph{rolling-origin}) \cite{tashman2000, bergmeir2018}: tras un \emph{burn-in} que no se puntúa, cada cierto número de días el modelo se reentrena con toda la información hasta la fecha y predice el bloque siguiente, estrictamente futuro. La ventana se expande y nunca retrocede, causal por construcción. Cuando la etiqueta se solapa con el bloque de evaluación, la \emph{purga} retira las observaciones cuyo horizonte cae en él, y el \emph{embargo} descarta los $h$ días posteriores para cortar la autocorrelación de retornos contiguos \cite{lopezdeprado2018}. Como el horizonte es de un solo día, se fija $h=1$: elimina el único solape posible, y un embargo mayor descartaría información válida. La Figura~\ref{fig:strata-wf} muestra el esquema.
 
 \begin{figure}[htbp]
 \centering
