@@ -237,7 +237,9 @@ C2 volátiles (ROKU, MARA)                 & $-0{,}028$ & AutoML \\
 \section{Robustez}
 \label{sec:panel-robustez}
 
-El rescate no depende de una elección afortunada. Se mantiene al mover la ventana de calibración (Figura~\ref{fig:mp-robustez-calib}) y aguanta en el panel por tres vías a la vez (Figura~\ref{fig:mp-robustez-panel}): la importancia de STRATA es estable en el tiempo, el rescate sobrevive a distintas particiones y se sostiene partido por régimen.
+El rescate no depende de ninguna elección afortunada; resiste las perturbaciones del montaje. Al desplazar la ventana de calibración con la que se cierran los detectores, se mantiene (Figura~\ref{fig:mp-robustez-calib} del Anexo~\ref{anx:figuras}). Tampoco cuelga de un umbral afortunado: sobre SPY, la accuracy descansa en una meseta alrededor del valor canónico y no en un punto (Sección~\ref{sec:spy-rescate}), lo que descarta el ajuste al periodo de evaluación.
+
+En el panel aguanta, además, por tres vías a la vez (Figura~\ref{fig:mp-robustez-panel}): la importancia de STRATA en el aprendiz se mantiene mayoritaria a lo largo del tiempo, el rescate sobrevive a distintas particiones train/test y se sostiene partido por régimen, en alcista y en bajista.
 
 \begin{figure}[htbp]
 \centering
