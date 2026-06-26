@@ -1320,7 +1320,6 @@ if __name__ == "__main__":
 
     print("\nGenerando las 5 figuras de apoyo (arquitectura / protocolo / naturaleza)")
     strata_arquitectura()
-    strata_detectores()
     strata_timeline()
     strata_walkforward()
     modo = leverage_spy_vs_accion()

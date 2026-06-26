@@ -36,14 +36,30 @@ que a partir de la decisión del agente y de una lectura estadística del mercad
 \subsection{Los tres detectores en panorámica}
 \label{sec:strata-panorama}
 
-Cada detector cubre un eje distinto y ortogonal de la decisión (Figura~\ref{fig:strata-detectores}): RAM el régimen, con el modelo oculto de Markov; PSA el cambio estructural del agente, con detección bayesiana de puntos de cambio; y GSO el tamaño frente a la volatilidad, con el GARCH. Esa ortogonalidad hace que cada uno capte algo que los otros no.
+Cada detector cubre un eje distinto y ortogonal de la decisión del agente. La Tabla~\ref{tab:strata-detectores} resume qué vigila cada uno, la pregunta que responde y el modelo que lo sustenta; esa ortogonalidad hace que cada detector capte algo que los otros no.
 
-\begin{figure}[htbp]
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.92\textwidth]{figuras/strata_detectores}
-\caption{Los tres detectores en panorámica. Cada uno vigila un eje distinto de la decisión del agente —régimen (RAM), cambio estructural del agente (PSA) y tamaño frente a volatilidad (GSO)—, con el modelo que lo sustenta y la condición de disparo. La señal de cada detector, en $[0,1]$, alimenta la capa de intervención.}
-\label{fig:strata-detectores}
-\end{figure}
+\caption{Los tres detectores de STRATA: eje que vigila, pregunta que responde y modelo que lo sustenta. La señal de cada detector, en $[0,1]$, alimenta la capa de intervención.}
+\label{tab:strata-detectores}
+\begin{tabular}{@{}l p{3.3cm} p{6.2cm} l@{}}
+\toprule
+Detector & Eje & Pregunta & Modelo \\
+\midrule
+RAM & Régimen de mercado &
+¿La dirección de la apuesta encaja con el régimen vigente? &
+HMM gaussiano (3 estados) \\
+\addlinespace
+PSA & Coherencia temporal del agente &
+¿Acaba de romper estructuralmente su patrón de \emph{sizing}? &
+BOCPD \emph{online} \\
+\addlinespace
+GSO & Volatilidad del mercado &
+¿El tamaño de la apuesta cabe en la banda compatible con la volatilidad? &
+GARCH(1,1)-$t$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 La intervención puede ir de solo registrar la señal a reducir la posición o sustituirla. Se adopta como canónica la variante más fuerte, que reorienta el signo de $w_t$ hacia el régimen cuando la incoherencia es alta; los modos intermedios se comparan sobre SPY en el capítulo~\ref{cap:spy}. La Sección~\ref{sec:strata-aplicado} detalla cómo se construye cada señal y cuándo actúa.
 
