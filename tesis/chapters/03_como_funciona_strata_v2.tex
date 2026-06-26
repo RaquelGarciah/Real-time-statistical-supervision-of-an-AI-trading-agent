@@ -244,7 +244,7 @@ La posterior de la run-length se recupera normalizando,
 
 La demostración está en el Anexo~\ref{anx:bocpd}. La recursión es enteramente causal —$\Prob(r_t, x_{1:t})$ se construye desde $\Prob(r_{t-1}, x_{1:t-1})$ y $x_t$—, por lo que sirve para PSA; en la práctica se trunca el soporte de $r_t$ descartando las run-lengths despreciables, lo que acota el coste sin alterar la inferencia.
 
-Para cerrar el modelo se fija la hazard \emph{constante} $H(r) = 1/\lambda$: la run-length carece de memoria y la longitud de cada segmento es geométrica de media $\lambda$ pasos, único hiperparámetro de la dinámica. La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación en una familia exponencial con su \emph{previa conjugada}, lo que da una predictiva analítica que se actualiza de forma incremental \cite{fearnhead2006}.
+Para cerrar el modelo se fija la hazard \emph{constante} $H(r) = 1/\lambda$ con $\lambda = 250$: la run-length carece de memoria y la longitud de cada segmento es geométrica de media $\lambda$ pasos, único hiperparámetro de la dinámica. Con $\lambda = 250$ se espera a priori una ruptura estructural al año, unos $250$ días de mercado. La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación en una familia exponencial con su \emph{previa conjugada}, lo que da una predictiva analítica que se actualiza de forma incremental \cite{fearnhead2006}.
 
 \subsection{De los modelos a los scores: RAM, PSA y GSO, y la regla M8}
 \label{sec:strata-aplicado}
@@ -303,7 +303,7 @@ Sobre los datos estudiados, GSO rara vez supera la severidad media: el tamaño d
 \subsubsection{PSA: coherencia temporal del agente}
 \label{sec:strata-psa}
 
-PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición, con hazard constante $H = 1/\lambda$, $\lambda = 250$, que fija a priori la escala entre rupturas en un año bursátil (la media de la geométrica de la Sección~\ref{sec:bocpd-recursion}): un cambio esperado al año, fijado a mano y sin optimizar contra el periodo de evaluación.
+PSA vigila la coherencia temporal del agente: detecta si cambia de criterio de forma estructural, no como fluctuación dentro de un mismo patrón. Aplica la detección bayesiana de puntos de cambio de la Sección~\ref{sec:bocpd} a la serie de tamaños de posición, con la hazard $\lambda = 250$ ya fijada (Sección~\ref{sec:bocpd-recursion}): una ruptura esperada al año, a mano y sin optimizar contra el periodo de evaluación.
 
 \begin{definicion}[PSA score]
 \label{def:psa}
