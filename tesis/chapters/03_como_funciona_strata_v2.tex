@@ -246,10 +246,10 @@ La demostración está en el Anexo~\ref{anx:bocpd}. La recursión es enteramente
 
 Para cerrar el modelo se fija la hazard \emph{constante} $H(r) = 1/\lambda$ con $\lambda = 250$: la run-length carece de memoria y la longitud de cada segmento es geométrica de media $\lambda$ pasos, único hiperparámetro de la dinámica. Con $\lambda = 250$ se espera a priori una ruptura estructural al año, unos $250$ días de mercado. La predictiva $\pi^{(r)}_{\mathrm{pred}}$ se calcula de forma cerrada eligiendo el modelo de observación en una familia exponencial con su \emph{previa conjugada}, lo que da una predictiva analítica que se actualiza de forma incremental \cite{fearnhead2006}.
 
-\subsection{De los modelos a los scores: RAM, PSA y GSO, y la regla M8}
+\subsection{De los modelos a los scores: definición de RAM, PSA y GSO}
 \label{sec:strata-aplicado}
 
-Cada detector produce una señal numérica que mide un tipo de incoherencia entre la decisión del agente y el estado del mercado; cuando esa señal supera un umbral, fijado ex ante sobre la calibración (Sección~\ref{sec:strata-calib}), STRATA interviene.
+Cada detector produce una señal numérica que mide un tipo de incoherencia entre la decisión del agente y el estado del mercado; cuando esa señal supera un umbral, fijado ex ante sobre la calibración (Sección~\ref{sec:strata-calib}), STRATA interviene con la regla M8 (Sección~\ref{sec:strata-intervencion}).
 
 \subsubsection{RAM: desajuste entre régimen y acción}
 \label{sec:strata-ram}
@@ -316,10 +316,13 @@ con $w=5$ la ventana de racha corta (en días de mercado). Crece cuando el \emph
 
 Los umbrales operativos siguen el mismo criterio que GSO: los percentiles $95$ y $99$ sobre el periodo de calibración. En la intervención, se exige un índice muy alto de PSA para frenar la posición resultante.
 
-\subsubsection{La capa de intervención}
+\section{Estrategias supervisadas: M8, M10 y AutoML}
+\label{sec:strata-estrategias}
+
+\subsection{La regla M8: la capa de intervención}
 \label{sec:strata-intervencion}
 
-Las tres señales alimentan la capa de intervención, que transforma la posición $w_t$ en una posición supervisada $w_t^{\star}$ por composición de tres operadores. Sea $\rho_t = +1$ si $\gammaf(\text{Calma}) \ge \gammaf(\text{Crisis})$ y $\rho_t = -1$ en otro caso, la dirección del régimen dominante.
+La capa de intervención de STRATA es la regla de referencia M8: las tres señales alimentan una composición de tres operadores que transforma la posición $w_t$ en una posición supervisada $w_t^{\star}$. Sea $\rho_t = +1$ si $\gammaf(\text{Calma}) \ge \gammaf(\text{Crisis})$ y $\rho_t = -1$ en otro caso, la dirección del régimen dominante.
 
 \begin{definicion}[Capa de intervención M8]
 \label{def:m8}
@@ -336,10 +339,7 @@ El disparo se produce con severidad \emph{medium} o superior para GSO y RAM (es 
 
 El GSO acota la magnitud a la banda de volatilidad; el RAM, cuando $\mathrm{RAM}_t \ge \tau$ con $\tau = 0{,}50$, reorienta la posición al signo del régimen con esa banda (el único paso que cambia la dirección); el PSA frena a la mitad ante un cambio brusco de \emph{sizing}. La regla de referencia M8 es esta configuración, con $\mathrm{signal\_lag} = 1$.
 
-\section{Estrategias supervisadas: M8, M10 y AutoML}
-\label{sec:strata-estrategias}
-
-La regla M8 combina las tres señales con umbrales fijos. La pregunta natural es si una combinación \emph{aprendida} lo haría mejor: en lugar de fijar los umbrales a mano, un modelo puede estimar de los datos cómo pesar la información del agente y de STRATA para anticipar la dirección del día siguiente. Esa es la estrategia M10, y su generalización mediante búsqueda automatizada de modelos es AutoML.
+Esa regla determinista de umbrales fijos invita a preguntar si una combinación \emph{aprendida} lo haría mejor: en lugar de fijar los umbrales a mano, un modelo puede estimar de los datos cómo pesar la información del agente y de STRATA para anticipar la dirección del día siguiente. Esa es la estrategia M10, y su generalización mediante búsqueda automatizada de modelos es AutoML.
 
 \subsection{El problema de aprendizaje supervisado}
 \label{sec:sup-problema}
