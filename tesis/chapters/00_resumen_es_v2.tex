@@ -1,0 +1,11 @@
+\renewcommand{\abstractname}{Resumen}
+\begin{abstract}
+    Los agentes basados en grandes modelos de lenguaje ya toman decisiones de inversión, y no son deterministas: ante la misma pregunta pueden responder cosas distintas, y fallan sin avisar. Cuando hay dinero real en juego, eso es un problema. Este trabajo estudia uno de esos agentes, una réplica de AI Hedge Fund con cinco personalidades inversoras que elige una dirección y un tamaño para cada activo y cada día. Fuera de muestra pierde: sobre SPY acierta la dirección del día siguiente solo el $36{,}6\%$ de las veces, por debajo de una moneda, y una inversión inicial de \euro{}1000 termina en \euro{}700.
+
+    Diseñamos STRATA, una capa estadística que supervisa al agente en tiempo de ejecución. STRATA audita cada decisión con tres detectores clásicos ortogonales —un modelo oculto de Markov para el régimen, un detector bayesiano de puntos de cambio y una banda de volatilidad GARCH— y la sustituye cuando contradice un modelo explícito del mercado. Probamos la supervisión con estadística pareada sobre tres preguntas: si rescata al agente en acierto direccional y en riesgo, qué detector lleva el efecto, y si un \emph{meta-learner} libre redescubre las señales de STRATA en lugar de prescindir de ellas.
+
+    El rescate es estadísticamente significativo y su mecánica es interpretable. Sobre un panel de diez activos encontramos un patrón que indica dónde merece la pena aplicar el enfoque: cuanto más fuerte es el \emph{leverage effect} del activo, más rescata la supervisión, y la regla de régimen lidera en los índices amplios mientras el \emph{meta-learner} lidera en el resto. Su alcance es la supervisión, no el alfa, y esa frontera queda como trabajo futuro.
+
+    \medskip
+    \noindent\textbf{Palabras clave:} supervisión en tiempo de ejecución, agente LLM de trading, modelo oculto de Markov, GARCH, detección de puntos de cambio, \emph{meta-labeling}, \emph{leverage effect}.
+    \end{abstract}
