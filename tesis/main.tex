@@ -1,0 +1,30 @@
+% ============================================================================
+% main.tex — documento maestro de la memoria del TFG
+% STRATA: Supervisión estadística en tiempo real de un agente de trading con IA
+% Autora: Raquel García · Doble Grado en Matemáticas y Ciencia de Datos · UCM
+%
+% Compilar:  latexmk -pdf -bibtex main.tex   (o subir la carpeta a Overleaf)
+% ============================================================================
+\documentclass[11pt,a4paper,oneside]{report}
+
+\input{preamble}
+
+\begin{document}
+
+% --- Portada (placeholder; se sustituye por el modelo UCM cuando esté) ---
+\input{portada}
+
+\tableofcontents
+\cleardoublepage
+
+% --- Capítulos (orden de redacción: 3 primero; aquí van en orden de lectura) ---
+\include{chapters/01_introduccion}
+\include{chapters/02_estado_arte}
+\include{chapters/03_marco_teorico}
+\include{chapters/04_marco_practico}
+\include{chapters/05_conclusiones}
+
+% --- Bibliografía (numérica) ---
+\printbibliography[heading=bibintoc,title={Bibliografía}]
+
+\end{document}

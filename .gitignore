@@ -27,10 +27,21 @@ Icon?
 .claude/*
 !.claude/agents/
 !.claude/agents/**
+!.claude/commands/
+!.claude/commands/**
+!.claude/output-styles/
+!.claude/output-styles/**
+!.claude/hooks/
+!.claude/hooks/**
+!.claude/settings.json
+memoria/consejero/.state.json
 logs/
 
 # Audios crudos del tutor (las transcripciones .md sí se versionan)
 docs/tutor_audios/
+docs/tutor_transcripts/*.m4a
+docs/tutor_transcripts/*.mp3
+docs/tutor_transcripts/*.wav
 
 # Tests y coverage
 .pytest_cache/
@@ -47,3 +58,8 @@ htmlcov/
 cache/models/*_legacy*.pkl
 # Notebook scratch local
 notebooks/logic_esential.ipynb
+
+# Muestras de estilo de Raquel: PRIVADAS (repo público). Solo se versiona el README;
+# los textos propios (TFB, ensayos…) se quedan en local para calibrar el estilo.
+tesis_assets/estilo_raquel/*
+!tesis_assets/estilo_raquel/README.md

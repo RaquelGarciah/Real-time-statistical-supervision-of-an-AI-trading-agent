@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "ticker": "SPY",
+    "n_eval": 251,
+    "n_seeds": 10,
+    "features": "ALL22",
+    "embargo": 1,
+    "oos": [
+      "2025-05-09",
+      "2026-05-11"
+    ],
+    "frac_up_bh": 0.5657,
+    "nota_dsr": "DSR con n_trials=1 (PSR vs 0); el proyecto probó varias configs → DSR real menor"
+  },
+  "metricas": {
+    "M5": {
+      "accuracy": 0.3665,
+      "sharpe": -2.733,
+      "equity_final": 0.9321,
+      "max_drawdown": -0.0685
+    },
+    "M8": {
+      "accuracy": 0.4422,
+      "sharpe": 1.598,
+      "equity_final": 1.097,
+      "max_drawdown": -0.0596
+    },
+    "M10": {
+      "accuracy": 0.494,
+      "sharpe": -0.604,
+      "equity_final": 0.9202,
+      "max_drawdown": -0.1609,
+      "auc": 0.5312,
+      "log_loss": 0.8564,
+      "brier": 0.3084,
+      "dsr_ntrials1": 1.0
+    },
+    "B&H": {
+      "accuracy": 0.5657,
+      "sharpe": 2.195,
+      "equity_final": 1.3017,
+      "max_drawdown": -0.0982
+    }
+  },
+  "tests": {
+    "M10_vs_M5_mcnemar_p": 0.0074,
+    "M10_vs_M5_b_c": [
+      51,
+      83
+    ],
+    "M10_vs_M8_mcnemar_p": 0.2907,
+    "M10_vs_M8_b_c": [
+      58,
+      71
+    ],
+    "M10_vs_B&H_mcnemar_p": 0.1329,
+    "M10_vs_B&H_b_c": [
+      73,
+      55
+    ],
+    "M10_sign_vs_0.5_p": 0.8996,
+    "M10_exceso_acc_IC95": [
+      -0.0578,
+      0.0419
+    ]
+  }
+}

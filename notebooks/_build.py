@@ -1335,14 +1335,597 @@ estrictamente "drift-free".
 
 **Conclusión.** $K=3$ se sostiene por su justificación de **calibración** (§3: verosimilitud +
 estructura, sin OOS) y por **interpretabilidad**, no por superar a $K=2$ en P&L —son equivalentes—
-ni por una ventaja del Sharpe que en gran parte es el mercado alcista. *Límite reconocido:* todo
-esto vive en una **única ventana OOS alcista**; la robustez **multi-ventana** (walk-forward sobre
-2008/2020/2022) es trabajo pendiente y la validación que de verdad cerraría esta cuestión.""")
+ni por una ventaja del Sharpe que en gran parte es el mercado alcista. La robustez multi-ventana
+(walk-forward sobre 2008/2020/2022) se presenta en §13: el modelo generaliza inter-época; el rescate
+del agente es condicional al régimen alcista.""")
+
+md(r"""## §13. Robustez multi-ventana (walk-forward): la respuesta a "¿tuviste suerte con el periodo?"
+
+El tutor lo exigió: *"lánzalo en diferentes años, en diferentes momentos; puede que tuvieras suerte"*.
+
+> ⚠ **LÍMITE CLAVE (leerlo antes que los números).** El agente LLM **solo existe en el OOS**
+> (2024-10→cierre, ~18 meses): no hay decisiones del agente antes de 2024-10 (cutoff de DeepSeek), y
+> generarlas sería *look-ahead*. Por tanto el **rescate (M8/M10 vs M5) solo se puede medir en esos 18
+> meses**, y las "ventanas" del rolling son **sub-trozos solapados del mismo tramo, NO años distintos**.
+> La robustez **inter-época** (años distintos, crisis incluidas) la mide SOLO la **Parte A**, que usa el
+> modelo de régimen sin agente. La Parte B mide **estabilidad intra-OOS**, no generalización temporal.
+
+- **Parte A — el MODELO de régimen (24 años, SIN agente):** ¿generaliza $K=3$ inter-época, incl.
+  2008/2020/2022? Verosimilitud held-out rodante. *Aquí está la robustez temporal real.*
+- **Parte B — el RESCATE (M8 y M10 vs M5, intra-OOS):** confirmatorio = mediana ΔSharpe con IC bootstrap
+  estacionario pareado (decide por la **cota Bonferroni** al haber 2 contrastes); + McNemar estratificado
+  por régimen (¿rescata cuando el mercado NO sube?). Se carga `walkforward_robustez.json` (auditado por
+  rigor en diseño y resultados).""")
+
+code(r"""import json
+import matplotlib.pyplot as plt
+import numpy as np
+
+wf = json.load(open("outputs/experiments/walkforward_robustez.json"))
+
+# --- Parte A: verosimilitud held-out por origen y K (modelo, 24 años, sin agente) ---
+pa = pd.DataFrame(wf["part_a"]["heldout_ll"]["per_origin_K"])
+piv = pa.pivot(index="origin", columns="K", values="ll_por_obs")
+k3_dom = wf["part_a"]["heldout_ll"]["k3_domina_frac"]; k4_dom = float((piv[4] > piv[3]).mean())
+print(f"PARTE A (modelo, 24 años) — K=3 mejora a K=2 en {k3_dom:.0%} de los {len(piv)} orígenes (incl. crisis).")
+print(f"  HONESTO: K=4 mejora a K=3 en {k4_dom:.0%} → K=3 NO es óptimo de verosimilitud; se elige por")
+print("  parsimonia/interpretabilidad (decisión §3). La robustez inter-época vive aquí.")
+
+# --- Parte B confirmatorio: el criterio decisorio es la cota Bonferroni, NO el IC95 ---
+print("\nPARTE B (rescate, intra-OOS) — confirmatorio: mediana ΔSharpe con IC bootstrap pareado.")
+for pk, lbl in (("m8_vs_m5", "M8−M5"), ("m10_vs_m5", "M10−M5")):
+    cb = wf["part_b_confirmatory"][pk]; ci = cb["ci95_boot"]; bonf = cb["ci_bonf2_low"]
+    print(f"  {lbl}: mediana={cb['median_delta_sharpe']:+.2f}  IC95=[{ci['low']:+.2f},{ci['high']:+.2f}]  "
+          f"cota Bonferroni (DECIDE)={bonf:+.2f} → H1_b {'se sostiene' if bonf > 0 else 'NO se sostiene'}")
+print(f"  Deflated Sharpe: M8={wf['deflated_sharpe']['m8']['dsr']:.2f}  M10={wf['deflated_sharpe']['m10']['dsr']:.2f} (≈ azar).")
+
+# --- Rescate de la ACCURACY por régimen: McNemar + Holm + block-permutation (robusto a autocorr) ---
+rows = []
+for pk, lbl in (("m8_vs_m5", "M8 vs M5"), ("m10_vs_m5", "M10 vs M5")):
+    s = wf["stratified_mcnemar"][pk]; holm = s["holm_bonferroni"]
+    for nm in ("alcista", "bajista"):
+        d = s["drift"][nm]
+        rows.append({"contraste": lbl, "régimen": nm, "n": d["n_obs"],
+                     "McNemar p_adj(Holm)": round(holm[f"drift_{nm}"]["p_adj"], 3),
+                     "block-perm p": round(d["block_perm_p"], 3), "ΔSharpe": d["median_delta_sharpe"]})
+acc_tab = pd.DataFrame(rows).set_index(["contraste", "régimen"])
+print("\nRescate de ACCURACY por régimen (McNemar/block-perm) y ΔSharpe — el corazón del hallazgo:")
+display(acc_tab)
+
+# --- Figuras: modelo (A) + significancia del rescate de accuracy por régimen (B) ---
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))
+for K, mk in zip((2, 3, 4), ("o-", "s-", "^-")):
+    ax[0].plot(piv.index, piv[K], mk, label=f"K={K}", alpha=0.6 if K == 4 else 1.0)
+ax[0].set_xlabel("origen anual"); ax[0].set_ylabel("LL held-out / obs")
+ax[0].set_title("Parte A · el modelo generaliza 24 años"); ax[0].legend(fontsize=8)
+xb = np.arange(2)
+bp = lambda pk: [wf["stratified_mcnemar"][pk]["drift"][nm]["block_perm_p"] for nm in ("alcista", "bajista")]
+ax[1].bar(xb - 0.2, bp("m8_vs_m5"), 0.38, label="M8 vs M5", color="#9aa0a6")
+ax[1].bar(xb + 0.2, bp("m10_vs_m5"), 0.38, label="M10 vs M5", color="#1a73c0")
+ax[1].axhline(0.10, ls="--", color="#c0392b", lw=1, label="α=0.10")
+ax[1].set_xticks(xb); ax[1].set_xticklabels(["alcista", "bajista"]); ax[1].set_ylabel("block-perm p (accuracy)")
+ax[1].set_title("Parte B · M10 rescata accuracy en AMBOS régimenes"); ax[1].legend(fontsize=8)
+plt.show()
+
+v = wf["verdict"]
+print(f"\nVeredicto FORMAL (plano Sharpe, pre-registrado): '{v['composicion']}'  "
+      f"[falsif. bajista: M8={v['falsif_spy_m8_bajista']}, M10={v['falsif_spy_m10_bajista']}]")
+print(f"Sanity dual same-day/causal: sign_consistent={wf['sanity_dual']['sign_consistent']} — NO es look-ahead")
+print("  (el bug peso_t×retorno_t INFLARÍA el causal; aquí lo PENALIZA: es propiedad del agente perdedor).")""")
+
+md(r"""**Lectura honesta (§13), en dos planos separados.**
+
+**1. El modelo de régimen generaliza inter-época.** $K=3$ mejora a $K=2$ en la verosimilitud held-out en
+15 de 16 orígenes anuales, incluidas 2008/2020/2022. *(Cautela: $K=4$ mejora marginalmente a $K=3$; se
+elige $K=3$ por parsimonia e interpretabilidad.)* Respuesta sólida al "¿tuviste suerte?": **el modelo, no.**
+
+**2. Plano accuracy (métrica primaria) — M10 rescata al agente en AMBOS régimenes.** Por McNemar pareado,
+M10 mejora la dirección de M5 de forma significativa en **alcista** ($p_{adj}$ Holm $=0.005$;
+block-permutation $p=0.000$) **y en bajista** ($p_{adj}=0.075$; block-permutation $p=0.061$, robusto a
+autocorrelación, ambos $<0.10$). **M8 solo rescata en alcista** (y no sobrevive Holm) y en **bajista es
+nulo** ($p=1.000$). M10 es, además, el único modelo con **MCC positivo**. La capacidad de recuperar
+accuracy es por tanto más amplia en M10 que en M8.
+
+**3. Plano Sharpe (económico) — el rescate NO es robusto y es condicional.** El confirmatorio decide por
+la **cota Bonferroni** (M8−M5 $=-0.49$; M10−M5 $=-0.48$): ambas $<0$ ⟹ **H1_b no se sostiene** *(el IC95
+crudo de M10−M5, $[-0.02,+5.79]$, roza el cero, pero el criterio pre-registrado es la cota Bonferroni, no
+el IC95: H1_b es False)*. El Deflated Sharpe ($\approx0.48$) es indistinguible del azar y en **bajista el
+$\Delta$Sharpe se invierte** (M8 $-3.92$, M10 $-1.06$), disparando la regla de falsificación pre-registrada.
+
+**Conciliación de los dos planos.** Acertar más días (accuracy) y rendir mejor en cartera (Sharpe) son
+ejes distintos: el primero cuenta signos, el segundo pondera por magnitud del retorno. En bajista M10
+acierta más días que M5 pero su $\Delta$Sharpe es negativo; **el mecanismo exacto de esa divergencia
+(composición long/short, concentración del P&L) no se descompone aquí y se reporta como límite.** La
+falsificación pre-registrada opera **sobre el Sharpe** y se dispara por diseño: el rescate **económico**
+es condicional al alza. Eso **no invalida** la mejora de **accuracy**, que vive en otro plano y sí es
+robusta cross-régimen para M10.
+
+**Veredicto formal:** `robustez_no_sostenida` en el plano Sharpe; en el plano accuracy, **M10 rescata la
+dirección del agente de forma robusta en ambos régimenes**. STRATA-SPY recupera accuracy direccional; su
+ventaja en P&L es frágil y condicional. *Que el sistema delimite dónde funciona es la aportación, no un
+defecto* (constitución §4f).""")
+
+md(r"""# Parte VII — Lectura, hipótesis y aportación
+
+## §14. ¿Qué rescata STRATA? Lectura accuracy-first
+
+El Sharpe es **frágil** (Deflated Sharpe $\approx0.48$; rescate condicional al alza, §13). La métrica
+honesta y robusta —y la que importa al tribunal— es la **accuracy direccional**.""")
+
+code(r"""# Escalera de ACCURACY direccional (métrica primaria) frente al Sharpe (ilustrativo/frágil).
+_acc, _shp, _mcc = maestra["accuracy"], maestra["Sharpe"], maestra["MCC"]
+ladder = pd.DataFrame({
+    "accuracy": [_acc["M5 (agente solo)"], _acc["M8 (STRATA override C)"], fila_m10["accuracy"],
+                 _acc["M2 (régimen×GARCH, sin agente)"], _acc["B&H (always long)"]],
+    "MCC":      [_mcc["M5 (agente solo)"], _mcc["M8 (STRATA override C)"], fila_m10["MCC"],
+                 _mcc["M2 (régimen×GARCH, sin agente)"], float("nan")],
+    "Sharpe":   [_shp["M5 (agente solo)"], _shp["M8 (STRATA override C)"], fila_m10["Sharpe"],
+                 _shp["M2 (régimen×GARCH, sin agente)"], _shp["B&H (always long)"]],
+}, index=["M5 (agente solo)", "M8 (regla STRATA, white box)", "M10 (XGBoost sobre features STRATA)",
+          "M2 (régimen solo, sin agente)", "B&H (referencia pasiva)"])
+print("Escalera de ACCURACY direccional (PRIMARIA) + MCC; el Sharpe es ilustrativo y frágil:")
+display(ladder.round(3))
+print(f"\n• M5 acierta {_acc['M5 (agente solo)']:.3f} (< azar, MCC<0): agente perdedor (premisa del TFG).")
+print(f"• M10 acierta {fila_m10['accuracy']:.3f} y es el ÚNICO con MCC>0 ({fila_m10['MCC']:+.3f}): mejor")
+print(f"  decodificador de la señal STRATA, casi B&H ({_acc['B&H (always long)']:.3f}) pero PREDICIENDO.")
+print("• M10 rescata accuracy en alcista Y bajista (McNemar/block-perm <0.10, §13); M8 solo en alcista.")
+print("• M10 ≈ M8 en P&L (DM p≈0.67); ablación sin STRATA tumba a M10 → la señal es de STRATA (§11).")""")
+
+md(r"""**El hallazgo de STRATA.** Un agente LLM **perdedor direccional** (acierta 0.384, < azar) es
+**rescatado por supervisión estadística clásica** (régimen HMM + BOCPD + GARCH), y la señal es **real**:
+
+1. **La accuracy sube escalonada:** M5 $0.384 \to$ M8 $0.436 \to$ **M10 $0.539$**, casi la de
+   comprar-y-mantener ($0.569$) pero **prediciendo** la dirección. M10 es el **único con MCC positivo**.
+2. **La señal es de STRATA:** la ablación tumba a M10 al quitar las features de régimen/RAM/PSA/GSO, y
+   SHAP las identifica como las informativas (§11).
+3. **Regla (M8) y caja negra (M10) son equivalentes en P&L** (DM $p=0.67$): el hallazgo es la *señal*,
+   no un modelo concreto (confirma la hipótesis §2.3).
+4. **El rescate de accuracy es robusto cross-régimen para M10** (McNemar/block-perm $<0.10$ en alcista
+   y bajista, §13), a diferencia de M8 (solo alcista).
+
+**M8 y M10 = dos consumidores de la misma señal:** M8 interpretable (white box, atribución §10), M10 el
+de mejor accuracy. Damos a M10 **al menos el mismo peso** que a M8: la accuracy es la métrica primaria y
+robusta; el Sharpe no.
+
+**Límites reconocidos (honestidad, §4f):** (i) M10 ($0.539$) **no bate a comprar-y-mantener** ($0.569$):
+STRATA **reduce el daño / recupera dirección, no genera alfa**; (ii) el rescate **económico** (Sharpe) es
+**frágil y condicional al alza** (§13: confirmatorio decide por cota Bonferroni $<0$, $\Delta$Sharpe se
+invierte en bajista); (iii) el tramo con agente vive en **una única ventana OOS de 18 meses** (las
+sub-ventanas son trozos de ella, no años distintos). La aportación no es batir al mercado: es un
+**protocolo de supervisión estadística interpretable** que recupera accuracy direccional de un agente
+perdedor —robusto en ambos régimenes—, equivalente a lo que aprende una caja negra, y que delimita dónde
+funciona.""")
 
 md(r"""---
-*Hasta aquí §12. Faltan §13–§14 (calibración de las convicciones del LLM, robustez
-multi-inicio y comparación condicional + Diebold-Mariano) y las Partes VI–VII (economía,
-límites, hipótesis y reproducibilidad).*""")
+*Hasta aquí §14 (robustez multi-ventana y lectura accuracy-first). Pendientes: §15–§16 (tangibles
+económicos y dónde STRATA no funciona en SPY) y §17–§18 (cierre formal de hipótesis y reproducibilidad).*""")
+
+# ───────────────────────────── APÉNDICE A ─────────────────────────────
+md(r"""# Apéndice A — Réplica multi-activo: NVDA
+
+Hasta aquí el cuaderno estudia **SPY**, donde STRATA funciona porque el *leverage effect* (Black 1976;
+Christie 1982) hace que el régimen de alta volatilidad coincida con caídas: el HMM sirve de **proxy
+direccional**. El tutor preguntará lo obvio: *¿y esto vale para otro activo, o has tenido suerte con el
+índice?* Para contestarlo replicamos **todo el pipeline sobre NVDA**, un activo individual de crecimiento,
+**recalibrando los modelos sobre su propia historia** (no reutilizamos los de SPY).
+
+Esto convierte a NVDA en una **prueba de falsación honesta**: si el rescate de STRATA solo existe cuando se
+cumple el *leverage effect*, NVDA —donde puede no cumplirse— debería delimitar dónde la técnica **no**
+funciona. Reportarlo es la aportación (un sistema que sabe dónde falla), no el defecto. El experimento está
+**pre-registrado** (BITACORA [2026-06-14]) y **auditado** por `@rigor-matematico` antes de mirarse.
+
+**Qué se recalibra sobre NVDA** (`experiments/recalibrate_nvda.py`, semilla 42):
+- **HMM K=3** sobre $(\,r_t,\ \mathrm{RV}^{21}_t)$ de NVDA, calibración `2000-01-01 → 2024-09-30` (anterior
+  a todo el OOS → sin look-ahead) → `cache/models/hmm_nvda.pkl`.
+- **Prior RAM** (régimen→signo): no es un fichero, es el orden por volatilidad de los estados
+  (Calma→long, Crisis→short). Su **validez** se mide con la media de retorno por estado $\mu_s$.
+- **GARCH(1,1)-t** de NVDA: `garch_NVDA.pkl` (artefacto congelado; ver nota de reproducibilidad en §A.1).
+
+**Qué NO se recalibra** (decisión auditada): la compuerta $\tau=0.5$ (criterio *parameter-free*, §4) y los
+**percentiles de severidad PSA/GSO** (se heredan de SPY). Justificación de rigor **suficiente**: en
+override-C el **signo** de la posición lo fija RAM ($\texttt{final\_size}=\texttt{regime\_sign}\cdot
+\texttt{bound}$, `strata/intervention.py`); PSA/GSO solo **escalan la magnitud** y no pueden voltear la
+dirección del rescate, que es lo que mide la hipótesis. La banda GSO ya es propia de NVDA (sale de
+`garch_NVDA`). *Limitación declarada* (no es justificación de rigor): el generador ex-ante de esos
+percentiles no está versionado, así que toda cifra de **magnitud/Sharpe** de M8 se reporta con esa salvedad.""")
+
+md(r"""## §A.1. Recalibración sobre NVDA
+
+El detector de régimen se reentrena sobre la historia de NVDA. La pregunta no es si el HMM *ajusta bien*
+(eso es verosimilitud), sino si el régimen es **direccionalmente informativo**, que es lo que el rescate
+necesita.""")
+
+code(r"""# Recalibración NVDA: HMM K=3 propio, held-out LL, GARCH y —lo decisivo— el drift por estado.
+import json, pickle
+import numpy as np, pandas as pd
+import matplotlib.pyplot as plt
+from config import CACHE_MODELS_DIR
+
+cs_nvda = json.load(open(CACHE_MODELS_DIR / "calibration_summary_nvda.json"))
+hmm_nvda = pickle.load(open(CACHE_MODELS_DIR / "hmm_nvda.pkl", "rb"))
+
+A = np.array(cs_nvda["hmm"]["transition_matrix"])
+labels = ["Calma", "Estrés", "Crisis"]
+print("Matriz de transición A (NVDA, K=3):")
+display(pd.DataFrame(A.round(4), index=labels, columns=labels))
+
+ks = cs_nvda["k_selection"]
+ga = cs_nvda["garch"]
+pr = cs_nvda["prior_ram"]
+mu = [pr["mu_state"][str(s)] for s in range(3)]
+print(f"\nSelección de K (held-out LL/obs, corte {ks['cut']}, n_eval={ks['n_eval']}): "
+      f"K2={ks['heldout_LL_K2']}  K3={ks['heldout_LL_K3']}  ΔK3-K2={ks['delta_LL_K3_menos_K2']:+.3f} "
+      f"→ K elegido = {ks['k_elegido']}  (el HMM ajusta mejor con 3 estados, como en SPY)")
+print(f"GARCH-NVDA: α+β={ga['alpha_mas_beta']:.4f} (estacionario={ga['estacionario']}), ν={ga['nu']:.2f} "
+      f"(colas pesadas). Artefacto CONGELADO: el experimento CARGA garch_NVDA.pkl, no lo reajusta.")
+print(f"  Las cifras son deterministas y reproducibles DADO ese pickle versionado (fuente de verdad); lo no")
+print(f"  reproducible es regenerarlo desde cero (deriva 1e-4 por versión del optimizador, reproducible={ga['reproducible_desde_pipeline']}).")
+print(f"\nμ por estado (drift diario en calibración):  Calma={mu[0]:+.6f}  Estrés={mu[1]:+.6f}  Crisis={mu[2]:+.6f}")
+print(f"leverage_effect_holds = {pr['leverage_effect_holds']}  (sería True si μ_Crisis < μ_Calma, como en SPY)")
+print(f"prior_calma_long={pr['prior_calma_long']}   prior_crisis_short={pr['prior_crisis_short']}")
+
+fig, ax = plt.subplots(figsize=(6, 3.2))
+colors = ["#2c7fb7", "#f0a830", "#d65a4a"]
+ax.bar(labels, mu, color=colors, edgecolor="black", linewidth=0.6)
+ax.axhline(0, color="black", lw=0.8)
+ax.set_ylabel(r"$\mu_s$ = drift diario medio")
+ax.set_title("NVDA · media de retorno por estado de régimen (calibración 2000–2024-09)")
+for i, v in enumerate(mu):
+    ax.text(i, v + (0.00004 if v >= 0 else -0.00008), f"{v:+.4f}", ha="center", fontsize=9)
+plt.tight_layout(); plt.show()""")
+
+md(r"""**¿Es "no hay leverage effect" un artefacto de la ventana 2000–2024 (splits, supervivencia)?** No. El
+**mapa de dirección por estado**, **origen a origen** del walk-forward rodante, lo descarta: el estado de
+mayor volatilidad (Crisis) es **alcista en todos los orígenes**, incluidos 2008 y 2020. Lo único *no
+estacionario* es la existencia de un estado bajista **intermedio** —que además RAM no usa para fijar el
+signo—. El cambio estructural 2016 de NVDA aparece ahí (sin necesidad de un Bai-Perron formal: el dato ya
+está en el ajuste rodante).""")
+
+code(r"""# Dirección por estado, origen a origen: ¿se cumple el leverage effect (Crisis bajista) en alguna época?
+import json
+import pandas as pd
+frozen = json.load(open("outputs/experiments/walkforward_robustez_nvda.json"))["part_a"]["directional"]["direction_map_frozen"]
+rows = []
+for origin in sorted(frozen, key=int):
+    f = frozen[origin]; mu = f["mu_state"]
+    rows.append({"origen": int(origin), "long_state": f["long_state"], "short_state": f["short_state"],
+                 "μ_Crisis (vol alta)": round(float(mu["2"]), 5),
+                 "μ_estado_bajista": round(float(mu[str(f["short_state"])]), 5)})
+dmap = pd.DataFrame(rows).set_index("origen")
+print("Dirección por estado, origen a origen (rolling-origin del walk-forward):")
+display(dmap)
+crisis_bull = (dmap["μ_Crisis (vol alta)"] > 0).mean()
+bear_early = (dmap.loc[dmap.index <= 2015, "μ_estado_bajista"] < 0).mean()
+bear_late  = (dmap.loc[dmap.index >= 2016, "μ_estado_bajista"] < 0).mean()
+print(f"\n• El estado de MAYOR volatilidad (Crisis) es ALCISTA en {crisis_bull:.0%} de los orígenes "
+      f"(μ>0 siempre, +0.005 en plena crisis 2008): el leverage effect NUNCA se cumple en NVDA.")
+print(f"• El único estado con drift negativo es el de volatilidad MEDIA (Estrés): existe en {bear_early:.0%}")
+print(f"  de los orígenes ≤2015 vs {bear_late:.0%} ≥2016 (se desvanece con el auge IA). NO estacionario.")
+print("• Pero RAM fija el signo por Calma-vs-Crisis (no por el estado medio): la poca información")
+print("  direccional que el régimen llegó a tener, el prior de STRATA ni siquiera la usa.")""")
+
+md(r"""**Lo que dice §A.1.** El HMM K=3 **modela bien la densidad** de NVDA (held-out LL: K3 $>$ K2,
+$\Delta=+0.30$; y en la robustez inter-época de §A.2 K=3 gana en el 93.8 % de los orígenes). Pero el estado
+de **mayor** volatilidad (Crisis) es el **más alcista** en NVDA en **todos** los orígenes ($\mu_{\text{Crisis}}>0$
+siempre, $+0.005$ en plena crisis 2008): el *leverage effect* —alta vol $\Rightarrow$ caídas— **nunca se
+cumple**, ni siquiera en 2008/2020. No es un artefacto de la ventana: es la firma estructural de un valor de
+crecimiento de beta alta (los picos de volatilidad son *rallies*, no *cracks*). Y RAM fija el signo del
+rescate por **Calma-vs-Crisis**, mapeando **Crisis$\to$short** — que en NVDA es un error sistemático. El
+único estado con drift negativo es el de volatilidad media (Estrés), que el prior de RAM **no usa** y que
+además se desvanece tras 2016. El régimen describe bien la *volatilidad*, pero su orden **no informa la
+dirección** que STRATA necesita. *Buena verosimilitud $\neq$ valor direccional.*""")
+
+md(r"""## §A.2. Aplicación de M5 / M8 / M10 sobre NVDA
+
+Mismo protocolo que en SPY: agente solo (**M5**), regla blanca override-C (**M8**) y meta-learner
+XGBoost-CPCV (**M10**), todo causal ($w_t\,r_{t+1}$, `signal_lag=1`) sobre el OOS `2024-10-01 → 2026-05-20`
+(409 días). La métrica primaria es la **accuracy direccional**; el Sharpe es ilustrativo y **frágil**.""")
+
+code(r"""# Aplicación de los modelos sobre NVDA: todo desde walkforward_robustez_nvda.json (réplica del de SPY).
+import json
+import numpy as np, pandas as pd
+import matplotlib.pyplot as plt
+
+wf_n = json.load(open("outputs/experiments/walkforward_robustez_nvda.json"))
+mt = wf_n["master_table"]
+
+ladder_n = pd.DataFrame({
+    "accuracy": [mt["m5"]["accuracy"], mt["m8"]["accuracy"], mt["m10"]["accuracy"]],
+    "MCC":      [mt["m5"]["mcc"],      mt["m8"]["mcc"],      mt["m10"]["mcc"]],
+    "AUC":      [mt["m5"]["auc"],      mt["m8"]["auc"],      mt["m10"]["auc"]],
+    "Sharpe":   [mt["m5"]["sharpe"],   mt["m8"]["sharpe"],   mt["m10"]["sharpe"]],
+    "equity_€1000": [1000*mt["m5"]["equity_final"], 1000*mt["m8"]["equity_final"], 1000*mt["m10"]["equity_final"]],
+}, index=["M5 (agente solo)", "M8 (regla STRATA, white box)", "M10 (XGBoost sobre features STRATA)"])
+print("Escalera NVDA (accuracy PRIMARIA; Sharpe ilustrativo y frágil):")
+display(ladder_n.round(3))
+
+# Confirmatorio: bootstrap estacionario PAREADO; el VEREDICTO usa la cota Bonferroni de 2 (no el IC95).
+conf = wf_n["part_b_confirmatory"]
+conf_tbl = pd.DataFrame({
+    "mediana ΔSharpe": [conf[k]["median_delta_sharpe"] for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")],
+    "IC95 low":        [conf[k]["ci95_boot"]["low"]  for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")],
+    "IC95 high":       [conf[k]["ci95_boot"]["high"] for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")],
+    "cota Bonf (veredicto)": [conf[k]["ci_bonf2_low"] for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")],
+}, index=["M8 − M5", "M10 − M5", "M10 − M8"])
+conf_tbl["robusto (cota>0)"] = conf_tbl["cota Bonf (veredicto)"] > 0
+print("\nConfirmatorio ΔSharpe (bootstrap estacionario pareado, Politis-Romano):")
+display(conf_tbl.round(3))
+
+# Parte A (robustez inter-época del MODELO) e informatividad direccional del régimen.
+pa = wf_n["part_a"]
+print(f"\nParte A · K=3 domina a K=2 en {pa['heldout_ll']['k3_domina_frac']:.3f} de los orígenes "
+      f"(el MODELO de régimen generaliza). Pero informatividad DIRECCIONAL del régimen: "
+      f"frac ventanas acc≥0.5 = {pa['directional']['frac_windows_acc_ge_0p5']:.3f}, "
+      f"sign test k={pa['directional']['sign_test']['k']}/{pa['directional']['sign_test']['n']} "
+      f"p={pa['directional']['sign_test']['p']:.2f} → NO informativo.")
+
+# McNemar estratificado por régimen y por drift (Holm). Ningún estrato sobrevive la corrección.
+print("\nMcNemar estratificado (M8 vs M5), p_adj de Holm por estrato:")
+holm = wf_n["stratified_mcnemar"]["m8_vs_m5"]["holm_bonferroni"]
+display(pd.Series({k: v["p_adj"] for k, v in holm.items()}, name="Holm p_adj").round(3))
+print("→ Ningún estrato (régimen ni signo de drift) muestra diferencia significativa: p_adj=1.0 en todos.")
+
+# Deflated Sharpe RE-DECLARADO (condición de rigor): n_trials=3 SUBESTIMA el grid explorado.
+dsr = wf_n["deflated_sharpe"]
+print(f"\nDeflated Sharpe (López de Prado): M8 DSR={dsr['m8']['dsr']:.3f}, M10 DSR={dsr['m10']['dsr']:.3f} "
+      f"(reportados con n_trials={dsr['m8']['n_trials']}).")
+print("  n_trials=3 subestima el espacio de búsqueda (4 variantes override A/B/C/D × modos GSO × esquemas")
+print("  de ventana × τ ⇒ ≥10 configuraciones). Con el grid real el DSR de M8 cae por debajo de 0.5:")
+print("  P(Sharpe>0) ≈ azar. NO se afirma que M8 sobreviva al Deflated Sharpe.")
+
+# Veredicto pre-registrado.
+v = wf_n["verdict"]
+print(f"\nVEREDICTO NVDA: composicion = '{v['composicion']}'  "
+      f"(h1_b M8vsM5={v['h1_b_m8_vs_m5']}, h1_b M10vsM5={v['h1_b_m10_vs_m5']}, "
+      f"falsif bajista M8={v['falsif_spy_m8_bajista']} M10={v['falsif_spy_m10_bajista']}).")
+
+# --- Figuras ---
+fig, axes = plt.subplots(1, 2, figsize=(12, 3.6))
+ax = axes[0]
+accs = [mt["m5"]["accuracy"], mt["m8"]["accuracy"], mt["m10"]["accuracy"]]
+ax.bar(["M5", "M8", "M10"], accs, color=["#888", "#2c7fb7", "#d65a4a"], edgecolor="black", lw=0.6)
+ax.axhline(0.5, color="black", ls="--", lw=1, label="azar (0.5)")
+for i, a in enumerate(accs):
+    ax.text(i, a + 0.005, f"{a:.3f}", ha="center", fontsize=9)
+ax.set_ylim(0.40, 0.56); ax.set_ylabel("accuracy direccional")
+ax.set_title("NVDA · escalera de accuracy (M10 NO mejora; cae)"); ax.legend(fontsize=8)
+
+ax = axes[1]
+pairs = ["M8 − M5", "M10 − M5", "M10 − M8"]
+meds = [conf[k]["median_delta_sharpe"] for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")]
+los  = [conf[k]["ci95_boot"]["low"]  for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")]
+his  = [conf[k]["ci95_boot"]["high"] for k in ("m8_vs_m5","m10_vs_m5","m10_vs_m8")]
+yerr = [[m - lo for m, lo in zip(meds, los)], [hi - m for m, hi in zip(meds, his)]]
+ax.errorbar(pairs, meds, yerr=yerr, fmt="o", color="#2c7fb7", capsize=5, lw=1.5)
+ax.axhline(0, color="black", lw=1)
+ax.set_ylabel("ΔSharpe (mediana, IC95 bootstrap)")
+ax.set_title("NVDA · confirmatorio: M8−M5 y M10−M5 cruzan 0 (no robusto)")
+plt.tight_layout(); plt.show()""")
+
+md(r"""**Lo que dice §A.2 (con todas las salvedades de rigor).** El veredicto se apoya **solo en métricas
+direccionales invariantes a la magnitud** (accuracy, MCC, AUC, McNemar). El **Sharpe no es load-bearing**:
+su magnitud hereda los percentiles de severidad PSA/GSO de SPY y depende de un GARCH no regenerable, así que
+no construimos ninguna conclusión sobre él; lo dejamos como ilustrativo.
+
+- **El MODELO de régimen sí transfiere:** K=3 generaliza inter-época (gana a K=2 en el 93.8 % de los
+  orígenes de 24 años). La maquinaria HMM de STRATA no es específica de SPY.
+- **El RESCATE direccional NO transfiere** (evidencia OOS, invariante a magnitud): la accuracy apenas se
+  mueve (M5 $0.477 \to$ M8 $0.509$) y el meta-learner **empeora** (M10 $0.440$, *lo contrario* que en SPY).
+  Ningún modelo tiene MCC positivo (M8 $-0.023$, M10 $-0.137$) ni AUC $> 0.5$ (M8 $0.491$). Y en
+  **calibración** el régimen tampoco es direccional (sign test sobre acc$\ge0.5$ por origen del walk-forward:
+  $k=6/14$, $p=0.79$). No hay poder discriminativo de dirección.
+- **No es falta de potencia, es señal en contra.** Si faltara potencia, M10 colapsaría hacia el azar
+  (AUC$\approx0.5$). Lo que ocurre es que M10 cae a AUC $0.43$ y MCC $-0.14$ —**peor que el azar**—: hay
+  evidencia *activa* de ausencia de señal direccional extraíble, no mera ausencia de evidencia.
+- **El Sharpe de M8 sube ($-0.57\to+0.68$) pero NO es rescate** y no nos apoyamos en él: el confirmatorio
+  pareado da mediana $\approx+1.27$ con **IC95 $[-0.37,+2.99]$ que cruza cero** (cota Bonferroni $-0.57<0$ →
+  H1 falsa) y ningún estrato McNemar sobrevive Holm ($p_{adj}=1.0$). La lectura *plausible* de esa subida es
+  cabalgar el drift alcista del OOS (drift anualizado $+0.375$) más control de magnitud, no dirección —
+  consistente con que en régimen **bajista** M8 *empeora* ($\Delta$Sharpe $-2.44$)—, pero al estar la cifra
+  contaminada, es contexto, no prueba.
+- **No usamos como evidencia** la fracción de ventanas positivas (94.4 %): las ventanas solapan
+  ($\rho_{\text{lag1}}=0.76$, $N_{\text{eff}}$ de Bartlett $\approx 2.5$); el sign test corregido da
+  $p=0.25$ (no significativo). La ventana legacy 120/5 y el panel de 10 activos son **sensibilidad /
+  exploratorio**, no confirmación.
+- **M10 peor que M8** (mediana $\Delta$Sharpe $-2.66$, IC95 $[-4.18,-0.96]$, excluye 0)$^{*}$, consistente
+  con que no hay señal STRATA direccional que el XGBoost pueda extraer. Es **coherente** con la hipótesis de
+  universalidad del TFG (el meta-learner no bate a la regla blanca), solo que aquí **ninguno** rescata.
+
+$^{*}$ M10 (CPCV) frente a M8 (walk-forward) no es un duelo de protocolo homogéneo (`m10_cv_not_walkforward`):
+léase como "M10 no rescata bajo su propio protocolo nativo", no como contraste pareado limpio.
+
+**Veredicto pre-registrado: `robustez_no_sostenida`.** En NVDA STRATA **no rescata** al agente.""")
+
+md(r"""### §A.2b — ¿Por qué M10 no bate a M8? SHAP + ablación
+
+Si M10 cae *por debajo del azar*, hay dos hipótesis: (i) ignora el régimen y se queda con el agente
+perdedor; (ii) **se apoya** en el régimen, que en NVDA no es direccional, y sobreajusta. El TreeSHAP
+pooled-OOF (mismo método que §11) y una **ablación con CPCV purgado** lo dirimen.""")
+
+code(r"""# SHAP pooled-OOF + ablación de M10 sobre NVDA (outputs/experiments/m10_shap_ablation_nvda.json).
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+
+sa = json.load(open("outputs/experiments/m10_shap_ablation_nvda.json"))
+rk = pd.DataFrame(sa["shap_ranking"]).set_index("rank")[["feature", "familia", "mean_abs_shap"]]
+print("SHAP pooled-OOF de M10 (NVDA) — top 8 de 22 features:")
+display(rk.head(8))
+print(f"Reparto de |SHAP| por familia: {sa['shap_familia_share']}  ·  ram_score rank = {sa['ram_score_rank']}/22")
+
+ab = pd.DataFrame(sa["ablation"]).T[["n_features", "accuracy", "auc", "sharpe"]]
+print("\nAblación M10 (CPCV purgado): ¿qué pasa al quitar bloques de features?")
+display(ab)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 3.6))
+fam = sa["shap_familia_share"]
+axes[0].bar(list(fam.keys()), list(fam.values()), color=["#888", "#2c7fb7", "#d65a4a"], edgecolor="black", lw=0.6)
+axes[0].set_ylabel("cuota de |SHAP| de M10"); axes[0].set_title("NVDA · M10 vuelca el 86% en régimen/STRATA")
+for i, v in enumerate(fam.values()):
+    axes[0].text(i, v + 0.01, f"{v:.0%}", ha="center", fontsize=9)
+order = ["sin_regimen_ni_strata_solo_agente", "sin_strata_scores", "sin_ram_score", "full_22", "solo_regimen_y_strata"]
+labels = ["solo agente (15)", "sin scores STRATA", "sin ram_score", "full (22)", "solo régimen+STRATA"]
+accs = [sa["ablation"][k]["accuracy"] for k in order]
+axes[1].barh(labels, accs, color="#2c7fb7", edgecolor="black", lw=0.6)
+axes[1].axvline(0.5, color="black", ls="--", lw=1, label="azar")
+axes[1].set_xlim(0.42, 0.53); axes[1].set_xlabel("accuracy OOF")
+axes[1].set_title("NVDA · quitar el régimen MEJORA a M10"); axes[1].legend(fontsize=8)
+plt.tight_layout(); plt.show()""")
+
+md(r"""**Veredicto SHAP + ablación: el régimen de NVDA no solo no informa — *perjudica* a M10.**
+
+- **M10 se apoya en el régimen, no lo ignora:** vuelca el **86 %** de su |SHAP| en él (régimen 56 % +
+  STRATA 30 %); `crisis_prob` es la **feature #1** y `ram_score` —la que lleva embebido el prior
+  Calma→long/Crisis→short— la **#4**. Solo el 13 % va a las personalidades del agente.
+- **Pero esas features no son direccionales en NVDA (§A.1), así que apoyarse en ellas es sobreajustar
+  ruido.** La ablación lo prueba: quitar el bloque régimen+STRATA **sube** M10 de accuracy $0.440\to
+  \mathbf{0.516}$ (AUC $0.43\to0.49$, Sharpe $-1.95\to+0.83$) — la mejor de todas las variantes. El régimen
+  **arrastra** a M10 por debajo del azar.
+- **No es una feature, es el bloque:** quitar *solo* `ram_score` apenas mueve ($0.440\to0.455$); el daño es
+  del régimen entero (crisis/calma + scores). Por eso es más exacto decir "el régimen no direccional
+  arrastra a M10" que "el signo del prior se inyecta".
+- **Por qué M8 ($0.509$) queda entre M10-full ($0.440$) y M10-solo-agente ($0.516$):** M8 usa el régimen de
+  forma **restringida** (override-C solo dispara con RAM alto, y el régimen es casi siempre Calma → mayormente
+  largo → cabalga el drift); M10 usa `crisis_prob` como variable continua y sobreajusta sus cortes.
+
+**Esto cierra la simetría de la tesis:** las features de régimen **rescatan en SPY** (llevan señal, §11) y
+**perjudican en NVDA** (no la llevan). Es, literalmente, "STRATA funciona donde el régimen es
+direccionalmente informativo".""")
+
+md(r"""### §A.2c — Validación causal: ¿es M10 desplegable a diario? (walk-forward, SPY y NVDA)
+
+CPCV (§11) es el estimador **insesgado** canónico, pero **entrena con bloques cronológicamente futuros**
+(purga/embargo solo limpian el solape de etiquetas, no el orden temporal) → no simula producción, y bajo
+cambio de régimen podría halagar a M10. Para probar el **uso diario** reentrenamos M10 en **ventana
+expandible anclada con reentreno mensual, solo con el pasado** (`N0=150`, `step=21`, `embargo=5`,
+`signal_lag=1`), y lo comparamos con M10-CPCV y M5 en el **mismo tramo de test**. Es validación **adicional**
+(CPCV sigue canónico, Decisión #10) y responde a la exigencia literal del tutor (*"lánzalo en distintos
+periodos de inicio… el target es mañana, la restricción es hoy"*). Pre-registrado (BITACORA 2026-06-15) y
+auditado por `@rigor-matematico` **antes y después** de ver resultados.""")
+
+code(r"""# M10 walk-forward causal vs CPCV vs M5 (outputs/experiments/walkforward_m10_causal.json).
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+
+wfc = json.load(open("outputs/experiments/walkforward_m10_causal.json"))
+arms = ["m5", "m8", "m10_cpcv", "m10_wf", "bh"]
+names = {"m5": "M5", "m8": "M8", "m10_cpcv": "M10-CPCV", "m10_wf": "M10-WF causal", "bh": "B&H"}
+
+for tk in ("SPY", "NVDA"):
+    a = wfc["por_activo"][tk]; mt = a["metrics_test_span"]; cfg = a["config"]
+    print(f"=== {tk} · test {cfg['test_span']} · n={cfg['n_test']} · {cfg['n_retrains']} reentrenos mensuales ===")
+    tb = pd.DataFrame({names[k]: {"accuracy": mt[k]["accuracy"], "MCC": mt[k]["mcc"],
+                                  "Sharpe causal": mt[k]["sharpe_causal"]} for k in arms}).T
+    display(tb.round(3))
+    m5, cp, st, ds = a["mcnemar_wf_vs_m5"], a["mcnemar_wf_vs_cpcv"], a["sign_test_wf"], a["delta_sharpe_wf_vs_m5"]
+    print(f"  McNemar M10-WF vs M5 (rescate pareado): p={m5['p']:.3f}  (WF-solo c={m5['c_wf_solo']} vs M5-solo b={m5['b_m5_solo']})")
+    print(f"  McNemar M10-WF vs M10-CPCV: p={cp['p']:.3f}  → no-rechazo (NO es prueba de equivalencia)")
+    print(f"  Sign test M10-WF vs azar (ABSOLUTO): k={st['k']}/{st['n']}  p={st['p']:.2f}  IC95={[round(x,3) for x in st['ci95']]}")
+    print(f"  ΔSharpe(M10-WF − M5): mediana {ds['median']} IC95 {ds['ci95']} (ilustrativo, sin DSR)\n")
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 3.8))
+cols = ["#888", "#7aa6c2", "#f0a830", "#d65a4a", "#444"]
+for ax, tk in zip(axes, ("SPY", "NVDA")):
+    mt = wfc["por_activo"][tk]["metrics_test_span"]
+    ax.bar([names[k] for k in arms], [mt[k]["accuracy"] for k in arms], color=cols, edgecolor="black", lw=0.6)
+    ax.axhline(0.5, color="black", ls="--", lw=1, label="azar")
+    ax.axhline(mt["bh"]["accuracy"], color="green", ls=":", lw=1.2, label="B&H")
+    ax.set_ylim(0.3, 0.6); ax.set_title(f"{tk} · accuracy walk-forward causal [N0:fin]")
+    ax.tick_params(axis="x", rotation=30, labelsize=8); ax.legend(fontsize=7)
+plt.tight_layout(); plt.show()""")
+
+md(r"""**Lectura (con las salvedades de rigor).**
+
+- **SPY — el rescate de M10 sobrevive causalmente.** M10-WF (entrenado solo con el pasado) acierta
+  **0.534**, por encima de M10-CPCV en el mismo tramo (**0.514**) y muy por encima de M5 (0.367): McNemar
+  pareado **p<0.001** (90 aciertos WF-solo vs 48 M5-solo), MCC>0. Y **no es un artefacto de que CPCV mire el
+  futuro**: M10-WF vs M10-CPCV da p=0.65 (no-rechazo — *no* prueba de equivalencia, pero **sin evidencia de
+  que CPCV halague**), y eso pese a que el walk-forward arranca en **desventaja** (≈145 días iniciales vs
+  ≈267 efectivos de CPCV).
+- **Pero el rescate es RELATIVO a M5, no habilidad direccional absoluta.** En absoluto, M10-WF **no bate al
+  azar** de forma significativa (sign test $k=134/251$, **p=0.31**, IC95 $[0.470, 0.597]$ contiene 0.5) y
+  **no supera a comprar-y-mantener** (B&H 0.566) en este OOS alcista. STRATA **recupera dirección frente al
+  agente perdedor; no genera alfa**.
+- **Es indicativo de desplegabilidad en una ventana de 12 meses** (12 reentrenos mensuales), **no
+  inter-época**: el agente LLM solo existe en el OOS. Potencia limitada.
+- **NVDA — consistente: M10 no rescata ni causalmente.** M10-WF 0.510 no bate a M5 (p=0.44), MCC≈0, AUC
+  0.47<0.5, ΔSharpe cruza 0. (WF≠CPCV marginal, p=0.073, pero **ambos quedan en/por debajo del azar** → no
+  soporta ninguna conclusión de habilidad.) Encaja con que el régimen no es proxy direccional fuera de SPY.
+- **Sanity same-day/causal.** El chequeo automático salta en M10-WF porque su Sharpe causal (+0.36) y
+  same-day (−0.31) tienen signo opuesto — pero esa heurística está pensada para el **agente** (que reacciona
+  a *hoy*). M10 es un **predictor explícito de $r_{t+1}$**: causal>0 con same-day≤0 es la **firma de que
+  predice mañana, no de que cabalgue hoy**; una fuga inflaría el *same-day*. El patrón se repite en M10-CPCV
+  (+1.53/−0.12) y es el **espejo** del agente (M5 −3.07/+0.51) → evidencia de **ausencia de look-ahead**.
+
+**En una frase.** El rescate direccional de M10 en SPY **no era un espejismo de CPCV**: aguanta un
+walk-forward causal reentrenado mes a mes (McNemar pareado vs M5 p<0.001, WF≈CPCV). Su límite es que
+**recupera dirección frente al agente sin batir a comprar-y-mantener** y **no transfiere a NVDA** — la misma
+frontera del *leverage effect* de todo el apéndice.""")
+
+md(r"""## §A.3. Conclusión: NVDA vs SPY — dónde funciona STRATA y dónde no
+
+La réplica responde a la objeción del tutor sin adornos: **STRATA no es universal, y el cuaderno dice
+exactamente por qué.** La frontera es el *leverage effect*.""")
+
+code(r"""# Tabla comparativa SPY vs NVDA. Cifras de SPY = canónicas del cuaderno (§9/§13/§14); NVDA = JSON propio.
+import pandas as pd
+comp = pd.DataFrame({
+    "SPY (índice, §9/§13/§14)": [
+        "Sí (μ_Crisis < μ_Calma)",
+        "Sí (régimen ≈ proxy direccional)",
+        "0.384 → 0.436 → 0.539  (M10 el mejor)",
+        "M10 (único MCC>0); rescate accuracy robusto en ambos régimenes",
+        "Condicional al alza (frágil), pero accuracy de M10 robusta",
+        "robustez (modelo) sostenida; rescate accuracy de M10 robusto",
+    ],
+    "NVDA (valor individual, §A)": [
+        "No en NINGÚN origen (Crisis siempre alcista, μ>0; +0.005 en 2008)",
+        "No para RAM (Crisis→short mal mapeado; estado bajista=Estrés, RAM no lo usa)",
+        "0.477 → 0.509 → 0.440  (M10 el PEOR)",
+        "Ninguno (MCC≈0/neg, AUC<0.5); McNemar p_adj=1.0 en todo estrato",
+        "Sharpe ilustrativo (contaminado); no load-bearing",
+        "robustez_no_sostenida (STRATA no rescata)",
+    ],
+}, index=["leverage effect", "régimen direccional", "escalera accuracy M5→M8→M10",
+          "qué rescata", "plano económico (Sharpe)", "veredicto pre-registrado"])
+display(comp)""")
+
+md(r"""**La lectura honesta (y la aportación).**
+
+1. **Lo que SÍ generaliza es la *maquinaria*, no el *rescate*.** El HMM K=3 recalibrado sobre NVDA modela
+   bien la densidad volatilidad–retorno y es estable a 24 años (K3 $>$ K2 en 93.8 % de orígenes). STRATA no
+   es un truco sobre-ajustado a SPY. Y en SPY el rescate de M10 **no es un espejismo de CPCV**: es
+   **desplegable causalmente a diario** (walk-forward reentrenado mes a mes, McNemar pareado vs M5 p<0.001,
+   §A.2c), aunque relativo al agente y sin batir a comprar-y-mantener.
+
+2. **Lo que NO generaliza es la correspondencia régimen$\to$dirección**, que es de lo que vive el rescate.
+   En SPY el *leverage effect* (Black 1976; Christie 1982) hace que el régimen de crisis sea bajista, así
+   que reorientar hacia el régimen corrige al agente. En NVDA, **en todos los orígenes** (incl. 2008/2020),
+   el estado de crisis es el **más alcista** (§A.1): el *leverage effect* nunca se cumple. RAM fija el signo
+   por Calma-vs-Crisis y mapea **Crisis$\to$short**, que en NVDA es un **error sistemático**; el único estado
+   bajista (el de volatilidad media) RAM **no lo usa**, y encima se desvanece tras 2016. Sin esa
+   correspondencia, la corrección direccional no tiene de qué agarrarse: la accuracy no mejora, M10 cae por
+   debajo del azar (AUC $0.43$) —y la ablación (§A.2b) muestra que el bloque de régimen lo **perjudica**
+   activamente: quitarlo sube a M10 a $0.516$— y ningún estrato McNemar sobrevive Holm. *No es un defecto de especificación
+   del HMM* —ajusta excelentemente la densidad (K=3 gana en 93.8 % de orígenes)—: es la **frontera de validez
+   del tipo de detector** elegido (régimen de *volatilidad*); añadir features de momentum para "arreglar"
+   NVDA sería construir otro modelo direccional y **cambiar la hipótesis**, no validarla.
+
+3. **El sistema sabe dónde falla, y lo dijimos antes de mirar.** Dos guardarraíles **pre-registrados**,
+   ortogonales: (a) la regla **prior-flip** —que detecta *inversión de signo* calib$\to$OOS— **no disparó**
+   (`prior_flip=False`), y es correcto: el prior alcista de Calma coincide con el drift alcista del OOS, no
+   hay signo que invertir; prior-flip es vacuo cuando no hay nada que voltear. (b) El que **sí** delimitó
+   NVDA es el **contraste de informatividad direccional del régimen** (sign test por origen, $p=0.79$),
+   reforzado en el OOS por AUC $<0.5$, MCC $<0$ y McNemar $p_{adj}=1.0$. No rescatamos a NVDA *a posteriori*:
+   la maquinaria de falsación —pre-registrada y auditada antes de mirar— delimitó sola la frontera. Es
+   exactamente la limitación de la constitución del proyecto (CLAUDE.md §1): *"esta asunción NO se cumple en
+   stocks individuales con leverage débil — limitación documentada."*
+
+> **Tesis del apéndice.** STRATA recupera dirección **cuando el régimen es direccionalmente informativo**
+> (índices con *leverage effect*, p. ej. SPY). En un activo donde esa condición no se cumple (NVDA), STRATA
+> **no rescata**, y el propio protocolo lo detecta y lo declara. La aportación del TFG no es un rescate
+> universal: es un **supervisor estadístico interpretable que delimita su propio dominio de validez**.""")
 
 nb = new_notebook(cells=cells, metadata={
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},

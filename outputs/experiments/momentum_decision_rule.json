@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "l_mom": 21,
+    "recent": 252,
+    "theta": 0.5
+  },
+  "por_activo": [
+    {
+      "ticker": "SPY",
+      "senal_mom_reciente": 0.5794,
+      "regla_dice_meter": true,
+      "delta_acc_oos": 0.0557,
+      "momentum_ayuda_real": true,
+      "acierto": true
+    },
+    {
+      "ticker": "NVDA",
+      "senal_mom_reciente": 0.5219,
+      "regla_dice_meter": true,
+      "delta_acc_oos": 0.0232,
+      "momentum_ayuda_real": true,
+      "acierto": true
+    },
+    {
+      "ticker": "BAC",
+      "senal_mom_reciente": 0.4343,
+      "regla_dice_meter": false,
+      "delta_acc_oos": 0.0,
+      "momentum_ayuda_real": false,
+      "acierto": true
+    },
+    {
+      "ticker": "TSLA",
+      "senal_mom_reciente": 0.5278,
+      "regla_dice_meter": true,
+      "delta_acc_oos": 0.0,
+      "momentum_ayuda_real": false,
+      "acierto": false
+    },
+    {
+      "ticker": "XLE",
+      "senal_mom_reciente": 0.4325,
+      "regla_dice_meter": false,
+      "delta_acc_oos": 0.0403,
+      "momentum_ayuda_real": true,
+      "acierto": false
+    },
+    {
+      "ticker": "UNG",
+      "senal_mom_reciente": 0.5261,
+      "regla_dice_meter": true,
+      "delta_acc_oos": 0.0607,
+      "momentum_ayuda_real": true,
+      "acierto": true
+    },
+    {
+      "ticker": "MSTR",
+      "senal_mom_reciente": 0.5159,
+      "regla_dice_meter": true,
+      "delta_acc_oos": 0.0119,
+      "momentum_ayuda_real": true,
+      "acierto": true
+    },
+    {
+      "ticker": "SMCI",
+      "senal_mom_reciente": 0.4921,
+      "regla_dice_meter": false,
+      "delta_acc_oos": -0.016,
+      "momentum_ayuda_real": false,
+      "acierto": true
+    },
+    {
+      "ticker": "ROKU",
+      "senal_mom_reciente": 0.5219,
+      "regla_dice_meter": true,
+      "delta_acc_oos": -0.052,
+      "momentum_ayuda_real": false,
+      "acierto": false
+    },
+    {
+      "ticker": "MARA",
+      "senal_mom_reciente": 0.4741,
+      "regla_dice_meter": false,
+      "delta_acc_oos": -0.0041,
+      "momentum_ayuda_real": false,
+      "acierto": true
+    }
+  ],
+  "resumen": {
+    "theta": 0.5,
+    "aciertos": "7/10",
+    "spy_ok": true,
+    "smci_ok": true,
+    "falsos_positivos": [
+      "TSLA",
+      "ROKU"
+    ],
+    "falsos_negativos": [
+      "XLE"
+    ]
+  }
+}

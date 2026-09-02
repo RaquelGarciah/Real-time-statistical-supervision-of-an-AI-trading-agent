@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "n_burnin": 150,
+    "step": 21,
+    "embargo": 5,
+    "n_test": 250,
+    "test_span": [
+      "2025-05-09",
+      "2026-05-11"
+    ],
+    "bh_accuracy": 0.484,
+    "seed": 42,
+    "config_elegida": "M10-WF 300x4 all22 (vanilla; las mejoras v3 no ayudan en SMCI)"
+  },
+  "estrategias": {
+    "M5 (agente)": 0.484,
+    "M8 (regla)": 0.496,
+    "B&H (trivial)": 0.484,
+    "M10-WF (desplegable)": 0.524,
+    "M10-CPCV (ve futuro)": 0.448
+  },
+  "grid_configs": [
+    {
+      "config": "300x4/all22",
+      "capacidad": "300x4",
+      "features": "all22",
+      "isotonica_abstencion": false,
+      "accuracy": 0.524
+    },
+    {
+      "config": "80x3/all22",
+      "capacidad": "80x3",
+      "features": "all22",
+      "isotonica_abstencion": false,
+      "accuracy": 0.52
+    },
+    {
+      "config": "300x4/regime7",
+      "capacidad": "300x4",
+      "features": "regime7",
+      "isotonica_abstencion": false,
+      "accuracy": 0.52
+    },
+    {
+      "config": "80x3/regime7",
+      "capacidad": "80x3",
+      "features": "regime7",
+      "isotonica_abstencion": false,
+      "accuracy": 0.524
+    },
+    {
+      "config": "300x4/agent15",
+      "capacidad": "300x4",
+      "features": "agent15",
+      "isotonica_abstencion": false,
+      "accuracy": 0.476
+    },
+    {
+      "config": "80x3/agent15",
+      "capacidad": "80x3",
+      "features": "agent15",
+      "isotonica_abstencion": false,
+      "accuracy": 0.476
+    },
+    {
+      "config": "300x4/all22 +iso+abst30",
+      "capacidad": "300x4",
+      "features": "all22",
+      "isotonica_abstencion": true,
+      "cobertura": 0.904,
+      "accuracy": 0.424,
+      "accuracy_activos": 0.4336
+    },
+    {
+      "config": "80x3/all22 +iso+abst30",
+      "capacidad": "80x3",
+      "features": "all22",
+      "isotonica_abstencion": true,
+      "cobertura": 0.9,
+      "accuracy": 0.392,
+      "accuracy_activos": 0.4089
+    }
+  ],
+  "tests_m10wf_vanilla": {
+    "M5 (agente)": {
+      "blockperm_p": 0.3164
+    },
+    "M8 (regla)": {
+      "blockperm_p": 0.444
+    },
+    "B&H (trivial)": {
+      "blockperm_p": 0.2518
+    },
+    "sign_vs_0.5_p": 0.4867
+  }
+}

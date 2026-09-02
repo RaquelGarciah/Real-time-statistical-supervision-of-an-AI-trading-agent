@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "n": 250,
+    "embargo": 1,
+    "n_seeds": 10,
+    "nota": "prep cap.4: contrastes M8 vs M10 (hipótesis nivel 3) + ablación + SHAP; OOS completo",
+    "pre_registro": "BITACORA 2026-06-18 (cap.4 prep)"
+  },
+  "accuracy": {
+    "m10": 0.552,
+    "m5": 0.484,
+    "m8": 0.496
+  },
+  "mcnemar_oos_completo": {
+    "m10_vs_m5": {
+      "p": 0.1621,
+      "b": 57,
+      "c": 74
+    },
+    "m10_vs_m8": {
+      "p": 0.243,
+      "b": 55,
+      "c": 69
+    }
+  },
+  "diebold_mariano_pnl": {
+    "m10_vs_m8": {
+      "stat": -1.8292,
+      "p": 0.0674
+    },
+    "m10_vs_m5": {
+      "stat": -1.8782,
+      "p": 0.0604
+    }
+  },
+  "sign_vs_0.5": {
+    "k": 138,
+    "n": 250,
+    "p_2cola": 0.1137,
+    "ci95": [
+      0.4881,
+      0.6147
+    ]
+  },
+  "ablacion": {
+    "accuracy": {
+      "agente15": 0.468,
+      "strata7": 0.516,
+      "all22": 0.552
+    },
+    "mcnemar_22_vs_agente15": {
+      "p": 0.0532,
+      "b": 43,
+      "c": 64
+    }
+  },
+  "shap": {
+    "metodo": "media |TreeSHAP| (shap.TreeExplainer)",
+    "cuota_strata7": 0.6469,
+    "top10": {
+      "garch_sigma": 0.34212,
+      "ram_score": 0.30737,
+      "stress_prob": 0.28998,
+      "psa_score": 0.28319,
+      "crisis_prob": 0.20233,
+      "cathie_wood_conf": 0.17668,
+      "bill_ackman_conf": 0.16503,
+      "calm_prob": 0.15628,
+      "gso_score": 0.13522,
+      "michael_burry_conf": 0.12643
+    }
+  }
+}

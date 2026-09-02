@@ -1,5 +1,10 @@
 # STRATA — Real-time statistical supervision of an AI trading agent
 
+> **[Coherence note, 2026-06-17]** The thesis case study is **SMCI** (a fair benchmark, B&H ≈ 0.484), where a
+> deployable walk-forward meta-learner beats the agent, the rule and buy&hold nominally in directional accuracy
+> (0.552 vs 0.484). SPY is the *mechanism* case (where the rescue is statistically significant). Canonical
+> one-page summary: **`memoria/MANUAL.md`**.
+
 [![CI](https://github.com/RaquelGarciah/Real-time-statistical-supervision-of-an-AI-trading-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/RaquelGarciah/Real-time-statistical-supervision-of-an-AI-trading-agent/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)
 ![Status](https://img.shields.io/badge/status-active%20research-success.svg)

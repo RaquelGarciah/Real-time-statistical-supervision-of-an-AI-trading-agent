@@ -1,8 +1,31 @@
-# Decisiones esenciales — vivas a 2026-06-07
+# Decisiones esenciales — vivas a 2026-06-17
 
-Las 12 decisiones que sobreviven al pivot final del proyecto anterior. Cada una con: **Qué + Por qué + Dónde está justificada en el archivo + Estado**. Léelas antes de cuestionar cualquier hiperparámetro.
+Las 12 decisiones que sobreviven al pivot final del proyecto anterior, **más 4 del pivot a caso de estudio
+SMCI (#13–#16, 2026-06-17)**. Cada una con: **Qué + Por qué + Dónde está justificada en el archivo + Estado**. Léelas antes de cuestionar cualquier hiperparámetro.
 
 Decisiones **descartadas** explícitamente: Nemotron como LLM principal (reemplazado por DeepSeek V3 / gpt-oss-120b); NVDA como caso central (vuelto a SPY por leverage effect); GSO relativo con look-ahead (reemplazado por GSO absoluto causal); plan original de 9 configuraciones M1..M9 (reducido a 3 canónicas M5/M8/M10 más M1/M2 como baselines).
+
+---
+
+## Mapa de documentos del proyecto (para no perder el hilo)
+
+Dónde vive cada cosa, de lo general a lo concreto:
+
+| Documento | Para qué | Estado |
+|---|---|---|
+| **`CLAUDE.md`** | Constitución del proyecto (qué es STRATA, reglas, workflow) | Vivo |
+| **`DECISIONES_ESENCIALES.md`** (este) | Las 16 decisiones vivas con su porqué | Vivo |
+| **`decisiones_respaldadas_literatura.md`** | Decisiones con respaldo bibliográfico verificado (embargo, ensemble, detectores, tests, abstención) | Vivo |
+| **`RESULTADOS_OBJETIVO.md`** | Cifras canónicas para la memoria: §1 SPY (método), **§1bis SMCI (caso de estudio)** | Vivo |
+| **`BITACORA.md`** | Cuaderno de campo cronológico (pre-registros + hallazgos) | Vivo |
+| **`CONOCIMIENTO_ACUMULADO.md`** | Síntesis de hallazgos | Vivo |
+| **`docs/chats/decision_activo/smci.md`** | **Recorrido completo de la elección de SMCI** (resumen + decisiones en orden + fases) | Vivo |
+| **`notebooks/m10_better_smci.ipynb`** | **Entregable** del caso de estudio SMCI (pruebas + gráficas + conclusiones) | Vigente |
+| **`notebooks/decision_activo.ipynb`** | Registro de la *elección* del activo (protocolo inicial emb=5; ver banner) | Histórico |
+| **`notebooks/strata_canonical.ipynb`** | Notebook canónico del método (SPY) | Vivo |
+| **`notebooks/logic_esential.ipynb`** | Didáctico: conceptos esenciales (§14b embargo, §14d ensemble) | Vivo |
+
+**Dos casos, no confundir:** **SPY = caso central del método** (donde STRATA rescata significativamente, decisión #1); **SMCI = caso de estudio del tutor** (donde M10 desplegable bate a todo nominal, decisión #13).
 
 ---
 
@@ -64,7 +87,7 @@ Decisiones **descartadas** explícitamente: Nemotron como LLM principal (reempla
 - Régimen: probabilidades `filtered` (no smoothed) — solo información hasta `t`.
 - `signal_lag = 1`: la posición en `t` multiplica al retorno en `t+1`.
 
-**Por qué.** El protocolo de medición dual (`same-day` para sanity + `causal` para reportar) reveló que las variantes A, B, D y el GSO relativo introducían look-ahead. Override C + régimen filtered es la **única** combinación que sobrevive al test causal con Sharpe positivo (+0.66 sobre SPY).
+**Por qué.** El protocolo de medición dual (`same-day` para sanity + `causal` para reportar) reveló que las variantes A, B, D y el GSO relativo introducían look-ahead. Override C + régimen filtered es la **única** combinación que sobrevive al test causal con Sharpe positivo. **Cifra canónica actual: +0.67** (K=3, τ=0.5, notebook canónico 2026-06-08); el +0.66 citado en la justificación del proyecto anterior corresponde a K sin fijar y τ=0.40 — misma decisión, cifra actualizada.
 
 **Dónde está justificada.**
 - `_archivo_proyecto_anterior/docs/hallazgos_strata.md` (techo supervisión, protocolo dual)
@@ -110,13 +133,13 @@ El `RAM_score` es **literalmente una masa de probabilidad** sobre regímenes don
 ## 8. Umbrales STRATA fijos calibrados ex-ante
 
 **Qué.**
-- RAM: **low 0.20 / medium 0.40 / high 0.70** (defaults razonables, robustos por construcción del score como probabilidad).
+- RAM: **low 0.25 / medium (τ) 0.50 / high 0.70**. El gate operativo que dispara M7 (reduce) y M8 (override) es `medium = τ = 0.5` (regla de mayoría: el régimen contrario es el más probable). `low` y `high` solo re-etiquetan severidad — no afectan al P&L (BITACORA [2026-06-09]). Se mantiene el blindaje dual: el McNemar se reporta con τ=0.5 **y** con el default conservador 0.40 para demostrar que el rescate no depende del umbral elegido.
 - PSA: **P95 / P99** sobre el periodo de calibración.
 - GSO: **P95 / P99** sobre el periodo de calibración.
 
 Guardados en `cache/models/strata_thresholds.json`.
 
-**Por qué.** Calibración ex-ante = sin look-ahead. Los percentiles sobre 24 años son estables. Defendible: 6 hiperparámetros fijos vs los ~4500 splits de un XGBoost.
+**Por qué.** El RAM score es cuasi-binario (masa en ~0 y ~1, valle vacío en el medio): el acierto direccional es plano para cualquier τ∈[0.3, 0.9] ≈ 0.556 en calibración, lo que hace τ=0.5 identificable sin ajuste. El cruce isotónico fino degeneraba por confound del drift (SPY sube 54.4% del tiempo). τ=0.5 tiene varianza de estimación cero y es la regla de mayoría natural. Calibración ex-ante = sin look-ahead. Defendible: los umbrales fijos de STRATA son estables por construcción; el umbral aprendido de XGBoost no (estabilidad temporal §11).
 
 **Dónde está justificada.** `_archivo_proyecto_anterior/docs/decisiones.md` + `cache/models/strata_thresholds.json`.
 
@@ -186,6 +209,112 @@ Guardados en `cache/models/strata_thresholds.json`.
 
 ---
 
+---
+
+# Decisiones del pivot a caso de estudio de UN activo (2026-06-17)
+
+El tutor pide centrar el TFG en **un activo** donde **M10 (o variante) bata en accuracy a M5, M8 y B&H**.
+Estas decisiones salen de esa búsqueda, toda pre-registrada en BITACORA y auditada (@rigor-matematico,
+@experto-citas). Conviven con las 12 anteriores; donde matizan a una, se indica.
+
+## 13. Caso de estudio = SMCI (benchmark B&H justo)
+
+**Qué.** El activo del caso de estudio es **SMCI**. B&H ≈ 0.48 (≈ moneda) → benchmark **justo** (el tribunal
+no puede tumbarlo con "una estrategia trivial gana", como sí pasa en SPY donde B&H ≈ 0.57).
+
+**Por qué.** Barriendo el panel de 10, **SMCI es el ÚNICO activo donde acc(M10) > M5, M8 y B&H** a la vez
+(nominal). No es casualidad: el agente LLM es **corto-sesgado en los 10 activos** (71–100 %); en los que caen
+(B&H batible) el agente ya acierta yendo corto → M10 no se separa; en los que suben, M10 rescata pero B&H
+gana. La casilla "activo cae + agente equivocado" está **vacía**. SMCI es el caso umbral.
+
+**Dónde está justificada.** **Recorrido completo: `docs/chats/decision_activo/smci.md`** (resumen + decisiones
+en orden + narrativa fase por fase, desde "no sé qué activo" hasta consolidado). Además:
+`notebooks/m10_better_smci.ipynb` §F/§F.2; `outputs/experiments/panel_intervention_scan.json`; BITACORA
+2026-06-16.
+
+**Estado.** Viva. Matiza la decisión #1 (SPY sigue siendo el caso central del *método*; SMCI es el caso de
+estudio que pide el tutor para "batir a todo en accuracy").
+
+## 14. M10 desplegable = walk-forward ensemble (no CPCV)
+
+**Qué.** El M10 **operativo/desplegable** es **walk-forward expandible** (burn-in 150, reentreno mensual),
+**ensemble de 10 semillas** sobre las 22 features STRATA, umbral 0.5. El **M10-CPCV** (decisión #10) se
+conserva **solo como contraste** (ve bloques futuros → no desplegable; en SMCI da 0.448, peor).
+
+**Por qué.** El ensemble, a **igual accuracy** que la base (0.552 con embargo=1), mejora Sharpe (→1.84) y
+equity (→3.24×) por reducción de varianza (criterio de Raquel: a igual accuracy, Sharpe/equity cuenta). Las
+palancas probadas **NO** mejoran la accuracy y se descartan: tuning en validación (sobreajuste, validación≠test),
+features de señal real (momentum/vol-rel/racha), recencia, triple-barrier, modelos por régimen, stacking
+M5→M10, voting y abstención condicional.
+
+**Dónde está justificada.** `notebooks/m10_better_smci.ipynb` §A–§D; `experiments/m10_smci_{deep,advanced}.py`;
+BITACORA 2026-06-16.
+
+**Estado.** Viva.
+
+## 15. Embargo = 1 en el walk-forward desplegable (no 5)
+
+**Qué.** En el walk-forward de M10 el embargo es **1 día**, no 5.
+
+**Por qué.** Es validación **rolling-origin** (Tashman 2000), no CPCV: el test es siempre futuro → no hay
+solape bidireccional que motive el embargo. La etiqueta tiene **horizonte 1** (y_t=1[r_{t+1}>0]) → purga = 1
+(López de Prado 2018 §7.4). El **embargo≥5 de la decisión #10 / CLAUDE.md §4 es regla de CPCV** (folds
+interleaved, etiquetas multi-día), otro régimen. Validez con hueco mínimo bajo residuos no correlados:
+Bergmeir, Hyndman & Koo (2018). Sube la accuracy de SMCI **0.524 → 0.552** (nominal). **La significancia NO
+sobrevive** (el p=0.047 vs B&H es un pico aislado en emb=1; Bonferroni-5 = 0.28) → se reporta como
+sensibilidad; el embargo=1 se elige **por principio**, no por el p-valor.
+
+**Dónde está justificada.** `notebooks/logic_esential.ipynb` §14b; `tesis/bibliography.bib` (tashman2000,
+bergmeir2018, lopezdeprado2018, burman1994, racine2000, bergmeir2012); BITACORA 2026-06-17; auditoría
+@rigor-matematico + @experto-citas 2026-06-17.
+
+**Estado.** Viva. Matiza la decisión #10 (embargo 5 sigue para CPCV; 1 para el WF desplegable).
+
+## 16. Límite honesto: STRATA rescata donde el agente discrepa del régimen
+
+**Qué.** STRATA/M10 aporta valor (bate al agente) **solo donde el agente va a contracorriente de un régimen
+que acierta**. En SPY ocurre (M10 vs M5 McNemar p=0.0041 en el panel todo-OOS, embargo=1; p=0.0005 en el
+walk-forward causal n=251 — significativo en ambas muestras; leverage effect fuerte). En SMCI **no**: el agente
+ya está 95 % corto (alineado con el régimen) → STRATA interviene el 3 % → M5/M8/M10 son la misma apuesta corta
+y ninguno se separa. Ningún M10 desplegable bate a B&H/M5/M8 de forma **significativa** en SMCI.
+
+**Por qué importa.** Define dónde funciona el método (su frontera), coherente con el leverage effect (decisión
+#1). La ventaja de M10 sobre B&H en SMCI es **sesgo a corto en un activo que cae**, no habilidad direccional
+fina (se reporta con el benchmark "siempre-corto" al lado).
+
+**Dónde está justificada.** `notebooks/m10_better_smci.ipynb` §F/§G; `experiments/panel_intervention_scan.py`,
+`experiments/m10_smci_rolling.py`; BITACORA 2026-06-16.
+
+**Estado.** Viva (hallazgo de cierre, honesto).
+
+---
+
+## 17. Robustez a la ventana de calibración: la completa (pre-registrada) es la más robusta
+
+**Qué.** A petición del tutor, se prueba recalibrar HMM+GARCH con ventanas más cortas (inicio 2007→2022, fin
+fijo 2024-09-30, sin fuga) y recomputar el walk-forward de M10 sobre el **mismo OOS** (`experiments/smci_calib_window.py`).
+Resultado: **(a)** acortar **no** vuelve direccional al régimen — la media de Crisis se mantiene **positiva** y
+crece (en SMCI el pasado reciente es el *boom* de IA: alta volatilidad con subidas), refutando la hipótesis de
+que "el pasado lejano no aporta"; **(b)** la accuracy de M10 **degrada al acortar** (0.552 con la completa →
+~0.48, el nivel del agente). La ventaja de M10 **vive en las features de régimen calibradas sobre la historia
+larga** (coherente con la ablación: agente-15 0.468 → +STRATA 0.552).
+
+**Por qué importa.** (1) Responde al tutor con evidencia y **no es p-hacking**: la ventana completa era la
+pre-registrada (decisión #3), no se elige por el número, y de hecho cualquier ventana más corta es peor.
+(2) Es a la vez una **dependencia honesta** que se reporta: el resultado necesita la historia larga.
+(3) Conecta con el límite de SMCI: el régimen **separa por volatilidad pero no por dirección** (Crisis con media
+positiva), por lo que en el drawdown de verano 2025 M10 sigue largo aunque el régimen ya marque Crisis (la causa
+del −34 % es la no-direccionalidad, no el rezago de la RV²¹).
+
+**Dónde está justificada.** `notebooks/STRATA_SMCI.ipynb` §8c (robustez calibración), §2 (régimen→signo
+honesto), §5 (drawdown); `experiments/smci_calib_window.py` → `outputs/experiments/smci_calib_window.json`.
+
+**Estado.** Viva (robustez + hallazgo honesto). Nota: el entregable definitivo es `notebooks/STRATA_SMCI.ipynb`,
+que **sustituye a `strata_canonical.ipynb`**; el Sharpe se reporta como **P(Sharpe>0)** (0.976 sin corregir /
+0.72 corregida por multiplicidad), no como "DSR".
+
+---
+
 ## Tabla resumen
 
 | # | Decisión | Categoría | Estado |
@@ -197,11 +326,16 @@ Guardados en `cache/models/strata_thresholds.json`.
 | 5 | M8 = override C + filtered + signal_lag=1 | STRATA | Viva |
 | 6 | Prior RAM data-driven por activo | STRATA | Viva |
 | 7 | Política RAM simétrica con leverage | STRATA | Viva |
-| 8 | Umbrales fijos ex-ante (RAM 0.2/0.4/0.7, PSA/GSO P95/P99) | STRATA | Viva |
+| 8 | Umbrales fijos ex-ante (RAM 0.25/τ=0.5/0.70, PSA/GSO P95/P99; blindaje dual τ=0.5 y 0.40) | STRATA | Viva |
 | 9 | M7 reduce = PSA cp_prob_delta + hazard 1/60 | STRATA | Viva (control de daños) |
 | 10 | M10 con CPCV-within-OOS, embargo 5, n_splits 6 | Validación | Viva |
 | 11 | Pre-registro en BITACORA obligatorio | Metodología | **Viva, obligatoria** |
 | 12 | Caché `cache/agent/` git, `cache/llm/` local | Reproducibilidad | Viva |
+| 13 | Caso de estudio = SMCI (B&H justo ≈0.48; único que bate a todo nominal) | Universo | Viva |
+| 14 | M10 desplegable = WF ensemble 10 semillas (CPCV solo contraste) | Validación | Viva |
+| 15 | Embargo = 1 en el WF desplegable (5 solo para CPCV) | Validación | Viva |
+| 16 | Límite: STRATA rescata donde agente discrepa del régimen (SMCI no) | STRATA | Viva |
+| 17 | Robustez a la ventana de calibración: la completa (pre-registrada) es la más robusta; M10 depende de la historia larga | Validación | Viva |
 
 ---
 

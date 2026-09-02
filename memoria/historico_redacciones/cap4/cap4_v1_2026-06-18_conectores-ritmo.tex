@@ -1,0 +1,98 @@
+\chapter{Marco práctico: el caso de estudio SMCI}
+\label{cap:marco-practico}
+
+% Cifras desde RESULTADOS_OBJETIVO.md §1bis (SMCI) / outputs/experiments/m10_smci_*.json.
+% La tabla principal debe autogenerarse; aquí van los valores canónicos del §1bis.
+% Figuras: se generan desde notebooks/STRATA_SMCI.ipynb (ver graficas_clave.md). Placeholders marcados.
+
+Este capítulo responde a la pregunta operativa del trabajo sobre un activo concreto: en un benchmark justo, ¿un meta-learner desplegable que consume las señales de STRATA mejora la dirección del agente y supera a las estrategias triviales? Sobre SMCI la respuesta es sí, aunque solo de forma nominal. M10 gana a todos los baselines y la ventaja resiste a varias particiones; la significancia plena queda como trabajo futuro.
+
+\section{Datos y caso de estudio}
+\label{sec:datos}
+
+El activo del caso de estudio es \textbf{SMCI}, elegido por un criterio metodológico: sus dos clases direccionales están casi equilibradas. El \emph{buy-and-hold} (comprar y mantener, siempre largo) acierta el $48{,}4\%$ de los días, así que la comparación con lo trivial es exigente. La regla de no-habilidad, predecir siempre la clase mayoritaria (\emph{ZeroR} \cite{witten2016datamining, kuhn2008caret}), no se lleva por delante a un modelo solo por el desbalance; en SMCI acierta el $51{,}6\%$, materializada como ``siempre corto''.
+
+Los tres detectores de STRATA se calibran una sola vez sobre 2000--2024-09 y se congelan (Sección~\ref{sec:strata-calib}). La evaluación es fuera de muestra: $n = 250$ días posteriores al arranque del walk-forward. Todos caen tras el corte de conocimiento del modelo de lenguaje que mueve al agente, así que esas decisiones no pudieron memorizarse en su entrenamiento. El protocolo causal y desplegable es el de las Secciones~\ref{sec:cpcv-causalidad} y~\ref{sec:cpcv-walkforward}.
+
+\section{El agente sin supervisar (M5)}
+\label{sec:m5}
+
+El agente de trading por sí solo, que denotamos M5, es un perdedor direccional sobre SMCI: acierta el $48{,}4\%$ de las direcciones, por debajo del azar. Su comportamiento está además muy sesgado, con posición corta el $95\%$ de los días. De aquí parte el problema: sin supervisar, el agente pierde dinero y no llega al medio acierto. La hipótesis del trabajo es que las señales de STRATA, bien explotadas, recuperan parte de esa dirección perdida.
+
+\section{La regla a mano (M8) como referencia}
+\label{sec:m8}
+
+La regla determinista M8 aplica la intervención de STRATA descrita en la Sección~\ref{sec:strata-intervencion}: cuando el RAM score supera el gate $\tau = 0{,}50$, sustituye la dirección del agente por la que marca el régimen. Sobre SMCI, M8 acierta el $49{,}6\%$, apenas por encima de M5. La razón es mecánica: el agente ya va casi siempre corto, y el régimen de SMCI también sesga a corto, de modo que la dirección del agente y la del régimen coinciden la mayor parte del tiempo y STRATA solo encuentra incoherencia que corregir en torno al $3\%$ de los días. M8 cumple aquí el papel de \emph{referencia interpretable}: una regla transparente sobre la que medir cuánto añade un modelo que aprende.
+
+\section{El meta-learner M10}
+\label{sec:m10}
+
+M10, el modelo central del caso de estudio, es un clasificador binario XGBoost \cite{chen2016}: cada día estima la probabilidad de que el retorno del día siguiente sea positivo. Lo hace a partir de \textbf{veintidós variables}: las quince de la decisión del agente (cinco personalidades, cada una con signo, tamaño y confianza) y las siete señales de STRATA y de régimen (los tres scores RAM, PSA y GSO, las tres probabilidades de régimen y la volatilidad condicional del GARCH). La posición del día es el signo de la probabilidad estimada menos $0{,}5$.
+
+El modelo sigue el protocolo walk-forward de la Sección~\ref{sec:cpcv-walkforward}: arranque de $150$ días, reentreno cada $21$ con toda la historia, y embargo de un día. Para reducir la varianza del azar interno se promedia un \emph{ensemble} de diez modelos que solo difieren en la semilla. Es \emph{bagging} \cite{breiman1996, dietterich2000}: el promedio cancela ruido sin crear señal, y no introduce optimismo. M10 no usa la validación cruzada combinatoria, que mira el futuro y queda como contraste (Sección~\ref{sec:cpcv-cpcv}). Tampoco lleva variables de momento ni abstención, descartadas porque no mejoran la accuracy fuera de muestra.
+
+\section{Resultado principal}
+\label{sec:resultado}
+
+La Tabla~\ref{tab:smci-resultado} resume el resultado sobre todo el periodo de evaluación. \textbf{M10 acierta el $55{,}2\%$ de las direcciones, por encima del agente ($48{,}4\%$), de la regla a mano ($49{,}6\%$), de comprar-y-mantener ($48{,}4\%$) y de la clase mayoritaria ($51{,}6\%$).} Es el único que los supera a todos a la vez, incluida la clase mayoritaria, que en SMCI equivale a ``siempre corto''. En el plano económico, ilustrativo y no probatorio, M10 multiplica el capital por $3{,}24$ frente al $0{,}71$ de comprar-y-mantener, con un ratio de Sharpe de $+1{,}84$. Ese Sharpe es positivo con probabilidad $0{,}976$; penalizado por las configuraciones exploradas a lo largo del estudio, el Deflated Sharpe Ratio baja a $0{,}72$, por debajo del umbral de habilidad. La habilidad económica no queda probada: el rendimiento se reporta como ilustración y la prueba del trabajo descansa en la accuracy.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultado sobre SMCI (OOS, $n=250$ días, walk-forward, embargo$=1$). Fuente: \texttt{m10\_smci\_valtest\_robustez.json} / \texttt{RESULTADOS\_OBJETIVO.md} §1bis.}
+\label{tab:smci-resultado}
+\begin{tabular}{lrrr}
+\hline
+Estrategia & Accuracy & Sharpe & Equity \\
+\hline
+\textbf{M10-WF ensemble (modelo)} & \textbf{0,552} & \textbf{+1,84} & \textbf{3,24$\times$} \\
+Trivial: clase mayoritaria (= siempre corto) & 0,516 & --- & --- \\
+M8 (regla a mano STRATA) & 0,496 & +0,33 & 1,02$\times$ \\
+M5 (agente solo) & 0,484 & $-$0,24 & 0,98$\times$ \\
+Trivial: comprar y mantener (siempre largo) & 0,484 & +0,03 & 0,71$\times$ \\
+\hline
+\end{tabular}
+\end{table}
+
+% [Figura por generar — graficas_clave §1: barras de accuracy M10 vs M5/M8/B&H con líneas de azar (0,5) y mayoritaria (0,516); + curvas de equity. Fuente: notebooks/STRATA_SMCI.ipynb.]
+
+El $0{,}552$ hay que acompañarlo de su contraste. La ventaja de M10 es \textbf{nominal, no significativa} al tamaño de muestra disponible: el binomial frente a la clase mayoritaria, que es el baseline de no-habilidad correcto, da $p = 0{,}14$; la permutación por bloques frente a comprar-y-mantener da $p = 0{,}047$, que no sobrevive a la corrección por multiplicidad; el McNemar pareado frente al agente da $p = 0{,}16$. Con un horizonte de unos $250$ días, acotado porque el agente solo existe tras el corte del modelo de lenguaje, ningún sistema de decisión diaria alcanza significancia plena frente a un benchmark justo: es una consecuencia del tamaño de muestra y de la eficiencia de los mercados a horizonte diario. El criterio del trabajo es el que la literatura admite en este régimen de muestra: superar a lo trivial de forma nominal y \emph{consistente}, dejando la significancia plena como trabajo futuro con un periodo más largo.
+
+\section{Robustez}
+\label{sec:robustez}
+
+La ventaja de M10 no depende del corte concreto de los datos. La Tabla~\ref{tab:smci-robustez} la evalúa sobre tres particiones cronológicas estándar, $60/40$, $70/30$ y $80/20$: en las tres, y tanto en validación como en test, M10 supera al agente, a la regla y a comprar-y-mantener. Que gane en los tres cortes hace improbable que el resultado sea un artefacto de una partición afortunada.
+
+% [Tabla/figura por generar — graficas_clave §3: robustez a la partición (3 splits val/test). Fuente: m10_smci_valtest_robustez.json / notebooks/STRATA_SMCI.ipynb.]
+
+\begin{table}[htbp]
+\centering
+\caption{Robustez a la partición: accuracy de M10 frente a los baselines en validación y test de tres cortes cronológicos. M10 gana a todos en los tres. Fuente: \texttt{m10\_smci\_valtest\_robustez.json}.}
+\label{tab:smci-robustez}
+\begin{tabular}{lccc}
+\hline
+Partición (val / test) & Accuracy M10 (val) & Accuracy M10 (test) & $n_{\text{test}}$ \\
+\hline
+60 / 40 & 0,520 & 0,600 & 100 \\
+70 / 30 & 0,526 & 0,613 & 75 \\
+80 / 20 & 0,535 & 0,620 & 50 \\
+\hline
+\end{tabular}
+\end{table}
+
+La robustez se confirma en el tiempo. Sobre ventanas rodantes a lo largo del periodo de evaluación, M10 supera a comprar-y-mantener en el $71$--$82\%$ de las ventanas y al agente en el $67$--$76\%$, según el tamaño de ventana. La ventaja se sostiene a lo largo del periodo, no en un único tramo. El protocolo es igual de estable: la accuracy apenas se mueve al variar la frecuencia de reentreno, y el embargo se fija en uno por el horizonte de la etiqueta (Sección~\ref{sec:cpcv-purga}), no para maximizar una cifra.
+
+% [Figura por generar — graficas_clave §3/§5: rolling-window (% de ventanas ganadas) y robustez al embargo. Fuente: notebooks/STRATA_SMCI.ipynb §G, §0bis.]
+
+\section{Interpretabilidad: M10 es inseparable de STRATA}
+\label{sec:interpretabilidad}
+
+La ventaja de M10 proviene de las señales de STRATA, no de un conjunto cualquiera de variables. Lo confirman dos análisis. El primero es una ablación: un M10 entrenado solo con las quince variables del agente, sin las siete señales de STRATA, cae al $46{,}8\%$, en torno al del agente (que acierta el $48{,}4\%$); añadir las siete señales lo lleva al $55{,}2\%$, una mejora pareada con $p = 0{,}05$ en el test de McNemar. El segundo es la importancia por valores de Shapley (SHAP) \cite{lundberg2017} sobre el ensemble: las siete señales de STRATA y de régimen concentran el $41{,}4\%$ de la importancia total, por delante de las variables del agente. Sin esas señales el modelo retrocede al nivel del agente; con ellas recupera la dirección. Por construcción, el meta-learner es inseparable de STRATA: es lo que da sentido al nombre del sistema.
+
+% [Figura por generar — graficas_clave apéndice: ablación (agente-solo vs +STRATA) y barras SHAP (7 señales STRATA arriba). Fuente: notebooks/STRATA_SMCI.ipynb §7, §7b.]
+
+\section{Lectura honesta y límites}
+\label{sec:lectura}
+
+En SMCI los tres modelos, M5, M8 y M10, apuestan en la misma dirección la mayor parte del tiempo, porque el agente ya está alineado con un régimen que también sesga a corto. La supervisión de STRATA rescata de forma marcada al agente solo cuando este va a contracorriente de un régimen que acierta, una condición que SMCI cumple poco y que delimita el alcance del método. Con todo, su acierto no se reduce a apostar siempre a la baja: sobre el periodo completo M10 va corto en torno al $47\%$ de los días, y aun así gana a la estrategia constante ``siempre corto''.
+
+La limitación principal es el tamaño y la naturaleza de la muestra. El agente solo existe sobre el periodo posterior al corte del modelo de lenguaje, lo que acota la evaluación a unos $250$ días y vuelve inalcanzable la significancia plena frente a un benchmark justo. Las dos extensiones inmediatas, la generalización a otros agentes y a otros activos, son costosas en inferencia y en tiempo por las razones que cuantifico en el Capítulo~\ref{cap:conclusiones}, y quedan como trabajo futuro. Sí queda algo firme: sobre este activo el protocolo funciona y es desplegable. En un benchmark honesto recupera la dirección del agente y supera a la regla a mano y a lo trivial.

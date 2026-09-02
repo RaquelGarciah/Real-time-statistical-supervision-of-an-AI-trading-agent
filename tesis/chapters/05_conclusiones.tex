@@ -1,0 +1,16 @@
+\chapter{Conclusiones}
+\label{cap:conclusiones}
+
+% Objetivo: conclusiones generales + trabajo futuro.
+% [PENDIENTE DE REDACCIÓN — pipeline /redaccion-capitulo. Esqueleto:]
+%   - Respuesta a la pregunta del TFG: STRATA rescata al agente con significancia pareada.
+%   - Disciplina estadística > complejidad ML (M10 no bate a M8; SHAP lo confirma).
+%   - Límites honestos: ventana OOS única, no bate B&H, leverage effect en índices.
+%   - Trabajo futuro: validación multi-ventana, prior RAM por activo, extensión del panel.
+
+\section{Límites y trabajo futuro}
+\label{sec:smci-limites}
+
+La limitación principal es el tamaño de la muestra. El agente solo existe sobre el periodo posterior al corte del modelo de lenguaje, lo que acota la evaluación a unos $250$ días y deja la significancia plena fuera de alcance frente a un benchmark justo. La convergencia de las cuatro evidencias (dominancia $2\times 2$, invarianza a la partición, consistencia en ventanas rodantes y mecanismo identificado por ablación y SHAP) sostiene la conclusión a este tamaño, pero un periodo más largo es la vía natural para llevar la ventaja nominal a significancia plena.
+
+Quedan tres extensiones. La generalización a otros agentes y a otros activos, costosa en inferencia y en tiempo por las razones que cuantificamos en el Capítulo~\ref{cap:conclusiones}. El despliegue en vivo, con su coste operativo. Y, sobre todo, SPY como activo donde el mecanismo de STRATA debería ser significativo: en un índice el \emph{leverage effect} es fuerte, el régimen de alta volatilidad coincide con el bajista y el HMM actúa como proxy direccional, justo la condición que SMCI no satisface. Sobre este activo, en cambio, el protocolo es desplegable: en un benchmark honesto recupera la dirección del agente y supera a la regla a mano y a lo trivial.
