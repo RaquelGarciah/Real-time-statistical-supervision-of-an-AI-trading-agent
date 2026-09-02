@@ -1,13 +1,86 @@
 # Resultados objetivo — cifras de referencia (no objetivo único)
 
-Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo proyecto debe **replicarlas o superarlas con mejor rigor**. Si las cambia por un diseño más limpio, hay que justificar la diferencia.
-
-**Fuente primaria:** `_archivo_proyecto_anterior/outputs_canonicos/m{5,8,10}*.json` y `statistical_tests.json`.
-**Fuente secundaria** (accuracy/AUC/Brier/MCC contra ground truth binario): notebook `strata_final.ipynb` del proyecto anterior, sesión 2026-06-02 → 2026-06-07. Esas cifras se recalculan en el nuevo notebook canónico desde los net_returns y weights del JSON.
+**ESTRUCTURA:** §1 = cifras canónicas del nuevo proyecto (fuente única de verdad para la memoria LaTeX). §2 = tabla del proyecto anterior (referencia histórica, no canónica).
 
 ---
 
-## Tabla maestra (SPY OOS, N ≈ 400 días)
+## §1. Cifras canónicas — nuevo proyecto (notebook strata_canonical.ipynb, 2026-06-08)
+
+**Fuente:** `notebooks/strata_canonical.ipynb` (K=3, τ=0.5, OOS 2024-10-01→2026-06, N=401). Estas son las cifras que van a la memoria LaTeX.
+
+### Tabla maestra canónica (SPY OOS, N=401 días)
+
+| Estrategia | Accuracy | Sharpe | McNemar vs M5 | Lectura |
+|---|---:|---:|---:|---|
+| B&H (referencia pasiva) | 0.569 | ≈ B&H | — | Techo del problema |
+| M5 (agente solo) | 0.384 | −1.82 | — | Perdedor direccional (sign test p=4·10⁻⁶) |
+| M7 (reduce) | 0.384 | −1.41 | trivial (b=c=0) | Reduce daño en P&L (DM p=0.095), no accuracy |
+| M8 (STRATA override C) | 0.436 | +0.67 | **p=0.069 (τ=0.5) / 0.088 (τ=0.40)** | Rescata accuracy; Sharpe frágil (DSR≈0.10) |
+| M10 (XGBoost CPCV) | **0.539** | +0.64 | DM M10 vs M8: p=0.67 | Mejor accuracy; equivalente a M8 en P&L |
+| M2 (régimen×GARCH, sin agente) | — | +~0 | DM M8 vs M2: p=0.44 | Ablación sin agente |
+
+**Métrica primaria: accuracy direccional** (el Sharpe es ilustración frágil; Deflated Sharpe M8 ≈ 0.10).
+**Dos planos (walk-forward §13):**
+- *Plano accuracy:* M10 rescata accuracy en AMBOS regímenes (bajista Holm p_adj=0.075, block-perm p=0.061). M8 solo en alcista (Holm p_adj=0.15) y nulo en bajista (p=1.0). MCC M10=+0.068 (único positivo).
+- *Plano Sharpe:* rescate NO robusto. Criterio confirmatorio = cota Bonferroni: M8−M5=−0.49; M10−M5=−0.48; ambas <0 → H1_b False. IC95 crudo M10−M5=[−0.02,+5.79] NO es el criterio. ΔSharpe se invierte en bajista: M8=−3.92, M10=−1.06 (n=123 ≥ 60) — falsificación pre-registrada disparada para ambos.
+**Veredicto formal:** `robustez_no_sostenida` (plano Sharpe). "STRATA-SPY recupera accuracy cross-régimen para M10; su ventaja económica es condicional al alza."
+
+### Tests pareados canónicos
+
+| Test | Comparación | p-valor | Lectura |
+|---|---|---:|---|
+| McNemar (τ=0.5) | M8 vs M5 | **0.069** | Rechaza H0 a α=0.10 |
+| McNemar (τ=0.40 default) | M8 vs M5 | **0.088** | Rechaza H0 a α=0.10 (blindaje dual) |
+| Block permutation | M8 vs M5 | **0.044** | Controla autocorrelación |
+| Diebold-Mariano | M10 vs M8 P&L | **0.67** | Equivalentes en P&L |
+| Walk-forward B-conf M8−M5 | cota Bonferroni (DECIDE) | −0.49 | H1_b False — rescate en Sharpe no robusto |
+| Walk-forward B-conf M10−M5 | cota Bonferroni (DECIDE) | −0.48 | H1_b False — ídem; IC95=[−0.02,+5.79] NO es el criterio |
+| McNemar M10 vs M5 bajista | Holm p_adj | **0.075** | M10 rescata accuracy en bajista (block-perm 0.061) |
+| McNemar M10 vs M5 alcista | Holm p_adj | **0.005** | M10 rescata accuracy en alcista (block-perm 0.000) |
+
+---
+
+## §1bis. Caso de estudio SMCI (activo del tutor) — cifras canónicas (embargo=1, 2026-06-17)
+
+SPY (§1) es el **caso central del método**. **SMCI es el activo del CASO DE ESTUDIO** que pide el tutor:
+un activo con **B&H ≈ 50 %** (benchmark justo) donde el M10 **desplegable** bate a todo en accuracy. Fuente:
+`notebooks/m10_better_smci.ipynb` + JSON de `experiments/m10_smci_*`. Recorrido completo:
+`docs/chats/decision_activo/smci.md`.
+
+| Estrategia (OOS SMCI, n=250, walk-forward, embargo=1) | Accuracy | Sharpe | Equity | Lectura |
+|---|---|---|---|---|
+| M5 (agente) | 0.484 | −0.24 | — | agente 95 % corto |
+| M8 (regla) | 0.496 | +0.33 | — | STRATA interviene solo 3 % → ≈ M5 |
+| B&H (trivial, siempre largo) | 0.484 | +0.03 | 0.71× | benchmark económico (≈ moneda) |
+| S&H (siempre corto, espejo de B&H) | 0.516 | — | — | la otra estrategia constante |
+| Clase mayoritaria (ZeroR / NIR) | 0.516 | — | — | no-habilidad = máx(B&H, S&H); en SMCI **= S&H** ("siempre corto") |
+| **M10-WF ensemble** (10 semillas, 22 features) | **0.552** | **+1.84** | **3.24×** | bate a **todo** (incl. mayoría) **nominal** |
+
+- **Baselines:** se compara contra B&H (económico, siempre largo) **y la clase mayoritaria** (ZeroR /
+  no-information rate = siempre la dirección dominante; en SMCI "siempre corto", 0.516 — Witten et al. 2016;
+  Kuhn 2008). M10 (0.552) bate a **ambos** → su ventaja **no es un mero sesgo a corto**.
+- **Significancia:** **nominal, no plena.** Test correcto = **binomial M10 vs NIR** (clase mayoritaria) = 0.141
+  (no sig); block-perm vs B&H 0.047 (no sobrevive Bonferroni-5 ≈ 0.28); sign vs 0.5 p=0.11; no bate al agente.
+  **DSR=0.72 < 0.95.**
+- **Robustez a la partición (respaldo):** con 3 splits estándar (60/40, 70/30, 80/20; burn-in 150), M10 bate a
+  M5/M8/B&H **y a la clase mayoritaria** en validación Y test en los tres (val 0.52–0.535, test 0.60–0.62) → la
+  conclusión no depende del corte. Fuente: `experiments/m10_smci_valtest_robustez.py`. (Al achicar el test la
+  accuracy sube pero pierde potencia: binom vs NIR 0.183→0.060; por eso el headline es el de todo el OOS.)
+- **Por qué no es significativo:** en SMCI el agente ya está 95 % corto (alineado con el régimen) → M5/M8/M10
+  son la misma apuesta corta; STRATA rescata solo donde el agente discrepa de un régimen que acierta (SPY,
+  M10 vs M5 p=0.0041). SMCI es el único activo del panel donde M10 > M5, M8 y B&H (muro estructural 2×2).
+- **Protocolo:** WF expandible, burn-in 150, reentreno 21 d, **embargo 1** (horizonte de etiqueta=1; Tashman
+  2000 / López de Prado 2018 §7.4 — ver DECISIONES_ESENCIALES #15). Ensemble = bagging (Breiman 1996).
+- **Frase de cierre SMCI:** "El M10 desplegable bate al pasivo en un benchmark justo (0.552 vs 0.484), de
+  forma nominal; la significancia plena requiere más muestra (trabajo futuro)."
+
+---
+
+## §2. Tabla del proyecto anterior (referencia histórica — NO usar en memoria LaTeX)
+
+Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo proyecto las ha replicado con mejor rigor (K=3 fijo, τ=0.5, walk-forward, accuracy-first). Si en la memoria aparece una cifra, debe venir de §1.
+
+**Fuente primaria:** `_archivo_proyecto_anterior/outputs_canonicos/m{5,8,10}*.json` y `statistical_tests.json`.
 
 | Estrategia | Accuracy | AUC | Log-loss | Brier | MCC | Sharpe | €1000→ |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -16,7 +89,7 @@ Las cifras que el proyecto anterior produjo al cierre (2026-06-07). El nuevo pro
 | M8 (STRATA override C) | 0.460 | 0.471 | 1.640 | 0.312 | −0.090 | **+0.66** | **1064** |
 | M10 (XGBoost CPCV) | 0.530 | 0.504 | 0.785 | 0.284 | +0.022 | **+0.69** | **1035** |
 
-Sharpe y €1000→ en negrita = directamente de los JSON canónicos. Accuracy/AUC/log-loss/Brier/MCC del notebook (recalcular).
+*Diferencias respecto al canónico actual: K no fijo vs K=3; τ=0.40 vs τ=0.5; N=400 vs 401; M10 accuracy 0.530 vs 0.539; M8 Sharpe 0.66 vs 0.67; DM p=0.75 vs 0.67. Las diferencias son menores y esperadas por el rediseño.*
 
 ### Métricas auxiliares del backtest (JSON canónico)
 
@@ -122,13 +195,15 @@ Hit rate M5 vs M8 **mejora en 8/10 activos**. Sign test panel `p ≈ 0.109` (bor
 
 - **GSO no dispara con severidad medium+ en NINGÚN activo del panel.** Hallazgo metodológico negativo.
 - **SMCI = contraejemplo McNemar contra M8** (agente con información direccional complementaria al prior).
+  *[Actualizado 2026-06-17: lectura del proyecto anterior, con signo de RAM hardcodeado (corregido). En el
+  proyecto actual SMCI es el ACTIVO DEL CASO DE ESTUDIO del tutor — cifras canónicas en §1bis.]*
 - **MSTR = `prior-flip` clásico** (signo calibración ≠ signo OOS).
 
 ---
 
-## La narrativa de cierre (frase a memorizar)
+## La narrativa de cierre (frase canónica — usar §14 del notebook)
 
-> *"El agente LLM sin supervisar pierde dinero (€903 sobre €1000) y acierta direccionalmente menos del 50% (sign test p<0.001). STRATA lo rescata con significancia pareada (McNemar p≈0.088, Δ€161). Un meta-learner XGBoost validado con CPCV llega al mismo techo (€1035) sin ser distinguible estadísticamente de la regla a mano (DM p≈0.75), y SHAP confirma que las features informativas son exactamente las que STRATA codifica explícitamente. Ningún sistema bate B&H pasivo (+32%) sobre 400 días de SPY — resultado coherente con la literatura sobre eficiencia direccional de índices agregados. La aportación del TFG es un protocolo de supervisión estadística que rescata a un agente LLM perdedor, no un sistema que bate al mercado."*
+> *"Un agente LLM perdedor direccional (38.4%, < azar, sign test p<0.001) es rescatado por supervisión estadística clásica: la accuracy sube 0.384 → 0.436 (regla M8) → 0.539 (XGBoost M10 sobre features STRATA), y regla a mano y caja negra son equivalentes en P&L (DM p=0.67). La señal informativa es la de STRATA: ablación sin features de régimen/RAM/PSA/GSO cae a Sharpe +0.21. Ningún sistema bate B&H pasivo (0.569 accuracy) — STRATA reduce el daño, no genera alfa. En el plano accuracy, M10 rescata al agente en ambos regímenes (bajista Holm p_adj=0.075, block-perm p=0.061; alcista Holm p_adj=0.005); M8 solo en alcista y nulo en bajista. En el plano Sharpe el rescate es condicional al alza para ambos modelos (walk-forward §13: ΔSharpe se invierte en bajista, M8=−3.92 / M10=−1.06, n=123 ≥ 60; cota Bonferroni M8−M5=−0.49 y M10−M5=−0.48 → H1_b False; falsificación pre-registrada disparada); el modelo K=3 sí generaliza inter-época (15/16 orígenes). La aportación es un protocolo de supervisión estadística interpretable que recupera accuracy direccional de un agente perdedor —robusto en ambos regímenes para M10— y delimita honestamente dónde funciona y dónde no."*
 
 ---
 

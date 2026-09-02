@@ -1,0 +1,235 @@
+{
+  "meta": {
+    "ticker": "SMCI",
+    "seed": 42,
+    "signal_lag": 1,
+    "n_oos": 400,
+    "test_start_idx": 250,
+    "test_span": [
+      "2025-10-02",
+      "2026-05-11"
+    ],
+    "burnins": [
+      100,
+      120,
+      140,
+      160,
+      180,
+      200
+    ],
+    "configs": [
+      "base",
+      "ens"
+    ],
+    "n_seeds": 10,
+    "criterio": "elegir (config,burn-in) por accuracy en VALIDACIÓN; test intacto",
+    "regla": "test no se toca para elegir → selección honesta (validación≠test)"
+  },
+  "grid": [
+    {
+      "config": "base",
+      "burnin": 100,
+      "val_acc": 0.48,
+      "val_sharpe": -0.038,
+      "val_equity": 0.7992,
+      "val_n": 150,
+      "test_acc": 0.5133,
+      "test_sharpe": 1.015,
+      "test_equity": 1.3794,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 120,
+      "val_acc": 0.4769,
+      "val_sharpe": -0.953,
+      "val_equity": 0.5908,
+      "val_n": 130,
+      "test_acc": 0.5067,
+      "test_sharpe": 0.9,
+      "test_equity": 1.2978,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 140,
+      "val_acc": 0.4545,
+      "val_sharpe": -1.355,
+      "val_equity": 0.5863,
+      "val_n": 110,
+      "test_acc": 0.5333,
+      "test_sharpe": 1.889,
+      "test_equity": 2.1865,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 160,
+      "val_acc": 0.4778,
+      "val_sharpe": -1.134,
+      "val_equity": 0.7153,
+      "val_n": 90,
+      "test_acc": 0.56,
+      "test_sharpe": 2.249,
+      "test_equity": 2.6392,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 180,
+      "val_acc": 0.4714,
+      "val_sharpe": -1.372,
+      "val_equity": 0.7423,
+      "val_n": 70,
+      "test_acc": 0.5667,
+      "test_sharpe": 1.606,
+      "test_equity": 1.8839,
+      "test_n": 150
+    },
+    {
+      "config": "base",
+      "burnin": 200,
+      "val_acc": 0.42,
+      "val_sharpe": -0.864,
+      "val_equity": 0.8554,
+      "val_n": 50,
+      "test_acc": 0.52,
+      "test_sharpe": 1.061,
+      "test_equity": 1.4135,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 100,
+      "val_acc": 0.48,
+      "val_sharpe": -0.684,
+      "val_equity": 0.576,
+      "val_n": 150,
+      "test_acc": 0.5333,
+      "test_sharpe": 1.924,
+      "test_equity": 2.2266,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 120,
+      "val_acc": 0.4462,
+      "val_sharpe": -1.867,
+      "val_equity": 0.4145,
+      "val_n": 130,
+      "test_acc": 0.54,
+      "test_sharpe": 1.889,
+      "test_equity": 2.1871,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 140,
+      "val_acc": 0.4455,
+      "val_sharpe": -2.613,
+      "val_equity": 0.3991,
+      "val_n": 110,
+      "test_acc": 0.5667,
+      "test_sharpe": 2.388,
+      "test_equity": 2.8358,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 160,
+      "val_acc": 0.4889,
+      "val_sharpe": 0.15,
+      "val_equity": 0.9644,
+      "val_n": 90,
+      "test_acc": 0.56,
+      "test_sharpe": 2.257,
+      "test_equity": 2.6499,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 180,
+      "val_acc": 0.5,
+      "val_sharpe": -0.803,
+      "val_equity": 0.8209,
+      "val_n": 70,
+      "test_acc": 0.5867,
+      "test_sharpe": 2.298,
+      "test_equity": 2.7065,
+      "test_n": 150
+    },
+    {
+      "config": "ens",
+      "burnin": 200,
+      "val_acc": 0.42,
+      "val_sharpe": -0.657,
+      "val_equity": 0.8793,
+      "val_n": 50,
+      "test_acc": 0.5667,
+      "test_sharpe": 2.182,
+      "test_equity": 2.5489,
+      "test_n": 150
+    }
+  ],
+  "elegida": {
+    "config": "ens",
+    "burnin": 180,
+    "val_acc": 0.5,
+    "val_sharpe": -0.803,
+    "val_equity": 0.8209,
+    "val_n": 70,
+    "test_acc": 0.5867,
+    "test_sharpe": 2.298,
+    "test_equity": 2.7065,
+    "test_n": 150
+  },
+  "ref_validacion": {
+    "m5": {
+      "acc": 0.4143,
+      "sharpe": -1.327,
+      "equity": 0.9778
+    },
+    "m8": {
+      "acc": 0.4429,
+      "sharpe": 0.712,
+      "equity": 1.0135
+    },
+    "bh": {
+      "acc": 0.5286,
+      "sharpe": 1.384,
+      "equity": 1.2069
+    }
+  },
+  "ref_test": {
+    "m5": {
+      "acc": 0.5333,
+      "sharpe": 0.679,
+      "equity": 1.0341
+    },
+    "m8": {
+      "acc": 0.5333,
+      "sharpe": 0.678,
+      "equity": 1.034
+    },
+    "bh": {
+      "acc": 0.4467,
+      "sharpe": -0.867,
+      "equity": 0.4826
+    }
+  },
+  "diagnostico_test": {
+    "frac_largo": 0.46,
+    "frac_corto": 0.54,
+    "frac_up_test": 0.447,
+    "siempre_corto_acc": 0.5533,
+    "siempre_largo_bh_acc": 0.4467,
+    "mcnemar_vs_bh_p": 0.0263,
+    "block_perm_vs_bh_p": 0.0137,
+    "mcnemar_vs_m5_p": 0.4028,
+    "sign_vs_0.5_p": 0.0409,
+    "sign_ci95": [
+      0.5035,
+      0.6664
+    ]
+  }
+}

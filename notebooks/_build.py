@@ -1335,14 +1335,170 @@ estrictamente "drift-free".
 
 **Conclusión.** $K=3$ se sostiene por su justificación de **calibración** (§3: verosimilitud +
 estructura, sin OOS) y por **interpretabilidad**, no por superar a $K=2$ en P&L —son equivalentes—
-ni por una ventaja del Sharpe que en gran parte es el mercado alcista. *Límite reconocido:* todo
-esto vive en una **única ventana OOS alcista**; la robustez **multi-ventana** (walk-forward sobre
-2008/2020/2022) es trabajo pendiente y la validación que de verdad cerraría esta cuestión.""")
+ni por una ventaja del Sharpe que en gran parte es el mercado alcista. La robustez multi-ventana
+(walk-forward sobre 2008/2020/2022) se presenta en §13: el modelo generaliza inter-época; el rescate
+del agente es condicional al régimen alcista.""")
+
+md(r"""## §13. Robustez multi-ventana (walk-forward): la respuesta a "¿tuviste suerte con el periodo?"
+
+El tutor lo exigió: *"lánzalo en diferentes años, en diferentes momentos; puede que tuvieras suerte"*.
+
+> ⚠ **LÍMITE CLAVE (leerlo antes que los números).** El agente LLM **solo existe en el OOS**
+> (2024-10→cierre, ~18 meses): no hay decisiones del agente antes de 2024-10 (cutoff de DeepSeek), y
+> generarlas sería *look-ahead*. Por tanto el **rescate (M8/M10 vs M5) solo se puede medir en esos 18
+> meses**, y las "ventanas" del rolling son **sub-trozos solapados del mismo tramo, NO años distintos**.
+> La robustez **inter-época** (años distintos, crisis incluidas) la mide SOLO la **Parte A**, que usa el
+> modelo de régimen sin agente. La Parte B mide **estabilidad intra-OOS**, no generalización temporal.
+
+- **Parte A — el MODELO de régimen (24 años, SIN agente):** ¿generaliza $K=3$ inter-época, incl.
+  2008/2020/2022? Verosimilitud held-out rodante. *Aquí está la robustez temporal real.*
+- **Parte B — el RESCATE (M8 y M10 vs M5, intra-OOS):** confirmatorio = mediana ΔSharpe con IC bootstrap
+  estacionario pareado (decide por la **cota Bonferroni** al haber 2 contrastes); + McNemar estratificado
+  por régimen (¿rescata cuando el mercado NO sube?). Se carga `walkforward_robustez.json` (auditado por
+  rigor en diseño y resultados).""")
+
+code(r"""import json
+import matplotlib.pyplot as plt
+import numpy as np
+
+wf = json.load(open("outputs/experiments/walkforward_robustez.json"))
+
+# --- Parte A: verosimilitud held-out por origen y K (modelo, 24 años, sin agente) ---
+pa = pd.DataFrame(wf["part_a"]["heldout_ll"]["per_origin_K"])
+piv = pa.pivot(index="origin", columns="K", values="ll_por_obs")
+k3_dom = wf["part_a"]["heldout_ll"]["k3_domina_frac"]; k4_dom = float((piv[4] > piv[3]).mean())
+print(f"PARTE A (modelo, 24 años) — K=3 mejora a K=2 en {k3_dom:.0%} de los {len(piv)} orígenes (incl. crisis).")
+print(f"  HONESTO: K=4 mejora a K=3 en {k4_dom:.0%} → K=3 NO es óptimo de verosimilitud; se elige por")
+print("  parsimonia/interpretabilidad (decisión §3). La robustez inter-época vive aquí.")
+
+# --- Parte B confirmatorio: el criterio decisorio es la cota Bonferroni, NO el IC95 ---
+print("\nPARTE B (rescate, intra-OOS) — confirmatorio: mediana ΔSharpe con IC bootstrap pareado.")
+for pk, lbl in (("m8_vs_m5", "M8−M5"), ("m10_vs_m5", "M10−M5")):
+    cb = wf["part_b_confirmatory"][pk]; ci = cb["ci95_boot"]; bonf = cb["ci_bonf2_low"]
+    print(f"  {lbl}: mediana={cb['median_delta_sharpe']:+.2f}  IC95=[{ci['low']:+.2f},{ci['high']:+.2f}]  "
+          f"cota Bonferroni (DECIDE)={bonf:+.2f} → H1_b {'se sostiene' if bonf > 0 else 'NO se sostiene'}")
+print(f"  Deflated Sharpe: M8={wf['deflated_sharpe']['m8']['dsr']:.2f}  M10={wf['deflated_sharpe']['m10']['dsr']:.2f} (≈ azar).")
+
+# --- Rescate de la ACCURACY por régimen: McNemar + Holm + block-permutation (robusto a autocorr) ---
+rows = []
+for pk, lbl in (("m8_vs_m5", "M8 vs M5"), ("m10_vs_m5", "M10 vs M5")):
+    s = wf["stratified_mcnemar"][pk]; holm = s["holm_bonferroni"]
+    for nm in ("alcista", "bajista"):
+        d = s["drift"][nm]
+        rows.append({"contraste": lbl, "régimen": nm, "n": d["n_obs"],
+                     "McNemar p_adj(Holm)": round(holm[f"drift_{nm}"]["p_adj"], 3),
+                     "block-perm p": round(d["block_perm_p"], 3), "ΔSharpe": d["median_delta_sharpe"]})
+acc_tab = pd.DataFrame(rows).set_index(["contraste", "régimen"])
+print("\nRescate de ACCURACY por régimen (McNemar/block-perm) y ΔSharpe — el corazón del hallazgo:")
+display(acc_tab)
+
+# --- Figuras: modelo (A) + significancia del rescate de accuracy por régimen (B) ---
+fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))
+for K, mk in zip((2, 3, 4), ("o-", "s-", "^-")):
+    ax[0].plot(piv.index, piv[K], mk, label=f"K={K}", alpha=0.6 if K == 4 else 1.0)
+ax[0].set_xlabel("origen anual"); ax[0].set_ylabel("LL held-out / obs")
+ax[0].set_title("Parte A · el modelo generaliza 24 años"); ax[0].legend(fontsize=8)
+xb = np.arange(2)
+bp = lambda pk: [wf["stratified_mcnemar"][pk]["drift"][nm]["block_perm_p"] for nm in ("alcista", "bajista")]
+ax[1].bar(xb - 0.2, bp("m8_vs_m5"), 0.38, label="M8 vs M5", color="#9aa0a6")
+ax[1].bar(xb + 0.2, bp("m10_vs_m5"), 0.38, label="M10 vs M5", color="#1a73c0")
+ax[1].axhline(0.10, ls="--", color="#c0392b", lw=1, label="α=0.10")
+ax[1].set_xticks(xb); ax[1].set_xticklabels(["alcista", "bajista"]); ax[1].set_ylabel("block-perm p (accuracy)")
+ax[1].set_title("Parte B · M10 rescata accuracy en AMBOS régimenes"); ax[1].legend(fontsize=8)
+plt.show()
+
+v = wf["verdict"]
+print(f"\nVeredicto FORMAL (plano Sharpe, pre-registrado): '{v['composicion']}'  "
+      f"[falsif. bajista: M8={v['falsif_spy_m8_bajista']}, M10={v['falsif_spy_m10_bajista']}]")
+print(f"Sanity dual same-day/causal: sign_consistent={wf['sanity_dual']['sign_consistent']} — NO es look-ahead")
+print("  (el bug peso_t×retorno_t INFLARÍA el causal; aquí lo PENALIZA: es propiedad del agente perdedor).")""")
+
+md(r"""**Lectura honesta (§13), en dos planos separados.**
+
+**1. El modelo de régimen generaliza inter-época.** $K=3$ mejora a $K=2$ en la verosimilitud held-out en
+15 de 16 orígenes anuales, incluidas 2008/2020/2022. *(Cautela: $K=4$ mejora marginalmente a $K=3$; se
+elige $K=3$ por parsimonia e interpretabilidad.)* Respuesta sólida al "¿tuviste suerte?": **el modelo, no.**
+
+**2. Plano accuracy (métrica primaria) — M10 rescata al agente en AMBOS régimenes.** Por McNemar pareado,
+M10 mejora la dirección de M5 de forma significativa en **alcista** ($p_{adj}$ Holm $=0.005$;
+block-permutation $p=0.000$) **y en bajista** ($p_{adj}=0.075$; block-permutation $p=0.061$, robusto a
+autocorrelación, ambos $<0.10$). **M8 solo rescata en alcista** (y no sobrevive Holm) y en **bajista es
+nulo** ($p=1.000$). M10 es, además, el único modelo con **MCC positivo**. La capacidad de recuperar
+accuracy es por tanto más amplia en M10 que en M8.
+
+**3. Plano Sharpe (económico) — el rescate NO es robusto y es condicional.** El confirmatorio decide por
+la **cota Bonferroni** (M8−M5 $=-0.49$; M10−M5 $=-0.48$): ambas $<0$ ⟹ **H1_b no se sostiene** *(el IC95
+crudo de M10−M5, $[-0.02,+5.79]$, roza el cero, pero el criterio pre-registrado es la cota Bonferroni, no
+el IC95: H1_b es False)*. El Deflated Sharpe ($\approx0.48$) es indistinguible del azar y en **bajista el
+$\Delta$Sharpe se invierte** (M8 $-3.92$, M10 $-1.06$), disparando la regla de falsificación pre-registrada.
+
+**Conciliación de los dos planos.** Acertar más días (accuracy) y rendir mejor en cartera (Sharpe) son
+ejes distintos: el primero cuenta signos, el segundo pondera por magnitud del retorno. En bajista M10
+acierta más días que M5 pero su $\Delta$Sharpe es negativo; **el mecanismo exacto de esa divergencia
+(composición long/short, concentración del P&L) no se descompone aquí y se reporta como límite.** La
+falsificación pre-registrada opera **sobre el Sharpe** y se dispara por diseño: el rescate **económico**
+es condicional al alza. Eso **no invalida** la mejora de **accuracy**, que vive en otro plano y sí es
+robusta cross-régimen para M10.
+
+**Veredicto formal:** `robustez_no_sostenida` en el plano Sharpe; en el plano accuracy, **M10 rescata la
+dirección del agente de forma robusta en ambos régimenes**. STRATA-SPY recupera accuracy direccional; su
+ventaja en P&L es frágil y condicional. *Que el sistema delimite dónde funciona es la aportación, no un
+defecto* (constitución §4f).""")
+
+md(r"""# Parte VII — Lectura, hipótesis y aportación
+
+## §14. ¿Qué rescata STRATA? Lectura accuracy-first
+
+El Sharpe es **frágil** (Deflated Sharpe $\approx0.48$; rescate condicional al alza, §13). La métrica
+honesta y robusta —y la que importa al tribunal— es la **accuracy direccional**.""")
+
+code(r"""# Escalera de ACCURACY direccional (métrica primaria) frente al Sharpe (ilustrativo/frágil).
+_acc, _shp, _mcc = maestra["accuracy"], maestra["Sharpe"], maestra["MCC"]
+ladder = pd.DataFrame({
+    "accuracy": [_acc["M5 (agente solo)"], _acc["M8 (STRATA override C)"], fila_m10["accuracy"],
+                 _acc["M2 (régimen×GARCH, sin agente)"], _acc["B&H (always long)"]],
+    "MCC":      [_mcc["M5 (agente solo)"], _mcc["M8 (STRATA override C)"], fila_m10["MCC"],
+                 _mcc["M2 (régimen×GARCH, sin agente)"], float("nan")],
+    "Sharpe":   [_shp["M5 (agente solo)"], _shp["M8 (STRATA override C)"], fila_m10["Sharpe"],
+                 _shp["M2 (régimen×GARCH, sin agente)"], _shp["B&H (always long)"]],
+}, index=["M5 (agente solo)", "M8 (regla STRATA, white box)", "M10 (XGBoost sobre features STRATA)",
+          "M2 (régimen solo, sin agente)", "B&H (referencia pasiva)"])
+print("Escalera de ACCURACY direccional (PRIMARIA) + MCC; el Sharpe es ilustrativo y frágil:")
+display(ladder.round(3))
+print(f"\n• M5 acierta {_acc['M5 (agente solo)']:.3f} (< azar, MCC<0): agente perdedor (premisa del TFG).")
+print(f"• M10 acierta {fila_m10['accuracy']:.3f} y es el ÚNICO con MCC>0 ({fila_m10['MCC']:+.3f}): mejor")
+print(f"  decodificador de la señal STRATA, casi B&H ({_acc['B&H (always long)']:.3f}) pero PREDICIENDO.")
+print("• M10 rescata accuracy en alcista Y bajista (McNemar/block-perm <0.10, §13); M8 solo en alcista.")
+print("• M10 ≈ M8 en P&L (DM p≈0.67); ablación sin STRATA tumba a M10 → la señal es de STRATA (§11).")""")
+
+md(r"""**El hallazgo de STRATA.** Un agente LLM **perdedor direccional** (acierta 0.384, < azar) es
+**rescatado por supervisión estadística clásica** (régimen HMM + BOCPD + GARCH), y la señal es **real**:
+
+1. **La accuracy sube escalonada:** M5 $0.384 \to$ M8 $0.436 \to$ **M10 $0.539$**, casi la de
+   comprar-y-mantener ($0.569$) pero **prediciendo** la dirección. M10 es el **único con MCC positivo**.
+2. **La señal es de STRATA:** la ablación tumba a M10 al quitar las features de régimen/RAM/PSA/GSO, y
+   SHAP las identifica como las informativas (§11).
+3. **Regla (M8) y caja negra (M10) son equivalentes en P&L** (DM $p=0.67$): el hallazgo es la *señal*,
+   no un modelo concreto (confirma la hipótesis §2.3).
+4. **El rescate de accuracy es robusto cross-régimen para M10** (McNemar/block-perm $<0.10$ en alcista
+   y bajista, §13), a diferencia de M8 (solo alcista).
+
+**M8 y M10 = dos consumidores de la misma señal:** M8 interpretable (white box, atribución §10), M10 el
+de mejor accuracy. Damos a M10 **al menos el mismo peso** que a M8: la accuracy es la métrica primaria y
+robusta; el Sharpe no.
+
+**Límites reconocidos (honestidad, §4f):** (i) M10 ($0.539$) **no bate a comprar-y-mantener** ($0.569$):
+STRATA **reduce el daño / recupera dirección, no genera alfa**; (ii) el rescate **económico** (Sharpe) es
+**frágil y condicional al alza** (§13: confirmatorio decide por cota Bonferroni $<0$, $\Delta$Sharpe se
+invierte en bajista); (iii) el tramo con agente vive en **una única ventana OOS de 18 meses** (las
+sub-ventanas son trozos de ella, no años distintos). La aportación no es batir al mercado: es un
+**protocolo de supervisión estadística interpretable** que recupera accuracy direccional de un agente
+perdedor —robusto en ambos régimenes—, equivalente a lo que aprende una caja negra, y que delimita dónde
+funciona.""")
 
 md(r"""---
-*Hasta aquí §12. Faltan §13–§14 (calibración de las convicciones del LLM, robustez
-multi-inicio y comparación condicional + Diebold-Mariano) y las Partes VI–VII (economía,
-límites, hipótesis y reproducibilidad).*""")
+*Hasta aquí §14 (robustez multi-ventana y lectura accuracy-first). Pendientes: §15–§16 (tangibles
+económicos y dónde STRATA no funciona en SPY) y §17–§18 (cierre formal de hipótesis y reproducibilidad).*""")
 
 nb = new_notebook(cells=cells, metadata={
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},

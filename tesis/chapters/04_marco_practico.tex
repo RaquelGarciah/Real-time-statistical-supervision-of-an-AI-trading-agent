@@ -1,0 +1,32 @@
+\chapter{Marco práctico}
+\label{cap:marco-practico}
+
+% Objetivo: resultados de cada parte del trabajo y su lectura. CIFRAS NUNCA A MANO:
+% todas vía \input{tables/...} autogeneradas desde outputs/experiments/*.json. Cada
+% afirmación cuantitativa trazable a su fuente.
+
+% [PENDIENTE DE REDACCIÓN — pipeline /redaccion-capitulo. Esqueleto:]
+
+\section{Datos, calibración y barrera temporal}
+\label{sec:datos}
+% SPY, calibración 2000-2024, OOS oct-2024+, controles de causalidad.
+
+\section{El agente sin supervisar (M5)}
+\label{sec:m5}
+% Accuracy, Sharpe, sign test vs 0.5. Tabla autogenerada.
+
+\section{STRATA (M8): el rescate}
+\label{sec:m8}
+% Override-C, McNemar pareado M8 vs M5, escalera M5->M7->M8, matrices de confusión.
+
+\section{El meta-learner XGBoost (M10) y la universalidad}
+\label{sec:m10}
+% CPCV, SHAP, Diebold-Mariano M10 vs M8.
+
+\section{Sensibilidad y robustez}
+\label{sec:robustez}
+% Umbrales (E4), selección de K (E1-E3), walk-forward multi-ventana, panel multi-activo.
+
+\section{Lectura conjunta}
+\label{sec:lectura}
+% Qué demuestra y qué no (no bate B&H; rescata al agente con significancia marginal).

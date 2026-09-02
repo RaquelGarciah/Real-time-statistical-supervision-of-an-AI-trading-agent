@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "horizons": [
+      5,
+      10,
+      21
+    ],
+    "eff_w": 63,
+    "no_solapados": true,
+    "calib_end": "2024-09-30",
+    "oos_start": "2024-10-01"
+  },
+  "por_horizonte": {
+    "h5": {
+      "n_oos_bloques": 816,
+      "calib_mom_acc": 0.4998,
+      "oos_mom_acc": 0.5172,
+      "oos_mom_sign_p": 0.327,
+      "oos_siempre_largo_acc": 0.5233,
+      "oos_mom_menos_largo": -0.0061,
+      "theta_eff": 0.1742,
+      "oos_mom_acc_tendencia": 0.5234,
+      "oos_n_tendencia": 214,
+      "oos_mom_sign_p_tendencia": 0.4942
+    },
+    "h10": {
+      "n_oos_bloques": 409,
+      "calib_mom_acc": 0.5089,
+      "oos_mom_acc": 0.4939,
+      "oos_mom_sign_p": 0.8047,
+      "oos_siempre_largo_acc": 0.555,
+      "oos_mom_menos_largo": -0.0611,
+      "theta_eff": 0.1736,
+      "oos_mom_acc_tendencia": 0.4151,
+      "oos_n_tendencia": 106,
+      "oos_mom_sign_p_tendencia": 0.0804
+    },
+    "h21": {
+      "n_oos_bloques": 196,
+      "calib_mom_acc": 0.5294,
+      "oos_mom_acc": 0.4898,
+      "oos_mom_sign_p": 0.7751,
+      "oos_siempre_largo_acc": 0.5765,
+      "oos_mom_menos_largo": -0.0867,
+      "theta_eff": 0.1779,
+      "oos_mom_acc_tendencia": 0.5208,
+      "oos_n_tendencia": 48,
+      "oos_mom_sign_p_tendencia": 0.7728
+    }
+  },
+  "EXITO_PREREGISTRADO": false
+}

@@ -195,13 +195,46 @@ PSA ni GSO son el protagonista; RAM lo es.
 
 El GARCH da una $\sigma$ **diaria**. Se anualiza con $\sigma_{\text{anual}}=\sigma_{\text{diaria}}\cdot\sqrt{252}$
 (252 = días de bolsa/año; el $\sqrt{}$ sale de que la **varianza** escala lineal con el tiempo
-si los retornos son ~i.i.d.). Dos razones:
+si los retornos son ~i.i.d., así que la desviación típica escala con $\sqrt{T}$). Dos razones:
 
 1. **Unidad estándar e interpretable.** `target_vol = 0.10` = "quiero ~10 % de volatilidad
    **anual**" lo entiende cualquiera; un 0.63 % diario no dice nada (el VIX, etc., van anualizados).
 2. **Coherencia de unidades en la banda.** $b_t=\text{target\_vol}/\sigma_t$ exige numerador y
    denominador en las mismas unidades; como `target_vol` es anual, $\sigma_t$ debe serlo. Si
    mezclaras $\sigma$ diaria con target anual, la banda erraría por un factor $\sqrt{252}\approx16$.
+
+#### Qué tiene que ver esto con el *sizing* del agente
+
+El *sizing* del agente es $w_t$ (su `size`): **cuánto apuesta**, como fracción del capital —no
+en euros— con signo = dirección y módulo = convicción. La clave es que el **riesgo** que asume no
+es el tamaño de la apuesta a secas, sino el tamaño **multiplicado por lo nervioso que está el
+mercado**:
+
+$$\sigma_{\text{posición}}=|w_t|\cdot\sigma_t.$$
+
+Apostar el 100 % ($w_t=1$) sobre un activo plácido ($\sigma_t=8\%$) arriesga *menos* que apostar
+el 50 % ($w_t=0.5$) sobre uno que se mueve un 40 %. Por eso el GSO no fija el tamaño: fija el
+**riesgo objetivo** `target_vol` (presupuesto de volatilidad) y de ahí **deduce** el tamaño máximo
+coherente, igualando el riesgo de la posición al presupuesto:
+
+$$|w_t|\cdot\sigma_t=\text{target\_vol}\ \Longrightarrow\ \underbrace{|w_t|}_{\text{banda }b_t}=\frac{\text{target\_vol}}{\sigma_t}.$$
+
+Eso es literalmente `bound = min(1, target_vol / sigma_t_annualized)` en `gso_detector`. El GSO
+compara el `size` del agente contra esa banda; si el agente se pasa (sobreexposición), recorta.
+Esto es **volatility targeting**: apuestas menos cuando el mercado está más volátil, para que el
+riesgo de tu P&L se mantenga ~constante.
+
+Aquí es donde la división **obliga** a misma escala: `target_vol` se fija con sentido económico
+("quiero 10 % **anual**"), que es inevitablemente anual. Para que $b_t$ salga adimensional —una
+fracción de capital— $\sigma_t$ debe ser anual también. Si metieras la $\sigma$ **diaria**
+($\approx0.0095$) contra el target anual ($0.10$), saldría $b_t=0.10/0.0095\approx10$, y
+`min(1, 10)=1` **siempre** → el GSO **no saltaría jamás**.
+
+> **Matiz para el tribunal.** Como en $\text{target\_vol}/\sigma_t$ **ambos** llevan el mismo
+> $\sqrt{252}$, el factor se **cancela**: la banda no depende de anualizar... *siempre que seas
+> consistente*. El error real no es "anualizar o no", es **mezclar escalas** entre el target y
+> $\sigma_t$. La anualización es la convención que garantiza que los dos lados hablan el mismo
+> idioma — y, de paso, que `target_vol` se lea como un riesgo interpretable.
 """)
 
 # ---------------------------------------------------------------------------
@@ -481,6 +514,34 @@ ML con todo dentro no lo hace mejor.
 
 # ---------------------------------------------------------------------------
 md(r"""
+### 8.1 ¿Cómo mide Diebold-Mariano que dos P&L son "indistinguibles"?
+
+DM no compara dos números agregados (dos Sharpes, dos P&L totales): compara los dos modelos
+**día a día, de forma pareada**, sobre las mismas fechas.
+
+**Serie de diferencia.** La "pérdida" de cada día es el retorno con signo negativo, $L_t=-r_t$
+(perder = retorno negativo). La diferencia diaria es
+$$d_t = L^{M10}_t - L^{M8}_t = r^{M8}_t - r^{M10}_t,$$
+o sea, cuánto gana M8 *de más* que M10 ese día. Bajo $H_0:\ \mathbb E[d_t]=0$ (rinden igual),
+$$\mathrm{DM}=\frac{\bar d}{\sqrt{s_d^2/n}}\ \sim\ \mathcal N(0,1),$$
+con $\bar d$ la media de las diferencias y $s_d^2$ su varianza (horizonte $h=1$: la corrección
+HAC de Newey-West solo entra para $h>1$). Se lee el $p$ a dos colas.
+
+**Por qué DM y no comparar los dos Sharpes sueltos.** (1) Es **pareado**: ambos modelos viven
+los **mismos días**, así que al restar día a día **el movimiento común del mercado se cancela** y
+queda solo la diferencia atribuible a los modelos → mucha más potencia. (2) Testea la **diferencia
+directa**, no un cociente (el Sharpe es un cociente con distribución muestral incómoda).
+
+**Lo que salió y la lectura honesta.** $\mathrm{DM}(M10\text{ vs }M8)=-0.43$, $p=0.666$: **no se
+rechaza $H_0$** → no hay diferencia *detectable* en el P&L diario. Cautela clave: *no rechazar* **no
+es** *demostrar que son iguales* (eso sería afirmar la nula). Por eso se corre **además TOST**
+(test de equivalencia), que dio $p=0.42$ → **tampoco** demuestra equivalencia. La frase exacta:
+*"indistinguibles en P&L (DM p=0.67); con N≈400 no hay potencia para afirmar equivalencia formal"*,
+nunca *"probadas iguales"*. Y M10 **sí** gana en lo que importa: accuracy 0.539 vs 0.436.
+""")
+
+# ---------------------------------------------------------------------------
+md(r"""
 ## 9. ¿Predice alguna variable sola la dirección? El descriptivo
 
 Antes de cualquier modelo, el tutor pidió un **descriptivo**: para cada variable continua,
@@ -689,7 +750,318 @@ calibración por régimen ≠ el signo en OOS, se documenta como caso donde la t
 
 # ---------------------------------------------------------------------------
 md(r"""
-## 14. Checklist — lo que debes saber recitar
+## 14. El HMM da VOLATILIDAD, no dirección (filtrado, leverage, prior-flip)
+
+Pregunta recurrente: *"si el HMM me da el régimen de cada día, ¿no sirve eso para
+predecir mucho?"*. Sirve — es la señal más informativa de M10 (SHAP) — pero con **dos
+límites duros** que conviene recitar, porque son justo lo que un tribunal ataca.
+
+### 14.1 Filtrado vs suavizado (la trampa de look-ahead)
+
+Hay dos formas de "etiquetar el régimen del día $t$", y solo una es legal:
+
+- **Suavizado** $P(\text{estado}_t\mid \text{TODA la serie})$ (Viterbi / posterior completo):
+  para decidir $t$ mira días **posteriores** a $t$. Sirve para *describir* el pasado, pero
+  como señal de trading es **look-ahead**: en tiempo real no tienes el futuro.
+- **Filtrado** $P(\text{estado}_t\mid \text{datos}\le t)$: solo pasado. **Es lo único legal**, y
+  es lo que STRATA usa (`predict_proba_filtered`). El régimen sirve, pero **solo el filtrado**.
+
+### 14.2 El HMM modela volatilidad; la dirección solo llega por el *leverage effect*
+
+El HMM se ajusta sobre $(r_t,\ \text{RV}_{21})$ → sus estados son regímenes de **volatilidad**
+(Calma/Estrés/Crisis), no de signo. Saber que estás en alta vol informa del **tamaño** del
+movimiento, no de su **dirección**. La dirección solo aparece **vía leverage effect** (Black 1976;
+Christie 1982): en índices, alta vol coincide con caídas. Y eso es **contemporáneo** (mismo día),
+no predictivo. Al hacerlo causal (régimen de hoy → retorno de mañana), la señal direccional casi
+se evapora. Retorno medio por régimen filtrado (`experiments/regime_direction_table.py`):
+
+| | SPY mismo-día (calib) | SPY día-sig (calib→oos) | SMCI mismo-día (calib→oos) | SMCI día-sig (calib→oos) |
+|---|---|---|---|---|
+| Calma | +0.00054 | +0.00032 → +0.00012 | −0.00034 → +0.00191 | −0.00006 → **+0.02546** |
+| Estrés | +0.00017 | +0.00033 → +0.00082 | +0.00143 → +0.00328 | +0.00117 → **−0.00384** |
+| Crisis | ≈0 | +0.00015 → +0.00329 | +0.00278 → −0.00238 | +0.00248 → **−0.00003** |
+
+**SPY:** el signo causal **transfiere** (todo positivo: deriva alcista, leverage débil pero coherente).
+**SMCI:** el signo causal **FLIPEA** en los tres regímenes calib→OOS — el régimen no predice dirección
+fuera de muestra. Esto es el **`prior-flip`**, la regla de falsación pre-registrada: donde el signo de
+calibración ≠ el de OOS, se documenta como caso donde la técnica *no* aplica. SPY (leverage) funciona;
+SMCI/TSLA/UNG (sin leverage) no. Ese es el **dominio de validez**.
+
+### 14.3 ¿Y si hacemos que el HMM prediga dirección? (la pregunta del tutor)
+
+Se puede, de tres formas: (a) cambiar las features de emisión por direccionales (momentum/signo);
+(b) HMM multivariante con una emisión direccional añadida; (c) regímenes con **media** propia
+(Hamilton 1989, *mean-switching*) — que es **lo que STRATA ya hace** con el signo data-driven
+($\mu_k$ por estado) + `prior-flip`. **Pero todas chocan con el mismo muro:** la volatilidad es
+**predecible** (clustering, por eso el GARCH funciona); la dirección a un día es **casi una
+martingala** (eficiencia de mercado). Un HMM ajustado a dirección **sobreajusta el pasado y no
+transfiere** — evidencia directa: la trendiness en calibración no predice el beneficio del momentum
+en OOS (Spearman de −0.55 a +0.45, nunca significativo sobre 10 activos), y el `prior-flip` muestra
+que el signo por régimen solo transfiere en SPY.
+
+**Consecuencias de hacerlo direccional:** pierdes la coherencia con vol/GARCH y, sobre todo, **el relato
+del leverage effect** (tu aportación teórica); RAM deja de ser "desajuste con el régimen de volatilidad";
+y ganas riesgo de overfitting sin una señal direccional fiable a cambio. Por eso el diseño actual es el
+**inteligente**: predice lo predecible (volatilidad) y cosecha dirección **solo donde la economía la
+regala** (leverage). El "HMM direccional", en su versión defendible (medias por régimen), ya está hecho,
+y su límite es justo el `prior-flip`.
+
+""")
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 14b. El embargo del walk-forward: por qué **embargo = 1** (no 5)
+
+**Decisión (2026-06-17):** en la validación walk-forward de M10 uso **embargo = 1 día**, no 5.
+Aquí está el porqué, atado a la literatura, porque es justo el detalle que un tribunal ataca.
+
+### Qué es el embargo (y qué NO es)
+
+Al validar sin mirar el futuro hay **dos** mecanismos distintos, que conviene no confundir
+(López de Prado 2018, cap. 7, §7.4):
+
+- **Purga (*purging*).** Quita del entrenamiento las observaciones cuya **etiqueta se solapa en el
+  tiempo** con la del test. Su tamaño = **horizonte de la etiqueta**.
+- **Embargo (*embargoing*).** Quita, *además*, unas pocas observaciones **inmediatamente posteriores**
+  al test, para cortar la **autocorrelación residual** en la frontera. López de Prado lo fija como una
+  fracción pequeña del total: *"A small value $h\approx 0.01\,T$ often suffices"*.
+
+Lo esencial: **ambos existen porque en K-fold / CPCV los folds de test tienen entrenamiento ANTES y
+DESPUÉS** (estructura *interleaved*, bidireccional). El embargo blinda ese borde posterior.
+
+### Por qué en *mi* validación el número correcto es 1
+
+Mi validación **no es K-fold ni CPCV**: es **walk-forward de origen móvil** (*rolling-origin*,
+Tashman 2000), donde **el test es siempre futuro respecto al entrenamiento** → el solape
+"entrenamiento *después* del test" que motiva el embargo **no existe por construcción**. Solo queda el
+solape de la **etiqueta**, y mi etiqueta tiene **horizonte 1 día**:
+$$ y_t = \mathbf{1}[\,r_{t+1} > 0\,]. $$
+La etiqueta de $t$ solo ocupa hasta $t+1$ → la purga necesaria es de **1 día**. El **embargo $\geq 5$**
+de CLAUDE.md §4 es la regla de **CPCV** (folds bidireccionales) y de **etiquetas multi-día**
+(triple-barrier): **otro régimen**, no el mío. Cierre (Bergmeir, Hyndman & Koo 2018): con **residuos
+no correlados**, la validación con hueco mínimo es **válida**; el único solape mecánico —la etiqueta
+$t+1$— se elimina con **embargo = 1**.
+
+### Frase lista para defender
+
+> *"El embargo $\geq 5$ es una recomendación calibrada para Purged/Combinatorial K-Fold con folds
+> interleaved y etiquetas multi-día (López de Prado 2018, §7.4), no para evaluación walk-forward de
+> origen móvil con etiqueta de horizonte 1. En rolling-origin (Tashman 2000) el test es siempre futuro
+> respecto al entrenamiento, lo que elimina por construcción el solape bidireccional que motiva el
+> embargo; el único solape residual —la etiqueta $y_t=\mathbf{1}[r_{t+1}>0]$— se purga con embargo = 1.
+> La validez de la validación con hueco mínimo bajo residuos no correlados está en Bergmeir, Hyndman &
+> Koo (2018)."*
+
+Apoyos sobre el **tamaño** del hueco en datos dependientes: *h-block* (Burman, Chow & Nolan 1994)
+introduce eliminar $h$ vecinos para datos dependientes; la idea de ligar $h$ a la **estructura de
+dependencia** (y *hv-block*) es de Racine (2000); Bergmeir & Benítez (2012) respalda empíricamente el
+buen comportamiento de la CV en series temporales.
+
+### Honestidad (esto va conmigo, no contra mí)
+
+embargo = 1 es **corrección del protocolo**, no un truco para "sacar significancia":
+
+- **Sí** mejora la accuracy **nominal** en SMCI: $0.524$ (embargo 5) $\to \mathbf{0.552}$ (embargo 1),
+  con posiciones equilibradas (47 % corto, 48 % de días alcistas) — no es "ponerse corto a un activo
+  que cae".
+- **No** crea significancia. El único $p<0.05$ aparece **solo** en embargo = 1 (pico aislado: embargo
+  0 y 2, igual de válidos, dan $p\approx0.12$–$0.13$); no sobrevive la corrección por multiplicidad del
+  barrido (Bonferroni-5: $0.047\times5\approx0.24$) ni el Holm de la familia {vs M5, M8, B&H}. Se
+  reporta como **sensibilidad**, no como hallazgo confirmatorio.
+
+**El barrido completo (embargo 1,2,3,5,10,21) confirma que la accuracy es RUIDO, no señal**
+(`experiments/embargo_sweep.py`): el rango entre embargos es $0.032$ en SPY y $0.040$ en SMCI, ambos
+$\approx$ **1 desviación binomial** ($\pm0.0316$ para $n\approx250$). Y van en **direcciones opuestas**:
+en SPY el "mejor" es embargo 5, en SMCI es embargo 1 — se contradicen, luego no hay regla que extraer.
+La causa mecánica: quitar 4 días de entrenamiento desplaza $p_1$ en $\sim0.06$ y **voltea el signo del
+10 % de las posiciones**. Que un cambio tan pequeño mueva tanto es, en sí, **la prueba de que M10 no
+tiene señal direccional** (un modelo con señal sería estable). Cambiar la semilla mueve la accuracy lo
+mismo que cambiar el embargo.
+
+> **Regla:** elijo embargo = 1 **por principio** (horizonte = 1), justificado a priori — *no* por su
+> p-valor. Y digo yo misma que la significancia no sobrevive. Esa es la defensa sólida.
+""")
+
+# Celda ilustrativa: el indexado del walk-forward con embargo 1 vs 5 (sin datos, solo la mecánica).
+code(r'''
+# Mecánica del embargo en el walk-forward (ilustrativo, sin datos):
+# para predecir el bloque que empieza en `start`, entreno con [:start - embargo].
+STEP = 21
+start = 171                                   # un reentreno cualquiera
+for embargo in (5, 1):
+    tr_end = start - embargo                  # última fila de train = tr_end - 1
+    ultima_etiqueta_usa = (tr_end - 1) + 1    # y_t usa r_{t+1}  (horizonte 1)
+    primer_ret_test = start + 1               # la fila `start` se evalúa contra r_{start+1}
+    gap = primer_ret_test - ultima_etiqueta_usa
+    print(f"embargo={embargo}: train=[:{tr_end}]  predice=[{start}:{start+STEP}]  "
+          f"última etiqueta de train usa r_{ultima_etiqueta_usa}, primer retorno de test r_{primer_ret_test}"
+          f"  -> gap={gap}d {'(sin solape)' if gap >= 1 else '(SOLAPE)'}")
+# Con horizonte 1, embargo=1 ya deja gap>=1 -> sin solape de etiquetas -> sin fuga.
+''')
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 14c. El momentum y M10 sobre SPY: por qué el momentum NO entra al modelo
+
+Exploración (2026-06-17) de si añadir *momentum* a M10 mejora, y si se puede decidir **a priori**.
+Conclusión: el momentum **no es un componente desplegable**, y el M10 canónico no tiene alfa direccional.
+
+### El cuadro de M10 canónico (ALL22, sin momentum) sobre SPY — embargo = 1
+
+`experiments/spy_m10_full_report.py` (OOS 2025-05→2026-05, $n=251$):
+
+| modelo | accuracy | Sharpe | equity | maxDD | AUC | log-loss | Brier |
+|---|---|---|---|---|---|---|---|
+| M5 (agente) | 0.367 | −2.73 | 0.932 | −0.069 | — | — | — |
+| M8 (STRATA) | 0.442 | **+1.60** | **1.097** | −0.060 | — | — | — |
+| M10 (ALL22) | 0.494 | −0.60 | 0.920 | −0.161 | 0.531 | 0.856 | 0.308 |
+| B&H | 0.566 | +2.20 | 1.302 | −0.098 | — | — | — |
+
+Tests de M10: vs M5 **McNemar $p=0.007$** (corrige al agente); vs M8 $p=0.29$ (universalidad); vs B&H
+$p=0.13$; **sign vs 0.5 $p=0.90$**; IC95 del exceso de accuracy $[-0.058,+0.042]$ (cruza el 0).
+
+Lectura: el M10 desplegable es **una moneda que pierde dinero** (acc 0.494, AUC 0.53, log-loss $>0.693$,
+equity $<1$). Su único valor —igual que el de M8— es **corregir al agente** ($p=0.007$), no generar alfa.
+Y la regla determinista **M8 le gana al ML** económicamente (Sharpe $+1.60$ vs $-0.60$): universalidad.
+
+### El momentum: significativo en SPY, pero no robusto ni justificable a priori
+
+Con momentum, SPY/aug subía a accuracy $0.59$ y era significativo vs azar — pero:
+
+1. **No bate a B&H** y el motor era el momentum, no STRATA (`spy_momentum_ablation.py`): el momentum solo
+   da Sharpe alto con accuracy de moneda (0.52); STRATA+régimen añade los puntos significativos.
+2. **No se puede decidir a priori si meterlo.** Una regla "mete momentum si funcionó el último año"
+   acierta 7/10 (`momentum_decision_rule.py`) **pero no es robusta**: el supuesto (que el rendimiento del
+   momentum persiste) **es falso** — sobre 708 puntos de 24 años, Spearman señal↔resultado $=0.03$
+   (`momentum_rule_robustness.py`); y el 7/10 oscila entre 2/10 y 8/10 según parámetros (ruido).
+3. **A horizonte mensual** (Moskowitz, Ooi & Pedersen 2012) el momentum es real en calibración (acc 0.55)
+   pero **no transfiere** al OOS (`momentum_tsmom_monthly.py`): OOS corto y alcista, B&H gana.
+
+> **Frase:** *"El momentum no entra al modelo: demuestro (708 puntos, sin look-ahead) que su beneficio no
+> persiste, así que no hay regla a priori para incluirlo. El M10 desplegable es STRATA puro, que no
+> predice dirección mejor que el azar; su valor es corregir al agente ($p=0.007$), no batir al mercado."*
+
+""")
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 14d. El ensemble de M10: qué es, por qué ayuda y por qué es lícito
+
+El M10 desplegable no es **un** XGBoost, es el **promedio de 10**. Esto conviene tenerlo clavado para la
+defensa.
+
+### Qué es exactamente
+
+Un XGBoost tiene **azar dentro**: cada árbol ve solo el 80 % de las filas (`subsample=0.8`) y el 80 % de las
+features (`colsample_bytree=0.8`), elegidas según una **semilla**. Cambias la semilla → modelo distinto →
+`p1` distinto. Ese azar es **ruido**, no información. El ensemble es la receta más simple:
+
+1. Entreno **10 XGBoost idénticos**, cambiando solo la semilla (42, 43, …, 51).
+2. Promedio sus probabilidades: $p_1^{\text{ens}} = \frac{1}{10}\sum_k p_1^{(k)}$.
+3. Posición = $\text{signo}(p_1^{\text{ens}} - 0.5)$.
+
+Mismas 22 features, mismo walk-forward, mismo embargo. **Apuesta todos los días** (cobertura 100 %), igual
+que B&H.
+
+### Por qué ayuda (reducción de varianza)
+
+Al promediar, la **señal** (lo que dicen las features) es común a las 10 y se conserva; el **ruido** del
+muestreo aleatorio es distinto en cada una y se **cancela parcialmente**. Resultado: una $p_1$ más **estable**
+→ sube algo la accuracy (0.52 → 0.552) y, sobre todo, mejora el Sharpe (0.85 → 1.84) y la equity (1.45× →
+3.24×), porque las posiciones dan menos vaivenes. La celda de abajo lo ilustra con números.
+
+### Por qué es lícito (y no es trampa)
+
+- **Principio de *bagging*** (Breiman 1996): *"the vital element is the instability of the prediction method;
+  if perturbing the learning set can cause significant changes in the predictor, bagging can improve
+  accuracy."* Promediar versiones inestables reduce el componente de **varianza** sin añadir sesgo.
+- **Aleatorización del aprendiz** (Dietterich 2000): mi variabilidad es la **semilla** (mismo dato, distinto
+  submuestreo interno) → *seed averaging*. Matiz honesto: el *bagging* clásico remuestrea los **datos**
+  (bootstrap); cito Breiman por el **principio**, Dietterich por la aleatorización del aprendiz.
+- **Sin look-ahead:** cada uno de los 10 se entrena **solo con el pasado** (mismo WF). Promediar no mira el
+  futuro.
+- **Sin cherry-pick:** promedio **las 10** semillas; **no elijo la mejor** (eso sí sería p-hacking).
+
+### Honestidad (lo dices tú)
+
+El ensemble **reduce ruido, no crea señal**. Si la dirección diaria de SMCI es casi aleatoria, promediar no
+inventa información → la ganancia de accuracy es **modesta** y la significancia no sobrevive (DSR=0.72<0.95).
+Pero como decisión metodológica es impecable: es la **única** palanca que mejora sin tocar la cobertura ni
+mirar el futuro. *(Respaldo completo en `decisiones_respaldadas_literatura.md` §2.)*
+
+> **Frase:** *"El M10 promedia 10 XGBoost que solo difieren en la semilla; reduce la varianza de la predicción
+> siguiendo el principio del bagging [Breiman 1996], sin remuestrear datos —seed averaging, aleatorización del
+> aprendiz [Dietterich 2000]—, sin look-ahead y sin elegir la mejor semilla. Mejora accuracy y, sobre todo,
+> Sharpe/equity; pero reduce ruido, no crea señal."*
+""")
+
+code(r'''
+# Ilustración del ensemble: promediar estimaciones ruidosas reduce su dispersión (no necesita datos reales).
+import numpy as np
+rng = np.random.default_rng(0)
+p_true = 0.55                       # "señal" verdadera (prob. de subida de un día)
+n_dias, n_seeds = 2000, 10
+# Cada semilla estima p_true con ruido (el azar interno del XGBoost):
+ruido = rng.normal(0, 0.08, size=(n_dias, n_seeds))
+p_por_semilla = p_true + ruido      # estimación de 1 sola semilla, por día
+p_ensemble = p_por_semilla.mean(axis=1)   # promedio de las 10 semillas, por día
+
+print(f"Desviación típica de la estimación con 1 sola semilla : {p_por_semilla[:, 0].std():.4f}")
+print(f"Desviación típica de la estimación con ensemble de 10  : {p_ensemble.std():.4f}")
+print(f"Reducción de varianza ~ 1/sqrt(10) = {1/np.sqrt(n_seeds):.2f}  -> menos decisiones volcadas por ruido")
+print("La señal (0.55) se conserva; el ruido del muestreo se cancela. Eso es el ensemble.")
+''')
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 14e. Contra qué se mide la accuracy: el test binomial vs *no-information rate*
+
+Para decir que un modelo "acierta", hay que contrastarlo contra el baseline correcto. El ingenuo (0.5) es
+**demasiado fácil** cuando las clases están desbalanceadas; el correcto es la **clase mayoritaria**.
+
+### Qué es
+
+- **Baseline de no-habilidad = clase mayoritaria (regla ZeroR** [Witten et al. 2016]**):** predecir siempre
+  la dirección dominante. Su accuracy = **no-information rate (NIR)** = frecuencia de la clase más frecuente
+  = $\max(\%\text{suben}, \%\text{bajan})$ [Kuhn 2008].
+- **El test:** binomial unilateral — `binomtest(aciertos, n, p=NIR, alternative="greater")`.
+  - **H0:** accuracy del modelo $\leq$ NIR (no tiene habilidad por encima de predecir la clase dominante).
+  - Rechazar H0 ⇒ el modelo tiene **habilidad real**, no solo el sesgo de la clase mayoritaria.
+
+### Por qué es más honesto que el sign test vs 0.5
+
+Porque **0.5 no es "sin habilidad" si las clases están desbalanceadas.** En SMCI bajan más días de los que
+suben, así que **"siempre corto" ya saca 0.516 gratis**. Comparar contra 0.5 regala esa diferencia y hace que
+el modelo parezca mejor de lo que es. La celda lo muestra: el mismo M10 (0.552) pasa de "casi significativo"
+(vs 0.5) a "no significativo" (vs NIR).
+
+> **Frase:** *"No contrasto la accuracy contra 0.5 (la moneda), sino contra el no-information rate —la
+> frecuencia de la clase mayoritaria, regla ZeroR [Witten et al. 2016; Kuhn 2008]— mediante un test binomial
+> unilateral. Es el baseline de no-habilidad correcto en clases desbalanceadas y, por tanto, más exigente:
+> en SMCI lo adopto aun sabiendo que reduce la significancia de mi modelo (de 0.057 a 0.141)."*
+
+**Matiz:** este test es de **una muestra** (accuracy del modelo vs un umbral). Es complementario a **McNemar /
+block-permutation vs B&H**, que son **pareados** (comparan dos estrategias día a día). Juntos responden
+"¿mejor que el no-skill?" y "¿mejor que esta estrategia concreta?".
+""")
+
+code(r'''
+# El mismo modelo, dos baselines: 0.5 (moneda, fácil) vs NIR=clase mayoritaria (correcto, exigente).
+from scipy.stats import binomtest
+n, aciertos = 250, 138            # M10 en SMCI: accuracy 0.552 sobre 250 días
+frac_up = 0.484                   # % días que suben -> baja la mayoría
+nir = max(frac_up, 1 - frac_up)   # no-information rate = clase mayoritaria ("siempre corto")
+p_05  = binomtest(aciertos, n, 0.5, alternative="greater").pvalue
+p_nir = binomtest(aciertos, n, nir, alternative="greater").pvalue
+print(f"accuracy M10 = {aciertos/n:.3f}   |   NIR (clase mayoritaria) = {nir:.3f}  ('siempre corto')")
+print(f"  vs 0.5  (moneda, baseline INCORRECTO/fácil): p = {p_05:.3f}   -> parece casi significativo")
+print(f"  vs NIR  (clase mayoritaria, baseline CORRECTO): p = {p_nir:.3f}   -> NO significativo (honesto)")
+print(f"  la 'habilidad gratis' por el desbalance = NIR - 0.5 = {nir-0.5:.3f}  (lo que el test vs 0.5 te regala)")
+''')
+
+# ---------------------------------------------------------------------------
+md(r"""
+## 15. Checklist — lo que debes saber recitar
 
 1. **STRATA no predice $r_{t+1}$.** Es $f:(\text{decisión}_t,\text{mercado}_t)\to
    \text{posición}_t$, determinista. El retorno futuro solo entra en el backtest

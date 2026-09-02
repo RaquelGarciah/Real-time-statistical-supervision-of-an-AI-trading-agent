@@ -1,0 +1,106 @@
+{
+  "descripcion": "Balanceo sube/baja en OOS por activo; clase = signo de r_{t+1} (causal) sobre fechas con decisión del agente. Ordenado por cercanía a 50/50.",
+  "oos_start": "2024-10-01",
+  "activos": [
+    {
+      "ticker": "TSLA",
+      "n_dias_oos": 401,
+      "frac_sube": 0.5012,
+      "frac_baja": 0.4988,
+      "baseline_mayoritario_acc": 0.5012,
+      "desbalanceo_abs": 0.0012,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "UNG",
+      "n_dias_oos": 401,
+      "frac_sube": 0.4988,
+      "frac_baja": 0.5012,
+      "baseline_mayoritario_acc": 0.5012,
+      "desbalanceo_abs": 0.0012,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "MSTR",
+      "n_dias_oos": 401,
+      "frac_sube": 0.4713,
+      "frac_baja": 0.5287,
+      "baseline_mayoritario_acc": 0.5287,
+      "desbalanceo_abs": 0.0287,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "ROKU",
+      "n_dias_oos": 401,
+      "frac_sube": 0.5287,
+      "frac_baja": 0.4713,
+      "baseline_mayoritario_acc": 0.5287,
+      "desbalanceo_abs": 0.0287,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "MARA",
+      "n_dias_oos": 401,
+      "frac_sube": 0.4663,
+      "frac_baja": 0.5337,
+      "baseline_mayoritario_acc": 0.5337,
+      "desbalanceo_abs": 0.0337,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "SMCI",
+      "n_dias_oos": 401,
+      "frac_sube": 0.4638,
+      "frac_baja": 0.5362,
+      "baseline_mayoritario_acc": 0.5362,
+      "desbalanceo_abs": 0.0362,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "NVDA",
+      "n_dias_oos": 409,
+      "frac_sube": 0.5428,
+      "frac_baja": 0.4572,
+      "baseline_mayoritario_acc": 0.5428,
+      "desbalanceo_abs": 0.0428,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-19"
+    },
+    {
+      "ticker": "BAC",
+      "n_dias_oos": 401,
+      "frac_sube": 0.5436,
+      "frac_baja": 0.4564,
+      "baseline_mayoritario_acc": 0.5436,
+      "desbalanceo_abs": 0.0436,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "XLE",
+      "n_dias_oos": 401,
+      "frac_sube": 0.5611,
+      "frac_baja": 0.4389,
+      "baseline_mayoritario_acc": 0.5611,
+      "desbalanceo_abs": 0.0611,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    },
+    {
+      "ticker": "SPY",
+      "n_dias_oos": 401,
+      "frac_sube": 0.5686,
+      "frac_baja": 0.4314,
+      "baseline_mayoritario_acc": 0.5686,
+      "desbalanceo_abs": 0.0686,
+      "oos_ini": "2024-10-01",
+      "oos_fin": "2026-05-11"
+    }
+  ]
+}

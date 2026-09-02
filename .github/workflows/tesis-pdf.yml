@@ -1,0 +1,35 @@
+name: Tesis PDF
+
+# Compila tesis/main.tex en la nube (gratis, sin instalar LaTeX) y deja el PDF
+# como artefacto descargable. Se lanza a mano (botón "Run workflow"), al abrir/
+# actualizar un PR, y al llegar a main. No se dispara en cada autosave para no
+# malgastar minutos: cuando quieras ver el PDF, púlsalo o ábrelo desde el PR.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['tesis/**']
+  push:
+    branches: [main]
+    paths: ['tesis/**']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar la memoria (LaTeX + biber)
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: tesis
+          root_file: main.tex
+
+      - name: Subir el PDF como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: tesis-pdf
+          path: tesis/main.pdf
+          if-no-files-found: error

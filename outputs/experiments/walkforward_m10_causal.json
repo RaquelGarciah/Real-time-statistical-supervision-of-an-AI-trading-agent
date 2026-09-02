@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "seed": 42,
+    "signal_lag": 1,
+    "scheme": "expanding_anchored_monthly_retrain",
+    "nota": "Validación causal ADICIONAL de M10; no sustituye CPCV (Decisión #10).",
+    "no_fwer_cross_ticker": "SPY = caso central; NVDA = chequeo de consistencia → sin Holm entre activos (declarado).",
+    "m8_nvda_umbrales": "M8-NVDA usa umbrales PSA/GSO/RAM de SPY (no recalibrados); su Sharpe es ilustrativo.",
+    "potencia": "n_test~250, ~12 reentrenos; p≥0.10 en WF-vs-CPCV es no-rechazo, NO equivalencia.",
+    "pre_registro": "BITACORA 2026-06-15"
+  },
+  "por_activo": {
+    "SPY": {
+      "config": {
+        "N0": 150,
+        "step": 21,
+        "embargo": 5,
+        "n_test": 251,
+        "n_retrains": 12,
+        "test_span": [
+          "2025-05-09",
+          "2026-05-11"
+        ],
+        "hmm_file": "hmm.pkl"
+      },
+      "metrics_test_span": {
+        "m5": {
+          "accuracy": 0.3665,
+          "auc": null,
+          "mcc": -0.1378,
+          "sharpe_causal": -3.07,
+          "sharpe_sameday": 0.506
+        },
+        "m8": {
+          "accuracy": 0.4422,
+          "auc": null,
+          "mcc": -0.0801,
+          "sharpe_causal": -0.464,
+          "sharpe_sameday": 0.987
+        },
+        "m10_cpcv": {
+          "accuracy": 0.5139,
+          "auc": 0.5457,
+          "mcc": 0.0493,
+          "sharpe_causal": 1.529,
+          "sharpe_sameday": -0.122
+        },
+        "m10_wf": {
+          "accuracy": 0.5339,
+          "auc": 0.5413,
+          "mcc": 0.0646,
+          "sharpe_causal": 0.359,
+          "sharpe_sameday": -0.314
+        },
+        "bh": {
+          "accuracy": 0.5657,
+          "auc": null,
+          "mcc": null,
+          "sharpe_causal": 2.206,
+          "sharpe_sameday": 2.194
+        }
+      },
+      "mcnemar_wf_vs_m5": {
+        "p": 0.0004827462928941176,
+        "b_m5_solo": 48,
+        "c_wf_solo": 90
+      },
+      "mcnemar_wf_vs_cpcv": {
+        "p": 0.6526850882533246,
+        "b_cpcv_solo": 37,
+        "c_wf_solo": 42
+      },
+      "sign_test_wf": {
+        "k": 134,
+        "n": 251,
+        "p": 0.31253553826267316,
+        "ci95": [
+          0.4700728477499026,
+          0.5968471301928986
+        ]
+      },
+      "delta_sharpe_wf_vs_m5": {
+        "median": 3.4257,
+        "ci95": [
+          0.4129,
+          6.4019
+        ],
+        "point": 3.4295,
+        "n_obs": 251
+      },
+      "verdict": {
+        "rescata_causal": true,
+        "rescata_causal_por": [
+          "mcnemar_vs_m5"
+        ],
+        "cpcv_no_halaga_no_equiv": true,
+        "desplegable_diario": true,
+        "cpcv_halagaba": false,
+        "sanity_ok": false
+      }
+    },
+    "NVDA": {
+      "config": {
+        "N0": 150,
+        "step": 21,
+        "embargo": 5,
+        "n_test": 259,
+        "n_retrains": 13,
+        "test_span": [
+          "2025-05-08",
+          "2026-05-19"
+        ],
+        "hmm_file": "hmm_nvda.pkl"
+      },
+      "metrics_test_span": {
+        "m5": {
+          "accuracy": 0.4672,
+          "auc": null,
+          "mcc": 0.0279,
+          "sharpe_causal": -1.007,
+          "sharpe_sameday": -0.088
+        },
+        "m8": {
+          "accuracy": 0.5212,
+          "auc": null,
+          "mcc": -0.0258,
+          "sharpe_causal": 1.195,
+          "sharpe_sameday": 2.02
+        },
+        "m10_cpcv": {
+          "accuracy": 0.4402,
+          "auc": 0.4463,
+          "mcc": -0.1145,
+          "sharpe_causal": -1.981,
+          "sharpe_sameday": -2.446
+        },
+        "m10_wf": {
+          "accuracy": 0.5097,
+          "auc": 0.4696,
+          "mcc": -0.0071,
+          "sharpe_causal": -0.206,
+          "sharpe_sameday": -2.804
+        },
+        "bh": {
+          "accuracy": 0.5521,
+          "auc": null,
+          "mcc": null,
+          "sharpe_causal": 1.792,
+          "sharpe_sameday": 1.799
+        }
+      },
+      "mcnemar_wf_vs_m5": {
+        "p": 0.436274928840529,
+        "b_m5_solo": 77,
+        "c_wf_solo": 88
+      },
+      "mcnemar_wf_vs_cpcv": {
+        "p": 0.07313979965890871,
+        "b_cpcv_solo": 36,
+        "c_wf_solo": 54
+      },
+      "sign_test_wf": {
+        "k": 132,
+        "n": 259,
+        "p": 0.8037688966992548,
+        "ci95": [
+          0.4470335899330816,
+          0.5720480463627503
+        ]
+      },
+      "delta_sharpe_wf_vs_m5": {
+        "median": 0.8276,
+        "ci95": [
+          -1.5918,
+          3.1935
+        ],
+        "point": 0.8006,
+        "n_obs": 259
+      },
+      "verdict": {
+        "rescata_causal": false,
+        "rescata_causal_por": [],
+        "cpcv_no_halaga_no_equiv": false,
+        "desplegable_diario": false,
+        "cpcv_halagaba": false,
+        "sanity_ok": true
+      }
+    }
+  }
+}

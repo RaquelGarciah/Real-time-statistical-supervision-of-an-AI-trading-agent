@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "lookbacks": {
+      "K3": 63,
+      "K6": 126,
+      "K12": 252
+    },
+    "hold": 21,
+    "rebalanceo": "mensual no solapado",
+    "calib_end": "2024-09-30",
+    "oos_start": "2024-10-01"
+  },
+  "por_lookback": {
+    "K3": {
+      "lookback_d": 63,
+      "n_oos_meses": 186,
+      "calib_acc": 0.5305,
+      "oos_acc": 0.5,
+      "oos_sign_p": 1.0,
+      "oos_siempre_largo_acc": 0.5699,
+      "oos_sharpe_tsmom": -0.09,
+      "oos_sharpe_siempre_largo": 0.194,
+      "calib_sharpe_tsmom": 0.203
+    },
+    "K6": {
+      "lookback_d": 126,
+      "n_oos_meses": 186,
+      "calib_acc": 0.5416,
+      "oos_acc": 0.4409,
+      "oos_sign_p": 0.1067,
+      "oos_siempre_largo_acc": 0.5699,
+      "oos_sharpe_tsmom": -0.405,
+      "oos_sharpe_siempre_largo": 0.194,
+      "calib_sharpe_tsmom": 0.197
+    },
+    "K12": {
+      "lookback_d": 252,
+      "n_oos_meses": 186,
+      "calib_acc": 0.5514,
+      "oos_acc": 0.5376,
+      "oos_sign_p": 0.3046,
+      "oos_siempre_largo_acc": 0.5699,
+      "oos_sharpe_tsmom": 0.061,
+      "oos_sharpe_siempre_largo": 0.194,
+      "calib_sharpe_tsmom": 0.2
+    }
+  },
+  "EXITO_PREREGISTRADO": false
+}
