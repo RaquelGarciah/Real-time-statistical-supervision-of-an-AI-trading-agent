@@ -24,16 +24,10 @@ Icon?
 # IDE / herramientas locales
 .idea/
 .vscode/
-.claude/*
-!.claude/agents/
-!.claude/agents/**
-!.claude/commands/
-!.claude/commands/**
-!.claude/output-styles/
-!.claude/output-styles/**
-!.claude/hooks/
-!.claude/hooks/**
-!.claude/settings.json
+# Tooling local del asistente: vive en disco, no se versiona ni se publica.
+.claude/
+**/.claude/
+CLAUDE.md
 memoria/consejero/.state.json
 logs/
 
